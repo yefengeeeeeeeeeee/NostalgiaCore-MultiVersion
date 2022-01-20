@@ -94,7 +94,7 @@ class LevelAPI{
 			if(strtoupper($this->server->api->getProperty("level-type")) == "FLAT"){
 				$generator = new SuperflatGenerator($options);
 			}else{
-				$generator = new TemporalGenerator($options);
+				$generator = new NormalGenerator($options);
 			}
 		}
 		$gen = new WorldGenerator($generator, $name, $seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):(int) $seed);
@@ -225,20 +225,6 @@ class LevelAPI{
 
 	public function getSpawn(){
 		return $this->server->spawn;
-	}
-	
-	public function loadMap(){
-		if($this->mapName !== false and trim($this->mapName) !== ""){
-			if(!file_exists($this->mapDir."level.pmf")){
-				$level = new LevelImport($this->mapDir);
-				$level->import();
-			}
-			$this->level = new PMFLevel($this->mapDir."level.pmf");
-			console("[INFO] Preparing level \"".$this->level->getData("name")."\"");
-			$this->time = (int) $this->level->getData("time");
-			$this->seed = (int) $this->level->getData("seed");
-			$this->spawn = $this->level->getSpawn();
-		}
 	}
 	
 	public function getAll(){

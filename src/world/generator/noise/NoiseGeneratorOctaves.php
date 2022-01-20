@@ -23,7 +23,7 @@
 require_once("NoiseGenerator.php");
 /***REM_END***/
 
-class NoiseGeneratorOctaves extends NoiseGenerator{
+abstract class NoiseGeneratorOctaves extends NoiseGenerator{
 	public $octaves;
 	private $generatorCollection;
 	public function __construct(Random $random, $octaves){	

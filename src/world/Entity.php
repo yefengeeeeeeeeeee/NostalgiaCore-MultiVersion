@@ -136,7 +136,7 @@ class Entity extends Position{
 					$this->setHealth(10000000, "generic");
 					$this->server->schedule(5, array($this, "updateFuse"), array(), true);
 					$this->update();
-				}elseif($this->type === (OBJECT_ARROW or OBJECT_SNOWBALL)){
+				}elseif($this->type === OBJECT_ARROW){
 					$this->server->schedule(1210, array($this, "update")); //Despawn
 					$this->update();
 				}
@@ -164,7 +164,7 @@ class Entity extends Position{
 	}
 	
 	public function getDrops(){
-		if($this->class === ENTITY_PLAYER and $this->player instanceof Player and ($this->player->gamemode & 0x01) === 0){
+		if($this->class === ENTITY_PLAYER and ($this->player->gamemode & 0x01) === 0){
 			$inv = array();
 			for($i = 0; $i < PLAYER_SURVIVAL_SLOTS; ++$i){
 				$slot = $this->player->getSlot($i);
@@ -201,7 +201,6 @@ class Entity extends Position{
 				case MOB_PIGMAN:
 					return array(
 						array(COOKED_PORKCHOP, 0, mt_rand(0,2)),
-						array(GOLD_INGOT, 0, mt_rand(0,2)),
 					);
 				case MOB_CREEPER:
 					return array(
@@ -266,7 +265,7 @@ class Entity extends Position{
 				$this->close(); //Despawn timer
 				return false;
 			}
-		}elseif($this->class === ENTITY_OBJECT and ($this->type === OBJECT_ARROW or OBJECT_SNOWBALL)){
+		}elseif($this->class === ENTITY_OBJECT and $this->type === OBJECT_ARROW){
 			if(($time - $this->spawntime) >= 60){
 				$this->close(); //Despawn timer
 				return false;
@@ -297,7 +296,7 @@ class Entity extends Position{
 			}
 		}
 	
-		if($this->class !== ENTITY_PLAYER and ($this->x <= 0 or $this->z <= 0 or $this->x >= 256 or $this->z >= 256 or $this->y >= 128 or $this->y <= 0)){
+		if($this->class !== ENTITY_PLAYER and ($this->y >= 128 or $this->y <= 0)){
 			$this->close();
 			return false;
 		}

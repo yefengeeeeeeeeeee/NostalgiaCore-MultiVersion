@@ -25,7 +25,7 @@ require_once("TreeObject.php");
 
 class SmallTreeObject extends TreeObject{
 	public $type = 0;
-	private $trunkHeight = 4;
+	private $trunkHeight = 5;
 	private static $leavesHeight = 4; // All trees appear to be 4 tall
 	private static $leafRadii = array( 1, 1.41, 2.83, 2.24 );
 

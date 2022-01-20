@@ -31,8 +31,14 @@ class StonecutterBlock extends SolidBlock{
 	}
 
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array($this->id, 0, 1),
-		);
+		if($item->isPickaxe()){
+			return array(
+			   array($this->id, 0, 1),
+			);
+		} else {
+			return array(
+			   array($this->id, 0, 0),
+			);
+  }
 	}	
 }
