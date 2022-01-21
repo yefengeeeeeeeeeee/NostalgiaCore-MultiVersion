@@ -164,7 +164,7 @@ class Entity extends Position{
 	}
 	
 	public function getDrops(){
-		if($this->class === ENTITY_PLAYER and ($this->player->gamemode & 0x01) === 0){
+		if($this->class === ENTITY_PLAYER and $this->player instanceof Player and ($this->player->gamemode & 0x01) === 0){
 			$inv = array();
 			for($i = 0; $i < PLAYER_SURVIVAL_SLOTS; ++$i){
 				$slot = $this->player->getSlot($i);
@@ -201,6 +201,7 @@ class Entity extends Position{
 				case MOB_PIGMAN:
 					return array(
 						array(COOKED_PORKCHOP, 0, mt_rand(0,2)),
+						array(GOLD_INGOT, 0, mt_rand(0,2)),
 					);
 				case MOB_CREEPER:
 					return array(
@@ -227,7 +228,7 @@ class Entity extends Position{
 					);
 				case MOB_SHEEP:
 					return array(
-						array(WOOL, $this->data["Color"] & 0x0F, 1),
+						array(WOOL, 2 & 0x0F, 1),
 					);
 			}
 		}
@@ -296,7 +297,7 @@ class Entity extends Position{
 			}
 		}
 	
-		if($this->class !== ENTITY_PLAYER and ($this->y >= 128 or $this->y <= 0)){
+		if($this->class !== ENTITY_PLAYER and ($this->x <= 0 or $this->z <= 0 or $this->x >= 256 or $this->z >= 256 or $this->y >= 128 or $this->y <= 0)){
 			$this->close();
 			return false;
 		}
