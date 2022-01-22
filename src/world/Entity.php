@@ -228,7 +228,7 @@ class Entity extends Position{
 					);
 				case MOB_SHEEP:
 					return array(
-						array(WOOL, 2 & 0x0F, 1),
+						array(WOOL, this->data["Color"] & 0x0F, 1),
 					);
 			}
 		}
