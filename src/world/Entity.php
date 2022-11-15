@@ -214,10 +214,26 @@ class Entity extends Position{
 		}
 		$this->updateLast();
 		$this->updatePosition();
-		if($this->y < 0 and $this->class !== ENTITY_PLAYER){
+		if($this->isInVoid()){
+			$this->outOfWorld();
+		}
+	}
+	
+	public function isInVoid(){
+		return $this->y < -1.6;
+	}
+	
+	/**
+	* Handle fall out of world
+	*/
+	public function outOfWorld(){
+		if($this->player instanceof Player){
+			$this->harm($this->health, "void", true);
+		}else{
 			$this->close();
 		}
 	}
+	
 	public function dropAnEgg(){
 		ServerAPI::request()->api->entity->drop(new Position($this->x + 0.5, $this->y, $this->z + 0.5, $this->level), BlockAPI::getItem(EGG,0,1));
 		$this->server->schedule(mt_rand(0,6000) + 6000, array($this, "dropAnEgg"));
@@ -384,11 +400,6 @@ class Entity extends Position{
 					break;
 			}
 		}
-	
-		if($this->class !== ENTITY_PLAYER and ($this->x <= 0 or $this->z <= 0 or $this->x >= 256 or $this->z >= 256 or $this->y >= 128 or $this->y <= 0)){
-			$this->close();
-			return false;
-		}
 		
 		if($this->dead === true){
 			$this->fire = 0;
@@ -396,9 +407,8 @@ class Entity extends Position{
 			return false;
 		}
 		
-		if($this->y < -16){
-			$this->harm(8, "void", true);
-			$hasUpdate = true;
+		if($this->isInVoid()){
+			$this->outOfWorld();
 		}
 		
 		if($this->fire > 0){
