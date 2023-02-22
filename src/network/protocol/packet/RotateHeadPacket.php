@@ -23,7 +23,7 @@ class RotateHeadPacket extends RakNetDataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);
-		@$this->putByte($this->rawYaw ? $this->yaw : $this->yaw / 360 / 0.0039062); //dont ask me why does chr count float TODO find a better way
+		$this->putByte($this->rawYaw ? $this->yaw : ($this->yaw / 360 / 0.0039062)); //wraps 360 angle to 0xff
 	}
 
 }

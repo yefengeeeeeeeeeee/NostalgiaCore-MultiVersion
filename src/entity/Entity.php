@@ -733,6 +733,9 @@ class Entity extends Position
 		if($this->closed === true){
 			return false;
 		}
+		if($this->lastHeadYaw != $this->headYaw){
+			$this->sendHeadYaw();
+		}
 		$now = microtime(true);
 		if($this->isStatic === false and ($this->lastX != $this->x or $this->lastY != $this->y or $this->lastZ != $this->z or $this->lastYaw != $this->yaw or $this->lastPitch != $this->pitch or $this->lastHeadYaw != $this->headYaw)){
 			if($this->class === ENTITY_PLAYER or ($this->last[5] + 8) < $now){
@@ -770,15 +773,10 @@ class Entity extends Position
 				}
 			} else{
 				$this->updatePosition();
-				if($this->lastHeadYaw != $this->headYaw){
-					$this->sendHeadYaw();
-				}
 				$this->updateLast();
 			}
 			
-			
 		}
-
 		$this->lastUpdate = $now;
 	}
 	
