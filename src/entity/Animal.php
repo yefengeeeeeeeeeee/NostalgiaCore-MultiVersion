@@ -22,6 +22,7 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 	public function harm($dmg, $cause = "generic", $force = false){
 		$ret = parent::harm($dmg, $cause, $force);
 		$this->inPanic |= ($ret && is_numeric($cause));
+		$this->inLove = false;
 		return $ret;
 	}
 	
@@ -32,7 +33,7 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 	public function breed(){
 		$c = $this->spawnChild();
 		if($this->server->dhandle("entity.animal.breed", ["parent" => $this, "child" => $c]) !== false){
-			$c->parent = &$this;
+			$c->parent = $this;
 			$this->server->api->entity->spawnToAll($c);
 		}
 	}
