@@ -13,5 +13,9 @@ class LiquidBlock extends TransparentBlock{
 		$this->isReplaceable = true;
 		$this->isSolid = false;
 		$this->isFullBlock = true;
+		$this->hardness = 500;
+	}
+	public function getDrops(Item $item, Player $player){
+		return array();
 	}
 }

@@ -32,10 +32,10 @@ class Explosion{
 		$server = ServerAPI::request();
 		if(!Explosion::$enableExplosions){ /*Disable Explosions*/
 			foreach($server->api->entity->getRadius($this->source, $radius) as $entity){
-							$impact = (1 - $this->source->distance($entity) / $radius) * 0.5; //pla>
-							$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
-							$entity->harm($damage, "explosion");
-					}
+				$impact = (1 - $this->source->distance($entity) / $radius) * 0.5; //pla>
+				$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
+				$entity->harm($damage, "explosion");
+			}
 			$pk = new ExplodePacket; //sound fix
 			$pk->x = $this->source->x;
 			$pk->y = $this->source->y;
@@ -46,12 +46,13 @@ class Explosion{
 			return;
 		}
 		if($this->size < 0.1 or $server->api->dhandle("entity.explosion", [
-				"level" => $this->level,
-				"source" => $this->source,
-				"size" => $this->size
-			]) === false){
+			"level" => $this->level,
+			"source" => $this->source,
+			"size" => $this->size
+		]) === false){
 			return false;
 		}
+		$visited = [];
 		$mRays = $this->rays - 1;
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
@@ -63,14 +64,20 @@ class Explosion{
 
 						for($blastForce = $this->size * (mt_rand(700, 1300) / 1000); $blastForce > 0; $blastForce -= $this->stepLen * 0.75){
 							$vBlock = $pointer->floor();
-							$blockID = $this->level->level->getBlockID($vBlock->x, $vBlock->y, $vBlock->z);
-							$blockMeta = $this->level->level->getBlockDamage($vBlock->x, $vBlock->y, $vBlock->z);
+							$BIDM = $this->level->level->getBlock($vBlock->x, $vBlock->y, $vBlock->z);
+							$blockID = $BIDM[0];
+							$blockMeta = $BIDM[1];
 							if($blockID > 0){
 								$block = BlockAPI::get($blockID, $blockMeta);
 								$block->x = $vBlock->x;
 								$block->y = $vBlock->y;
 								$block->z = $vBlock->z;
 								$block->level = $this->level;
+								$index = ($block->x << 15) + ($block->z << 7) + $block->y;
+								if($block instanceof LiquidBlock && !isset($visited[$index])){
+									ServerAPI::request()->api->block->scheduleBlockUpdate($block, 5, BLOCK_UPDATE_NORMAL);
+									$visited[$index] = true;
+								}
 								$blastForce -= ($block->getHardness() / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									$index = ($block->x << 15) + ($block->z << 7) + $block->y;
