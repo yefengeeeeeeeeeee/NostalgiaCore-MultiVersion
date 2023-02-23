@@ -133,8 +133,8 @@ class Entity extends Position
 				$this->player = $this->data["player"];
 				$this->setHealth($this->health, "generic");
 				$this->speedModifer = 1;
-				$this->width = 1.2;
-				$this->height = 1.8;
+				$this->width = 1.4;
+				$this->height = 1.9;
 				$this->hasKnockback = true;
 				$this->hasGravity = true;
 				$this->canBeAttacked = true;
@@ -659,7 +659,7 @@ class Entity extends Position
 					// $this->speedZ = 0;
 					$this->server->api->handle("entity.move", $this);
 					$update = true;
-				}elseif ($this->lastYaw != $this->yaw || $this->lastPitch != $this->pitch) {
+				}elseif ($this->lastYaw != $this->yaw || $this->lastPitch != $this->pitch || $this->lastHeadYaw != $this->headYaw) {
 					$update = true;
 				}
 
@@ -719,7 +719,9 @@ class Entity extends Position
 		if($this->idleTime > 0){
 			-- $this->idleTime;
 		}
-
+		if($this->lastHeadYaw != $this->headYaw){
+			$this->sendHeadYaw();
+		}
 		if($this->class !== ENTITY_PLAYER && $update){
 			$this->updateMovement();
 		}
@@ -732,9 +734,6 @@ class Entity extends Position
 	{
 		if($this->closed === true){
 			return false;
-		}
-		if($this->lastHeadYaw != $this->headYaw){
-			$this->sendHeadYaw();
 		}
 		$now = microtime(true);
 		if($this->isStatic === false and ($this->lastX != $this->x or $this->lastY != $this->y or $this->lastZ != $this->z or $this->lastYaw != $this->yaw or $this->lastPitch != $this->pitch or $this->lastHeadYaw != $this->headYaw)){
