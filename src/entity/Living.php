@@ -17,7 +17,12 @@ abstract class Living extends Entity implements Damageable, Pathfindable{
 		$this->hasKnockback = true;
 		if(self::$despawnMobs) $this->server->schedule(self::$despawnTimer, [$this, "close"]); //900*20
 	}
-	
+	public function fall(){
+		$dmg = floor($this->fallDistance - 3);
+		if($dmg > 0){
+			$this->harm($dmg, "fall");
+		}
+	}
 	public function hasPath(){
 		return $this->path != null;
 	}
