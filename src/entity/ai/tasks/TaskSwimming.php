@@ -16,10 +16,12 @@ class TaskSwimming extends TaskBase
 	{
 		if(!$ai->entity->inWater){
 			$this->reset();
+			$ai->mobController->setJumping(false);
+			return;
 		}
 		
 		if(Utils::randomFloat() < 0.8){ #1.5.2 method
-			$ai->entity->speedY = 0.42;
+			$ai->mobController->setJumping(true);
 		}
 		
 		

@@ -18,4 +18,8 @@ class LiquidBlock extends TransparentBlock{
 	public function getDrops(Item $item, Player $player){
 		return array();
 	}
+	
+	public function getLiquidHeight(){ //TODO lava,water meta
+		return (($this->meta >= 8 ? 0 : $this->meta)+1) / 9;
+	}
 }

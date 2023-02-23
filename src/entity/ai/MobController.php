@@ -9,9 +9,19 @@ class MobController
 	
 	public $finalYaw, $finalPitch, $finalHeadYaw;
 	
+	protected $jumping;
+	protected $jumpTimeout;
 	
 	public function __construct($e){
 		$this->entity = $e;
+	}
+	
+	public function isJumping(){
+		return $this->jumping;
+	}
+	
+	public function setJumping($b){
+		$this->jumping = $b;
 	}
 	
 	public function moveNonInstant($x, $y, $z){
@@ -45,6 +55,15 @@ class MobController
 		    $this->entity->moveEntityWithOffset($ox, $oy, $oz);
 		}
 		return true;
+	}
+	
+	public function movementTick(){
+		if($this->isJumping() && $this->jumpTimeout <= 0){
+			$this->jumpTimeout = 10;
+			$this->entity->speedY = 0.42;
+		}
+		
+		if($this->jumpTimeout > 0) --$this->jumpTimeout;
 	}
 	
 	public function rotateTick(){ //TODO handle more rotation
