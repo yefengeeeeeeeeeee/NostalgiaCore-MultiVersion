@@ -10,6 +10,12 @@ class Level{
 	 * @var Entity[]
 	 */
 	public $entityList;
+	/**
+	 * Entity list based on their chunk positions
+	 * @var array()
+	 */
+	public $entityChunked;
+	
 	public $tiles, $blockUpdates, $nextSave, $players = [], $level;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
 
@@ -274,13 +280,62 @@ class Level{
 				unset($this->entityList[$k]);
 				continue;
 			}
+			$prevIndex = (((int)$e->x) >> 4).":".(((int)$e->y) >> 4).":".(((int)$e->z) >> 4);
+			if(!(nullsafe($this->entityChunked[$prevIndex][$k], false) instanceof Entity)){
+				$this->entityChunked[$prevIndex][$k] = &$this->entityList[$k];
+			}
 			if($e->needsUpdate){
 				$e->update();
+			}
+			$newIndex = (((int)$e->x) >> 4).":".(((int)$e->y) >> 4).":".(((int)$e->z) >> 4);
+			if($newIndex != $prevIndex){
+				unset($this->entityChunked[$prevIndex][$k]);
+				$this->entityChunked[$newIndex][$k] = &$this->entityList[$k];
 			}
 		}
 		if(Entity::$updateOnTick && $server->ticks % 40 === 0){ //40 ticks delay
 			$this->mobSpawner->handle();
 		}
+	}
+	public function applyCallbackToNearbyEntities(Entity $e, callable $c, $radius = 5){
+		$minChunkX = ((int)($e->x - $radius)) >> 4;
+		$minChunkY = ((int)($e->y - $radius)) >> 4;
+		$minChunkZ = ((int)($e->z - $radius)) >> 4;
+		$maxChunkX = ((int)($e->x + $radius)) >> 4;
+		$maxChunkY = ((int)($e->y + $radius)) >> 4;
+		$maxChunkZ = ((int)($e->z + $radius)) >> 4;
+		$ents = [];
+		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
+			for($chunkY = $minChunkY; $chunkY <= $maxChunkY; ++$chunkY){
+				for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
+					$ind = (((int)$e->x) >> 4).":".(((int)$e->y) >> 4).":".(((int)$e->z) >> 4);
+					foreach(nullsafe($this->entityChunked[$ind], []) as $e){
+						$c($e);
+					}
+				}
+			}
+		}
+		//unset($ents[$e->eid]);
+	}
+	public function getEntitiesNearby(Entity $e, $radius = 5){
+		$minChunkX = ((int)($e->x - $radius)) >> 4;
+		$minChunkY = ((int)($e->y - $radius)) >> 4;
+		$minChunkZ = ((int)($e->z - $radius)) >> 4;
+		$maxChunkX = ((int)($e->x + $radius)) >> 4;
+		$maxChunkY = ((int)($e->y + $radius)) >> 4;
+		$maxChunkZ = ((int)($e->z + $radius)) >> 4;
+		$ents = [];
+		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
+			for($chunkY = $minChunkY; $chunkY <= $maxChunkY; ++$chunkY){
+				for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
+					$ind = (((int)$e->x) >> 4).":".(((int)$e->y) >> 4).":".(((int)$e->z) >> 4);
+					$ents += $this->entityChunked[$ind];
+				}
+			}
+		}
+		unset($ents[$e->eid]);
+		//if(count($ents) > 0) console(count($ents));
+		
 	}
 	
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){
