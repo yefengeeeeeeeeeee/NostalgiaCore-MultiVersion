@@ -72,6 +72,8 @@ class Entity extends Position
 	public $inAction = false;
 	public $hasKnockback;
 	public $hasJumped;
+	public $invincible, $crouched, $fire, $health, $status;
+	public $position;
 	public $onGround, $inWater;
 	public $carryoverDamage;
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array())

@@ -411,8 +411,8 @@ class Player{
 		if(!($this->entity instanceof Entity) or $this->connected === false){
 			return false;
 		}
-		$X = $this->entity->x >> 4;
-		$Z = $this->entity->z >> 4;
+		$X = ((int)$this->entity->x) >> 4;
+		$Z = ((int)$this->entity->z) >> 4;
 		$v = new Vector2($X, $Z);
 		$this->chunksOrder = [];
 		for($x = 0; $x < 16; ++$x){

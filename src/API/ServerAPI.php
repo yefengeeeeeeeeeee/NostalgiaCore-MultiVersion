@@ -56,6 +56,10 @@ class ServerAPI{
 	 * @var PluginAPI
 	 */
 	public $plugin;
+	/**
+	 * @var QueryHandler
+	 */
+	public $query;
 	
 	private $asyncCalls = [];
 	private $server;

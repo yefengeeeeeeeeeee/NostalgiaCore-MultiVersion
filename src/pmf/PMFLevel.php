@@ -11,7 +11,7 @@ class PMFLevel extends PMF{
 	private $payloadOffset = 0;
 	private $chunks = [];
 	private $chunkChange = [];
-
+	public $level;
 	public function __construct($file, $blank = false){
 		if(is_array($blank)){
 			$this->create($file, 0);

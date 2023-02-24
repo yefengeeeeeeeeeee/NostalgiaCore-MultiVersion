@@ -6,7 +6,9 @@ class Random{
 	private $x, $y, $z, $w;
 	private $haveNextNextGaussian = false;
 	private $nextNextGaussian = 0;
-
+	
+	public $state;
+	public $i, $j;
 	public function __construct($seed = false){
 		$this->setSeed($seed);
 	}
