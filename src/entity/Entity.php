@@ -76,6 +76,7 @@ class Entity extends Position
 	public $position;
 	public $onGround, $inWater;
 	public $carryoverDamage;
+	public $gravity;
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array())
 	{
 		$this->random = new Random();
@@ -106,6 +107,7 @@ class Entity extends Position
 		$this->closed = false;
 		$this->isStatic = false;
 		$this->name = "";
+		$this->gravity = 0.08;
 		$this->state = $this->data["State"] = isset($this->data["State"]) ? $this->data["State"] : 0;
 		$this->tickCounter = 0;
 		$this->server->query("INSERT OR REPLACE INTO entities (EID, level, type, class, health, hasUpdate) VALUES (" . $this->eid . ", '" . $this->level->getName() . "', " . $this->type . ", " . $this->class . ", " . $this->health . ", 0);");
@@ -140,24 +142,6 @@ class Entity extends Position
 				$this->hasKnockback = true;
 				$this->hasGravity = true;
 				$this->canBeAttacked = true;
-				break;
-			case ENTITY_ITEM:
-				if(isset($data["item"]) and ($data["item"] instanceof Item)){
-					$this->meta = $this->data["item"]->getMetadata();
-					$this->stack = $this->data["item"]->count;
-				} else{
-					$this->meta = (int) $this->data["meta"];
-					$this->stack = (int) $this->data["stack"];
-				}
-				$this->hasGravity = true;
-				$this->setHealth(5, "generic");
-				$this->setSize(0.25, 0.25);
-				break;
-			case ENTITY_FALLING:
-				$this->setHealth(PHP_INT_MAX, "generic");
-				$this->height = 0.98;
-				$this->width = 0.98;
-				$this->hasGravity = true;
 				break;
 			case ENTITY_OBJECT:
 				$this->x = isset($this->data["TileX"]) ? $this->data["TileX"] : $this->x;
@@ -658,7 +642,7 @@ class Entity extends Position
 				
 				
 				if($this->hasGravity){
-					$this->speedY -= $this->inWater ? 0.02 : (($this->class === ENTITY_FALLING) ? 0.04 : ($this->class === ENTITY_ITEM ? 0.06 : 0.08)); // TODO: replace with $gravity
+					$this->speedY -= $this->inWater ? 0.02 : ($this->gravity); // TODO: replace with $gravity
 					$update = true;
 				} elseif($this->lastX != $this->x || $this->lastZ != $this->z || $this->lastY != $this->z){
 					// $this->speedX = 0;

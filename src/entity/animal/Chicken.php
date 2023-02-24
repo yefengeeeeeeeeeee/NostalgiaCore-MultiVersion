@@ -16,6 +16,8 @@ class Chicken extends Animal{
 		return $id === PUMPKIN_SEEDS || $id === MELON_SEEDS || $id === BEETROOT_SEEDS || $id === WHEAT_SEEDS;
 	}
 	
+	public function fall(){} //chickens have no fall dmg?
+	
 	public function update(){
 		parent::update();
 		if($this->timeUntilEgg-- <= 0 && !$this->isBaby()){
