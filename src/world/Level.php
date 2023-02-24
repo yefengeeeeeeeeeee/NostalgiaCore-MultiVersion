@@ -298,12 +298,12 @@ class Level{
 		}
 	}
 	public function applyCallbackToNearbyEntities(Entity $e, callable $c, $radius = 5){
-		$minChunkX = ((int)($e->x - $radius)) >> 2;
-		$minChunkY = ((int)($e->y - $radius)) >> 2;
-		$minChunkZ = ((int)($e->z - $radius)) >> 2;
-		$maxChunkX = ((int)($e->x + $radius)) >> 2;
-		$maxChunkY = ((int)($e->y + $radius)) >> 2;
-		$maxChunkZ = ((int)($e->z + $radius)) >> 2;
+		$minChunkX = ((int)($e->x - $radius)) >> 4;
+		$minChunkY = ((int)($e->y - $radius)) >> 4;
+		$minChunkZ = ((int)($e->z - $radius)) >> 4;
+		$maxChunkX = ((int)($e->x + $radius)) >> 4;
+		$maxChunkY = ((int)($e->y + $radius)) >> 4;
+		$maxChunkZ = ((int)($e->z + $radius)) >> 4;
 		$ents = [];
 		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
 			for($chunkY = $minChunkY; $chunkY <= $maxChunkY; ++$chunkY){
@@ -318,12 +318,12 @@ class Level{
 		//unset($ents[$e->eid]);
 	}
 	public function getEntitiesNearby(Entity $e, $radius = 5){
-		$minChunkX = ((int)($e->x - $radius)) >> 2;
-		$minChunkY = ((int)($e->y - $radius)) >> 2;
-		$minChunkZ = ((int)($e->z - $radius)) >> 2;
-		$maxChunkX = ((int)($e->x + $radius)) >> 2;
-		$maxChunkY = ((int)($e->y + $radius)) >> 2;
-		$maxChunkZ = ((int)($e->z + $radius)) >> 2;
+		$minChunkX = ((int)($e->x - $radius)) >> 4;
+		$minChunkY = ((int)($e->y - $radius)) >> 4;
+		$minChunkZ = ((int)($e->z - $radius)) >> 4;
+		$maxChunkX = ((int)($e->x + $radius)) >> 4;
+		$maxChunkY = ((int)($e->y + $radius)) >> 4;
+		$maxChunkZ = ((int)($e->z + $radius)) >> 4;
 		$ents = [];
 		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
 			for($chunkY = $minChunkY; $chunkY <= $maxChunkY; ++$chunkY){
