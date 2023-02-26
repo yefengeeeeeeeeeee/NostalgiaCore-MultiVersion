@@ -1434,6 +1434,9 @@ class Entity extends Position
 
 	public function knockBack($d, $d1)
 	{
+		if($this->closed || $this->dead){
+			return false;
+		}
 		$f = sqrt($d * $d + $d1 * $d1);
 		$f1 = 0.4;
 		$this->speedX /= 2;
