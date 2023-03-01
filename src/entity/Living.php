@@ -65,9 +65,9 @@ abstract class Living extends Entity implements Damageable, Pathfindable{
 		}
 		$this->ai->mobController->rotateTick();
 		$this->ai->mobController->movementTick();
-		if(self::$entityPushing){
+		/*if(self::$entityPushing){
 			$this->collideHandler();
-		}
+		}*/
 		if($this->onGround){
 			//if(!$this->hasPath() && $this->pathFinder instanceof ITileNavigator){
 			//	$this->path = $this->pathFinder->navigate(new PathTileXYZ($this->x, $this->y, $this->z, $this->level), new PathTileXYZ($this->x + mt_rand(-10, 10), $this->y + mt_rand(-1, 1), $this->z + mt_rand(-10, 10), $this->level), 10);
