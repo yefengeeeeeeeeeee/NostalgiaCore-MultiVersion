@@ -11,6 +11,9 @@ class PathFollower{
 	}
 	
 	public function followPath(){
+		
+		if(!isset($this->entity) || !($this->entity instanceof Living)) return;
+		
 		if($this->entity->path != null && (is_array($this->entity->path) && count($this->entity->path) <= 0 || $this->entity->currentIndex >= count($this->entity->path))){
 			$this->entity->path = null;
 			$this->entity->currentIndex = 0;
