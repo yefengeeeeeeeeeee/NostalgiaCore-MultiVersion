@@ -581,10 +581,9 @@ class Entity extends Position
 							}
 						}
 					}
-					
+					$b->boundingBox->offset($this->speedX, $this->speedY, $this->speedZ);
 					$this->inWater = $water;
 				}
-				
 				$support = $savedSpeedY != $this->speedY && $savedSpeedY < 0;
 				$horizontalMultiplyFactor = 0.91;
 				if($support){
