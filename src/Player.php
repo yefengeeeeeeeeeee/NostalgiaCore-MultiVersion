@@ -963,7 +963,7 @@ class Player{
 			$this->blocked = true;
 			$this->gamemode = $gm;
 			$this->sendChat("Your gamemode has been changed to " . $this->getGamemode() . ", you've to do a forced reconnect.\n");
-			$this->server->schedule(30, [$this, "close"], "gamemode change"); //Forces a kick
+			$this->server->schedule(30, [$this, "close"], "gamemode change", false, true); //Forces a kick
 		}
 		
 		if($this->gamemode === SPECTATOR){

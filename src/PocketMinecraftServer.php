@@ -118,7 +118,6 @@ class PocketMinecraftServer{
 		$this->saveEnabled = true;
 		$this->api->level->saveAll();
 		$this->saveEnabled = $save;
-		$this->send2Discord('[INFO] Server stopped!');
 	}
 
 	public function startDatabase(){
@@ -203,7 +202,8 @@ class PocketMinecraftServer{
 			}
 			if(($this->api instanceof ServerAPI) === true){
 				if(($this->api->chat instanceof ChatAPI) === true){
-					$this->api->chat->broadcast("Stopping server...");
+					$this->api->chat->send(false, "Stopping server...");
+					new StopMessageThread($this, "[INFO] Stopping server..."); //broadcast didnt want to send message to discord for some reason
 				}
 			}
 			$this->stop = true;
@@ -215,7 +215,7 @@ class PocketMinecraftServer{
 			}
 		}
 	}
-
+	
 	public function send2Discord($msg){
 		if($this->extraprops->get("discord-msg") == true and $this->extraprops->get("discord-webhook-url") !== "none"){
 			$url = $this->extraprops->get("discord-webhook-url");
