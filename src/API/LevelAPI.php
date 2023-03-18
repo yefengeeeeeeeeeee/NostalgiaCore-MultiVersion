@@ -96,7 +96,10 @@ class LevelAPI{
 		}
 		return true;
 	}
-
+	/**
+	 * @param string $name
+	 * @return Level|boolean
+	 */
 	public function get($name){
 		if(isset($this->levels[$name])){
 			return $this->levels[$name];
