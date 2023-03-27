@@ -1349,8 +1349,6 @@ class Player{
 					return;
 				}
 
-				$this->server->send2Discord($this->username . " joined the game");
-
 				$this->auth = true;
 				if(!$this->data->exists("inventory") or ($this->gamemode & 0x01) === 0x01){
 					if(($this->gamemode & 0x01) === 0x01){
@@ -1485,7 +1483,8 @@ class Player{
 						$this->server->schedule(50, [$this, "orderChunks"], []);
 						$this->blocked = false;
 
-						$this->server->handle("player.spawn", $this);
+						$this->server->send2Discord($this->username . " joined the game");
+						$this->server-dhandle("player.spawn", $this);
 						break;
 					case 2://Chunk loaded?
 						break;
