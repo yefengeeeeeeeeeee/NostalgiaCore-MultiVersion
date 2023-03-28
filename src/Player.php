@@ -1484,7 +1484,7 @@ class Player{
 						$this->blocked = false;
 
 						$this->server->send2Discord($this->username . " joined the game");
-						$this->server-dhandle("player.spawn", $this);
+						$this->server->handle("player.spawn", $this);
 						break;
 					case 2://Chunk loaded?
 						break;
