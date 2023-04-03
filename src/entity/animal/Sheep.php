@@ -17,7 +17,7 @@ class Sheep extends Animal{
 		}elseif($this->isBaby() and Entity::$updateOnTick){
 			$this->server->schedule(mt_rand(400, 1000), [$this, "eatGrass"], null, true); //unknown time
 		}*/
-		$this->ai->addTask(new TasKEatTileGoal());
+		$this->ai->addTask(new TaskEatTileGoal());
 	}
 	public function createSaveData(){
 		$data = parent::createSaveData();
