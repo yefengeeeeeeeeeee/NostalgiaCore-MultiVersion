@@ -298,12 +298,10 @@ class BlockAPI{
 				if($player instanceof Player){			
 					$item = self::fromString(nullsafe($args[1], ""));
 					if(($player->gamemode & 0x01) === 0x01){
-						$output .= "Player is in creative mode.";
-						break;
+						return "Player is in creative mode.";
 					}
 					if($item->getID() === 0){
-						$output .= "You cannot give an air block to a player.";
-						break;
+						return "You cannot give an air block to a player.";
 					}
 					
 					if(!isset($args[2])){

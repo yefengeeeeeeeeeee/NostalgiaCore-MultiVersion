@@ -1,5 +1,5 @@
 <?php
-
+//TODO mutexBits
 abstract class TaskBase
 {
 	public $isStarted = false, $selfCounter = 0;
