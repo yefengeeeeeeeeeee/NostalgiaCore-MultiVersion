@@ -10,6 +10,14 @@ define("VIEW", 3);
 define("VIEWER", 3);
 define("SPECTATOR", 3);
 
+//Block Sides
+define("SIDE_DOWN", 0);
+define("SIDE_UP", 1);
+define("SIDE_ZNEG", 2);
+define("SIDE_ZPOS", 3);
+define("SIDE_XNEG", 4);
+define("SIDE_XPOS", 5);
+
 //Players
 define("MAX_CHUNK_RATE", 20 / arg("max-chunks-per-second", 4)); //Default rate ~256 kB/s
 define("PLAYER_MAX_QUEUE", 1024);
