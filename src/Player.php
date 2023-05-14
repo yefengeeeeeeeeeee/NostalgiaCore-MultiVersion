@@ -2160,6 +2160,12 @@ class Player{
 				}
 				break;
 			case ProtocolInfo::PLAYER_INPUT_PACKET:
+				if(strlen(bin2hex($packet->buffer)) === 24 && $this->entity->linkedEntity instanceof Entity){
+					$this->entity->linkedEntity->linkEntity($this->entity->linkedEntity, SetEntityLinkPacket::TYPE_RIDE);
+					$this->entity->linkedEntity->linkedEntity = false;
+					$this->entity->linkedEntity = false;
+				}
+				
 				break; //TODO player input-
 			default:
 				console("[DEBUG] Unhandled 0x" . dechex($packet->pid()) . " data packet for " . $this->username . " (" . $this->clientID . "): " . print_r($packet, true), true, true, 2);

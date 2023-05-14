@@ -1272,6 +1272,8 @@ class Entity extends Position
 	public function linkEntity(Entity $e, $type)
 	{
 		//if($e->isPlayer()){
+		$this->linkedEntity = $e;
+		$e->linkedEntity = $this;
 		$this->server->api->dhandle("entity.link", ["rider" => $e->eid, "riding" => $this->eid, "type" => 0]);
 		//}
 	}
