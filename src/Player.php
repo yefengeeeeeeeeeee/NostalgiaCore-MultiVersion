@@ -2165,6 +2165,22 @@ class Player{
 					$this->entity->linkedEntity->linkedEntity = false;
 					$this->entity->linkedEntity = false;
 				}
+				if($this->entity->linkedEntity instanceof Entity){
+					$pk = new SetEntityMotionPacket;
+					$pk->eid = $this->entity->linkedEntity->eid;
+					var_dump($packet);
+					$pk->speedX = ($this->entity->x - $this->entity->linkedEntity->x)*30;
+					$pk->speedY = ($this->entity->y - $this->entity->linkedEntity->y)*30;
+					$pk->speedZ = ($this->entity->z - $this->entity->linkedEntity->z)*30;
+					foreach($this->level->players as $p){
+						if($p->entity->eid != $this->entity->eid){
+							$p->dataPacket(clone $pk);
+						}
+					}
+					
+					$this->entity->linkedEntity->setPosition($this->entity);
+					$this->entity->linkedEntity->sendMoveUpdate();
+				}
 				
 				break; //TODO player input-
 			default:

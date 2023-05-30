@@ -2,10 +2,59 @@
 
 class Minecart extends Vehicle{
 	const TYPE = OBJECT_MINECART;
-	private $moveVector = [];
-	const STATE_INITIAL = 0;
-	const STATE_ON_RAIL = 1;
-	const STATE_OFF_RAIL = 2;
+	/**
+	 * A minecart rotation matrix
+	 * @var int[][][] 
+	 */
+	private static $matrix = [
+		[
+			[0, 0, -1],
+			[0, 0, 1]
+		],
+		[
+			[-1, 0, 0],
+			[1, 0, 0]
+		],
+		[
+			[-1, -1, 0],
+			[1, 0, 0]
+		],
+		[
+			[-1, 0, 0],
+			[1, -1, 0]
+		],
+		[
+			[0, 0, -1],
+			[0, -1, 1]
+		],
+		[
+			[0, -1, -1],
+			[0, 0, 1]
+		],
+		[
+			[0, 0, 1],
+			[1, 0, 0]
+		],
+		[
+			[0, 0, 1],
+			[-1, 0, 0]
+		],
+		[
+			[0, 0, -1],
+			[-1, 0, 0]
+		],
+		[
+			[0, 0, -1],
+			[1, 0, 0]
+		]
+	];
+	
+	private $hurtTime = 0; //syncentdata 17 int
+	private $damage = 0; //syncentdata 19 float
+	
+	private $minecartX = 0, $minecartY = 0, $minecartZ = 0;
+	private $turnProgress = 0;
+	
 	
 	function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		parent::__construct($level, $eid, $class, $type, $data);
@@ -14,12 +63,8 @@ class Minecart extends Vehicle{
 		$this->y = isset($this->data["TileY"]) ? $this->data["TileY"]:$this->y;
 		$this->z = isset($this->data["TileZ"]) ? $this->data["TileZ"]:$this->z;
 		$this->setHealth(3, "generic");
-		//$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
-		$this->width = 1;
-		/*$this->moveVector[Entity::NORTH] = new Vector3(-1, 0, 0);
-		$this->moveVector[Entity::SOUTH] = new Vector3(1, 0, 0);
-		$this->moveVector[Entity::EAST] = new Vector3(0, 0, -1);
-		$this->moveVector[Entity::WEST] = new Vector3(0, 0, 1);*/
+		$this->width = 0.98;
+		$this->height = 0.7;
 		$this->update();
 	}
 	
@@ -63,7 +108,6 @@ class Minecart extends Vehicle{
 		}
 		parent::interactWith($e, $action);
 	}
-	
 	public function canRide($e)
 	{
 	   return !($this->linkedEntity instanceof Entity) && !$e->isRiding;
