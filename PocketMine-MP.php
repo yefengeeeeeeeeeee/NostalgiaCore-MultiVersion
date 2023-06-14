@@ -28,9 +28,5 @@ require_once(FILE_PATH."/src/dependencies.php");
 
 $server = new ServerAPI();
 $server->start();
-/*console(Utils::getSeedNumeric("nyan")*543321);
-$mtrand = new MersenneTwister(Utils::getSeedNumeric("nyan")*543321);
-$nois = new NoiseGeneratorOctaves($mtrand, 2);
-var_dump($nois->generateNoiseOctaves(2 << 4, 6 << 4, 16, 16, 0.025, 0.025, 0.25));*/
 kill(getmypid()); //Fix for ConsoleAPI being blocked
 exit(0);
