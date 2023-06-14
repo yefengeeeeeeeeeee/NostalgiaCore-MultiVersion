@@ -34,8 +34,9 @@ class WorldGenerator{
 			for($X = 0; $X < $this->width; ++$X){
 				$this->generator->generateChunk($X, $Z);
 			}
+			
 			console("[NOTICE] Generating level " . ceil((($Z + 1) / $this->width) * 100) . "%");
-		}
+		}//$this->generator->generateChunk(7, 5);
 		console("[NOTICE] Populating level");
 		$this->generator->populateLevel();
 		for($Z = 0; $Z < $this->width; ++$Z){
@@ -43,7 +44,8 @@ class WorldGenerator{
 				$this->generator->populateChunk($X, $Z);
 			}
 			console("[NOTICE] Populating level " . ceil((($Z + 1) / $this->width) * 100) . "%");
-		}
+		}//
+		//$this->generator->populateChunk(7, 7);
 
 		$this->level->setSpawn($this->generator->getSpawn());
 		$this->level->save(true, true);

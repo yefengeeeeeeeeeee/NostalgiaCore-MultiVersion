@@ -6,11 +6,11 @@ class PMFLevel extends PMF{
 
 	public $isLoaded = true;
 	private $levelData = [];
-	private $locationTable = [];
+	public $locationTable = [];
 	private $log = 4;
 	private $payloadOffset = 0;
-	private $chunks = [];
-	private $chunkChange = [];
+	public $chunks = [];
+	public $chunkChange = [];
 	public $level;
 	public function __construct($file, $blank = false){
 		if(is_array($blank)){

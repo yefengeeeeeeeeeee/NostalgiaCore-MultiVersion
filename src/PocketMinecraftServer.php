@@ -33,6 +33,8 @@ class PocketMinecraftServer{
 		}*/
 		console("[INFO] Starting Minecraft PE server on " . ($this->serverip === "0.0.0.0" ? "*" : $this->serverip) . ":" . $this->port);
 		EntityRegistry::registerEntities();
+		Feature::init();
+		Biome::init();
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
 		$this->serverID = $this->serverID === false ? Utils::readLong(substr(Utils::getUniqueID(true, $this->serverip . $this->port), 8)) : $this->serverID;
 		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)) : $this->seed;
@@ -418,6 +420,7 @@ class PocketMinecraftServer{
 			pcntl_signal(SIGINT, [$this, "close"]);
 			pcntl_signal(SIGHUP, [$this, "close"]);
 		}
+		
 		console("[INFO] Default game type: " . strtoupper($this->getGamemode()));
 		$this->trigger("server.start", microtime(true));
 		console('[INFO] Done (' . round(microtime(true) - START_TIME, 3) . 's)! For help, type "help" or "?"');

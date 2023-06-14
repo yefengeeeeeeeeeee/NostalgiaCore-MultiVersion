@@ -19,7 +19,9 @@
   Only the class `twister' is part of the API; everything else is private.
   
   http://kingfisher.nfshost.com/sw/twister/
-
+  
+  
+  Who made such a weird names? - GameHerobrine
 */
 const N = 624;
 const M = 397;
@@ -41,7 +43,7 @@ $val = MASK31 | (MASK31 << 1);
 define("MASK32", $val);
 
 
-class MersenneTwister{ //Does it even used? //rename back if any problems will be spotted
+class MersenneTwister{
 
 	const N = N;
 	# the class constant is not used anywhere in this namespace,
@@ -202,7 +204,7 @@ class MersenneTwister{ //Does it even used? //rename back if any problems will b
 
 		return $y;
 	}
-
+	
 	/* generates a random number on [0,1]-real-interval */
 
 	function real_closed(){
@@ -330,6 +332,19 @@ class MersenneTwister{ //Does it even used? //rename back if any problems will b
 				($this->int32() & MASK26)) *
 			(1.0 / 9007199254740992.0);
 	}
+	
+	function nextInt($bound = null){
+		return $bound == null ? ($this->int32() >> 1) : ($this->int32() % $bound);
+	}
+	
+	function nextFloat(){
+		return $this->int32() * 2.3283064365386963E-010;
+	}
+	
+	function setSeed($seed){
+		$this->init_with_integer($seed);
+	}
+	
 }
 
 function signed2unsigned($signed_integer){

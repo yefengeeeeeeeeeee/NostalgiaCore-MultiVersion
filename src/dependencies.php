@@ -128,6 +128,7 @@ require_once(FILE_PATH . "/src/plugin/OtherPluginRequirement.php");
 require_once(FILE_PATH . "/src/plugin/DummyPlugin.php");
 require_once(FILE_PATH . "/src/plugin/phar/IClassLoader.php");
 require_once(FILE_PATH . "/src/plugin/phar/PharUtils.php");
+require_once(FILE_PATH . "/src/world/generator/vanilla/feature/Feature.php");
 
 require_all(FILE_PATH . "src/");
 

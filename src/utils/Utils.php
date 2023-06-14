@@ -44,6 +44,29 @@ class Utils{
 		$angle = fmod($angle, 360);
 		return $angle < 0 ? $angle + 360 : $angle;
 	}
+	
+	public static function getSeedNumeric($seed){
+		if($seed === "") return false;
+		else if(is_int($seed)) return (int)$seed;
+		else{
+			$i = 0;
+			for($j = 0; $j < strlen($seed); ++$j){
+				$i = $i * 31 + ord($seed[$j]);
+			}
+			return (int)$i;
+		}
+	}
+	
+	public static function sint32($r){
+		$r &= 0xFFFFFFFF;
+		if ($r & 0x80000000)
+		{
+			$r &= ~0x80000000;
+			return -2147483648 + $r;
+		}
+		return $r;
+	}
+	
 	public static function wrapAngleTo180($angle)
 	{
 		$angle = fmod($angle+180, 360);
