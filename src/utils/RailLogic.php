@@ -24,9 +24,9 @@ class RailLogic
 	public function getRail($v){
 		if(($b = $this->level->getBlock($v)) instanceof RailBaseBlock){
 			return new RailLogic($b);
-		}else if(($b = $this->level->getBlockWithoutVector($v->x, $v->y + 1, $v->z)) instanceof RailBaseBlock){
+		}elseif(($b = $this->level->getBlockWithoutVector($v->x, $v->y + 1, $v->z)) instanceof RailBaseBlock){
 			return new RailLogic($b);
-		}else if(($b = $this->level->getBlockWithoutVector($v->x, $v->y - 1, $v->z)) instanceof RailBaseBlock){
+		}elseif(($b = $this->level->getBlockWithoutVector($v->x, $v->y - 1, $v->z)) instanceof RailBaseBlock){
 			return new RailLogic($b);
 		}
 		
@@ -113,10 +113,10 @@ class RailLogic
 		if($state === 0){
 			if(RailBaseBlock::isRailBlock($this->level, $this->x, $this->y + 1, $this->z - 1)) $state = 4;
 			if(RailBaseBlock::isRailBlock($this->level, $this->x, $this->y + 1, $this->z + 1)) $state = 5;
-		}else if($state === 1){
+		}elseif($state === 1){
 			if(RailBaseBlock::isRailBlock($this->level, $this->x + 1, $this->y + 1, $this->z)) $state = 2;
 			if(RailBaseBlock::isRailBlock($this->level, $this->x - 1, $this->y + 1, $this->z)) $state = 3;
-		}else if($state < 0) $state = 0;
+		}elseif($state < 0) $state = 0;
 		
 		$this->updateConnections($state);
 		$meta = $state;
@@ -173,10 +173,10 @@ class RailLogic
 		if($state == 0){
 			if(RailBaseBlock::isRailBlock($this->level, $this->x, $this->y + 1, $this->z - 1)) $state = 4;
 			if(RailBaseBlock::isRailBlock($this->level, $this->x, $this->y + 1, $this->z + 1)) $state = 5;
-		}else if($state == 1){
+		}elseif($state == 1){
 			if(RailBaseBlock::isRailBlock($this->level, $this->x + 1, $this->y + 1, $this->z)) $state = 2;
 			if(RailBaseBlock::isRailBlock($this->level, $this->x - 1, $this->y + 1, $this->z)) $state = 3;
-		}else if($state < 0) $state = 0;
+		}elseif($state < 0) $state = 0;
 		
 		$meta = $state;
 		

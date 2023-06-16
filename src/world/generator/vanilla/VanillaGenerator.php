@@ -108,12 +108,12 @@ class VanillaGenerator implements LevelGenerator
 		$sample = (int) (((($this->treeNoise->getValue($chunkXWorld * 0.5, $chunkZWorld * 0.5) / 8) + ($this->rand->nextFloat() * 4)) + 4) / 3);
 		$treesAmount = $this->rand->nextInt(10) == 0;
 		if($biome == Biome::$forest) $treesAmount += $sample + 2;
-		else if($biome == Biome::$rainForest) $treesAmount += $sample + 2;
-		else if($biome == Biome::$seasonalForest) $treesAmount += $sample + 1;
-		else if($biome == Biome::$taiga) $treesAmount += $sample + 1;
-		else if($biome == Biome::$desert) $treesAmount -= 20;
-		else if($biome == Biome::$tundra) $treesAmount -= 20;
-		else if($biome == Biome::$plains) $treesAmount -= 20;
+		elseif($biome == Biome::$rainForest) $treesAmount += $sample + 2;
+		elseif($biome == Biome::$seasonalForest) $treesAmount += $sample + 1;
+		elseif($biome == Biome::$taiga) $treesAmount += $sample + 1;
+		elseif($biome == Biome::$desert) $treesAmount -= 20;
+		elseif($biome == Biome::$tundra) $treesAmount -= 20;
+		elseif($biome == Biome::$plains) $treesAmount -= 20;
 		for($l8 = 0; $l8 < $treesAmount; ++$l8){
 			$l12 = $chunkXWorld + $this->rand->nextInt(16) + 8;
 			$j15 = $chunkZWorld + $this->rand->nextInt(16) + 8;
@@ -237,7 +237,7 @@ class VanillaGenerator implements LevelGenerator
 						$b3 = ord($chunks[$blockY >> 4][($blockY & 0xf) + ($blockZ << 5) + ($blockX << 9)]);
 						if($b3 == 0){
 							$i = -1;
-						}else if($b3 == STONE){
+						}elseif($b3 == STONE){
 							if($i == -1){
 								if($nextFloat > 0){
 									if($blockY >= 64-4 && $blockY <= 64+1){
@@ -266,7 +266,7 @@ class VanillaGenerator implements LevelGenerator
 								}else{
 									$chunks[$blockY >> 4][($blockY & 0xf) + ($blockZ << 5) + ($blockX << 9)] = chr($b2);
 								}
-							}else if($i > 0){
+							}elseif($i > 0){
 								--$i;
 								$chunks[$blockY >> 4][($blockY & 0xf) + ($blockZ << 5) + ($blockX << 9)] = chr($b2);
 								if($i == 0 && $b2 == SAND){
@@ -396,7 +396,7 @@ class VanillaGenerator implements LevelGenerator
 					$d12 = ($this->interpolationNoises[$k1] / 10 + 1) / 2;
 					
 					if($d12 < 0) $d8 = $d10;
-					else if($d12 > 1) $d8 = $d11;
+					elseif($d12 > 1) $d8 = $d11;
 					else $d8 = $d10 + ($d11 - $d10) * $d12;
 					
 					$d8 -= $d9;

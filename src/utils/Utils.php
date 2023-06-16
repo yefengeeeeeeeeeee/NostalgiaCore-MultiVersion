@@ -47,7 +47,7 @@ class Utils{
 	
 	public static function getSeedNumeric($seed){
 		if($seed === "") return false;
-		else if(is_int($seed)) return (int)$seed;
+		elseif(is_int($seed)) return (int)$seed;
 		else{
 			$i = 0;
 			for($j = 0; $j < strlen($seed); ++$j){

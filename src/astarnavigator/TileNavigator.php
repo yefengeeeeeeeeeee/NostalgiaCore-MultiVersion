@@ -62,7 +62,7 @@ class TileNavigator implements ITileNavigator
 					$open->insert($neighbor, -$tentativeG);
 					$has[(string)$neighbor] = true;
 				}
-				else if ($tentativeG >= $gScore[(string) $neighbor])
+				elseif ($tentativeG >= $gScore[(string) $neighbor])
 				{
 					continue;
 				}

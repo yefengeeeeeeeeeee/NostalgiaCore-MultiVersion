@@ -38,7 +38,7 @@ class BiomeSource
 				$f = 1 - (((($this->detailNoises[$index] * 1.1) + 0.5) * 0.01) + ((($this->temperatureNoises[$index] * 0.15) + 0.7) * 0.99));
 				$f1 = 1 - ($f*$f);
 				if($f1 < 0) $f1 = 0;
-				else if($f1 > 1) $f1 = 1;
+				elseif($f1 > 1) $f1 = 1;
 				
 				$this->temperatureNoises[$index++] = $f1;
 			}
@@ -66,10 +66,10 @@ class BiomeSource
 				$blockTemp = 1 - ($f1 * $f1);
 				
 				if($blockTemp < 0) $blockTemp = 0;
-				else if($blockTemp > 1) $blockTemp = 1;
+				elseif($blockTemp > 1) $blockTemp = 1;
 				
 				if($rain < 0) $rain = 0;
-				else if($rain > 1) $rain = 1;
+				elseif($rain > 1) $rain = 1;
 				
 				$this->temperatureNoises[$index] = $blockTemp;
 				$this->rainfallNoises[$index] = $rain;
