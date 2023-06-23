@@ -55,27 +55,30 @@ class SugarcaneBlock extends FlowableBlock{
 				$this->level->setBlock($this, new AirBlock(), false, false, true);
 				return BLOCK_UPDATE_NORMAL;
 			}
-		}elseif($type === BLOCK_UPDATE_RANDOM){
-			if($this->getSide(0)->getID() !== SUGARCANE_BLOCK){
-				if($this->meta === 0x0F){
-					for($y = 1; $y < 3; ++$y){
-						$b = $this->level->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
-						if($b->getID() === AIR){
-							$this->level->setBlock($b, new SugarcaneBlock(), true, false, true);							
-						}
-					}
-					$this->meta = 0;
-					$this->level->setBlock($this, $this, true, false, true);
-				}else{
-					++$this->meta;
-					$this->level->setBlock($this, $this, true, false, true);
-				}
-				return BLOCK_UPDATE_RANDOM;
-			}
 		}
 		return false;
 	}
-	
+	public static function onRandomTick(Level $level, $x, $y, $z){
+		$underID = $level->level->getBlockID($x, $y - 1, $z);
+		$b = $level->level->getBlock($x, $y, $z);
+		$id = $b[0];
+		$meta = $b[1];
+		if($underID !== SUGARCANE_BLOCK){
+			if($meta == 0x0F){
+				for($yy = 1; $yy < 3; ++$yy){
+					$bID = $level->level->getBlockID($x, $y + $yy, $z);
+					if($bID === AIR){
+						$level->setBlock(new Position($x, $y, $z, $level), new SugarcaneBlock(), true, false, true);
+					}
+				}
+				$meta = 0;
+				$level->fastSetBlockUpdate($x, $y, $z, $id, $meta);
+			}else{
+				$level->fastSetBlockUpdate($x, $y, $z, $id, $meta + 1);
+			}
+			return BLOCK_UPDATE_RANDOM;
+		}
+	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			$down = $this->getSide(0);
 			if($down->getID() === SUGARCANE_BLOCK){

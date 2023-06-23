@@ -9,6 +9,13 @@ class FireBlock extends FlowableBlock implements LightingBlock{
 		$this->hardness = 0;
 	}
 	
+	public static function onRandomTick(Level $level, $x, $y, $z){
+		console("Fire tick at $x $y $z");
+		if($level->level->getBlockID($x, $y - 1, $z) !== NETHERRACK){
+			$level->setBlock(new Position($x, $y, $z, $level), new AirBlock(), true, false, true);
+		}
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		return array();
 	}
@@ -25,11 +32,6 @@ class FireBlock extends FlowableBlock implements LightingBlock{
 			}
 			$this->level->setBlock($this, new AirBlock(), true, false, true);
 			return BLOCK_UPDATE_NORMAL;
-		}elseif($type === BLOCK_UPDATE_RANDOM){
-			if($this->getSide(0)->getID() !== NETHERRACK){
-				$this->level->setBlock($this, new AirBlock(), true, false, true);
-				return BLOCK_UPDATE_NORMAL;
-			}
 		}
 		return false;
 	}

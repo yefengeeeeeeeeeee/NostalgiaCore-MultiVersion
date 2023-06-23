@@ -92,7 +92,7 @@ class LevelAPI{
 
 		$timeu = microtime(true);
 		foreach($blockUpdates->getAll() as $bupdate){
-			$this->server->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"], (int) $bupdate["y"], (int) $bupdate["z"], $this->levels[$name]), (float) $bupdate["delay"], (int) $bupdate["type"]);
+			if($bupdate["type"] !== BLOCK_UPDATE_RANDOM) $this->server->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"], (int) $bupdate["y"], (int) $bupdate["z"], $this->levels[$name]), (float) $bupdate["delay"], (int) $bupdate["type"]);
 		}
 		return true;
 	}

@@ -326,7 +326,7 @@ class PMFLevel extends PMF{
 		console("[NOTICE] If you see this message, you should send the log with error to the devs.");
 	}
 	public function getBlockID($x, $y, $z){
-		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
+		if($x < 0 || $x > 255 || $z < 0 || $z > 255 || $y < 0 || $y > 127){
 			return 0;
 		}
 		$X = $x >> 4;
@@ -347,7 +347,7 @@ class PMFLevel extends PMF{
 	}
 
 	public function setBlockID($x, $y, $z, $block){
-		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
+		if($x < 0 || $x > 255 || $z < 0 || $z > 255 || $y < 0 || $y > 127){
 			return false;
 		}
 		$X = $x >> 4;
@@ -372,7 +372,7 @@ class PMFLevel extends PMF{
 	}
 
 	public function getBlockDamage($x, $y, $z){
-		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
+		if($x < 0 || $x > 255 || $z < 0 || $z > 255 || $y < 0 || $y > 127){
 			return 0;
 		}
 		$X = $x >> 4;
@@ -397,7 +397,7 @@ class PMFLevel extends PMF{
 	}
 
 	public function setBlockDamage($x, $y, $z, $damage){
-		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
+		if($x < 0 || $x > 255 || $z < 0 || $z > 255 || $y < 0 || $y > 127){
 			return false;
 		}
 		$X = $x >> 4;
@@ -436,7 +436,7 @@ class PMFLevel extends PMF{
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
-		if($x < 0 or $z < 0 or $X >= $this->levelData["width"] or $Z >= $this->levelData["width"] or $Y >= $this->levelData["height"] or $y < 0){
+		if($x < 0 || $x > 255 || $z < 0 || $z > 255 || $y < 0 || $y > 127){
 			return [AIR, 0];
 		}
 		$index = $this->getIndex($X, $Z);
@@ -473,7 +473,7 @@ class PMFLevel extends PMF{
 		$Y = $y >> 4;
 		$block &= 0xFF;
 		$meta &= 0x0F;
-		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"] or $y < 0){
+		if($x < 0 || $x > 255 || $z < 0 || $z > 255 || $y < 0 || $y > 127){
 			return false;
 		}
 		$index = $this->getIndex($X, $Z);

@@ -15,6 +15,37 @@ class FarmlandBlock extends TransparentBlock{
 		$b = $this->getSide(1);
 		return $b->isTransparent && $b->id != 0;
 	}
+	
+	public static function onRandomTick(Level $level, $x, $y, $z){
+		$meta = $level->level->getBlockDamage($x, $y, $z);
+		$b = $level->getBlockWithoutVector($x, $y + 1, $z, $level, false);
+		if($meta === 0 && mt_rand(0, 5) === 0){
+			$water = self::checkWaterStatic($level, $x, $y, $z);
+			if($water){
+				$level->setBlock(new Position($x, $y, $z, $level), BlockAPI::get(FARMLAND, 1), true, false, true);
+			}elseif(!(($b instanceof Block) && $b->isTransparent && $b->id != 0)){
+				$level->setBlock(new Position($x, $y, $z, $level), BlockAPI::get(DIRT, 0), true, false, true);
+			}
+		}
+		
+		if($b instanceof Block && !$b->isFlowable){
+			$level->setBlock(new Position($x, $y, $z, $level), BlockAPI::get(DIRT, 0), true, false, true);
+		}
+	}
+	
+	public static function checkWaterStatic(Level $level, $x, $y, $z){
+		for($bx = $x - 4; $bx <= $x + 4; $bx++){
+			for($by = $y; $by <= $y + 1; $by++){
+				for($bz = $z - 4; $bz <= $z + 4; $bz++){
+					$id = $level->level->getBlockID($bx, $by, $bz);
+					if($id === 8 || $id === 9){
+						return true;
+					}
+				}
+			}
+		}
+	}
+	
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if(!$this->getSide(1)->isTransparent){
@@ -22,26 +53,12 @@ class FarmlandBlock extends TransparentBlock{
 				return $type;
 			}
 		}
-		if($type === BLOCK_UPDATE_RANDOM){
-			if($this->meta === 0 && mt_rand(0,5) == 0){
-				$water = $this->checkWater();
-				if($water){
-					$this->level->setBlock($this, BlockAPI::get(FARMLAND, 1), true, false, true);
-				}elseif(!$this->hasCrops()){
-					$this->level->setBlock($this, BlockAPI::get(DIRT, 0), true, false, true);
-				}
-			}
-			if(!$this->getSide(1)->isFlowable){
-				$this->level->setBlock($this, BlockAPI::get(DIRT, 0), true, false, true);
-			}
-			return $type;
-		}
 		return false;
 	}
 
 	public function getBlockID($x, $y, $z){
 		return $this->level->level->getBlockID($x, $y, $z); //PMFLevel method
-}
+	}
 
 	public function checkWater(){
 

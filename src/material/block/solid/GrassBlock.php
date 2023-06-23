@@ -46,12 +46,10 @@ class GrassBlock extends SolidBlock{
 		}
 		return;
 	}
-
-	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_RANDOM && !$this->getSide(1)->isTransparent && mt_rand(0, 2) == 1){
-			$this->level->setBlock($this, BlockAPI::get(DIRT, 0), true, false, true);
+	public static function onRandomTick(Level $level, $x, $y, $z){
+		if(!$level->getBlockWithoutVector($x, $y + 1, $z, false)->isTransparent && mt_rand(0, 2) == 1){
+			$level->fastSetBlockUpdate($x, $y, $z, DIRT, 0);
 		}
-		return BLOCK_UPDATE_RANDOM;
 	}
 
 }

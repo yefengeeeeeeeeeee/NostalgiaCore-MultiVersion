@@ -155,6 +155,7 @@ abstract class Block extends Position{
 	public $z = 0;
 	public $slipperiness;
 	
+	public static function onRandomTick(Level $level, $x, $y, $z){}
 	
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		$this->id = (int) $id;

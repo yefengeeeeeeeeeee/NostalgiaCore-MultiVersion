@@ -15,7 +15,34 @@ class PumpkinStemBlock extends FlowableBlock{
 			}
 		return false;
 	}
-
+	public static function onRandomTick(Level $level, $x, $y, $z){
+		if(mt_rand(0, 2) == 1){
+			$block = $level->level->getBlock($x, $y, $z);
+			if($block[1] < 0x07){
+				//++$this->meta;
+				//$this->level->setBlock($this, $this, true, false, true);
+				$level->fastSetBlockUpdate($x, $y, $z, $block[0], $block[1] + 1);
+			}else{
+				
+				$position = new AirBlock(); //feke block
+				$position->x = $x;
+				$position->y = $y;
+				$position->z = $z;
+				$position->level = $level;
+				for($side = 2; $side <= 5; ++$side){
+					$b = $position->getSide($side);
+					if($b->getID() === PUMPKIN){
+						return;
+					}
+				}
+				$side = $position->getSide(mt_rand(2,5));
+				$d = $side->getSide(0);
+				if($side->getID() === AIR and ($d->getID() === FARMLAND or $d->getID() === GRASS or $d->getID() === DIRT)){
+					$level->setBlock($side, new PumpkinBlock(), true, false, true);
+				}
+			}
+		}
+	}
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() != 60){

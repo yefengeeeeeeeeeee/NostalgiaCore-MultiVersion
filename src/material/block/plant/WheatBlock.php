@@ -31,24 +31,22 @@ class WheatBlock extends FlowableBlock{
 		}
 		return false;
 	}
-
+	public static function onRandomTick(Level $level, $x, $y, $z){
+		if(mt_rand(0, 2) == 1){
+			$block = $level->level->getBlock($x, $y, $z);
+			if($block[1] < 0x07){
+				//++$this->meta;
+				//$this->level->setBlock($this, $this, true, false, true);
+				$level->fastSetBlockUpdate($x, $y, $z, $block[0], $block[1] + 1);
+			}
+		}
+	}
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() != 60){
 				ServerAPI::request()->api->entity->drop(new Position($this->x + 0.5, $this->y, $this->z + 0.5, $this->level), BlockAPI::getItem(WHEAT_SEEDS, 0, 1));
 				$this->level->setBlock($this, new AirBlock(), false, false, true);
 				return BLOCK_UPDATE_NORMAL;
-			}
-		}
-		elseif($type === BLOCK_UPDATE_RANDOM){
-			if(mt_rand(0, 2) == 1){
-				if($this->meta < 0x07){
-					++$this->meta;
-					$this->level->setBlock($this, $this, true, false, true);
-					return BLOCK_UPDATE_RANDOM;
-				}
-			}else{
-				return BLOCK_UPDATE_RANDOM;
 			}
 		}
 		return false;

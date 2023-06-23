@@ -41,7 +41,7 @@ class IceBlock extends TransparentBlock{
 		}
 	}
 	public function onUpdate($type){ /*Taken from https://github.com/PocketMine/PocketMine-MP/issues/3249*/
-		if($type === BLOCK_UPDATE_RANDOM){
+		/*if($type === BLOCK_UPDATE_RANDOM){
 			$light = $this->scanForNearbyLightSources(3,3,3);
 			if(LightUtils::getLightValueFromNearbySource($light,$this) > 12){
 				$this->level->setBlock($this, new WaterBlock(), true);
@@ -49,7 +49,7 @@ class IceBlock extends TransparentBlock{
 			}
 			return BLOCK_UPDATE_RANDOM;
 		}
-		return false;
+		return false;*/ //TODO i dont want it now
 	}
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){

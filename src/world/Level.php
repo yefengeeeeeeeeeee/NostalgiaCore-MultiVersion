@@ -14,6 +14,24 @@ class Level{
 	public $tiles, $blockUpdates, $nextSave, $players = [], $level, $mobSpawner;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
 	
+	public static $randomUpdateBlocks = [
+		FIRE => true,
+		FARMLAND => true,
+		GLOWING_REDSTONE_ORE => true,
+		BEETROOT_BLOCK => true,
+		CACTUS => true,
+		CARROT_BLOCK => true,
+		MELON_STEM => true,
+		POTATO_BLOCK => true,
+		PUMPKIN_STEM => true,
+		SUGARCANE_BLOCK => true,
+		WHEAT_BLOCK => true,
+		DIRT => true,
+		GRASS => true,
+		ICE => true,
+		LEAVES => true
+	];
+	
 	public function __construct(PMFLevel $level, Config $entities, Config $tiles, Config $blockUpdates, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
@@ -33,6 +51,8 @@ class Level{
 		$this->changedBlocks = [];
 		$this->changedCount = [];
 		$this->mobSpawner = new MobSpawner($this);
+		$this->randInt1 = 0x283AE83; //it is static in 0.1, and i dont care is it in 0.8
+		$this->randInt2 = 0x3C6EF35F;
 	}
 
 	public function close(){
@@ -267,9 +287,47 @@ class Level{
 		return $ret;
 	}
 	
+	public function fastSetBlockUpdate($x, $y, $z, $id, $meta){
+		$this->level->setBlock($x, $y, $z, $id, $meta);
+		$pk = new UpdateBlockPacket;
+		$pk->x = $x;
+		$pk->y = $y;
+		$pk->z = $z;
+		$pk->block = $id;
+		$pk->meta = $meta;
+		$this->server->api->player->broadcastPacket($this->players, $pk);
+	}
+	
 	public function onTick(PocketMinecraftServer $server){
 		//$ents = $server->api->entity->getAll($this);
 		if(!$this->stopTime) ++$this->time;
+		$p = new Position(0, 0, 0, $this);
+		for($i = 0; $i < 256; ++$i){ //0000 0000 x z
+			$cZ = $i & 0xf;
+			$cX = $i >> 4;
+			for($c = 0; $c <= 80; ++$c){
+				$this->randInt1 = $this->randInt1 * 3 + $this->randInt2;
+				$xyz = $this->randInt1 >> 2;
+				$this->randInt1 = $this->randInt1 & 0xffffffff; //bad php i hate u why no uint 
+				$x = $xyz & 0xf;
+				$z = ($xyz >> 8) & 0xf; //TODO might be possible to make some micro optmizations
+				$y = ($xyz >> 16) & 0x7f;
+				$idmeta = $this->level->getBlock(($cX << 4) + $x, $y, $z + ($cZ << 4));
+				$id = $idmeta[0];
+				if(isset(self::$randomUpdateBlocks[$id])){
+					$c = nullsafe(Block::$class[$id], false);
+					if($c !== false){
+						$c::onRandomTick($this, ($cX << 4) + $x, $y, $z + ($cZ << 4));
+					}
+					//$p->setXYZ(($cX << 4) + $x, $y, $z + ($cZ << 4));
+					//$b = BlockAPI::get($idmeta[0], $idmeta[1], $p); //$this->getBlockWithoutVector();
+					//if($b instanceof Block){
+					//	$b->onUpdate(BLOCK_UPDATE_RANDOM);
+					//}
+				}
+				
+			}
+		}
 		foreach($this->entityList as $k => $e){
 			if(!($e instanceof Entity)){
 				unset($this->entityList[$k]);
