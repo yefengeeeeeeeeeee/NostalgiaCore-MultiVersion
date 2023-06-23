@@ -32,7 +32,23 @@ class WoodBlock extends SolidBlock{
 		$this->level->setBlock($block, $this, true, false, true);
 		return true;
 	}
-
+	public function onBreak(Item $item, Player $player){
+		parent::onBreak($item, $player);
+		for($xOff = -4; $xOff <= 4; ++$xOff){
+			for($yOff = -4; $yOff <= 4; ++$yOff){
+				for($zOff = -4; $zOff <= 4; ++$zOff){
+					$b = $player->level->level->getBlock($this->x + $xOff, $this->y + $yOff, $this->z + $zOff);
+					$id = $b[0];
+					$meta = $b[1];
+					if($id === LEAVES){
+						if(($meta & 0x8) === 0){
+							$player->level->fastSetBlockUpdate($this->x + $xOff, $this->y + $yOff, $this->z + $zOff, $id, $meta | 8);
+						}
+					}
+				}
+			}
+		}
+	}
 	public function getDrops(Item $item, Player $player){
 		return array(
 			array($this->id, $this->meta & 0x03, 1),

@@ -49,6 +49,18 @@ class GrassBlock extends SolidBlock{
 	public static function onRandomTick(Level $level, $x, $y, $z){
 		if(!$level->getBlockWithoutVector($x, $y + 1, $z, false)->isTransparent && mt_rand(0, 2) == 1){
 			$level->fastSetBlockUpdate($x, $y, $z, DIRT, 0);
+		}else{
+			for($cnt = 0; $cnt < 4; ++$cnt){
+				$x = $x + mt_rand(0, 2) - 1;
+				$y = $y + mt_rand(0, 4) - 3;
+				$z = $z + mt_rand(0, 2) - 1;
+				
+				$blockUp = $level->getBlockWithoutVector($x, $y + 1, $z, false);
+				if($blockUp->isTransparent && !$blockUp->isLiquid && !($blockUp->getID() === 60) && $level->level->getBlockID($x, $y, $z) === DIRT){
+					$level->fastSetBlockUpdate($x, $y, $z, GRASS, 0);
+				}
+				
+			}
 		}
 	}
 

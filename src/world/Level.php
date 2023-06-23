@@ -301,31 +301,28 @@ class Level{
 	public function onTick(PocketMinecraftServer $server){
 		//$ents = $server->api->entity->getAll($this);
 		if(!$this->stopTime) ++$this->time;
-		$p = new Position(0, 0, 0, $this);
-		for($i = 0; $i < 256; ++$i){ //0000 0000 x z
-			$cZ = $i & 0xf;
-			$cX = $i >> 4;
-			for($c = 0; $c <= 80; ++$c){
-				$this->randInt1 = $this->randInt1 * 3 + $this->randInt2;
-				$xyz = $this->randInt1 >> 2;
-				$this->randInt1 = $this->randInt1 & 0xffffffff; //bad php i hate u why no uint 
-				$x = $xyz & 0xf;
-				$z = ($xyz >> 8) & 0xf; //TODO might be possible to make some micro optmizations
-				$y = ($xyz >> 16) & 0x7f;
-				$idmeta = $this->level->getBlock(($cX << 4) + $x, $y, $z + ($cZ << 4));
-				$id = $idmeta[0];
-				if(isset(self::$randomUpdateBlocks[$id])){
-					$c = nullsafe(Block::$class[$id], false);
-					if($c !== false){
-						$c::onRandomTick($this, ($cX << 4) + $x, $y, $z + ($cZ << 4));
+		for($cX = 0; $cX < 16; ++$cX){
+			for($cZ = 0; $cZ < 16; ++$cZ){
+				for($c = 0; $c <= 20; ++$c){
+					$this->randInt1 = $this->randInt1 * 3 + $this->randInt2;
+					$xyz = $this->randInt1 >> 2;
+					$this->randInt1 = $this->randInt1 & 0xffffffff; //bad php i hate u why no uint
+					$x = $xyz & 0xf;
+					$z = ($xyz >> 8) & 0xf; //TODO might be possible to make some micro optmizations
+					$y = ($xyz >> 16) & 0x7f;
+					$id = $this->level->getBlockID(($cX << 4) + $x, $y, $z + ($cZ << 4));
+					if(isset(self::$randomUpdateBlocks[$id])){
+						$cl = Block::$class[$id];
+						//if($cl !== false){
+						$cl::onRandomTick($this, ($cX << 4) + $x, $y, $z + ($cZ << 4));
+						//}
+						//$p->setXYZ(($cX << 4) + $x, $y, $z + ($cZ << 4));
+						//$b = BlockAPI::get($idmeta[0], $idmeta[1], $p); //$this->getBlockWithoutVector();
+						//if($b instanceof Block){
+						//	$b->onUpdate(BLOCK_UPDATE_RANDOM);
+						//}
 					}
-					//$p->setXYZ(($cX << 4) + $x, $y, $z + ($cZ << 4));
-					//$b = BlockAPI::get($idmeta[0], $idmeta[1], $p); //$this->getBlockWithoutVector();
-					//if($b instanceof Block){
-					//	$b->onUpdate(BLOCK_UPDATE_RANDOM);
-					//}
 				}
-				
 			}
 		}
 		foreach($this->entityList as $k => $e){

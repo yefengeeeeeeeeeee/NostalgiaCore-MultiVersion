@@ -10,7 +10,6 @@ class FireBlock extends FlowableBlock implements LightingBlock{
 	}
 	
 	public static function onRandomTick(Level $level, $x, $y, $z){
-		console("Fire tick at $x $y $z");
 		if($level->level->getBlockID($x, $y - 1, $z) !== NETHERRACK){
 			$level->setBlock(new Position($x, $y, $z, $level), new AirBlock(), true, false, true);
 		}

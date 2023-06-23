@@ -42,7 +42,6 @@ class LeavesBlock extends TransparentBlock{
 		$b = $level->level->getBlock($x, $y, $z);
 		$id = $b[0];
 		$meta = $b[1];
-		
 		if(($meta & 0b00001100) === 0x08){
 			$meta &= 0x03;
 			$visited = array();
@@ -55,7 +54,8 @@ class LeavesBlock extends TransparentBlock{
 				if(($meta & 0x03) === LeavesBlock::OAK and mt_rand(1,200) === 1){ //Apples
 					ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem(APPLE, 0, 1));
 				}
-				return BLOCK_UPDATE_NORMAL;
+			}else{
+				$level->fastSetBlockUpdate($x, $y, $z, $id, $meta);
 			}
 		}
 	}
@@ -63,7 +63,7 @@ class LeavesBlock extends TransparentBlock{
 		if($type === BLOCK_UPDATE_NORMAL){
 			if(($this->meta & 0b00001100) === 0){
 				$this->meta |= 0x08;
-				$this->level->setBlock($this, $this, false, false, true);
+				$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, $this->id, $this->meta);
 			}
 		}
 		return false;
