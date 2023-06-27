@@ -88,8 +88,10 @@ class PocketMinecraftServer{
 			"discord-bot-name" => "NostalgiaCore Logger",
 			"despawn-mobs" => true, 
 			"mob-despawn-ticks" => 18000,
+			"16x16x16_chunk_sending" => false
 			
 		]);
+		Player::$smallChunks = $this->extraprops->get("16x16x16_chunk_sending");
 		Living::$despawnMobs = $this->extraprops->get("despawn-mobs");
 		Living::$despawnTimer = $this->extraprops->get("mob-despawn-ticks");
 		Entity::$allowedAI = $this->extraprops->get("enable-mob-ai");

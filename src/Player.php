@@ -2,7 +2,9 @@
 
 
 class Player{
-
+	
+	public static $smallChunks = false;
+	
 	public $data;
 	/** @var Entity */
 	public $entity = false;
@@ -413,19 +415,36 @@ class Player{
 		}
 		$X = ((int)$this->entity->x) >> 4;
 		$Z = ((int)$this->entity->z) >> 4;
-		$v = new Vector2($X, $Z);
 		$this->chunksOrder = [];
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				$dist = $v->distance(new Vector2($x, $z));
-				for($y = 0; $y < 8; ++$y){
-					$d = $x . ":" . $y . ":" . $z;
-					if(!isset($this->chunksLoaded[$d])){
-						$this->chunksOrder[$d] = $dist;
+		if(self::$smallChunks){
+			$Y = ((int)$this->entity->y) >> 4;
+			$v = new Vector3($X, $Y, $Z);
+			for($x = 0; $x < 16; ++$x){
+				for($z = 0; $z < 16; ++$z){
+					for($y = 0; $y < 8; ++$y){
+						$dist = $v->distance(new Vector3($x, $y, $z));
+						$d = $x . ":" . $y . ":" . $z;
+						if(!isset($this->chunksLoaded[$d])){
+							$this->chunksOrder[$d] = $dist;
+						}
+					}
+				}
+			}
+		}else{
+			$v = new Vector2($X, $Z);
+			for($x = 0; $x < 16; ++$x){
+				for($z = 0; $z < 16; ++$z){
+					$dist = $v->distance(new Vector2($x, $z));
+					for($y = 0; $y < 8; ++$y){
+						$d = $x . ":" . $y . ":" . $z;
+						if(!isset($this->chunksLoaded[$d])){
+							$this->chunksOrder[$d] = $dist;
+						}
 					}
 				}
 			}
 		}
+		
 		asort($this->chunksOrder);
 	}
 	
