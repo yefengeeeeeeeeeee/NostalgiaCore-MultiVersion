@@ -64,11 +64,12 @@ class SugarcaneBlock extends FlowableBlock{
 		$id = $b[0];
 		$meta = $b[1];
 		if($underID !== SUGARCANE_BLOCK){
-			if($meta == 0x0F){
+			if($meta === 0x0F){
 				for($yy = 1; $yy < 3; ++$yy){
 					$bID = $level->level->getBlockID($x, $y + $yy, $z);
 					if($bID === AIR){
-						$level->setBlock(new Position($x, $y, $z, $level), new SugarcaneBlock(), true, false, true);
+						//$level->setBlock(new Position($x, $y, $z, $level), new SugarcaneBlock(), true, false, true);
+						$level->fastSetBlockUpdate($x, $y + $yy, $z, SUGARCANE_BLOCK, 0);
 					}
 				}
 				$meta = 0;
@@ -76,7 +77,6 @@ class SugarcaneBlock extends FlowableBlock{
 			}else{
 				$level->fastSetBlockUpdate($x, $y, $z, $id, $meta + 1);
 			}
-			return BLOCK_UPDATE_RANDOM;
 		}
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

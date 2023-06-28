@@ -19,6 +19,7 @@ class Level{
 		FARMLAND => true,
 		GLOWING_REDSTONE_ORE => true,
 		BEETROOT_BLOCK => true,
+		SAPLING => true,
 		CACTUS => true,
 		CARROT_BLOCK => true,
 		MELON_STEM => true,

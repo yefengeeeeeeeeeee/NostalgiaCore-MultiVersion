@@ -74,7 +74,6 @@ abstract class ProtocolInfo{
 }
 /*Unused:
  * 0xb5
- * 0xb9
  * 0x96
  * 0x17
  * 0x14
