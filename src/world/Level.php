@@ -305,9 +305,8 @@ class Level{
 		for($cX = 0; $cX < 16; ++$cX){
 			for($cZ = 0; $cZ < 16; ++$cZ){
 				for($c = 0; $c <= 20; ++$c){
-					$this->randInt1 = $this->randInt1 * 3 + $this->randInt2;
-					$xyz = $this->randInt1 >> 2;
-					$this->randInt1 = $this->randInt1 & 0xffffffff; //bad php i hate u why no uint
+					//$this->randInt1 = ($this->randInt1 * 3 + $this->randInt2) & 0xffffffff;
+					$xyz = mt_rand(0, 0xffffffff) >> 2;//$this->randInt1 >> 2;
 					$x = $xyz & 0xf;
 					$z = ($xyz >> 8) & 0xf; //TODO might be possible to make some micro optmizations
 					$y = ($xyz >> 16) & 0x7f;
