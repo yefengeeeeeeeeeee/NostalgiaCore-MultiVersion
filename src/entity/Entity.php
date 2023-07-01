@@ -138,7 +138,7 @@ class Entity extends Position
 				$this->setHealth($this->health, "generic");
 				$this->speedModifer = 1;
 				$this->width = 1.4;
-				$this->height = 1.85;
+				$this->height = 1.8;
 				$this->hasKnockback = true;
 				$this->hasGravity = true;
 				$this->canBeAttacked = true;
