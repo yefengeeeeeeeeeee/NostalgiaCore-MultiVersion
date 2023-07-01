@@ -137,7 +137,7 @@ class Entity extends Position
 				$this->player = $this->data["player"];
 				$this->setHealth($this->health, "generic");
 				$this->speedModifer = 1;
-				$this->width = 1.4;
+				$this->width = 0.6;
 				$this->height = 1.8;
 				$this->hasKnockback = true;
 				$this->hasGravity = true;
@@ -401,6 +401,24 @@ class Entity extends Position
 		$endY = ceil($this->boundingBox->maxY);
 		$endZ = ceil($this->boundingBox->maxZ);
 		$waterDone = false;
+		//$bup = new AxisAlignedBB($startX, $startY + 1, $startZ, $endX, $endY, $endZ);
+		
+		for($i = 0; $i < 8; ++$i){
+			$x = ((($i >> 0) % 2) - 0.5) * $this->width * 0.8;
+			$y= ((($i >> 1) % 2) - 0.5) * 0.1;
+			$z = ((($i >> 2) % 2) - 0.5) * $this->width * 0.8;
+			
+			$blockX = (int) ($this->x + $x);
+			$blockY = (int) ($this->y + $this->getEyeHeight() + $y);
+			$blockZ = (int) ($this->z + $z);
+			
+			if($this->level->getBlockWithoutVector($blockX, $blockY, $blockZ)->isSolid){
+				$this->harm(1, "suffocation"); // Suffocation
+				break;
+				$hasUpdate = true;
+			}
+		}
+		
 		for ($y = $startY; $y <= $endY; ++$y){
 			for ($x = $startX; $x <= $endX; ++$x){
 				for ($z = $startZ; $z <= $endZ; ++$z){
@@ -447,14 +465,20 @@ class Entity extends Position
 								$hasUpdate = true;
 							}
 							break;
-						default:
-							if ($this->inBlock($pos, $this->radius) and $y == $endY and !$b->isTransparent and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)) {
+						/*default:
+							
+							if($this->isPlayer()){
+								ConsoleAPI::debug("new {}");
+								ConsoleAPI::debug($this->boundingBox);
+								ConsoleAPI::debug(($this->boundingBox->maxY - $this->boundingBox->minY).", {$this->onGround}");
+							}
+							if (!$b->isTransparent && $b->boundingBox->intersectsWith($bup) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)) {
 								$this->harm(1, "suffocation"); // Suffocation
 								$hasUpdate = true;
 							} elseif ($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)) {
 								$this->air = 200; // Breathing
 							}
-							break;
+							break;*/
 					}
 				}
 			}
@@ -471,6 +495,7 @@ class Entity extends Position
 
 	
 	public function update(){
+
 		if($this->closed === true){
 			return false;
 		}
@@ -1049,7 +1074,10 @@ class Entity extends Position
 
 	public function updateAABB()
 	{
-		$this->boundingBox->setBounds($this->x - $this->radius, $this->y, $this->z - $this->radius, $this->x + $this->radius, $this->y + $this->height, $this->z + $this->radius);
+		$this->boundingBox->setBounds(
+			$this->x - $this->radius, $this->y, $this->z - $this->radius, 
+			$this->x + $this->radius, $this->y + $this->height, $this->z + $this->radius
+		);
 	}
 
 	public function updatePosition()
