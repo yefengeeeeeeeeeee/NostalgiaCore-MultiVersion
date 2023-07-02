@@ -412,7 +412,7 @@ class Entity extends Position
 			$blockY = (int) ($this->y + $this->getEyeHeight() + $y);
 			$blockZ = (int) ($this->z + $z);
 			
-			if($this->level->getBlockWithoutVector($blockX, $blockY, $blockZ)->isSolid){
+			if($this->level->getBlockWithoutVector($blockX, $blockY, $blockZ)->isTransparent){
 				$this->harm(1, "suffocation"); // Suffocation
 				$hasUpdate = true;
 				break;
@@ -691,7 +691,6 @@ class Entity extends Position
 				$this->speedX = -($this->lastX - $this->x);
 				$this->speedY = -($this->lastY - $this->y);
 				$this->speedZ = -($this->lastZ - $this->z);
-				$this->printSpeed();
 				for($x = floor($this->boundingBox->minX); $x <= ceil($this->boundingBox->maxX); ++$x){
 					for($z = floor($this->boundingBox->minZ); $z <= ceil($this->boundingBox->maxZ); ++$z){
 						for($y = floor($this->boundingBox->minY); $y <= ceil($this->boundingBox->maxY); ++$y){
