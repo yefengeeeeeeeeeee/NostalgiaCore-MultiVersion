@@ -414,8 +414,8 @@ class Entity extends Position
 			
 			if($this->level->getBlockWithoutVector($blockX, $blockY, $blockZ)->isSolid){
 				$this->harm(1, "suffocation"); // Suffocation
-				break;
 				$hasUpdate = true;
+				break;
 			}
 		}
 		
