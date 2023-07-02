@@ -412,7 +412,7 @@ class Entity extends Position
 			$blockY = (int) ($this->y + $this->getEyeHeight() + $y);
 			$blockZ = (int) ($this->z + $z);
 			
-			if($this->level->getBlockWithoutVector($blockX, $blockY, $blockZ)->isTransparent){
+			if(!$this->level->getBlockWithoutVector($blockX, $blockY, $blockZ)->isTransparent){
 				$this->harm(1, "suffocation"); // Suffocation
 				$hasUpdate = true;
 				break;
