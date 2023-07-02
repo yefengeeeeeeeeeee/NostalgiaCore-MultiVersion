@@ -557,7 +557,6 @@ class Entity extends Position
 						break;
 					}
 				}
-				$this->onGround = $support;
 			}
 			if(!$this->isPlayer()){
 				$update = false;
@@ -664,7 +663,7 @@ class Entity extends Position
 					$update = true;
 				}
 				$this->onGround = $support;
-				
+
 				
 				if($this->hasGravity){
 					$this->speedY -= $this->inWater ? 0.02 : ($this->gravity); // TODO: replace with $gravity
@@ -687,22 +686,36 @@ class Entity extends Position
 				}
 				$this->updateFallState($this->speedY);
 			} elseif($this->player instanceof Player){
-				
+				$prevGroundState = $this->onGround;
+				$this->onGround = false;
 				$this->speedX = -($this->lastX - $this->x);
 				$this->speedY = -($this->lastY - $this->y);
 				$this->speedZ = -($this->lastZ - $this->z);
-				for($x = floor($this->boundingBox->minX); $x <= ceil($this->boundingBox->maxX); ++$x){
-					for($z = floor($this->boundingBox->minZ); $z <= ceil($this->boundingBox->maxZ); ++$z){
-						for($y = floor($this->boundingBox->minY); $y <= ceil($this->boundingBox->maxY); ++$y){
-							$id = $this->level->level->getBlockID($x, $y, $z);
-							if($id === WATER || $id === STILL_WATER || $id === COBWEB){
-								$this->fallDistance = 0;
+				for($x = floor($this->boundingBox->minX); $x < ceil($this->boundingBox->maxX); ++$x){
+					for($z = floor($this->boundingBox->minZ); $z < ceil($this->boundingBox->maxZ); ++$z){
+						for($y = floor($this->boundingBox->minY - 1); $y < ceil($this->boundingBox->maxY); ++$y){
+							if($y <= floor($this->boundingBox->minY) && !$this->onGround){
+								$id = $this->level->getBlockWithoutVector($x, $y, $z);
+								$this->onGround = $id->isSolid;
+							}else{
+								$id = $this->level->level->getBlockID($x, $y, $z);
+								if($id === WATER || $id === STILL_WATER || $id === COBWEB){
+									$this->fallDistance = 0;
+									$this->fallStart = $this->y;
+								}
 							}
+							
 						}
 					}
 				}
-				$this->updateFallState($this->speedY);
-				
+				if(!$this->onGround && ($prevGroundState /*|| $this->y > $this->fallStart*/)){
+					$this->fallStart = $this->y;
+				}
+				//if($prevGroundState != $this->onGround){
+				//	$this->player->sendChat("I am now" . ($this->onGround ? 'on Ground' : 'not on Ground')." and fd: ".$this->fallDistance);
+				//}
+				$this->updateFallState(Utils::getSign($this->speedY)*0.1);
+				if($this->onGround) $this->fallDistance = 0;
 				$hasUpdate = true;
 				/*if($isFlying === true and ($this->player->gamemode & 0x01) === 0x00){
 					if($this->fallY === false or $this->fallStart === false){
@@ -764,7 +777,7 @@ class Entity extends Position
 	}
 	public function fall(){
 		if($this->isPlayer()){
-			$dmg = floor($this->fallDistance - 3);
+			$dmg = floor($this->fallStart - $this->y) - 3;
 			if($dmg > 0){
 				$this->harm($dmg, "fall");
 			}
