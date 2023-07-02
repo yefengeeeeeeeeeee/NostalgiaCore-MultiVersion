@@ -557,6 +557,7 @@ class Entity extends Position
 						break;
 					}
 				}
+				$this->onGround = $support;
 			}
 			if(!$this->isPlayer()){
 				$update = false;
@@ -686,7 +687,25 @@ class Entity extends Position
 				}
 				$this->updateFallState($this->speedY);
 			} elseif($this->player instanceof Player){
-				if($isFlying === true and ($this->player->gamemode & 0x01) === 0x00){
+				
+				$this->speedX = -($this->lastX - $this->x);
+				$this->speedY = -($this->lastY - $this->y);
+				$this->speedZ = -($this->lastZ - $this->z);
+				$this->printSpeed();
+				for($x = floor($this->boundingBox->minX); $x <= ceil($this->boundingBox->maxX); ++$x){
+					for($z = floor($this->boundingBox->minZ); $z <= ceil($this->boundingBox->maxZ); ++$z){
+						for($y = floor($this->boundingBox->minY); $y <= ceil($this->boundingBox->maxY); ++$y){
+							$id = $this->level->level->getBlockID($x, $y, $z);
+							if($id === WATER || $id === STILL_WATER || $id === COBWEB){
+								$this->fallDistance = 0;
+							}
+						}
+					}
+				}
+				$this->updateFallState($this->speedY);
+				
+				$hasUpdate = true;
+				/*if($isFlying === true and ($this->player->gamemode & 0x01) === 0x00){
 					if($this->fallY === false or $this->fallStart === false){
 						$this->fallY = $y;
 						$this->fallStart = microtime(true);
@@ -718,7 +737,7 @@ class Entity extends Position
 				$this->calculateVelocity();
 				if($this->speed <= 9 or ($this->speed <= 20 and ($this->player->gamemode & 0x01) === 0x01)){
 					$this->player->lastCorrect = new Vector3($this->last[0], $this->last[1], $this->last[2]);
-				}
+				}*/ //TODO anticheat stuff
 			}
 		}
 		if($this->knockbackTime > 0){
@@ -744,7 +763,14 @@ class Entity extends Position
 		$this->needsUpdate = $hasUpdate;
 		$this->lastUpdate = $now;
 	}
-	public function fall(){}
+	public function fall(){
+		if($this->isPlayer()){
+			$dmg = floor($this->fallDistance - 3);
+			if($dmg > 0){
+				$this->harm($dmg, "fall");
+			}
+		}
+	}
 	
 	public function updateFallState($fallTick){
 		if($this->onGround && $this->fallDistance > 0){
