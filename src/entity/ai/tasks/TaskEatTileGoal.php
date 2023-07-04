@@ -17,14 +17,14 @@ class TaskEatTileGoal extends TaskBase
 	{
 		if (--$this->selfCounter === 4)
 		{
-			$id = $ai->entity->level->getBlock($ai->entity->floor());
-			$idb = $ai->entity->level->getBlock($id->getSide(0));
-			if($id->getID() === TALL_GRASS){
-				$ai->entity->level->setBlock($idb, BlockAPI::get(AIR));
+			$id = $ai->entity->level->level->getBlockID($ai->entity->x, $ai->entity->y, $ai->entity->z);
+			$idb = $ai->entity->level->level->getBlockID($ai->entity->x, $ai->entity->y - 1, $ai->entity->z);
+			if($id === TALL_GRASS){
+				$ai->entity->level->fastSetBlockUpdate($ai->entity->x, $ai->entity->y, $ai->entity->z, AIR, 0);
 				$ai->entity->eatGrass();
 				
-			}elseif($idb->getID() === GRASS){
-				$ai->entity->level->setBlock($idb, BlockAPI::get(DIRT));
+			}elseif($idb === GRASS){
+				$ai->entity->level->fastSetBlockUpdate($ai->entity->x, $ai->entity->y - 1, $ai->entity->z, DIRT, 0);
 				$ai->entity->eatGrass();
 			}
 		}
@@ -34,9 +34,9 @@ class TaskEatTileGoal extends TaskBase
 	{
 		if($ai->isStarted("TaskRandomWalk")) return false;
 		if(mt_rand(0, ($ai->entity instanceof Ageable && $ai->entity->isBaby()) ? 50 : 1000) == 0){
-			$b = $ai->entity->level->getBlock($ai->entity->floor());
-			$bu = $ai->entity->level->getBlock($b->getSide(0));
-			return ($b->getID() === TALL_GRASS && $b->getMetadata() === 1) || $bu->getID() === GRASS;
+			$idm = $ai->entity->level->level->getBlock($ai->entity->x, $ai->entity->y, $ai->entity->z);
+			$idb = $ai->entity->level->level->getBlockID($ai->entity->x, $ai->entity->y - 1, $ai->entity->z);
+			return ($idm[0] === TALL_GRASS && $idm[1] === 1) || $idb === GRASS;
 		}
 		return false;
 		//this.theEntity.getRNG().nextInt(this.theEntity.isChild() ? 50 : 1000) != 0
