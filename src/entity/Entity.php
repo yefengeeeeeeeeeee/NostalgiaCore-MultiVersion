@@ -705,39 +705,17 @@ class Entity extends Position
 									$this->fallDistance = 0;
 									$this->fallStart = $this->y;
 								}
-								if($id === LADDER){
-									switch($meta){
-										case 2:
-											if($this->boundingBox->intersectsWith(new AxisAlignedBB($x, $y, $z + 1 - 0.125, $x + 1, $y + 1, $z + 1))){
-												$this->fallDistance = 0;
-												$this->fallStart = $this->y;
-											}
-											break;
-										case 3:
-											if($this->boundingBox->intersectsWith(new AxisAlignedBB($x, $y, $z, $x + 1, $y + 1, $z + 0.125))){
-												$this->fallDistance = 0;
-												$this->fallStart = $this->y;
-											}
-											break;
-										case 4:
-											if($this->boundingBox->intersectsWith(new AxisAlignedBB($x + 1 - 0.125, $y, $z, $x + 1, $y + 1, $z + 1))){
-												$this->fallDistance = 0;
-												$this->fallStart = $this->y;
-											}
-											break;
-										case 5:
-											if($this->boundingBox->intersectsWith(new AxisAlignedBB($x, $y, $z, $x + 0.125, $y + 1, $z + 1))){
-												$this->fallDistance = 0;
-												$this->fallStart = $this->y;
-											}
-											break;
-									}
-								}
 							}
 							
 						}
 					}
 				}
+				
+				if($this->isOnLadder()){
+					$this->fallDistance = 0;
+					$this->fallStart = $this->y;
+				}
+				
 				if(!$this->onGround && ($prevGroundState /*|| $this->y > $this->fallStart*/)){
 					$this->fallStart = $this->y;
 				}
@@ -772,6 +750,14 @@ class Entity extends Position
 		$this->needsUpdate = $hasUpdate;
 		$this->lastUpdate = $now;
 	}
+	
+	public function isOnLadder(){
+		$x = (int)$this->x;
+		$y = (int)$this->boundingBox->minY;
+		$z = (int)$this->z;
+		return $this->level->level->getBlockID($x, $y, $z) === LADDER;
+	}
+	
 	public function fall(){
 		if($this->isPlayer()){
 			$dmg = floor($this->fallStart - $this->y) - 3;
