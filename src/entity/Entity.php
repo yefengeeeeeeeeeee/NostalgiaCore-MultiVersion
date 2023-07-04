@@ -698,10 +698,40 @@ class Entity extends Position
 								$id = $this->level->getBlockWithoutVector($x, $y, $z);
 								$this->onGround = $id->isSolid;
 							}else{
-								$id = $this->level->level->getBlockID($x, $y, $z);
+								$block = $this->level->level->getBlock($x, $y, $z);
+								$id = $block[0];
+								$meta = $block[1];
 								if($id === WATER || $id === STILL_WATER || $id === COBWEB){
 									$this->fallDistance = 0;
 									$this->fallStart = $this->y;
+								}
+								if($id === LADDER){
+									switch($meta){
+										case 2:
+											if($this->boundingBox->intersectsWith(new AxisAlignedBB($x, $y, $z + 1 - 0.125, $x + 1, $y + 1, $z + 1))){
+												$this->fallDistance = 0;
+												$this->fallStart = $this->y;
+											}
+											break;
+										case 3:
+											if($this->boundingBox->intersectsWith(new AxisAlignedBB($x, $y, $z, $x + 1, $y + 1, $z + 0.125))){
+												$this->fallDistance = 0;
+												$this->fallStart = $this->y;
+											}
+											break;
+										case 4:
+											if($this->boundingBox->intersectsWith(new AxisAlignedBB($x + 1 - 0.125, $y, $z, $x + 1, $y + 1, $z + 1))){
+												$this->fallDistance = 0;
+												$this->fallStart = $this->y;
+											}
+											break;
+										case 5:
+											if($this->boundingBox->intersectsWith(new AxisAlignedBB($x, $y, $z, $x + 0.125, $y + 1, $z + 1))){
+												$this->fallDistance = 0;
+												$this->fallStart = $this->y;
+											}
+											break;
+									}
 								}
 							}
 							
@@ -717,39 +747,6 @@ class Entity extends Position
 				$this->updateFallState(Utils::getSign($this->speedY)*0.1);
 				if($this->onGround) $this->fallDistance = 0;
 				$hasUpdate = true;
-				/*if($isFlying === true and ($this->player->gamemode & 0x01) === 0x00){
-					if($this->fallY === false or $this->fallStart === false){
-						$this->fallY = $y;
-						$this->fallStart = microtime(true);
-					} elseif($this->class === ENTITY_PLAYER and ($this->fallStart + 5) < microtime(true)){
-						if($this->server->api->getProperty("allow-flight") !== true and $this->server->handle("player.flying", $this->player) !== true and $this->isRiding === false){
-							$this->player->close("flying");
-							return;
-						}
-					} elseif($y > $this->fallY){
-						$this->fallY = $y;
-					}
-				} elseif($this->fallY !== false){ // Fall damage!
-					if($y < $this->fallY){
-						$blockToFallOn = $this->level->getBlock(new Vector3($x, $y, $z));
-						if($blockToFallOn->getID() === FARMLAND){
-							$this->level->setBlock($blockToFallOn, new DirtBlock(), true, false, true);
-						}
-
-						$d = $this->level->getBlock(new Vector3($x, $y + 1, $z));
-						$d2 = $this->level->getBlock(new Vector3($x, $y + 2, $z));
-						$dmg = ($this->fallY - $y) - 3;
-						if($dmg > 0 and ! ($d instanceof LiquidBlock) and $d->getID() !== LADDER and $d->getID() !== COBWEB and ! ($d2 instanceof LiquidBlock) and $d2->getID() !== LADDER and $d2->getID() !== COBWEB){
-							$this->harm($dmg, "fall");
-						}
-					}
-					$this->fallY = false;
-					$this->fallStart = false;
-				}
-				$this->calculateVelocity();
-				if($this->speed <= 9 or ($this->speed <= 20 and ($this->player->gamemode & 0x01) === 0x01)){
-					$this->player->lastCorrect = new Vector3($this->last[0], $this->last[1], $this->last[2]);
-				}*/ //TODO anticheat stuff
 			}
 		}
 		if($this->knockbackTime > 0){
