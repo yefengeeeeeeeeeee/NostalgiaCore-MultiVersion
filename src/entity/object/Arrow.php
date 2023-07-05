@@ -67,8 +67,8 @@ class Arrow extends Projectile{
 	}
 	public function update(){
 		//parent::update();
-		if($this->closed) {
-			$this->close(); 
+		if($this->closed || ($this->x > 255 || $this->x < 0 || $this->y < 0 || $this->z < 0 || $this->z > 255)) {
+			$this->server->api->entity->remove($this->eid);
 			return;
 		}
 		
@@ -79,21 +79,8 @@ class Arrow extends Projectile{
 			$this->yaw = (atan2($this->speedX, $this->speedZ) * 180 / M_PI);
 			$this->pitch = (atan2($this->speedY, $f) * 180 / M_PI);
 		}
-		$this->x += $this->speedX;
-		$this->y += $this->speedY;
-		$this->z += $this->speedZ;
-		/**oh no, entity collision**/
-		++$this->airTicks; //TODO onGround state
-		
-		$this->speedX *= 0.99;
-		$this->speedY *= 0.99;
-		$this->speedZ *= 0.99;
-		$this->speedY -= $this->gravity;
-		
+		$closed = false;
 		$bbexp = $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ)->expand(0, 0.2, 0);
-		$this->sendMotion();
-		$this->updatePosition();
-		
 		foreach($this->level->entityList as $e){
 			if($e instanceof Entity && $e->eid !== $this->eid && !$e->closed && $e->canBeShot() && $e->boundingBox->intersectsWith($bbexp)){
 				if($this->shotByEntity && $this->shooterEID === $e->eid && $this->airTicks < 5) continue;
@@ -103,9 +90,23 @@ class Arrow extends Projectile{
 				}
 				$e->harm($dmg, $this->eid);
 				$this->closed = true;
-				return;
+				break;
 			}
 		}
+		
+		$this->x += $this->speedX;
+		$this->y += $this->speedY;
+		$this->z += $this->speedZ;
+		++$this->airTicks; //TODO onGround state
+		
+		$this->speedX *= 0.99;
+		$this->speedY *= 0.99;
+		$this->speedZ *= 0.99;
+		$this->speedY -= $this->gravity;
+		
+		
+		$this->sendMotion();
+		$this->updatePosition();	
 	}
 	
 	public function spawn($player){
