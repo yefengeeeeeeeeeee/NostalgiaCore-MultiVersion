@@ -41,7 +41,20 @@ class Arrow extends Projectile{
 		$this->update();
 		//TODO i guess? $ticksInGround = 0;
 	}
-	
+	public function sendMoveUpdate()
+	{
+		$pk = new MoveEntityPacket_PosRot();
+		$pk->eid = $this->eid;
+		$pk->x = $this->x;
+		$pk->y = $this->y;
+		$pk->z = $this->z;
+		$pk->yaw = $this->yaw;
+		$pk->pitch = $this->pitch;
+		
+		foreach($this->level->players as $p){ //sending packets directly makes movement less laggy
+			$p->directDataPacket(clone $pk);
+		}
+	}
 	public function update(){
 		//parent::update();
 		$this->needsUpdate = true;

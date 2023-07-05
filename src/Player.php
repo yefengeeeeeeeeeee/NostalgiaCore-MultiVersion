@@ -1726,7 +1726,26 @@ class Player{
 									$e->speedX = -sin(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
 									$e->speedZ = cos(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
 									$e->speedY = -sin(($e->pitch / 180) * M_PI);
-									$e->shoot($e->speedX, $e->speedY, $e->speedZ, 1.5, 1.5); //TODO bow power
+									
+									/**
+									 * Max usage: 72000ticks
+									 * initalPower = 72000 - (72000 - usedCtr)
+									 * power = initialPower / 20'
+									 * power = (power*power+power*2)/3
+									 * powerMax is 1, powerMin is 0.1
+									 * args: xvel, yvel, zvel, (power+power)*1.5, 1.0
+									 */
+									
+									$initalPower = 72000 - (72000 - 20); //assume we used a bow for 1 second
+									$power = $initalPower / 20;
+									$power = ($power * $power + $power * 2) / 3;
+									if($power > 1.0) $power = 1;
+									elseif($power < 0.1){
+										//CANCEL but i am too lazy
+										$power = 0.1;
+									}
+									
+									$e->shoot($e->speedX, $e->speedY, $e->speedZ, ($power+$power) * 1.5, 1.0); //TODO bow power
 									$this->server->api->entity->spawnToAll($e);
 								}
 							}
