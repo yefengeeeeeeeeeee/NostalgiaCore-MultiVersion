@@ -1726,7 +1726,7 @@ class Player{
 									$e->speedX = -sin(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
 									$e->speedZ = cos(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
 									$e->speedY = -sin(($e->pitch / 180) * M_PI);
-									$e->shoot($e->speedX, $e->speedY, $e->speedZ, 1.5, 1.0);
+									$e->shoot($e->speedX, $e->speedY, $e->speedZ, 1.5, 1.5); //TODO bow power
 									$this->server->api->entity->spawnToAll($e);
 								}
 							}

@@ -4,6 +4,7 @@ class Arrow extends Projectile{
 	const TYPE = OBJECT_ARROW;
 	function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		parent::__construct($level, $eid, $class, $type, $data);
+		$this->gravity = 0.05;
 		//$this->server->schedule(1210, array($this, "update")); //Despawn
 	}
 	
@@ -35,8 +36,32 @@ class Arrow extends Projectile{
 		$f3 = sqrt($d * $d + $d2 * $d2);
 		$this->yaw = (atan2($d, $d2) * 180) / M_PI;
 		$this->pitch = (atan2($d1, $f3) * 180) / M_PI;
+		$this->sendMotion();
+		$this->updatePosition();
 		$this->update();
 		//TODO i guess? $ticksInGround = 0;
+	}
+	
+	public function update(){
+		//parent::update();
+		$this->needsUpdate = true;
+		
+		$this->speedY -= $this->gravity;
+		
+		$this->speedX *= 0.99;
+		$this->speedY *= 0.99;
+		$this->speedZ *= 0.99;
+		
+		if($this->speedX != 0 or $this->speedY != 0 or $this->speedZ != 0){
+			$f = sqrt(($this->speedX * $this->speedX) + ($this->speedZ * $this->speedZ));
+			$this->yaw = (atan2($this->speedX, $this->speedZ) * 180 / M_PI);
+			$this->pitch = (atan2($this->speedY, $f) * 180 / M_PI);
+		}
+		$this->x += $this->speedX;
+		$this->y += $this->speedY;
+		$this->z += $this->speedZ;
+		$this->sendMotion();
+		$this->updatePosition();
 	}
 	
 	public function spawn($player){
