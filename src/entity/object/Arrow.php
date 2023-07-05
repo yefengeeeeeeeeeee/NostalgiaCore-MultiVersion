@@ -7,6 +7,7 @@ class Arrow extends Projectile{
 	public $shooterEID = 0;
 	public $shotByEntity;
 	public $airTicks = 0;
+	public $inWall = false;
 	public $groundTicks = 0;
 	function __construct(Level $level, $eid, $class, $type = 0, $data = [], $shooter = false){
 		parent::__construct($level, $eid, $class, $type, $data);
@@ -67,30 +68,51 @@ class Arrow extends Projectile{
 	}
 	public function update(){
 		//parent::update();
-		if($this->closed || ($this->x > 255 || $this->x < 0 || $this->y < 0 || $this->z < 0 || $this->z > 255)) {
+		if($this->closed || ($this->x > 255 || $this->x < 0 || $this->y < 0 || $this->z < 0 || $this->z > 255) || $this->groundTicks > 200) { //remove after 10 seconds in wall, idc about vanilla
 			$this->server->api->entity->remove($this->eid);
 			return;
 		}
 		
 		$this->needsUpdate = true;
-		
+		if($this->inWall) {
+			++$this->groundTicks;
+			return; //yeah whatever
+		}
 		if($this->speedX != 0 or $this->speedY != 0 or $this->speedZ != 0){
 			$f = sqrt(($this->speedX * $this->speedX) + ($this->speedZ * $this->speedZ));
 			$this->yaw = (atan2($this->speedX, $this->speedZ) * 180 / M_PI);
 			$this->pitch = (atan2($this->speedY, $f) * 180 / M_PI);
 		}
-		$closed = false;
-		$bbexp = $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ)->expand(0, 0.2, 0);
-		foreach($this->level->entityList as $e){
-			if($e instanceof Entity && $e->eid !== $this->eid && !$e->closed && $e->canBeShot() && $e->boundingBox->intersectsWith($bbexp)){
-				if($this->shotByEntity && $this->shooterEID === $e->eid && $this->airTicks < 5) continue;
-				$dmg = ceil(sqrt($this->speedX * $this->speedX + $this->speedY * $this->speedY + $this->speedZ * $this->speedZ) * 2);
-				if($this->criticial){
-					$dmg += mt_rand(0, (int)($dmg/2+1));
+		
+		$rt = $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ);
+		for($x = floor($rt->minX); $x <= ceil($rt->maxX); ++$x){
+			for($z = floor($rt->minZ); $z <= ceil($rt->maxZ); ++$z){
+				for($y = floor($rt->minY); $y <= ceil($rt->maxY); ++$y){
+					$pos = new Vector3($x, $y, $z);
+					$b = $this->level->getBlock($pos);
+					if($b != false && $b->isSolid){
+						$this->speedY = $b->boundingBox->calculateYOffset($this->boundingBox, $this->speedY);
+						$this->speedX = $b->boundingBox->calculateXOffset($this->boundingBox, $this->speedX);
+						$this->speedZ = $b->boundingBox->calculateZOffset($this->boundingBox, $this->speedZ);
+						$this->inWall = true;
+					}
 				}
-				$e->harm($dmg, $this->eid);
-				$this->closed = true;
-				break;
+			}
+		}
+		
+		if(!$this->inWall){
+			$bbexp = $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ)->expand(0, 0.2, 0);
+			foreach($this->level->entityList as $e){
+				if($e instanceof Entity && $e->eid !== $this->eid && !$e->closed && $e->canBeShot() && $e->boundingBox->intersectsWith($bbexp)){
+					if($this->shotByEntity && $this->shooterEID === $e->eid && $this->airTicks < 5) continue;
+					$dmg = ceil(sqrt($this->speedX * $this->speedX + $this->speedY * $this->speedY + $this->speedZ * $this->speedZ) * 2);
+					if($this->criticial){
+						$dmg += mt_rand(0, (int)($dmg/2+1));
+					}
+					$e->harm($dmg, $this->eid);
+					$this->closed = true;
+					break;
+				}
 			}
 		}
 		
@@ -107,6 +129,8 @@ class Arrow extends Projectile{
 		
 		$this->sendMotion();
 		$this->updatePosition();	
+		$bb = $this->boundingBox->grow(0.1, 0.1, 0.1);
+		
 	}
 	
 	public function spawn($player){
