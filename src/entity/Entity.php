@@ -895,8 +895,8 @@ class Entity extends Position
 		}
 	}
 
-	/*
-	 * METADATA VALUES(EXPEREMENTAL)
+	/**
+	 * METADATA VALUES
 	 * *****************
 	 * Types: Get input type of <value>
 	 * 0 -> Byte
@@ -917,7 +917,6 @@ class Entity extends Position
 	 * DATA FLAGS IDS
 	 * 0 - fire
 	 * 1 - crouching
-	 * 2 - riding <?> - no idea why doesnt it work
 	 * 4 - inAction(ex.: using a bow)
 	 */
 	public function getMetadata()
