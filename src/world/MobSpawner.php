@@ -11,11 +11,7 @@ class MobSpawner{
 	}
 
 	public function countEntities(){
-		$ents = 0;
-		foreach($this->level->entityList as $e){
-			if(!$e->isPlayer() && $e->class === ENTITY_MOB) ++$ents;
-		}
-		return $ents;
+		return $this->level->totalMobsAmount;
 	}
 
 	public function handle(){

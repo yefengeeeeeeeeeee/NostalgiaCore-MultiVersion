@@ -1729,7 +1729,8 @@ class Player{
 									$e->speedX = -sin(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
 									$e->speedZ = cos(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
 									$e->speedY = -sin(($e->pitch / 180) * M_PI);
-									
+									$e->shooterEID = $this->entity->eid;
+									$e->shotByEntity = true;
 									/**
 									 * Max usage: 72000ticks
 									 * initalPower = 72000 - (72000 - usedCtr)
@@ -1747,8 +1748,8 @@ class Player{
 										//CANCEL but i am too lazy
 										$power = 0.1;
 									}
-									//console("Arrow sent! power: $power");
-									$e->shoot($e->speedX, $e->speedY, $e->speedZ, ($power+$power) * 1.5, 1.0); //TODO bow power
+									$e->critical = ($power === 1);
+									$e->shoot($e->speedX, $e->speedY, $e->speedZ, ($power+$power) * 1.5, 1.0);
 									$this->server->api->entity->spawnToAll($e);
 								}
 							}

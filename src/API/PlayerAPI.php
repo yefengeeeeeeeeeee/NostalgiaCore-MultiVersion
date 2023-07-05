@@ -61,13 +61,15 @@ class PlayerAPI{
 				if(is_numeric($data["cause"])){
 					$e = $this->server->api->entity->get($data["cause"]);
 					if($e instanceof Entity){
-						switch($e->class){
-							case ENTITY_PLAYER:
-								$message = " was killed by " . $e->name;
-								break;
-							default:
-								$message = " was killed by {$e->getName()}";
-								break;
+						if($e instanceof Arrow){
+							if($e->shotByEntity && isset($this->server->api->entity->entities[$e->shooterEID]) && $this->server->api->entity->entities[$e->shooterEID] instanceof Entity){
+								$message = " was shot by {$this->server->api->entity->entities[$e->shooterEID]->name}";
+							}else{
+								$message = " was shot";	
+							}
+							
+						}else{
+							$message = "was killed by {$e->name}";
 						}
 					}
 				}else{
@@ -106,7 +108,6 @@ class PlayerAPI{
 				}
 				$this->server->api->chat->broadcast($data["player"]->username . $message);
 				return true;
-				break;
 		}
 	}
 

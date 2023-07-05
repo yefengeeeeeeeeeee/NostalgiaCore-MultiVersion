@@ -33,7 +33,9 @@ abstract class Living extends Entity implements Damageable, Pathfindable{
 		unset($this->pathFollower->entity);
 		unset($this->ai->entity);
 	}
-	
+	public function canBeShot(){
+		return true;
+	}
 	public function collideHandler(){
 		$this->level->applyCallbackToNearbyEntities($this, [$this, "applyCollision"], 2); //TODO radiuses
 	}

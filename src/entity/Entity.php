@@ -777,6 +777,10 @@ class Entity extends Position
 		}
 	}
 	
+	public function canBeShot(){
+		return $this->isPlayer();
+	}
+	
 	public function updateFallState($fallTick){
 		if($this->onGround && $this->fallDistance > 0){
 			$this->fall();

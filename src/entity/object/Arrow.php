@@ -2,9 +2,20 @@
 
 class Arrow extends Projectile{
 	const TYPE = OBJECT_ARROW;
-	function __construct(Level $level, $eid, $class, $type = 0, $data = []){
+	
+	public $criticial = false;
+	public $shooterEID = 0;
+	public $shotByEntity;
+	public $airTicks = 0;
+	public $groundTicks = 0;
+	function __construct(Level $level, $eid, $class, $type = 0, $data = [], $shooter = false){
 		parent::__construct($level, $eid, $class, $type, $data);
 		$this->gravity = 0.05;
+		$this->setSize(0.5, 0.5);
+		$this->setName("Arrow");
+		$this->shooterEID = $shooter;
+		$this->shotByEntity = $shooter instanceof Entity;
+		$this->airTicks = $this->groundTicks = 0;
 		//$this->server->schedule(1210, array($this, "update")); //Despawn
 	}
 	
@@ -50,13 +61,17 @@ class Arrow extends Projectile{
 		$pk->z = $this->z;
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
-		
 		foreach($this->level->players as $p){ //sending packets directly makes movement less laggy
 			$p->directDataPacket(clone $pk);
 		}
 	}
 	public function update(){
 		//parent::update();
+		if($this->closed) {
+			$this->close(); 
+			return;
+		}
+		
 		$this->needsUpdate = true;
 		
 		if($this->speedX != 0 or $this->speedY != 0 or $this->speedZ != 0){
@@ -67,14 +82,30 @@ class Arrow extends Projectile{
 		$this->x += $this->speedX;
 		$this->y += $this->speedY;
 		$this->z += $this->speedZ;
+		/**oh no, entity collision**/
+		++$this->airTicks; //TODO onGround state
 		
 		$this->speedX *= 0.99;
 		$this->speedY *= 0.99;
 		$this->speedZ *= 0.99;
 		$this->speedY -= $this->gravity;
 		
+		$bbexp = $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ)->expand(0, 0.2, 0);
 		$this->sendMotion();
 		$this->updatePosition();
+		
+		foreach($this->level->entityList as $e){
+			if($e instanceof Entity && $e->eid !== $this->eid && !$e->closed && $e->canBeShot() && $e->boundingBox->intersectsWith($bbexp)){
+				if($this->shotByEntity && $this->shooterEID === $e->eid && $this->airTicks < 5) continue;
+				$dmg = ceil(sqrt($this->speedX * $this->speedX + $this->speedY * $this->speedY + $this->speedZ * $this->speedZ) * 2);
+				if($this->criticial){
+					$dmg += mt_rand(0, (int)($dmg/2+1));
+				}
+				$e->harm($dmg, $this->eid);
+				$this->closed = true;
+				return;
+			}
+		}
 	}
 	
 	public function spawn($player){

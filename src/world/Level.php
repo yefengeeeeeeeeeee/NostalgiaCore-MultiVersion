@@ -11,7 +11,7 @@ class Level{
 	 */
 	public $entityList;
 	
-	public $tiles, $blockUpdates, $nextSave, $players = [], $level, $mobSpawner;
+	public $tiles, $blockUpdates, $nextSave, $players = [], $level, $mobSpawner, $totalMobsAmount = 0;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
 	
 	public static $randomUpdateBlocks = [
@@ -325,11 +325,17 @@ class Level{
 				}
 			}
 		}
+		$this->totalMobsAmount = 0;
 		foreach($this->entityList as $k => $e){
 			if(!($e instanceof Entity)){
 				unset($this->entityList[$k]);
 				continue;
 			}
+			
+			if($e->type === ENTITY_MOB && !$e->isPlayer()){
+				++$this->totalMobsAmount;
+			}
+			
 			if($e->needsUpdate){
 				$e->update();
 			}
