@@ -17,7 +17,6 @@ class Skeleton extends Monster{
 	}
 	
 	public function updateBurning(){
-		return false;
 		if($this->fire > 0 or !$this->level->isDay()){
 			return false;
 		}
