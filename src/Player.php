@@ -1607,6 +1607,7 @@ class Player{
 				}
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
+					$this->entity->inActionCounter = 0;
 					$this->entity->updateMetadata();
 				}
 				break;
@@ -1665,6 +1666,7 @@ class Player{
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
 					if($this->entity->inAction === true){
 						$this->entity->inAction = false;
+						$this->entity->inActionCounter = 0;
 						$this->entity->updateMetadata();
 					}
 
@@ -1697,6 +1699,7 @@ class Player{
 					break;
 				}elseif($packet->face === 0xff and $this->server->handle("player.action", $data) !== false){
 					$this->entity->inAction = true;
+					$this->entity->inActionCounter = 0;
 					$this->startAction = microtime(true);
 					$this->entity->updateMetadata();
 				}
@@ -1736,7 +1739,7 @@ class Player{
 									 * args: xvel, yvel, zvel, (power+power)*1.5, 1.0
 									 */
 									
-									$initalPower = 72000 - (72000 - 20); //assume we used a bow for 1 second
+									$initalPower = $this->entity->inActionCounter;
 									$power = $initalPower / 20;
 									$power = ($power * $power + $power * 2) / 3;
 									if($power > 1.0) $power = 1;
@@ -1744,7 +1747,7 @@ class Player{
 										//CANCEL but i am too lazy
 										$power = 0.1;
 									}
-									
+									//console("Arrow sent! power: $power");
 									$e->shoot($e->speedX, $e->speedY, $e->speedZ, ($power+$power) * 1.5, 1.0); //TODO bow power
 									$this->server->api->entity->spawnToAll($e);
 								}
@@ -1752,6 +1755,7 @@ class Player{
 						}
 						$this->startAction = false;
 						$this->entity->inAction = false;
+						$this->entity->inActionCounter = 0;
 						$this->entity->updateMetadata();
 						break;
 					case 6: //get out of the bed
@@ -1811,6 +1815,7 @@ class Player{
 				$this->sendArmor();
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
+					$this->entity->inActionCounter = 0;
 					$this->entity->updateMetadata();
 				}
 				break;
@@ -1876,6 +1881,7 @@ class Player{
 				$packet->eid = $this->eid;
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
+					$this->entity->inActionCounter = 0;
 					$this->entity->updateMetadata();
 				}
 				switch($packet->event){
@@ -1947,6 +1953,7 @@ class Player{
 				}
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
+					$this->entity->inActionCounter = 0;
 					$this->entity->updateMetadata();
 				}
 				break;

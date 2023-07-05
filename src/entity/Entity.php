@@ -70,6 +70,7 @@ class Entity extends Position
 	public $random;
 	public $radius;
 	public $inAction = false;
+	public $inActionCounter = 0;
 	public $hasKnockback;
 	public $hasJumped;
 	public $invincible, $crouched, $fire, $health, $status;
@@ -499,6 +500,7 @@ class Entity extends Position
 		if($this->closed === true){
 			return false;
 		}
+		
 		$now = microtime(true);
 		if($this->check === false){
 			$this->lastUpdate = $now;
@@ -727,19 +729,27 @@ class Entity extends Position
 				$hasUpdate = true;
 			}
 		}
+		
+		
 		if($this->knockbackTime > 0){
 			--$this->knockbackTime;
 		}
-		
 		if($this->moveTime > 0){
-			-- $this->moveTime;
+			--$this->moveTime;
 		}
 		if($this->lookTime > 0){
-			-- $this->lookTime;
+			--$this->lookTime;
 		}
 		if($this->idleTime > 0){
-			-- $this->idleTime;
+			--$this->idleTime;
 		}
+		
+		
+		if($this->inAction){
+			++$this->inActionCounter;
+		}
+		
+		
 		if($this->lastHeadYaw != $this->headYaw){
 			$this->sendHeadYaw();
 		}

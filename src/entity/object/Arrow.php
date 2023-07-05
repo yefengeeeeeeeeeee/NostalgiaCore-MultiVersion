@@ -59,12 +59,6 @@ class Arrow extends Projectile{
 		//parent::update();
 		$this->needsUpdate = true;
 		
-		$this->speedY -= $this->gravity;
-		
-		$this->speedX *= 0.99;
-		$this->speedY *= 0.99;
-		$this->speedZ *= 0.99;
-		
 		if($this->speedX != 0 or $this->speedY != 0 or $this->speedZ != 0){
 			$f = sqrt(($this->speedX * $this->speedX) + ($this->speedZ * $this->speedZ));
 			$this->yaw = (atan2($this->speedX, $this->speedZ) * 180 / M_PI);
@@ -73,6 +67,12 @@ class Arrow extends Projectile{
 		$this->x += $this->speedX;
 		$this->y += $this->speedY;
 		$this->z += $this->speedZ;
+		
+		$this->speedX *= 0.99;
+		$this->speedY *= 0.99;
+		$this->speedZ *= 0.99;
+		$this->speedY -= $this->gravity;
+		
 		$this->sendMotion();
 		$this->updatePosition();
 	}
