@@ -67,6 +67,8 @@ class Arrow extends Projectile{
 		}
 	}
 	public function update(){
+		$this->needsUpdate = false; //TODO reenable
+		return;
 		//parent::update();
 		if($this->closed || ($this->x > 255 || $this->x < 0 || $this->y < 0 || $this->z < 0 || $this->z > 255) || $this->groundTicks > 200) { //remove after 10 seconds in wall, idc about vanilla
 			$this->server->api->entity->remove($this->eid);
@@ -83,11 +85,10 @@ class Arrow extends Projectile{
 			$this->yaw = (atan2($this->speedX, $this->speedZ) * 180 / M_PI);
 			$this->pitch = (atan2($this->speedY, $f) * 180 / M_PI);
 		}
-		
-		$rt = $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ);
-		for($x = floor($rt->minX); $x <= ceil($rt->maxX); ++$x){
-			for($z = floor($rt->minZ); $z <= ceil($rt->maxZ); ++$z){
-				for($y = floor($rt->minY); $y <= ceil($rt->maxY); ++$y){
+		$rt = $this->boundingBox->shrink(0.4, 0.4, 0.4)->addCoord($this->speedX, $this->speedY, $this->speedZ);
+		for($x = floor($rt->minX); $x < ceil($rt->maxX); ++$x){
+			for($z = floor($rt->minZ); $z < ceil($rt->maxZ); ++$z){
+				for($y = ceil($rt->minY); $y < ceil($rt->maxY); ++$y){
 					$pos = new Vector3($x, $y, $z);
 					$b = $this->level->getBlock($pos);
 					if($b != false && $b->isSolid){
@@ -95,11 +96,11 @@ class Arrow extends Projectile{
 						$this->speedX = $b->boundingBox->calculateXOffset($this->boundingBox, $this->speedX);
 						$this->speedZ = $b->boundingBox->calculateZOffset($this->boundingBox, $this->speedZ);
 						$this->inWall = true;
+						break;
 					}
 				}
 			}
 		}
-		
 		if(!$this->inWall){
 			$bbexp = $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ)->expand(0, 0.2, 0);
 			foreach($this->level->entityList as $e){
@@ -129,7 +130,6 @@ class Arrow extends Projectile{
 		
 		$this->sendMotion();
 		$this->updatePosition();	
-		$bb = $this->boundingBox->grow(0.1, 0.1, 0.1);
 		
 	}
 	

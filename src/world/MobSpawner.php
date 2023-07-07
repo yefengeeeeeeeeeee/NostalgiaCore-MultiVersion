@@ -63,10 +63,14 @@ class MobSpawner{
 	protected function getSafeY($x, $z, $grassOnly = false, $highMob = false){ //first safe block //TODO check boundingbox
 		$allowed = [];
 		for($y = 0; $y < 128; ++$y){
-			$b = $this->level->getBlockWithoutVector($x, $y, $z);
-			$b2 = $this->level->getBlockWithoutVector($x, $y + 1, $z);
-			$b1 = $this->level->getBlockWithoutVector($x, $y - 1, $z);
-			if(!$b->isSolid && !$b->isLiquid && ($b1->isSolid && ($grassOnly ? $b1->getID() === GRASS : true) && ($highMob ? !$b2->isSolid && !$b2->isLiquid : true))){
+			$b = $this->level->level->getBlockID($x, $y, $z);
+			$b2 = $this->level->level->getBlockID($x, $y + 1, $z);
+			$b1 = $this->level->level->getBlockID($x, $y - 1, $z);
+			if(
+				!StaticBlock::getIsSolid($b) && !StaticBlock::getIsLiquid($b) && 
+				(StaticBlock::getIsSolid($b1) && ($grassOnly ? $b1 === GRASS : true) && 
+				($highMob ? !StaticBlock::getIsSolid($b2) && !StaticBlock::getIsLiquid($b2) : true))
+			){
 				$allowed[] = $y;
 			}
 		}

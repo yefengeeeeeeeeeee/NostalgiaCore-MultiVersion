@@ -35,20 +35,20 @@ class MobController
 		$xf = $this->entity->x + ($this->entity->getSpeedModifer() * $ox * $this->entity->getSpeed());
 		$zf = $this->entity->z + ($this->entity->getSpeedModifer() * $oz * $this->entity->getSpeed());
 		if($this->entity->onGround){
-			$bs = [ //TODO simplify(somehow)
-				$this->entity->level->getBlockWithoutVector(ceil($xf), floor($this->entity->y), ceil($zf)),
-				$this->entity->level->getBlockWithoutVector(ceil($xf), floor($this->entity->y), $zf - ($oz < 0 ? 1 : 0)),
-				$this->entity->level->getBlockWithoutVector($xf - ($ox < 0 ? 1 : 0), floor($this->entity->y), $zf - ($oz < 0 ? 1 : 0)),
-				$this->entity->level->getBlockWithoutVector($xf - ($ox < 0 ? 1 : 0), floor($this->entity->y), ceil($zf)),
-			];
-			foreach($bs as $b){
-				if($b->isSolid){
-					if(!$b->getSide(1)->isSolid){
-						$oy = 1;
-						break;
-					}
-				}
-			}
+			$oy = 
+					StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), floor($this->entity->y), ceil($zf))) && 
+					!StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), floor($this->entity->y) + 1, ceil($zf)))
+				||
+					StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), floor($this->entity->y), $zf - ($oz < 0))) &&
+					!StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), floor($this->entity->y) + 1, $zf - ($oz < 0)))
+				||
+					StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), floor($this->entity->y), $zf - ($oz < 0))) &&
+					!StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), floor($this->entity->y) + 1, $zf - ($oz < 0)))
+				||
+					StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), floor($this->entity->y), ceil($zf))) &&
+					!StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), floor($this->entity->y) + 1, ceil($zf)))
+			;
+			
 		}
 		$this->faceEntity($this->entity->add($ox, $oy, $oz));
 		if($this->entity->knockbackTime <= 0){

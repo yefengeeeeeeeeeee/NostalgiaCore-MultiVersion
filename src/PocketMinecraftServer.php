@@ -35,6 +35,7 @@ class PocketMinecraftServer{
 		EntityRegistry::registerEntities();
 		Feature::init();
 		Biome::init();
+		StaticBlock::init();
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
 		$this->serverID = $this->serverID === false ? Utils::readLong(substr(Utils::getUniqueID(true, $this->serverip . $this->port), 8)) : $this->serverID;
 		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)) : $this->seed;

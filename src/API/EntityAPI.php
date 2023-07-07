@@ -70,8 +70,8 @@ class EntityAPI{
 				}
 				elseif(is_numeric($args[1])){//summon <mob> [amount]
 					$amount = (int) $args[1];
-					if($amount > 100){
-						return "Cannot spawn > 100 mobs";
+					if($amount > 1000){
+						return "Cannot spawn > 1000 mobs";
 					}
 					$isBaby = false;
 					if(isset($args[2]) and strtolower($args[2]) === 'baby'){//summon <mob> [amount] [baby]

@@ -413,7 +413,7 @@ class Entity extends Position
 			$blockY = (int) ($this->y + $this->getEyeHeight() + $y);
 			$blockZ = (int) ($this->z + $z);
 			
-			if(!$this->level->getBlockWithoutVector($blockX, $blockY, $blockZ)->isTransparent){
+			if(!StaticBlock::getIsTransparent($this->level->level->getBlockID($blockX, $blockY, $blockZ))){
 				$this->harm(1, "suffocation"); // Suffocation
 				$hasUpdate = true;
 				break;
@@ -424,8 +424,10 @@ class Entity extends Position
 			for ($x = $startX; $x <= $endX; ++$x){
 				for ($z = $startZ; $z <= $endZ; ++$z){
 					$pos = new Vector3($x, $y, $z);
-					$b = $this->level->getBlock($pos);
-					switch ($b->getID()) {
+					$b = $this->level->level->getBlock($x, $y, $z);
+					$id = $b[0];
+					$meta = $b[1];
+					switch ($id) {
 						case WATER:
 						case STILL_WATER: // Drowing
 							if ($this->fire > 0 and $this->inBlock($pos)) {
@@ -436,7 +438,7 @@ class Entity extends Position
 								$this->harm(2, "water");
 								$hasUpdate = true;
 								$waterDone = true;
-							} elseif ($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1 - (($b->getMetadata() % 8) / 9)) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER) and !$waterDone) {
+							} elseif ($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1 - (($meta % 8) / 9)) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER) and !$waterDone) {
 								$this->air -= 1;
 								$waterDone = true;
 								$this->updateMetadata();
@@ -520,7 +522,7 @@ class Entity extends Position
 		}
 		++$this->counter;
 		if($this->isStatic === false){
-			$startX = floor($this->x - 0.5 - $this->width - 1);
+			/*$startX = floor($this->x - 0.5 - $this->width - 1);
 			// prefix for flying when player on fence
 			$y = floor($this->y - 1);
 			$yC = ceil($this->y - 1);
@@ -536,12 +538,12 @@ class Entity extends Position
 						$v = new Vector3($x, $y, $z);
 						$v1 = new Vector3($x, $yC, $z);
 						if($this->isSupport($v, $this->width)){
-							$b = $this->level->getBlock($v);
-							if($b->isSolid === true){
+							$b = $this->level->level->getBlockID($x, $y, $z);
+							if(StaticBlock::getIsSolid($b) === true){
 								$support = true;
 								$isFlying = false;
 								break;
-							} elseif(($b instanceof LiquidBlock) or $b->getID() === COBWEB or $b->getID() === LADDER or $b->getID() === FENCE or $b->getID() === STONE_WALL or $b->getID() === IRON_BARS){
+							} elseif(StaticBlock::getIsLiquid($b) or $b === COBWEB or $b === LADDER or $b === FENCE or $b=== STONE_WALL or $b === IRON_BARS){
 								$isFlying = false;
 							}
 						} elseif($this->isSupport($v1, $this->width)){
@@ -559,7 +561,7 @@ class Entity extends Position
 						break;
 					}
 				}
-			}
+			}*/ //this one is not neccessary anymore?
 			if(!$this->isPlayer()){
 				$update = false;
 				if(Utils::in_range($this->speedX, -0.01, 0.01)){
@@ -594,16 +596,16 @@ class Entity extends Position
 					for($x = $x0; $x < $x1; ++$x){
 						for($y = $y0; $y < $y1; ++$y){
 							for($z = $z0; $z < $z1; ++$z){
-								$pos = new Vector3($x, $y, $z);
-								$b = $this->level->getBlock($pos);
-								if(($b->getID() === WATER || $b->getID() === STILL_WATER)){
-									$water = $b->y == ($y1 - 1);
+								$b = $this->level->level->getBlockID($x, $y, $z);
+								if(($b === WATER || $b === STILL_WATER)){
+									$water = $y == ($y1 - 1);
 									$this->fallDistance = 0;
 								}
-								if($b != false && $b->isSolid){
-									$this->speedY = $b->boundingBox->calculateYOffset($this->boundingBox, $this->speedY);
-									$this->speedX = $b->boundingBox->calculateXOffset($this->boundingBox, $this->speedX);
-									$this->speedZ = $b->boundingBox->calculateZOffset($this->boundingBox, $this->speedZ);
+								if(StaticBlock::getIsSolid($b)){
+									$blockBounds = StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
+									$this->speedY = $blockBounds->calculateYOffset($this->boundingBox, $this->speedY);
+									$this->speedX = $blockBounds->calculateXOffset($this->boundingBox, $this->speedX);
+									$this->speedZ = $blockBounds->calculateZOffset($this->boundingBox, $this->speedZ);
 								}
 							}
 						}
@@ -615,9 +617,9 @@ class Entity extends Position
 				$horizontalMultiplyFactor = 0.91;
 				if($support){
 					$horizontalMultiplyFactor = 0.54;
-					$b = $this->level->getBlockWithoutVector(floor($this->x), floor($this->boundingBox->minX) - 1, floor($this->z));
-					if($b instanceof Block){
-						$horizontalMultiplyFactor = $b->slipperiness * 0.91;
+					$b = $this->level->level->getBlockID(floor($this->x), floor($this->boundingBox->minX) - 1, floor($this->z));
+					if($b > 0){
+						$horizontalMultiplyFactor = StaticBlock::getSlipperiness($b) * 0.91;
 					}
 				}
 				if($this->inWater){
@@ -644,7 +646,7 @@ class Entity extends Position
 						$z = (int) ($this->z - 0.5);
 						$lim = (int) floor($ny);
 						for($y = (int) ceil($this->y) - 1; $y >= $lim; -- $y){
-							if($this->level->getBlockWithoutVector($x, $y, $z)->isSolid === true){
+							if(StaticBlock::getIsSolid($this->level->level->getBlockID($x, $y, $z))){
 								//$support = true;
 								$this->y = $ny;
 								$fall = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5)));
@@ -697,8 +699,7 @@ class Entity extends Position
 					for($z = floor($this->boundingBox->minZ); $z < ceil($this->boundingBox->maxZ); ++$z){
 						for($y = floor($this->boundingBox->minY - 1); $y < ceil($this->boundingBox->maxY); ++$y){
 							if($y <= floor($this->boundingBox->minY) && !$this->onGround){
-								$id = $this->level->getBlockWithoutVector($x, $y, $z);
-								$this->onGround = $id->isSolid;
+								$this->onGround = StaticBlock::getIsSolid($this->level->level->getBlockID($x, $y, $z));
 							}else{
 								$block = $this->level->level->getBlock($x, $y, $z);
 								$id = $block[0];

@@ -7,7 +7,7 @@ class Skeleton extends Monster{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 10, "generic");
 		$this->setName("Skeleton");
 		$this->ai->removeTask("TaskAttackPlayer");
-		$this->ai->addTask(new TaskDestroyServerPerformance());
+		//$this->ai->addTask(new TaskDestroyServerPerformance());
 		$this->setSpeed(0.25);
 		$this->update();
 	}
@@ -22,12 +22,12 @@ class Skeleton extends Monster{
 		}
 		
 		for($y = $this->y; $y < 129; $y++){
-			$block = $this->level->getBlockWithoutVector($this->x, $y, $this->z);
-			if($block->isSolid){
+			$block = $this->level->level->getBlockID($this->x, $y, $this->z);
+			if(StaticBlock::getIsSolid($block)){
 				return false;
 			}
 		}
-		if($block->getID() === AIR){
+		if($block === AIR){
 			$this->fire = 160; //Value from 0.8.1
 			$this->updateMetadata();
 			return true;
