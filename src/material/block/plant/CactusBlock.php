@@ -18,7 +18,7 @@ class CactusBlock extends TransparentBlock{
 				for($yy = 1; $yy < 3; ++$yy){
 					$bID = $level->level->getBlockID($x, $y + $yy, $z);
 					if($bID === AIR){
-						$level->setBlock(new Position($x, $y, $z, $level), new CactusBlock(), true, false, true);
+						$level->setBlock(new Position($x, $y + $yy, $z, $level), new CactusBlock(), true, false, true);
 						break;
 					}
 				}
