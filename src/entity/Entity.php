@@ -522,46 +522,6 @@ class Entity extends Position
 		}
 		++$this->counter;
 		if($this->isStatic === false){
-			/*$startX = floor($this->x - 0.5 - $this->width - 1);
-			// prefix for flying when player on fence
-			$y = floor($this->y - 1);
-			$yC = ceil($this->y - 1);
-			$startZ = floor($this->z - 0.5 - $this->width - 1);
-			$endX = ceil($this->x - 0.5 + $this->width + 1);
-			$endZ = ceil($this->z - 0.5 + $this->width + 1);
-			$support = false;
-			$isFlying = true;
-			
-			if($this->isPlayer()){
-				for($z = $startZ; $z <= $endZ; ++ $z){
-					for($x = $startX; $x <= $endX; ++ $x){
-						$v = new Vector3($x, $y, $z);
-						$v1 = new Vector3($x, $yC, $z);
-						if($this->isSupport($v, $this->width)){
-							$b = $this->level->level->getBlockID($x, $y, $z);
-							if(StaticBlock::getIsSolid($b) === true){
-								$support = true;
-								$isFlying = false;
-								break;
-							} elseif(StaticBlock::getIsLiquid($b) or $b === COBWEB or $b === LADDER or $b === FENCE or $b=== STONE_WALL or $b === IRON_BARS){
-								$isFlying = false;
-							}
-						} elseif($this->isSupport($v1, $this->width)){
-							$b = $this->level->getBlock($v1);
-							if($b->isSolid === true){
-								$support = true;
-								$isFlying = false;
-								break;
-							} elseif(($b instanceof LiquidBlock) or $b->getID() === COBWEB or $b->getID() === LADDER or $b->getID() === FENCE or $b->getID() === STONE_WALL or $b->getID() === IRON_BARS){
-								$isFlying = false;
-							}
-						}
-					}
-					if($support === true){
-						break;
-					}
-				}
-			}*/ //this one is not neccessary anymore?
 			if(!$this->isPlayer()){
 				$update = false;
 				if(Utils::in_range($this->speedX, -0.01, 0.01)){
@@ -645,7 +605,7 @@ class Entity extends Position
 						$x = (int) ($this->x - 0.5);
 						$z = (int) ($this->z - 0.5);
 						$lim = (int) floor($ny);
-						for($y = (int) ceil($this->y) - 1; $y >= $lim; -- $y){
+						for($y = floor($this->y); $y >= $lim; --$y){
 							if(StaticBlock::getIsSolid($this->level->level->getBlockID($x, $y, $z))){
 								//$support = true;
 								$this->y = $ny;

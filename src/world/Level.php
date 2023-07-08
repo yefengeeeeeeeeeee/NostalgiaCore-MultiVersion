@@ -287,8 +287,21 @@ class Level{
 		}
 		return $ret;
 	}
+	public function fastSetBlockUpdateMeta($x, $y, $z, $meta, $updateBlock = false){
+		$this->level->setBlockDamage($x, $y, $z, $meta);
+		$pk = new UpdateBlockPacket;
+		$pk->x = $x;
+		$pk->y = $y;
+		$pk->z = $z;
+		$pk->block = $this->level->getBlockID($x, $y, $z);
+		$pk->meta = $meta;
+		$this->server->api->player->broadcastPacket($this->players, $pk);
+		if($updateBlock){
+			$this->server->api->block->blockUpdateAround(new Position($x, $y, $z, $this), BLOCK_UPDATE_NORMAL, 1);
+		}
+	}
 	
-	public function fastSetBlockUpdate($x, $y, $z, $id, $meta){
+	public function fastSetBlockUpdate($x, $y, $z, $id, $meta, $updateBlock = false){
 		$this->level->setBlock($x, $y, $z, $id, $meta);
 		$pk = new UpdateBlockPacket;
 		$pk->x = $x;
@@ -297,6 +310,9 @@ class Level{
 		$pk->block = $id;
 		$pk->meta = $meta;
 		$this->server->api->player->broadcastPacket($this->players, $pk);
+		if($updateBlock){
+			$this->server->api->block->blockUpdateAround(new Vector3($x, $y, $z), BLOCK_UPDATE_NORMAL, 1);
+		}
 	}
 	
 	public function onTick(PocketMinecraftServer $server){
@@ -305,22 +321,14 @@ class Level{
 		for($cX = 0; $cX < 16; ++$cX){
 			for($cZ = 0; $cZ < 16; ++$cZ){
 				for($c = 0; $c <= 20; ++$c){
-					//$this->randInt1 = ($this->randInt1 * 3 + $this->randInt2) & 0xffffffff;
-					$xyz = mt_rand(0, 0xffffffff) >> 2;//$this->randInt1 >> 2;
+					$xyz = mt_rand(0, 0xffffffff) >> 2;//TODO fix php5
 					$x = $xyz & 0xf;
 					$z = ($xyz >> 8) & 0xf; //TODO might be possible to make some micro optmizations
 					$y = ($xyz >> 16) & 0x7f;
 					$id = $this->level->getBlockID(($cX << 4) + $x, $y, $z + ($cZ << 4));
 					if(isset(self::$randomUpdateBlocks[$id])){
 						$cl = Block::$class[$id];
-						//if($cl !== false){
 						$cl::onRandomTick($this, ($cX << 4) + $x, $y, $z + ($cZ << 4));
-						//}
-						//$p->setXYZ(($cX << 4) + $x, $y, $z + ($cZ << 4));
-						//$b = BlockAPI::get($idmeta[0], $idmeta[1], $p); //$this->getBlockWithoutVector();
-						//if($b instanceof Block){
-						//	$b->onUpdate(BLOCK_UPDATE_RANDOM);
-						//}
 					}
 				}
 			}
@@ -329,6 +337,7 @@ class Level{
 		foreach($this->entityList as $k => $e){
 			if(!($e instanceof Entity)){
 				unset($this->entityList[$k]);
+				unset($this->server->entities[$k]);
 				continue;
 			}
 			

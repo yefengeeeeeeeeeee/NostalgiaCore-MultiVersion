@@ -7,18 +7,17 @@ class MCDiagonalProvider implements INeighborProvider
 	private static $moveDownOffset = [0, -1, 0];
 	public function getNeighbors(PathTile $tile)
 	{
-		
 		if($tile instanceof PathTileXYZ){
 			$pnts = [];
 			foreach(MCDiagonalProvider::$neighbors as $offset){
 				$pnt = $tile->addOffset($offset);
-				if(!$tile->level->getBlockWithoutVector($pnt->x, $pnt->y, $pnt->z, false)->isSolid){
-					if(!$tile->level->getBlockWithoutVector($pnt->x, $pnt->y - 1, $pnt->z, false)->isSolid){
+				if(!StaticBlock::getIsSolid($tile->level->level->getBlockID($pnt->x, $pnt->y, $pnt->z))){
+					if(!StaticBlock::getIsSolid($tile->level->level->getBlockID($pnt->x, $pnt->y - 1, $pnt->z, false))){
 						--$pnt->y;
 					}
 					$pnts[] = $pnt;
 				}else{
-					if(!$tile->level->getBlockWithoutVector($pnt->x, $pnt->y + 1, $pnt->z, false)->isSolid){
+					if(!StaticBlock::getIsSolid($tile->level->level->getBlockID($pnt->x, $pnt->y + 1, $pnt->z, false))){
 						++$pnt->y;
 						$pnts[] = $pnt;
 					}

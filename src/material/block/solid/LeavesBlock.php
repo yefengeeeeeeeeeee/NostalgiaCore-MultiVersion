@@ -25,8 +25,8 @@ class LeavesBlock extends TransparentBlock{
 		}
 		$visited[$index] = true;
 
-		$block = $level->getBlockWithoutVector($x, $y, $z, false);
-		if($block instanceof WoodBlock){ //type doesn't matter
+		$block = $level->level->getBlockID($x, $y, $z);
+		if($block === WOOD){ //type doesn't matter
 			return true;
 		}
 

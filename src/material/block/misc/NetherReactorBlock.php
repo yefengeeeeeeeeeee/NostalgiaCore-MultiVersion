@@ -61,8 +61,9 @@ class NetherReactorBlock extends SolidBlock{
 		for($a = $aOne; $a < $aTwo; $a += $aThree) { //wth those cycles are? TODO simplify if possible(makes server lag)
 			for($b = $bOne; $b < $bTwo; $b += $bThree) {
 				for($c = $cOne; $c < $cTwo; $c += $cThree) {
-					if ($this->level->getBlock(new Vector3($x+$a, $y+$b, $z+$c))->getID() === 87 && Utils::randomFloat() > 0.75){
-						$this->level->setBlock(new Vector3($x+$a, $y+$b, $z+$c), new AirBlock());
+					if ($this->level->level->getBlockID($x+$a, $y+$b, $z+$c) === NETHERRACK && Utils::randomFloat() > 0.75){
+						//$this->level->setBlock(new Vector3($x+$a, $y+$b, $z+$c), new AirBlock());
+						$this->level->fastSetBlockUpdate($x+$a, $y+$b, $z+$c, 0, 0); //TODO might be better to set not directly?
 					}
 				}
 			}
@@ -188,7 +189,7 @@ class NetherReactorBlock extends SolidBlock{
 		foreach($this->core as $yOffset => $layer){
 			foreach($layer as $line){
 				foreach(str_split($line) as $char){
-					$b = $this->level->getBlock(new Vector3($x + $offsetX, $y + $yOffset, $z + $offsetZ))->getID();
+					$b = $this->level->level->getBlockID($x + $offsetX, $y + $yOffset, $z + $offsetZ);
 					switch($char){
 						case "G":
 							if($b === GOLD_BLOCK){ //TODO make it use structure class
@@ -201,7 +202,7 @@ class NetherReactorBlock extends SolidBlock{
 							}
 							return false;
 						case "R":
-							if($b === NETHER_REACTOR and $this->level->getBlock(new Vector3($x + $offsetX, $y + $yOffset, $z + $offsetZ))->getMetadata() === 0){
+							if($b === NETHER_REACTOR and $this->level->level->getBlockDamage($x + $offsetX, $y + $yOffset, $z + $offsetZ) === 0){
 								break;
 							}
 							return false;
@@ -210,8 +211,6 @@ class NetherReactorBlock extends SolidBlock{
 								break;
 							}
 							return false;
-						default:
-							break;
 					}
 					++$offsetX;
 				}

@@ -184,9 +184,10 @@ class RailLogic
 			$meta = $this->level->level->getBlockDamage($this->x, $this->x, $this->z) & 8 | $state;
 		}
 		
-		$b = $this->level->getBlockWithoutVector($this->x, $this->y, $this->z);
-		$b->setMetadata($meta);
-		$this->level->setBlock(new Vector3($this->x, $this->y, $this->z), $b, true, false, true);
+		//$b = $this->level->getBlockWithoutVector($this->x, $this->y, $this->z);
+		//$b->setMetadata($meta);
+		//$this->level->setBlock(new Vector3($this->x, $this->y, $this->z), $b, true, false, true);
+		$this->level->fastSetBlockUpdateMeta($this->x, $this->y, $this->z, $meta, true);
 	}
 	
 	public function updateConnections($meta){

@@ -42,12 +42,11 @@ class TileNavigator implements ITileNavigator
 			$current = $open->top();
 			$open->next();
 			if ($current == $to){
-
 				return $this->reconstructPath($path, $current);
 			}
 			foreach($this->neighborProvider->getNeighbors($current) as $neighbor)
 			{
-				if(!Utils::in_range(Utils::distance_noroot($neighbor->asArray(), $from->asArray()), -$maxDist, $maxDist)){
+				if(!Utils::in_range(($from->x - $neighbor->x)*($from->x - $neighbor->x) + ($from->y - $neighbor->y)*($from->y - $neighbor->y) + ($from->z - $neighbor->z)*($from->z - $neighbor->z), -$maxDist, $maxDist)){ //Utils::distance_noroot($neighbor->asArray(), $from->asArray())
 					continue;
 				}
 				if(isset($visited[(string)$neighbor])){

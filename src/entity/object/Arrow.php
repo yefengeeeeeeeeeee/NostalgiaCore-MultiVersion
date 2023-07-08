@@ -89,12 +89,12 @@ class Arrow extends Projectile{
 		for($x = floor($rt->minX); $x < ceil($rt->maxX); ++$x){
 			for($z = floor($rt->minZ); $z < ceil($rt->maxZ); ++$z){
 				for($y = ceil($rt->minY); $y < ceil($rt->maxY); ++$y){
-					$pos = new Vector3($x, $y, $z);
-					$b = $this->level->getBlock($pos);
-					if($b != false && $b->isSolid){
-						$this->speedY = $b->boundingBox->calculateYOffset($this->boundingBox, $this->speedY);
-						$this->speedX = $b->boundingBox->calculateXOffset($this->boundingBox, $this->speedX);
-						$this->speedZ = $b->boundingBox->calculateZOffset($this->boundingBox, $this->speedZ);
+					$b = $this->level->level->getBlockID($x, $y, $z);
+					if(StaticBlock::getIsSolid($b)){
+						$bb = StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
+						$this->speedY = $bb->calculateYOffset($this->boundingBox, $this->speedY);
+						$this->speedX = $bb->calculateXOffset($this->boundingBox, $this->speedX);
+						$this->speedZ = $bb->calculateZOffset($this->boundingBox, $this->speedZ);
 						$this->inWall = true;
 						break;
 					}
