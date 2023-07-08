@@ -30,7 +30,7 @@ class LeavesBlock extends TransparentBlock{
 			return true;
 		}
 
-		if($block->getId() === LEAVES && $distance <= 4){
+		if($block === LEAVES && $distance <= 4){
 			if(self::findLog($level, $x - 1, $y, $z, $visited, $distance + 1)) return true;
 			if(self::findLog($level, $x + 1, $y, $z, $visited, $distance + 1)) return true;
 			if(self::findLog($level, $x, $y, $z - 1, $visited, $distance + 1)) return true;

@@ -16,7 +16,7 @@ class TaskDestroyServerPerformance extends TaskTempt
 	
 	public function onUpdate(EntityAI $ai)
 	{
-		if(!($this->target instanceof Entity) || ($ai->entity instanceof Spider && $ai->entity->level->isDay()) || ($this->target instanceof Entity && !$this->target->isPlayer()) || (Utils::distance_noroot($this->target, $ai->entity) > 256) || $this->target->level->getName() != $ai->entity->level->getName()){
+		if(!($this->target instanceof Entity) || ($this->target instanceof Entity && !$this->target->isPlayer()) || (Utils::distance_noroot($this->target, $ai->entity) > 256) || $this->target->level->getName() != $ai->entity->level->getName()){
 			$this->reset();
 			return;
 		}
