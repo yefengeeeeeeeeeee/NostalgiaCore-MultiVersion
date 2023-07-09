@@ -16,6 +16,14 @@ class FarmlandBlock extends TransparentBlock{
 		return $b->isTransparent && $b->id != 0;
 	}
 	
+	public static function fallOn(Level $level, $x, $y, $z, Entity $entity, $fallDistance){
+		$rv = lcg_value();
+		console("rv: $rv, fd: ".($fallDistance - 0.5));
+		if($rv < ($fallDistance - 0.5)){
+			$level->fastSetBlockUpdate($x, $y, $z, DIRT, 0);
+		}
+	}
+	
 	public static function onRandomTick(Level $level, $x, $y, $z){
 		$meta = $level->level->getBlockDamage($x, $y, $z);
 		$b = $level->level->getBlockID($x, $y + 1, $z);

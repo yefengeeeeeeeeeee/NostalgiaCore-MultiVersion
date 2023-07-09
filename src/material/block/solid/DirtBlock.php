@@ -15,7 +15,7 @@ class DirtBlock extends SolidBlock{
 				if($item->getMetadata() >= $item->getMaxDurability()) $player->setSlot($player->slot, new Item(AIR, 0, 0), false);
 				else $player->setSlot($player->slot, $item, true);
 			}
-			$this->level->setBlock($this, BlockAPI::get(FARMLAND, 0), true, false, true);
+			$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, FARMLAND, 0, true);
 			return true;
 		}
 		return false;

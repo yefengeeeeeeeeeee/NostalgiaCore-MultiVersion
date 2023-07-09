@@ -311,7 +311,7 @@ class Level{
 		$pk->meta = $meta;
 		$this->server->api->player->broadcastPacket($this->players, $pk);
 		if($updateBlock){
-			$this->server->api->block->blockUpdateAround(new Vector3($x, $y, $z), BLOCK_UPDATE_NORMAL, 1);
+			$this->server->api->block->blockUpdateAround(new Position($x, $y, $z, $this), BLOCK_UPDATE_NORMAL, 1);
 		}
 	}
 	

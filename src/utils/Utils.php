@@ -586,11 +586,14 @@ class Utils{
 	}
 	
 	public static function chance($i){//GameHerobrine's code
-		return self::randomFloat() <= $i / 100;
+		return lcg_value() <= $i / 100;
 	}
-
-	public static function randomFloat(){//GameHerobrine's code
-		return rand() / getrandmax();
+	
+	/**
+	 * @deprecated use lcg_value instead
+	 */
+	public static function randomFloat(){
+		return lcg_value();
 	}
 
 	public static function round($number){

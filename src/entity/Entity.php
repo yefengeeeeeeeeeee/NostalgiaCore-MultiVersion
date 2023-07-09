@@ -468,20 +468,6 @@ class Entity extends Position
 								$hasUpdate = true;
 							}
 							break;
-						/*default:
-							
-							if($this->isPlayer()){
-								ConsoleAPI::debug("new {}");
-								ConsoleAPI::debug($this->boundingBox);
-								ConsoleAPI::debug(($this->boundingBox->maxY - $this->boundingBox->minY).", {$this->onGround}");
-							}
-							if (!$b->isTransparent && $b->boundingBox->intersectsWith($bup) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)) {
-								$this->harm(1, "suffocation"); // Suffocation
-								$hasUpdate = true;
-							} elseif ($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)) {
-								$this->air = 200; // Breathing
-							}
-							break;*/
 					}
 				}
 			}
@@ -731,6 +717,17 @@ class Entity extends Position
 	
 	public function fall(){
 		if($this->isPlayer()){
+			
+			$x = floor($this->x);
+			$y = floor($this->y - 0.2);
+			$z = floor($this->z);
+			$bid = $this->level->level->getBlockID($x, $y, $z);
+			
+			if($bid > 0){
+				$clz = StaticBlock::getBlock($bid);
+				$clz::fallOn($this->level, $x, $y, $z, $this, floor($this->fallStart - $this->y));
+			}
+			
 			$dmg = floor($this->fallStart - $this->y) - 3;
 			if($dmg > 0){
 				$this->harm($dmg, "fall");

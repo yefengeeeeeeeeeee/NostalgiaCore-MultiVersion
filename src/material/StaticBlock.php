@@ -37,6 +37,10 @@ class StaticBlock
 		}
 	}
 	
+	public static function getBlock($id){
+		return nullsafe(Block::$class[$id], Block::$class[0]);
+	}
+	
 	public static function getBoundingBoxForBlockCoords($id, $x, $y, $z){
 		/**@var AxisAlignedBB $bb*/
 		$bb = nullsafe(self::$boundingBoxes[$id], false);
