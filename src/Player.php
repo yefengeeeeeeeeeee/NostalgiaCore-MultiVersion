@@ -164,25 +164,28 @@ class Player{
 				}
 
 				foreach($this->level->entityList as $e){
-					if($e !== $this->entity){
+					if($e->eid !== $this->entity->eid){
 						if($e->isPlayer()){
-							$pk = new MoveEntityPacket_PosRot;
+							$pk = new MovePlayerPacket();
 							$pk->eid = $this->entity->eid;
 							$pk->x = -256;
 							$pk->y = 128;
 							$pk->z = -256;
 							$pk->yaw = 0;
 							$pk->pitch = 0;
+							$pk->bodyYaw = 0;
 							$e->player->dataPacket($pk);
 							
-							$pk = new MoveEntityPacket_PosRot;
+							$pk = new MovePlayerPacket();
 							$pk->eid = $e->eid;
 							$pk->x = -256;
 							$pk->y = 128;
 							$pk->z = -256;
 							$pk->yaw = 0;
 							$pk->pitch = 0;
+							$pk->bodyYaw = 0;
 							$this->dataPacket($pk);
+							
 						}else{
 							$pk = new RemoveEntityPacket;
 							$pk->eid = $e->eid;
@@ -240,7 +243,7 @@ class Player{
 			$this->entity->calculateVelocity();
 			if($terrain === true){
 				$this->orderChunks();
-				$this->getNextChunk($this->level);
+				$this->server->schedule(1, [$this, "getNextChunk"], $this->level);
 			}
 			$this->entity->check = true;
 			if($force === true){
