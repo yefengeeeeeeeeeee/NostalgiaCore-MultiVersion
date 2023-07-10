@@ -33,6 +33,14 @@ class RailLogic
 		return null;
 	}
 	
+	public function hasRail($x, $y, $z){
+		return RailBaseBlock::isRailBlock($this->level, $x, $y, $z) || RailBaseBlock::isRailBlock($this->level, $x, $y + 1, $z) || RailBaseBlock::isRailBlock($this->level, $x, $y - 1, $z);
+	}
+	
+	public function countPotentialConnections(){
+		return $this->hasRail($this->x, $this->y, $this->z - 1) + $this->hasRail($this->x, $this->y, $this->z + 1) + $this->hasRail($this->x - 1, $this->y, $this->z) + $this->hasRail($this->x + 1, $this->y, $this->z);
+	}
+	
 	public function removeSoftConnections(){
 		for($ind = 0; $ind < count($this->railPositions); ++$ind){
 			$logic = $this->getRail($this->railPositions[$ind]);

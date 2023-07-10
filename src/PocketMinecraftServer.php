@@ -79,7 +79,7 @@ class PocketMinecraftServer{
 			"enable-mob-ai" => false,
 			"enable-nether-reactor" => true,
 			"enable-explosions" => true,
-			"enable-rail-connection" => false,
+			"enable-rail-connection" => true,
 			"save-player-data" => true,
 			"save-console-data" => true,
 			"query-plugins" => false,
