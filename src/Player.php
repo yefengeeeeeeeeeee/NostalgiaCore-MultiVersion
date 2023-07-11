@@ -1561,16 +1561,16 @@ class Player{
 				$data["eid"] = $packet->eid;
 				$data["player"] = $this;
 
-				if($packet->slot === 0x28 or $packet->slot === 0){ //0 for 0.8.0 compatibility
+				/*if($packet->slot === 0x28 or $packet->slot === 0){ //0 for 0.8.0 compatibility
 					$data["slot"] = -1;
 					$data["item"] = BlockAPI::getItem(AIR, 0, 0);
 					if($this->server->handle("player.equipment.change", $data) !== false){
 						$this->slot = -1;
 					}
 					break;
-				}else{
+				}else{*/
 					$packet->slot -= 9;
-				}
+				//}
 
 
 				if(($this->gamemode & 0x01) === SURVIVAL){
