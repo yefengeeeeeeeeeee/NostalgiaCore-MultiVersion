@@ -341,7 +341,7 @@ class Level{
 				continue;
 			}
 			
-			if($e->type === ENTITY_MOB && !$e->isPlayer()){
+			if($e->class === ENTITY_MOB && !$e->isPlayer()){
 				++$this->totalMobsAmount;
 			}
 			
