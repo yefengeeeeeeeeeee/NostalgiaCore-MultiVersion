@@ -468,6 +468,13 @@ class Entity extends Position
 								$hasUpdate = true;
 							}
 							break;
+						default:
+							if($this->inBlock(new Vector3($x, $y, $z), 0.7) and $y == $endY and !StaticBlock::getIsTransparent($id) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){}
+							elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
+								$this->air = 200;
+							}
+							break;
+							
 					}
 				}
 			}
