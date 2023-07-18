@@ -392,12 +392,12 @@ class PlayerAPI{
 		];
 
 		if(!file_exists(DATA_PATH . "players/" . $iname . ".yml")){
-			if($this->server->extraprops->get("save-player-data") && $create){
+			if(PocketMinecraftServer::$SAVE_PLAYER_DATA && $create){
 				console("[NOTICE] Player data not found for \"" . $iname . "\", creating new profile");
 				$data = new Config(DATA_PATH . "players/" . $iname . ".yml", CONFIG_YAML, $default);
 				$data->save();
 			}else{
-				return false;
+				return new Config(DATA_PATH . "players/$iname.yml", CONFIG_YAML, $default);
 			}
 		}
 
@@ -494,7 +494,7 @@ class PlayerAPI{
 	}
 
 	public function saveOffline(Config $data){
-		if($this->server->extraprops->get("save-player-data")){
+		if(PocketMinecraftServer::$SAVE_PLAYER_DATA){
 			$this->server->handle("player.offline.save", $data);
 			$data->save();
 		}

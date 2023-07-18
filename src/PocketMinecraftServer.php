@@ -24,6 +24,9 @@ class PocketMinecraftServer{
 		$this->load();
 	}
 	
+	public static $SAVE_PLAYER_DATA = true;
+	
+	
 	private function load(){
 		global $dolog;
 
@@ -97,6 +100,7 @@ class PocketMinecraftServer{
 		Living::$despawnTimer = $this->extraprops->get("mob-despawn-ticks");
 		Entity::$allowedAI = $this->extraprops->get("enable-mob-ai");
 		Entity::$updateOnTick = $this->extraprops->get("experemental-mob-features");
+		PocketMinecraftServer::$SAVE_PLAYER_DATA = $this->extraprops->get("save-player-data");
 		if(Entity::$updateOnTick){
 			console("[WARNING] Experemental mob features are enabled. Unpredictable behavior.");
 		}
