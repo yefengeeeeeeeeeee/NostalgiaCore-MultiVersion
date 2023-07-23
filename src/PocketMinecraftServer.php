@@ -74,7 +74,6 @@ class PocketMinecraftServer{
 		if(!defined("NO_THREADS")){
 			$this->asyncThread = new AsyncMultipleQueue();
 		}
-		
 		console("[INFO] Loading extra.properties...");
 		$this->extraprops = new Config(DATA_PATH . "extra.properties", CONFIG_PROPERTIES, [
 			"version" => "5",
@@ -220,7 +219,11 @@ class PocketMinecraftServer{
 			$this->interface->close();
 
 			if(!defined("NO_THREADS")){
-				@$this->asyncThread->stop = true;
+				$this->asyncThread->synchronized(function ($t){
+					$t->stop = true;
+					$t->notify();
+				}, $this->asyncThread);
+				//@$this->asyncThread->stop = true;
 			}
 		}
 	}

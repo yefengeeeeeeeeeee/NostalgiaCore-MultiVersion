@@ -5,6 +5,7 @@
 class StaticBlock
 {
 	const DEFAULT_SLIPPERINESS = 0.6;
+	const DEFAULT_HARDNESS = 0;
 	private static $NULL_BOUNDS;
 	public static $isSolid = [];
 	public static $isTransparent = [];
@@ -15,6 +16,7 @@ class StaticBlock
 	public static $isLiquid = [];
 	public static $isFullBlock = [];
 	
+	public static $hardness = [];
 	public static $slipperiness = [];
 	public static $boundingBoxes = [];
 	public static function init(){
@@ -31,14 +33,18 @@ class StaticBlock
 			self::$hasPhysics[$b->getID()] = $b->hasPhysics;
 			self::$isLiquid[$b->getID()] = $b->isLiquid;
 			self::$isFullBlock[$b->getID()] = $b->isFullBlock;
-			
 			self::$slipperiness[$b->getID()] = $b->slipperiness;
 			self::$boundingBoxes[$b->getID()] = $b->boundingBox;
+			self::$hardness[$b->getID()] = $b->getHardness();
 		}
 	}
 	
 	public static function getBlock($id){
 		return nullsafe(Block::$class[$id], Block::$class[0]);
+	}
+	
+	public static function getHardness($id){
+		return nullsafe(self::$hardness[$id], StaticBlock::DEFAULT_HARDNESS);
 	}
 	
 	public static function getBoundingBoxForBlockCoords($id, $x, $y, $z){

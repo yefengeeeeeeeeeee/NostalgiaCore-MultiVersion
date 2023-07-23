@@ -68,21 +68,24 @@ class Explosion{
 							$blockID = $BIDM[0];
 							$blockMeta = $BIDM[1];
 							if($blockID > 0){
-								$block = BlockAPI::get($blockID, $blockMeta);
-								$block->x = $vBlock->x;
-								$block->y = $vBlock->y;
-								$block->z = $vBlock->z;
-								$block->level = $this->level;
-								$index = ($block->x << 15) + ($block->z << 7) + $block->y;
-								if($block instanceof LiquidBlock && !isset($visited[$index])){
-									ServerAPI::request()->api->block->scheduleBlockUpdate($block, 5, BLOCK_UPDATE_NORMAL);
+								$index = ($vBlock->x << 15) + ($vBlock->z << 7) + $vBlock->y;
+								
+								if(StaticBlock::getIsLiquid($blockID) && !isset($visited[$index])){
+									ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($vBlock->x, $vBlock->y, $vBlock->z, $this->level), 5, BLOCK_UPDATE_NORMAL);
 									$visited[$index] = true;
 								}
-								$blastForce -= ($block->getHardness() / 5 + 0.3) * $this->stepLen;
+								
+								$blastForce -= (StaticBlock::getHardness($blockID) / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
-									$index = ($block->x << 15) + ($block->z << 7) + $block->y;
+									$index = ($vBlock->x << 15) + ($vBlock->z << 7) + $vBlock->y;
 									if(!isset($this->affectedBlocks[$index])){
-										$this->affectedBlocks[$index] = $block;
+										$this->affectedBlocks[$index] = [
+											"x" => $vBlock->x,
+											"y" => $vBlock->y,
+											"z" => $vBlock->z,
+											"id" => $blockID,
+											"meta" => $blockMeta
+										];
 									}
 								}
 							}
@@ -101,27 +104,28 @@ class Explosion{
 			$entity->harm($damage, "explosion");
 		}
 
-		foreach($this->affectedBlocks as $block){
-			if($block instanceof TNTBlock){
+		foreach($this->affectedBlocks as $blockA){
+			if($blockA["id"] === TNT){
 				$data = [
-					"x" => $block->x + 0.5,
-					"y" => $block->y + 0.5,
-					"z" => $block->z + 0.5,
+					"x" => $blockA["x"] + 0.5,
+					"y" => $blockA["y"] + 0.5,
+					"z" => $blockA["z"] + 0.5,
 					"power" => 4,
 					"fuse" => mt_rand(10, 30), //0.5 to 1.5 seconds
 				];
 				$e = $server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
 				$server->api->entity->spawnToAll($e);
 			}elseif(mt_rand(0, 10000) < ((1 / $this->size) * 10000)){
+				$block = BlockAPI::get($blockA["id"], $blockA["meta"], new Position($blockA["x"], $blockA["y"], $blockA["z"], $this->level));
 				$dropz = $block->getDrops($this->air, $this->nullPlayer);
 				if(is_array($dropz)){
 					foreach($dropz as $drop){
-						$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem($drop[0], $drop[1], $drop[2])); //id, meta, count
+						$server->api->entity->drop(new Position($blockA["x"] + 0.5, $blockA["y"], $blockA["z"] + 0.5, $this->level), BlockAPI::getItem($drop[0], $drop[1], $drop[2])); //id, meta, count
 					}
 				}
 			}
-			$this->level->setBlock($block, new AirBlock(), true);
-			$send[] = $block->subtract($source);
+			$this->level->fastSetBlockUpdate($blockA["x"], $blockA["y"], $blockA["z"], 0, 0);
+			$send[] = new Vector3($blockA["x"] - $source->x, $blockA["y"] - $source->y, $blockA["z"] - $source->z);
 		}
 		$pk = new ExplodePacket;
 		$pk->x = $this->source->x;

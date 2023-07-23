@@ -564,7 +564,7 @@ class BlockAPI{
 			$this->blockUpdate($pos->getSide(5), $type);
 		}
 	}
-
+	
 	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
 		$type = (int) $type;
 		if($delay < 0){
