@@ -6,6 +6,7 @@ abstract class Living extends Entity implements Damageable, Pathfindable{
 	
 	public $target, $ai;
 	public $pathFinder, $path = null, $currentIndex = 0, $currentNode, $pathFollower;
+	public $ticksExisted = 0;
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 		$this->target = false;
 		$this->ai = new EntityAI($this);
@@ -15,7 +16,7 @@ abstract class Living extends Entity implements Damageable, Pathfindable{
 		$this->canBeAttacked = true;
 		$this->hasGravity = true;
 		$this->hasKnockback = true;
-		if(self::$despawnMobs) $this->server->schedule(self::$despawnTimer, [$this, "close"]); //900*20
+		//if(self::$despawnMobs) $this->server->schedule(self::$despawnTimer, [$this, "close"]); //900*20
 	}
 	public function fall(){
 		$dmg = floor($this->fallDistance - 3);
@@ -62,6 +63,9 @@ abstract class Living extends Entity implements Damageable, Pathfindable{
 	}
 	
 	public function update(){
+		if(self::$despawnMobs && ++$this->ticksExisted > self::$despawnTimer){
+			$this->close();
+		}
 		if(!$this->dead && Entity::$allowedAI && $this->idleTime <= 0) {
 			$this->ai->updateTasks();
 		}

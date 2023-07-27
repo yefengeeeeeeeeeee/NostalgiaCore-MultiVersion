@@ -191,7 +191,7 @@ class EntityAPI{
 	}
 	
 	public function updateRadius(Position $center, $radius = 15, $class = false){
-		$this->server->query("UPDATE entities SET hasUpdate = 1 WHERE level = '" . $center->level->getName() . "' " . ($class !== false ? "AND class = $class " : "") . "AND abs(x - {$center->x}) <= $radius AND abs(y - {$center->y}) <= $radius AND abs(z - {$center->z}) <= $radius;");
+		//useless now? $this->server->query("UPDATE entities SET hasUpdate = 1 WHERE level = '" . $center->level->getName() . "' " . ($class !== false ? "AND class = $class " : "") . "AND abs(x - {$center->x}) <= $radius AND abs(y - {$center->y}) <= $radius AND abs(z - {$center->z}) <= $radius;");
 	}
 	
 	public function getRadius(Position $center, $radius = 15, $class = false){
@@ -254,9 +254,9 @@ class EntityAPI{
 			"y" => $pos->y + 0.19,
 			"z" => $pos->z + mt_rand(-10, 10) / 50,
 			"level" => $pos->level,
-			"speedX" => Utils::randomFloat() * 0.2 - 0.1,
+			"speedX" => lcg_value() * 0.2 - 0.1,
 			"speedY" => 0.2,
-			"speedZ" => Utils::randomFloat() * 0.2 - 0.1,
+			"speedZ" => lcg_value() * 0.2 - 0.1,
 			"item" => $item,
 		];
 		if($this->server->api->handle("item.drop", $data) !== false){

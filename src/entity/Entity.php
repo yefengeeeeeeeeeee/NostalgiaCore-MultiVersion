@@ -423,14 +423,13 @@ class Entity extends Position
 		for ($y = $startY; $y <= $endY; ++$y){
 			for ($x = $startX; $x <= $endX; ++$x){
 				for ($z = $startZ; $z <= $endZ; ++$z){
-					$pos = new Vector3($x, $y, $z);
 					$b = $this->level->level->getBlock($x, $y, $z);
 					$id = $b[0];
 					$meta = $b[1];
 					switch ($id) {
 						case WATER:
 						case STILL_WATER: // Drowing
-							if ($this->fire > 0 and $this->inBlock($pos)) {
+							if ($this->fire > 0 and $this->inBlockNonVector($x, $y, $z)) {
 								$this->fire = 0;
 								$this->updateMetadata();
 							}
@@ -447,7 +446,7 @@ class Entity extends Position
 							break;
 						case LAVA: // Lava damage
 						case STILL_LAVA:
-							if ($this->inBlock($pos)) {
+							if ($this->inBlockNonVector($x, $y, $z)) {
 								$this->harm(5, "lava");
 								$this->fire = 300;
 								$this->updateMetadata();
@@ -455,7 +454,7 @@ class Entity extends Position
 							}
 							break;
 						case FIRE: // Fire block damage
-							if ($this->inBlock($pos)) {
+							if ($this->inBlockNonVector($x, $y, $z)) {
 								$this->harm(1, "fire");
 								$this->fire = 300;
 								$this->updateMetadata();
@@ -463,14 +462,15 @@ class Entity extends Position
 							}
 							break;
 						case CACTUS: // Cactus damage
-							if ($this->touchingBlock($pos)) {
+							if ($this->inBlockNonVector($x, $y, $z)) {
 								$this->harm(1, "cactus");
 								$hasUpdate = true;
 							}
 							break;
 						default:
-							if($this->inBlock(new Vector3($x, $y, $z), 0.7) and $y == $endY and !StaticBlock::getIsTransparent($id) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){}
-							elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
+							if($this->inBlockNonVector($x, $y, $z, 0.7) && $y == $endY and !StaticBlock::getIsTransparent($id) && ($this->class === ENTITY_MOB || $this->class === ENTITY_PLAYER)){
+								
+							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
 								$this->air = 200;
 							}
 							break;
@@ -1123,7 +1123,10 @@ class Entity extends Position
 		$this->server->preparedSQL->entity->setPosition->bindValue(":eid", $this->eid, SQLITE3_INTEGER);
 		$this->server->preparedSQL->entity->setPosition->execute();
 	}
-
+	public function inBlockNonVector($x, $y, $z, $radius = 0.8)
+	{
+		return $y == ceil($this->y) || $y == (ceil($this->y)+1) && max(abs($x - ($this->x-0.5)), abs($z - ($this->z-0.5)));
+	}
 	public function inBlock(Vector3 $block, $radius = 0.8)
 	{
 		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
@@ -1154,15 +1157,7 @@ class Entity extends Position
 
 	public function resetSpeed()
 	{
-		$this->speedMeasure = array(
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0
-		);
+		$this->speedMeasure = array(0, 0, 0, 0, 0, 0, 0);
 	}
 
 	public function getSpeed()
@@ -1256,8 +1251,8 @@ class Entity extends Position
 		if ($ret != false && $this->hasKnockback && is_numeric($cause) && ($entity = $this->server->api->entity->get($cause)) != false) {
 			$d = $entity->x - $this->x;
 
-			for ($d1 = $entity->z - $this->z; $d * $d + $d1 * $d1 < 0.0001; $d1 = (Utils::randomFloat() - Utils::randomFloat()) * 0.01) {
-				$d = (Utils::randomFloat() - Utils::randomFloat()) * 0.01;
+			for ($d1 = $entity->z - $this->z; $d * $d + $d1 * $d1 < 0.0001; $d1 = (lcg_value() - lcg_value()) * 0.01) {
+				$d = (lcg_value() - lcg_value()) * 0.01;
 			}
 			// attackedAtYaw = (float)((Math.atan2($d1, $d) * 180D) / 3.1415927410125732D) >
 			$this->knockBack($d, $d1);
@@ -1469,9 +1464,9 @@ class Entity extends Position
 		$f1 = 0.4;
 		$this->speedX /= 2;
 		$this->speedZ /= 2;
-		$this->speedX -= ($d / (double) $f) * (double) $f1;
+		$this->speedX -= ($d / $f) * $f1;
 		$this->speedY += 0.40000000596046448;
-		$this->speedZ -= ($d1 / (double) $f) * (double) $f1;
+		$this->speedZ -= ($d1 / $f) * $f1;
 		if($this->speedY > 0.40000000596046448){
 			$this->speedY = 0.40000000596046448;
 		}

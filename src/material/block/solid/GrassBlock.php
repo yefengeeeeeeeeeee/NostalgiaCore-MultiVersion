@@ -35,7 +35,7 @@ class GrassBlock extends SolidBlock{
 	}
 	
 	public function seedsDrop(){
-		$chance = Utils::randomFloat() * 100;
+		$chance = lcg_value() * 100;
 		if($chance <= 1){
 			ServerAPI::request()->api->entity->drop(new Position($this->x+0.5, $this->y+1, $this->z+0.5, $this->level), BlockAPI::getItem(458,0,1));
 			return;

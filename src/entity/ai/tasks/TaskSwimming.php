@@ -20,7 +20,7 @@ class TaskSwimming extends TaskBase
 			return;
 		}
 		
-		if(Utils::randomFloat() < 0.8){ #1.5.2 method
+		if(lcg_value() < 0.8){ #1.5.2 method
 			$ai->mobController->setJumping(true);
 		}
 		

@@ -211,11 +211,11 @@ class ConsoleAPI{
 				break;
 			case "status":
 				if(!($issuer instanceof Player) and $issuer === "console"){
-					$this->server->debugInfo(true);
+					$info = $this->server->debugInfo(true);
+				}else{
+					$info = $this->server->debugInfo();
 				}
-				$info = $this->server->debugInfo();
-				$output .= "TPS: " . $info["tps"] . ", Memory usage: " . $info["memory_usage"] . " (Peak " . $info["memory_peak_usage"] . ")\n";
-				break;
+				return "TPS: " . $info["tps"] . ", Memory usage: " . $info["memory_usage"] . " (Peak " . $info["memory_peak_usage"] . ")";
 			case "stop":
 				$this->loop->stop = true;
 				$output .= "Stopping the server\n";
@@ -228,8 +228,7 @@ class ConsoleAPI{
 					break;
 				}
 				$this->server->api->setProperty("difficulty", (int) $s);
-				$output .= "Difficulty changed to " . $this->server->difficulty . "\n";
-				break;
+				return "Difficulty changed to " . $this->server->difficulty . "\n";
 			case "?":
 				if($issuer !== "console" and $issuer !== "rcon"){
 					break;

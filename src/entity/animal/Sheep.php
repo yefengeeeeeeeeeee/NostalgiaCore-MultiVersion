@@ -12,11 +12,6 @@ class Sheep extends Animal{
 		$this->data["Color"] = isset($this->data["Color"]) ? $this->data["Color"] : $this->sheepColor();
 		$this->setSpeed(0.25);
 		$this->update();
-		/*if($this->isSheared() and Entity::$updateOnTick){ //if ai enabled
-			$this->server->schedule(mt_rand(60, 400), [$this, "eatGrass"], null, true); //unknown time
-		}elseif($this->isBaby() and Entity::$updateOnTick){
-			$this->server->schedule(mt_rand(400, 1000), [$this, "eatGrass"], null, true); //unknown time
-		}*/
 		$this->ai->addTask(new TaskEatTileGoal());
 	}
 	public function createSaveData(){
@@ -27,17 +22,6 @@ class Sheep extends Animal{
 	}
 	
 	public function eatGrass(){
-		/*$downBlock = $this->level->getBlock(new Vector3($this->x, $this->y-1, $this->z));
-		if($downBlock->getID() !== GRASS){
-			//console("eww i don't wanna eat this $downBlock");
-			return false;
-		}
-		$pk = new EntityEventPacket;
-		$pk->eid = $this->eid;
-		$pk->event = EntityEventPacket::ENTITY_ANIM_10;
-		$this->server->api->player->broadcastPacket($this->level->players, $pk);
-		$this->server->schedule(38, [$this, "setSheared"], false);
-		$this->level->setblock(new Position($this->x, $this->y-1, $this->z, $this->level), new DirtBlock());*/
 		$this->setSheared(0);
 		if($this->isBaby()){
 			$age = $this->getAge() + 1200;
