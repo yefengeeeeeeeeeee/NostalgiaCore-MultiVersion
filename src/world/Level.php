@@ -301,7 +301,7 @@ class Level{
 		}
 	}
 	
-	public function fastSetBlockUpdate($x, $y, $z, $id, $meta, $updateBlock = false){
+	public function fastSetBlockUpdate($x, $y, $z, $id, $meta, $updateBlocksAround = false){
 		$this->level->setBlock($x, $y, $z, $id, $meta);
 		$pk = new UpdateBlockPacket;
 		$pk->x = $x;
@@ -310,7 +310,7 @@ class Level{
 		$pk->block = $id;
 		$pk->meta = $meta;
 		$this->server->api->player->broadcastPacket($this->players, $pk);
-		if($updateBlock){
+		if($updateBlocksAround){
 			$this->server->api->block->blockUpdateAround(new Position($x, $y, $z, $this), BLOCK_UPDATE_NORMAL, 1);
 		}
 	}
@@ -320,12 +320,14 @@ class Level{
 		if(!$this->stopTime) ++$this->time;
 		for($cX = 0; $cX < 16; ++$cX){
 			for($cZ = 0; $cZ < 16; ++$cZ){
+				$index = $this->level->getIndex($cX, $cZ);
+				if(!isset($this->level->chunks[$index]) || $this->level->chunks[$index] === false) continue;
 				for($c = 0; $c <= 20; ++$c){
 					$xyz = mt_rand(0, 0xffffffff) >> 2;//TODO fix php5
 					$x = $xyz & 0xf;
 					$z = ($xyz >> 8) & 0xf; //TODO might be possible to make some micro optmizations
 					$y = ($xyz >> 16) & 0x7f;
-					$id = $this->level->getBlockID(($cX << 4) + $x, $y, $z + ($cZ << 4));
+					$id = $this->level->fastGetBlockID($cX, $y >> 4, $cZ, $x, $y & 0xf, $z, $index); //$this->level->getBlockID(($cX << 4) + $x, $y, $z + ($cZ << 4));
 					if(isset(self::$randomUpdateBlocks[$id])){
 						$cl = Block::$class[$id];
 						$cl::onRandomTick($this, ($cX << 4) + $x, $y, $z + ($cZ << 4));
@@ -340,11 +342,9 @@ class Level{
 				unset($this->server->entities[$k]);
 				continue;
 			}
-			
 			if($e->class === ENTITY_MOB && !$e->isPlayer()){
 				++$this->totalMobsAmount;
 			}
-			
 			if($e->needsUpdate){
 				$e->update();
 			}

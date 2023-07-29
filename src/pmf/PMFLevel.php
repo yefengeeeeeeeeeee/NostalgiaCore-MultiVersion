@@ -318,11 +318,21 @@ class PMFLevel extends PMF{
 		$this->locationTable[$index][0] |= 1 << $Y;
 		return true;
 	}
-	private function report(){
-		console("[ERROR] A weird error in PMFLevel just happeneed. Values: ");
-		var_dump(func_get_args());
-		console("[NOTICE] If you see this message, you should send the log with error to the devs.");
+	/**
+	 * This method is faster, but may cause a lot of problems with unchecked values
+	 * @param integer $chunkX chunk(0-16)
+	 * @param integer $chunkY chunk(0-8)
+	 * @param integer $chunkZ chunk(0-16)
+	 * @param integer $blockX block(0-16)
+	 * @param integer $blockY block(0-16)
+	 * @param integer $blockZ block(0-16)
+	 * @param integer $index chunk index
+	 * @return number
+	 */
+	public function fastGetBlockID($chunkX, $chunkY, $chunkZ, $blockX, $blockY, $blockZ, $index){
+		return ($this->chunks[$index][$chunkY] === false) ? 0 : ord($this->chunks[$index][$chunkY][$blockY + ($blockX << 5) + ($blockZ << 9)]);
 	}
+	
 	public function getBlockID($x, $y, $z){
 		if($x < 0 || $x > 255 || $z < 0 || $z > 255 || $y < 0 || $y > 127){
 			return 0;

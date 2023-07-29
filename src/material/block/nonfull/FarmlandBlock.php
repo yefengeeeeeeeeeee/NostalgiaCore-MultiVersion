@@ -27,18 +27,18 @@ class FarmlandBlock extends TransparentBlock{
 	public static function onRandomTick(Level $level, $x, $y, $z){
 		$meta = $level->level->getBlockDamage($x, $y, $z);
 		$b = $level->level->getBlockID($x, $y + 1, $z);
-		if($meta === 0 && mt_rand(0, 5) === 0){
+		if(!StaticBlock::getIsFlowable($b)){
+			$level->fastSetBlockUpdate($x, $y, $z, DIRT, 0, true);
+		}else if($meta === 0 && mt_rand(0, 5) === 0){
 			$water = self::checkWaterStatic($level, $x, $y, $z);
 			if($water){
-				$level->setBlock(new Position($x, $y, $z, $level), BlockAPI::get(FARMLAND, 1), true, false, true);
+				$level->fastSetBlockUpdate($x, $y, $z, FARMLAND, 1, true);
 			}elseif($b != 0 && StaticBlock::getIsTransparent($b)){
-				$level->setBlock(new Position($x, $y, $z, $level), BlockAPI::get(DIRT, 0), true, false, true);
+				$level->fastSetBlockUpdate($x, $y, $z, DIRT, 0, true);
 			}
 		}
 		
-		if(!StaticBlock::getIsFlowable($b)){
-			$level->setBlock(new Position($x, $y, $z, $level), BlockAPI::get(DIRT, 0), true, false, true);
-		}
+		
 	}
 	
 	public static function checkWaterStatic(Level $level, $x, $y, $z){

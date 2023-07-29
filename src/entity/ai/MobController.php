@@ -50,7 +50,7 @@ class MobController
 			;
 			
 		}
-		$this->faceEntity($this->entity->add($ox, $oy, $oz));
+		$this->faceEntity($ox, $oy, $oz);
 		if($this->entity->knockbackTime <= 0){
 		    $this->entity->moveEntityWithOffset($ox, $oy, $oz);
 		}
@@ -76,10 +76,17 @@ class MobController
 		return $this->moveNonInstant($x - floor($this->entity->x), $y - floor($this->entity->y), $z - floor($this->entity->z));
 	}
 	
-	public function faceEntity(Vector3 $v){
-		$d = $v->subtract($this->entity)->normalize();
-		$dx = $d->x;
-		$dz = $d->z;
+	public function faceEntity($x, $y, $z){
+		$len = sqrt($x*$x + $z*$z + $y*$y);
+		//$d = $len == 0 ?//$v->subtract($this->entity)->normalize();
+		if($len == 0){
+			$dx = 0;
+			$dz = 0;
+		}else{
+			$dx = $x / $len;
+			$dz = $z / $len;
+		}
+		
 		
 		$tan = $dz == 0 ? ($dx < 0 ? 180 : 0) : (90 - rad2deg(atan($dx / $dz))); 
 		$thetaOffset = $dz < 0 ? 90 : 270;
@@ -97,10 +104,10 @@ class MobController
 		if($pitch){
 			$diff = sqrt($x * $x + $z * $z);
 			$calcPitch = $diff == 0 ? ($y < 0 ? -90 : 90) : rad2deg(atan($y / $diff));
-			$this->entity->pitch = $this->entity->type === MOB_CHICKEN ? -$calcPitch : $calcPitch;
+			$this->entity->pitch = $calcPitch;
 		}
 		
-		$this->entity->server->query("UPDATE entities SET pitch = ".$this->entity->pitch.", yaw = ".$this->entity->yaw." WHERE EID = ".$this->entity->eid.";");
+		//$this->entity->server->query("UPDATE entities SET pitch = ".$this->entity->pitch.", yaw = ".$this->entity->yaw." WHERE EID = ".$this->entity->eid.";");
 		return true;
 	}
 	

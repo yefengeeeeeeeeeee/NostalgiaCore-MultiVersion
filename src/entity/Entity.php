@@ -539,13 +539,6 @@ class Entity extends Position
 					
 					$ywMin = floor($aABB->minY + 0.4);
 					$ywMax = ceil($aABB->maxY - 0.4);
-					
-					$x0 = $x0 < 0 ? 0 : $x0;
-					$y0 = $y0 < 0 ? 0 : $y0;
-					$z0 = $z0 < 0 ? 0 : $z0;
-					$x1 = $x1 > 256 ? 256 : $x1;
-					$y1 = $y1 > 128 ? 128 : $y1;
-					$z1 = $z1 > 256 ? 256 : $z1;
 					for($x = $x0; $x < $x1; ++$x){
 						for($y = $y0; $y < $y1; ++$y){
 							for($z = $z0; $z < $z1; ++$z){

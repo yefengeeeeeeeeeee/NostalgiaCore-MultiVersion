@@ -611,11 +611,11 @@ class PocketMinecraftServer{
 				$this->preparedSQL->updateAction->bindValue(":time", $time, SQLITE3_FLOAT);
 				$this->preparedSQL->updateAction->bindValue(":id", $cid, SQLITE3_INTEGER);
 				$this->preparedSQL->updateAction->execute();
-				if(!isset($this->schedule[$cid]) || !isset($this->schedule[$cid][0]) || !@is_callable($this->schedule[$cid][0])){
-					$return = false;
-				}else{
+				if(isset($this->schedule[$cid]) && is_array($this->schedule[$cid]) && isset($this->schedule[$cid][0]) && is_callable($this->schedule[$cid][0])){
 					++$actionCount;
 					$return = call_user_func($this->schedule[$cid][0], $this->schedule[$cid][1], $this->schedule[$cid][2]);
+				}else{
+					$return = false;
 				}
 
 				if($action["repeat"] == 0 or $return === false){
