@@ -19,10 +19,10 @@ class BirchFeature extends Feature
 					if($i >= 0 && $i < 128){
 						$blockID = $level->level->getBlockID($i3, $i, $i4);
 						if($blockID != 0 && $blockID != LEAVES){
-							$z2 = false;
+							return;
 						}
 					}else{
-						$z2 = false;
+						return;
 					}
 				}
 			}

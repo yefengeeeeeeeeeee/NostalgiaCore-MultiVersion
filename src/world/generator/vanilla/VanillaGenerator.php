@@ -76,7 +76,7 @@ class VanillaGenerator implements LevelGenerator
 		$this->rand->setSeed($this->level->getSeed());
 		$i1 = (int)(((int)($this->rand->nextInt() / 2)) * 2 + 1); //why php integers are so big....???????????????????????????????????????
 		$j1 = (int)(((int)($this->rand->nextInt() / 2)) * 2 + 1);
-		$this->rand->setSeed(Utils::sint32($chunkX * $i1 + $chunkZ * $j1) ^ $this->level->getSeed());
+		$this->rand->setSeed((($chunkX * $i1 + $chunkZ * $j1) & 0xffffffff) ^ $this->level->getSeed());
 		for($i2 = 0; $i2 < 10; ++$i2){
 			ClayFeature::place($this->level, $this->rand, $chunkXWorld + $this->rand->nextInt(16), $this->rand->nextInt(128), $chunkZWorld + $this->rand->nextInt(16));
 		}
@@ -98,12 +98,12 @@ class VanillaGenerator implements LevelGenerator
 		for($i8 = 0; $i8 < 8; ++$i8){
 			OreFeature::place($this->level, $this->rand, $chunkXWorld + $this->rand->nextInt(16), $this->rand->nextInt(16),  $chunkZWorld + $this->rand->nextInt(16), REDSTONE_ORE, 7);
 		}
-		for($i9 = 0; $i9 < 1; ++$i9){ //TODO loop is not neccessary
-			OreFeature::place($this->level, $this->rand, $chunkXWorld + $this->rand->nextInt(16), $this->rand->nextInt(16),  $chunkZWorld + $this->rand->nextInt(16), DIAMOND_ORE, 7);
-		}
-		for($i10 = 0; $i10 < 1; ++$i10){
-			OreFeature::place($this->level, $this->rand, $chunkXWorld + $this->rand->nextInt(16), $this->rand->nextInt(16) + $this->rand->nextInt(16),  $chunkZWorld + $this->rand->nextInt(16), LAPIS_ORE, 6);
-		}
+		//for($i9 = 0; $i9 < 1; ++$i9){ //TODO loop is not neccessary
+		OreFeature::place($this->level, $this->rand, $chunkXWorld + $this->rand->nextInt(16), $this->rand->nextInt(16),  $chunkZWorld + $this->rand->nextInt(16), DIAMOND_ORE, 7);
+		//}
+		//for($i10 = 0; $i10 < 1; ++$i10){
+		OreFeature::place($this->level, $this->rand, $chunkXWorld + $this->rand->nextInt(16), $this->rand->nextInt(16) + $this->rand->nextInt(16),  $chunkZWorld + $this->rand->nextInt(16), LAPIS_ORE, 6);
+		//}
 		//sample= (int) ((((this.treeNoise.getValue(chunkXWorld * 0.5f, chunkZWorld * 0.5f) / 8.0f) + (this.rand.nextFloat() * 4.0f)) + 4.0f) / 3.0f);
 		$sample = (int) (((($this->treeNoise->getValue($chunkXWorld * 0.5, $chunkZWorld * 0.5) / 8) + ($this->rand->nextFloat() * 4)) + 4) / 3);
 		$treesAmount = $this->rand->nextInt(10) == 0;
@@ -156,7 +156,6 @@ class VanillaGenerator implements LevelGenerator
 		$chunkz = array_fill(0, 8, EMPTY_MINI_CHUNK); //[$blockY >> 4][($blockY & 0xf) + ($blockX << 5) + ($blockZ << 9)]. y&f+x&f+z&f
 		$this->prepareHeights($chunkX, $chunkZ, $chunkz, $this->biomes, $this->biomeSource->temperatureNoises);
 		$this->buildSurfaces($chunkX, $chunkZ, $chunkz, $this->biomes);
-		//c.generateHeightMap(); my 0.1.3 core also has this for easier top block search...
 		$this->generateHeightmap($chunkX, $chunkZ, $chunkz);
 		
 		for($Y = 0; $Y < 8; ++$Y){
@@ -230,8 +229,7 @@ class VanillaGenerator implements LevelGenerator
 				$b = $biome->topBlock;
 				$b2 = $biome->fillerBlock;
 				for($blockY = 127; $blockY >= 0; --$blockY){
-					$i2 = ((($blockZ * 16) + $blockX) * 128) + $blockY;
-					if($blockY <= (0 + $this->rand->nextInt(5))){
+					if($blockY <= $this->rand->nextIntBndn(5)){
 						$chunks[$blockY >> 4][($blockY & 0xf) + ($blockZ << 5) + ($blockX << 9)] = "\x07";
 					}else{
 						$b3 = ord($chunks[$blockY >> 4][($blockY & 0xf) + ($blockZ << 5) + ($blockX << 9)]);
@@ -240,16 +238,15 @@ class VanillaGenerator implements LevelGenerator
 						}elseif($b3 == STONE){
 							if($i == -1){
 								if($nextFloat > 0){
-									if($blockY >= 64-4 && $blockY <= 64+1){
-										$b = $biome->topBlock;
-										$b2 = $biome->fillerBlock;
-										if($z2){
+									if($blockY >= 60 && $blockY <= 65){
+										if($z){
+											$b2 = $b = SAND;
+										}elseif($z2){
 											$b = 0;
 											$b2 = GRAVEL;
-										}
-										if($z){
-											$b = SAND;
-											$b2 = SAND;
+										}else{
+											$b = $biome->topBlock;
+											$b2 = $biome->fillerBlock;
 										}
 									}
 								}else{
@@ -257,20 +254,14 @@ class VanillaGenerator implements LevelGenerator
 									$b2 = STONE;
 								}
 								
-								if($blockY < 64 && $b == 0){
-									$b = STILL_WATER;
-								}
+								$b = $blockY < 64 && $b == 0 ? STILL_WATER : $b;
 								$i = $nextFloat;
-								if($blockY >= 64 - 1){
-									$chunks[$blockY >> 4][($blockY & 0xf) + ($blockZ << 5) + ($blockX << 9)] = chr($b);
-								}else{
-									$chunks[$blockY >> 4][($blockY & 0xf) + ($blockZ << 5) + ($blockX << 9)] = chr($b2);
-								}
+								$chunks[$blockY >> 4][($blockY & 0xf) + ($blockZ << 5) + ($blockX << 9)] = $blockY >= 63 ? chr($b) : chr($b2);
 							}elseif($i > 0){
 								--$i;
 								$chunks[$blockY >> 4][($blockY & 0xf) + ($blockZ << 5) + ($blockX << 9)] = chr($b2);
 								if($i == 0 && $b2 == SAND){
-									$i = $this->rand->nextInt(4);
+									$i = $this->rand->nextIntBndn(4);
 									$b2 = SANDSTONE;
 								}
 							}
@@ -288,14 +279,14 @@ class VanillaGenerator implements LevelGenerator
 		for($unkX = 0; $unkX < 4; ++$unkX){
 			for($unkZ = 0; $unkZ < 4; ++$unkZ){
 				for($unkY = 0; $unkY < 16; ++$unkY){
-					$f = $this->heights[(((($unkX + 0) * 5) + $unkZ + 0) * 17) + $unkY + 0];
-					$f2 = $this->heights[(((($unkX + 0) * 5) + $unkZ + 1) * 17) + $unkY + 0];
-					$f3 = $this->heights[(((($unkX + 1) * 5) + $unkZ + 0) * 17) + $unkY + 0];
-					$f4 = $this->heights[(((($unkX + 1) * 5) + $unkZ + 1) * 17) + $unkY + 0];
+					$f = $this->heights[(((($unkX) * 5) + $unkZ) * 17) + $unkY];
+					$f2 = $this->heights[(((($unkX) * 5) + $unkZ + 1) * 17) + $unkY];
+					$f3 = $this->heights[(((($unkX + 1) * 5) + $unkZ) * 17) + $unkY];
+					$f4 = $this->heights[(((($unkX + 1) * 5) + $unkZ + 1) * 17) + $unkY];
 					
-					$f5 = ($this->heights[(((($unkX + 0) * 5) + ($unkZ + 0)) * 17) + ($unkY + 1)] - $f) * 0.125;
-					$f6 = ($this->heights[(((($unkX + 0) * 5) + ($unkZ + 1)) * 17) + ($unkY + 1)] - $f2) * 0.125;
-					$f7 = ($this->heights[(((($unkX + 1) * 5) + ($unkZ + 0)) * 17) + ($unkY + 1)] - $f3) * 0.125;
+					$f5 = ($this->heights[(((($unkX) * 5) + ($unkZ)) * 17) + ($unkY + 1)] - $f) * 0.125;
+					$f6 = ($this->heights[(((($unkX) * 5) + ($unkZ + 1)) * 17) + ($unkY + 1)] - $f2) * 0.125;
+					$f7 = ($this->heights[(((($unkX + 1) * 5) + ($unkZ)) * 17) + ($unkY + 1)] - $f3) * 0.125;
 					$f8 = ($this->heights[(((($unkX + 1) * 5) + ($unkZ + 1)) * 17) + ($unkY + 1)] - $f4) * 0.125;
 					
 					for($unkYY = 0; $unkYY < 8; ++$unkYY){
@@ -304,28 +295,20 @@ class VanillaGenerator implements LevelGenerator
 						$f11 = ($f3 - $f) * 0.25;
 						$f12 = ($f4 - $f2) * 0.25;
 						for($unkXX = 0; $unkXX < 4; ++$unkXX){
-							//int i2 = ((unkXX + (unkX * 4)) << 11) | ((0 + (unkZ * 4)) << 7) | ((unkY * 8) + unkYY);
-							$i2 = (($unkXX + ($unkX * 4)) << 11) | ((0 + ($unkZ * 4)) << 7) | (($unkY * 8) + $unkYY);
 							$f13 = $f9;
 							$f14 = ($f10 - $f9) * 0.25;
 							for($unkZZ = 0; $unkZZ < 4; ++$unkZZ){
 								$d15 = $temperatures[((($unkX * 4) + $unkXX) * 16) + ($unkZ * 4) + $unkZZ];
-								$i3 = 0;
-								if(($unkY * 8) + $unkYY < 64){
-									if($d15 < 0.5 && (($unkY * 8) + $unkYY) >= 63){ //64-1
-										$i3 = ICE;
-									}else{
-										$i3 = STILL_WATER;
-									}
+								$i3 = $f13 > 0; //true -> STONE, false -> AIR
+								
+								if(!$i3 && ($unkY * 8) + $unkYY < 64){
+									$i3 = $d15 < 0.5 && (($unkY * 8) + $unkYY) >= 63 ? ICE : STILL_WATER;
 								}
-								if($f13 > 0) $i3 = STONE;
+								
 								$fx = ($unkXX + ($unkX * 4));
 								$fy = (($unkY * 8) + $unkYY);
 								$fz = ($unkZZ + ($unkZ * 4));
-								//if($fx == 0 && $fy == 20 && $fz == 0) console("P:".$i3);
-								$chunks[$fy >> 4][($fy & 0xf) + ($fx << 5) + ($fz << 9)] = chr($i3); // ($aY + ($aX << 5) + ($aZ << 9))
-								//$this->level->level->setBlockID(($chunkX * 16) + ($unkXX + ($unkX * 4)), (($unkY * 8) + $unkYY), ($unkZZ + ($unkZ * 4)), $i3);
-								$i2 += 128;
+								$chunks[$fy >> 4][($fy & 0xf) + ($fx << 5) + ($fz << 9)] = chr($i3);
 								$f13 += $f14;
 							}
 							$f9 += $f11;

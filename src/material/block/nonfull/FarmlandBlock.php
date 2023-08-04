@@ -40,13 +40,14 @@ class FarmlandBlock extends TransparentBlock{
 		
 		
 	}
-	
-	public static function checkWaterStatic(Level $level, $x, $y, $z){
-		for($bx = $x - 4; $bx <= $x + 4; $bx++){
-			for($by = $y; $by <= $y + 1; $by++){
-				for($bz = $z - 4; $bz <= $z + 4; $bz++){
+
+	public static function checkWaterStatic(Level $level, $x, $y, $z)
+	{
+		for ($bx = $x - 4; $bx <= $x + 4; $bx++) {
+			for ($by = $y; $by <= $y + 1; $by++) {
+				for ($bz = $z - 4; $bz <= $z + 4; $bz++) {
 					$id = $level->level->getBlockID($bx, $by, $bz);
-					if($id === 8 || $id === 9){
+					if ($id === 8 || $id === 9) {
 						return true;
 					}
 				}

@@ -23,10 +23,10 @@ class PineFeature extends Feature
 					if($l1 >= 0 && $l1 < 128){
 						$j4 = $level->level->getBlockID($l2, $l1, $k3);
 						if($j4 != 0 && $j4 != LEAVES){
-							$flag = false;
+							return;
 						}
 					}else{
-						$flag = false;
+						return;
 					}
 				}
 			}

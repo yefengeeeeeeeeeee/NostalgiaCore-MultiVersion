@@ -59,9 +59,7 @@ class BiomeSource
 		
 		for($blockX = 0; $blockX < $xSize; ++$blockX){
 			for($blockZ = 0; $blockZ < $zSize; ++$blockZ){
-				//rain =((($this->detailNoises[$index] * 1.1) + 0.5) * 0.002) + ((($this->rainfallNoises[$index] * 0.15) + 0.5) * 0.998);
 				$rain = ((($this->detailNoises[$index] * 1.1) + 0.5) * 0.002) + ((($this->rainfallNoises[$index] * 0.15) + 0.5) * 0.998);
-				//1 - ((((this.detailNoises[index] * 1.1f) + 0.5f) * 0.01f) + (((this.temperatureNoises[index] * 0.15f) + 0.7f) * 0.99f));
 				$f1 = 1 - ((((($this->detailNoises[$index]) * 1.1) + 0.5) * 0.01) + ((($this->temperatureNoises[$index] * 0.15) + 0.7) * 0.99));
 				$blockTemp = 1 - ($f1 * $f1);
 				

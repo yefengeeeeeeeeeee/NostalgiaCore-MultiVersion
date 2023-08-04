@@ -14,10 +14,10 @@ class TreeFeature extends Feature
 					if($i >= 0 && $i < 128){
 						$tileID = $level->level->getBlockID($i3, $i, $i4);
 						if($tileID != 0 && $tileID != LEAVES){
-							$z2 = false;
+							return;
 						}
 					}else{
-						$z2 = false;
+						return;
 					}
 				}
 			}

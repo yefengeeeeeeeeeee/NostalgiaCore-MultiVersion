@@ -4,7 +4,7 @@
 class Player{
 	
 	public static $smallChunks = false;
-	
+	/** @var Config */
 	public $data;
 	/** @var Entity */
 	public $entity = false;
