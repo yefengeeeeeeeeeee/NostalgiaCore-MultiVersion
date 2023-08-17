@@ -60,6 +60,15 @@ class Level{
 		$this->__destruct();
 	}
 	
+	public function isTopSolidBlocking($x, $y, $z){
+		$idmeta = $this->level->getBlock($x, $y, $z);
+		$id = $idmeta[0];
+		$meta = $idmeta[1];
+		if($id == 0) return false;
+		if(StaticBlock::getIsTransparent($id)) return false;
+		
+		return true;
+	}
 	
 	/**
 	 * @param AxisAlignedBB $aABB
