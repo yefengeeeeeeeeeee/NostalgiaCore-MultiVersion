@@ -27,6 +27,7 @@ class ConsoleAPI{
   
 		$this->cmdWhitelist("help");
 		$this->cmdWhitelist("status");
+		$this->cmdWhitelist("?");
 	}
 	
 	/**
