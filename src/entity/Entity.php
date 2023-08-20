@@ -1048,7 +1048,7 @@ class Entity extends Position
 		$angle = Utils::angle3D($pos2, $pos);
 		$this->yaw = $angle["yaw"];
 		$this->pitch = $angle["pitch"];
-		//$this->server->query("UPDATE entities SET pitch = " . $this->pitch . ", yaw = " . $this->yaw . " WHERE EID = " . $this->eid . ";");
+		$this->server->query("UPDATE entities SET pitch = " . $this->pitch . ", yaw = " . $this->yaw . " WHERE EID = " . $this->eid . ";");
 	}
 
 	public function move(Vector3 $pos, $yaw = 0, $pitch = 0)
@@ -1060,7 +1060,7 @@ class Entity extends Position
 		$this->yaw %= 360;
 		$this->pitch += $pitch;
 		$this->pitch %= 90;
-		//$this->server->query("UPDATE entities SET x = " . $this->x . ", y = " . $this->y . ", z = " . $this->z . ", pitch = " . $this->pitch . ", yaw = " . $this->yaw . " WHERE EID = " . $this->eid . ";");
+		$this->server->query("UPDATE entities SET x = " . $this->x . ", y = " . $this->y . ", z = " . $this->z . ", pitch = " . $this->pitch . ", yaw = " . $this->yaw . " WHERE EID = " . $this->eid . ";");
 		$this->updateAABB();
 	}
 
@@ -1074,7 +1074,7 @@ class Entity extends Position
 
 	public function updatePosition()
 	{
-		//$this->server->query("UPDATE entities SET level = '" . $this->level->getName() . "', x = " . $this->x . ", y = " . $this->y . ", z = " . $this->z . ", pitch = " . $this->pitch . ", yaw = " . $this->yaw . " WHERE EID = " . $this->eid . ";");
+		$this->server->query("UPDATE entities SET level = '" . $this->level->getName() . "', x = " . $this->x . ", y = " . $this->y . ", z = " . $this->z . ", pitch = " . $this->pitch . ", yaw = " . $this->yaw . " WHERE EID = " . $this->eid . ";");
 		$this->sendMoveUpdate();
 		// $this->sendMotion();
 		$this->updateAABB();
@@ -1372,7 +1372,7 @@ class Entity extends Position
 			"cause" => $cause
 		)) !== false or $force === true){
 			$this->health = min(127, max(- 127, $health));
-			//$this->server->query("UPDATE entities SET health = " . $this->health . " WHERE EID = " . $this->eid . ";");
+			$this->server->query("UPDATE entities SET health = " . $this->health . " WHERE EID = " . $this->eid . ";");
 			if($harm === true){
 				$pk = new EntityEventPacket;
 				$pk->eid = $this->eid;
