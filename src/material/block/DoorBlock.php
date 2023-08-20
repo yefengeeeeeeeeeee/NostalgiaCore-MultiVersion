@@ -10,7 +10,7 @@ class DoorBlock extends TransparentBlock{
 		parent::__construct($id, $meta, $name);
 		$this->isSolid = false;
 	}
-
+	
 	/**
 	 * @param int $type
 	 *

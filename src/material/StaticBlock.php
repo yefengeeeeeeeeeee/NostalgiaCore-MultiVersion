@@ -40,16 +40,16 @@ class StaticBlock
 	}
 	
 	public static function getBlock($id){
-		return nullsafe(Block::$class[$id], Block::$class[0]);
+		return Block::$class[$id] ?? Block::$class[0];
 	}
 	
 	public static function getHardness($id){
-		return nullsafe(self::$hardness[$id], StaticBlock::DEFAULT_HARDNESS);
+		return self::$hardness[$id] ??  StaticBlock::DEFAULT_HARDNESS;
 	}
 	
 	public static function getBoundingBoxForBlockCoords($id, $x, $y, $z){
 		/**@var AxisAlignedBB $bb*/
-		$bb = nullsafe(self::$boundingBoxes[$id], false);
+		$bb = self::$boundingBoxes[$id] ?? false;
 		if($bb === false){
 			return clone self::$NULL_BOUNDS;
 		}
@@ -59,39 +59,39 @@ class StaticBlock
 	
 	
 	public static function getSlipperiness($id){
-		return nullsafe(self::$slipperiness[$id], StaticBlock::DEFAULT_SLIPPERINESS);
+		return self::$slipperiness[$id] ?? StaticBlock::DEFAULT_SLIPPERINESS;
 	}
 	
 	public static function getIsSolid($id){
-		return nullsafe(self::$isSolid[$id], false);
+		return self::$isSolid[$id] ?? false;
 	}
 	
 	public static function getIsTransparent($id){
-		return nullsafe(self::$isTransparent[$id], false);
+		return self::$isTransparent[$id] ?? false;
 	}
 	
 	public static function getIsFlowable($id){
-		return nullsafe(self::$isFlowable[$id], false);
+		return self::$isFlowable[$id] ?? false;
 	}
 	
 	public static function getIsReplaceable($id){
-		return nullsafe(self::$isReplaceable[$id], false);
+		return self::$isReplaceable[$id] ?? false;
 	}
 	
 	public static function getIsPlaceable($id){
-		return nullsafe(self::$isPlaceable[$id], false);
+		return self::$isPlaceable[$id] ?? false;
 	}
 	
 	public static function getHasPhysics($id){
-		return nullsafe(self::$hasPhysics[$id], false);
+		return self::$hasPhysics[$id] ??  false;
 	}
 	
 	public static function getIsLiquid($id){
-		return nullsafe(self::$isLiquid[$id], false);
+		return self::$isLiquid[$id] ?? false;
 	}
 	
 	public static function getIsFullBlock($id){
-		return nullsafe(self::$isFullBlock[$id], false);
+		return self::$isFullBlock[$id] ?? false;
 	}
 }
 

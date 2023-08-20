@@ -182,13 +182,7 @@ class AxisAlignedBB{
 	}
 	
 	public function intersectsWith(AxisAlignedBB $bb){
-		if($bb->maxX > $this->minX and $bb->minX < $this->maxX){
-			if($bb->maxY > $this->minY and $bb->minY < $this->maxY){
-				return $bb->maxZ > $this->minZ and $bb->minZ < $this->maxZ;
-			}
-		}
-
-		return false;
+		return $bb->maxX > $this->minX and $bb->minX < $this->maxX && $bb->maxZ > $this->minZ and $bb->minZ < $this->maxZ && $bb->maxY > $this->minY and $bb->minY < $this->maxY;
 	}
 	
 	public function isXYZInside($x, $y, $z){
