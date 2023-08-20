@@ -29,7 +29,7 @@ class LitPumpkinBlock extends SolidBlock implements LightingBlock{
 	}
 	
 	public function getDrops(Item $item, Player $player){
-		return [JACK_O_LANTERN, 0];
+		return [[JACK_O_LANTERN, 0]];
 	}
 	
 	
