@@ -49,7 +49,7 @@ class EntityAI
 	}
 	
 	public function isStarted($id){
-		$task = @$this->getTask($id);
+		$task = $this->getTask($id);
 		return $task instanceof TaskBase && $task->isStarted;
 	}
 
