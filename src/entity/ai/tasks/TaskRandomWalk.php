@@ -23,7 +23,7 @@ class TaskRandomWalk extends TaskBase
 	{
 		if(($ai->entity instanceof Creeper && $ai->entity->isIgnited()) || $ai->isStarted("TaskTempt")) {
 			$this->reset();
-			return false; //TODO Better way: block movement 
+			return false; //TODO Better way: block movement
 		}
 		--$this->selfCounter;
 		$ai->mobController->moveNonInstant($this->x, 0, $this->z);

@@ -4,6 +4,8 @@ class ItemEntity extends Entity{
 	const TYPE = "itemSpecial";
 	const CLASS_TYPE = ENTITY_ITEM;
 	
+	public $meta, $stack;
+	
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = array())
 	{
 		parent::__construct($level, $eid, $class, $type, $data);

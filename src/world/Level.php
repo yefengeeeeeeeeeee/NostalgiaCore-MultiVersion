@@ -14,6 +14,8 @@ class Level{
 	public $tiles, $blockUpdates, $nextSave, $players = [], $level, $mobSpawner, $totalMobsAmount = 0;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
 	
+	public $randInt1, $randInt2;
+	
 	public static $randomUpdateBlocks = [
 		FIRE => true,
 		FARMLAND => true,
