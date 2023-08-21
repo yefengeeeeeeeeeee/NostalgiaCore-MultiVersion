@@ -39,7 +39,7 @@ class Pig extends Animal implements Rideable{
 				$this->linkEntity($e, SetEntityLinkPacket::TYPE_RIDE);
 				return true;
 			}
-			if($e->isRiding && $this->linkedEntity->eid = $e->eid){
+			if($e->isRiding && $this->linkedEntity instanceof Entity && $this->linkedEntity->eid === $e->eid){
 				$this->linkEntity($e, SetEntityLinkPacket::TYPE_REMOVE);
 				$e->isRiding = false;
 				$this->linkedEntity = 0;
