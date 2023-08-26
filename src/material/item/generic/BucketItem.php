@@ -28,7 +28,8 @@ class BucketItem extends Item{
 			if($block->getID() === AIR || ( $block instanceof WaterBlock && ($block->getMetadata() & 0x07) != 0x00 ) ){
 				$water = new WaterBlock();
 				$level->setBlock($block, $water, true, false, true);
-				$water->place($this, $player, $block, $target, $face, $fx, $fy, $fz);
+				ServerAPI::request()->api->block->scheduleBlockUpdate($block, 5, BLOCK_UPDATE_NORMAL);
+				//$water->place($this, $player, $block, $target, $face, $fx, $fy, $fz);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = 0;
 				}
@@ -38,7 +39,8 @@ class BucketItem extends Item{
 			if($block->getID() === AIR){
 				$lava = new LavaBlock();
 				$level->setBlock($block, $lava, true, false, true);
-				$lava->place(clone $this, $player, $block, $target, $face, $fx, $fy, $fz);
+				ServerAPI::request()->api->block->scheduleBlockUpdate($block, 40, BLOCK_UPDATE_NORMAL);
+				//$lava->place(clone $this, $player, $block, $target, $face, $fx, $fy, $fz);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = 0;
 				}
