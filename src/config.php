@@ -48,11 +48,11 @@ set_include_path(get_include_path() . PATH_SEPARATOR . FILE_PATH);
 ini_set("memory_limit", "256M"); //Default
 define("LOG", true);
 define("START_TIME", microtime(true));
-define("MAJOR_VERSION", "2.0.0dev");
-define("CODENAME", "Breadfence"); //i'm not very creative - kotyaralih
-define("CURRENT_MINECRAFT_VERSION", "v0.9.5 alpha");
+define("MAJOR_VERSION", "3.0.0dev");
+define("CODENAME", "Pumpkin Pie"); //i'm not very creative - kotyaralih
+define("CURRENT_MINECRAFT_VERSION", "v0.10.5 alpha");
 define("CURRENT_API_VERSION", '13.1');
-define("CURRENT_PHP_VERSION", "5.5");
+define("CURRENT_PHP_VERSION", "8.0");
 $gitsha1 = false;
 if(file_exists(FILE_PATH . ".git/refs/heads/master")){ //Found Git information!
 	define("GIT_COMMIT", strtolower(trim(file_get_contents(FILE_PATH . ".git/refs/heads/master"))));

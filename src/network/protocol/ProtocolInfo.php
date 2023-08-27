@@ -1,7 +1,7 @@
 <?php
 
 abstract class ProtocolInfo{
-	const CURRENT_PROTOCOL = 18;
+	const CURRENT_PROTOCOL = 20;
 	
 	const PING_PACKET = 0x00;
 	
