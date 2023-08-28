@@ -256,7 +256,6 @@ class Player{
 		if($this->connected === false){
 			return false;
 		}
-
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY){
 			return;
 		}

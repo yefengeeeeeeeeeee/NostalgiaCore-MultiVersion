@@ -736,7 +736,7 @@ class Entity extends Position
 		if($this->lastHeadYaw != $this->headYaw){
 			$this->sendHeadYaw();
 		}
-		if($this->class !== ENTITY_PLAYER && $update){
+		if($this->class === ENTITY_PLAYER || $update){
 			$this->updateMovement();
 		}
 		
@@ -770,14 +770,13 @@ class Entity extends Position
 						$pk = new MovePlayerPacket();
 						$pk->eid = $this->eid;
 						$pk->x = $this->x;
-						$pk->y = $this->y + $this->getEyeHeight();
+						$pk->y = $this->y;
 						$pk->z = $this->z;
 						$pk->yaw = $this->yaw;
 						$pk->pitch = $this->pitch;
 						$pk->bodyYaw = $this->yaw;
 						$this->server->api->player->broadcastPacket($players, $pk);
 					} else{
-						
 						$pk = new MoveEntityPacket;
 						$pk->entities = [[$this->eid, $this->x, $this->y, $this->z, $this->yaw, $this->pitch]];
 						$this->server->api->player->broadcastPacket($players, $pk);
