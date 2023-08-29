@@ -538,9 +538,9 @@ class Entity extends Position
 					
 					$ywMin = floor($aABB->minY + 0.4);
 					$ywMax = ceil($aABB->maxY - 0.4);
-					for($x = $x0; $x < $x1; ++$x){
-						for($y = $y0; $y < $y1; ++$y){
-							for($z = $z0; $z < $z1; ++$z){
+					for($x = $x0; $x <= $x1; ++$x){
+						for($y = $y0; $y <= $y1; ++$y){
+							for($z = $z0; $z <= $z1; ++$z){
 								$b = $this->level->level->getBlockID($x, $y, $z);
 								if(($b === WATER || $b === STILL_WATER)){
 									$water = $y == ($y1 - 1);
