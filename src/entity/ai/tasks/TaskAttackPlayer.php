@@ -16,7 +16,7 @@ class TaskAttackPlayer extends TaskTempt
 			return;
 		}
 		
-		$ai->mobController->moveTo($this->target->x, floor($ai->entity->y), $this->target->z);
+		$ai->mobController->moveTo($this->target->x - 0.5, floor($ai->entity->y), $this->target->z - 0.5);
 		$ai->mobController->lookOn($this->target);
 		$mult = $ai->entity instanceof Spider ? 1 : 2;
 		$radius = ($ai->entity->width * $mult)*($ai->entity->width * $mult); 
