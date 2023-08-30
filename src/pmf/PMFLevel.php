@@ -193,7 +193,7 @@ class PMFLevel extends PMF{
 		unset($this->chunks[$index], $this->chunkChange[$index]);
 		return true;
 	}
-
+	
 	public function isChunkLoaded($X, $Z){
 		$index = $this->getIndex($X, $Z);
 		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){

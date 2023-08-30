@@ -2,6 +2,12 @@
 
 class MobController
 {
+	public static $ADVANCED = false;
+	public static $DANGEROUS_BLOCKS = [
+		LAVA => true,
+		STILL_LAVA => true,
+		FIRE => true,
+	];
 	/**
 	 * @var Entity
 	 */
@@ -15,7 +21,9 @@ class MobController
 	public function __construct($e){
 		$this->entity = $e;
 	}
-	
+	public function isDangerous($id){
+		return isset(self::$DANGEROUS_BLOCKS[$id]);
+	}
 	public function isJumping(){
 		return $this->jumping;
 	}
@@ -34,21 +42,48 @@ class MobController
 		$oz = ($z > 0 ? 1 : ($z < 0 ? -1 : 0));
 		$xf = $this->entity->x + ($this->entity->getSpeedModifer() * $ox * $this->entity->getSpeed());
 		$zf = $this->entity->z + ($this->entity->getSpeedModifer() * $oz * $this->entity->getSpeed());
-		if($this->entity->onGround){
-			$oy = 
-					StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), floor($this->entity->y), ceil($zf))) && 
-					!StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), floor($this->entity->y) + 1, ceil($zf)))
-				||
-					StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), floor($this->entity->y), $zf - ($oz < 0))) &&
-					!StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), floor($this->entity->y) + 1, $zf - ($oz < 0)))
-				||
-					StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), floor($this->entity->y), $zf - ($oz < 0))) &&
-					!StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), floor($this->entity->y) + 1, $zf - ($oz < 0)))
-				||
-					StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), floor($this->entity->y), ceil($zf))) &&
-					!StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), floor($this->entity->y) + 1, ceil($zf)))
-			;
-			
+		$a = $b = $c = $d = 0;
+		$oy = $this->entity->onGround && (
+				StaticBlock::getIsSolid(($a = $this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y), ceil($zf)))) && 
+				!StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y) + 1, ceil($zf)))
+			||
+				StaticBlock::getIsSolid(($b = $this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y), $zf - ($oz < 0)))) &&
+				!StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y) + 1, $zf - ($oz < 0)))
+			||
+				StaticBlock::getIsSolid(($c = $this->entity->level->level->getBlockID($xf - ($ox < 0), (int)($this->entity->y), $zf - ($oz < 0)))) &&
+				!StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), (int)($this->entity->y) + 1, $zf - ($oz < 0)))
+			||
+				StaticBlock::getIsSolid(($d = $this->entity->level->level->getBlockID($xf - ($ox < 0), (int)($this->entity->y), ceil($zf)))) &&
+				!StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), (int)($this->entity->y) + 1, ceil($zf)))
+		);
+		
+		while(self::$ADVANCED){
+			if($this->isDangerous($a) || $this->isDangerous($b) || $this->isDangerous($c) || $this->isDangerous($d)){
+				return false;
+			}
+			$id1 = $this->entity->level->level->getBlockID($xf, $this->entity->y + $oy - 1, $zf);
+			if($this->isDangerous($id1)) return false;
+			if(!StaticBlock::getIsSolid($id1)){
+				$id2 = $this->entity->level->level->getBlockID($xf, $this->entity->y - 2, $zf);
+				$id3 = $this->entity->level->level->getBlockID($xf, $this->entity->y - 3, $zf);
+				$id4 = $this->entity->level->level->getBlockID($xf, $this->entity->y - 4, $zf);
+				$s2 = StaticBlock::getIsSolid($id2);
+				$s3 = StaticBlock::getIsSolid($id3);
+				$s4 = StaticBlock::getIsSolid($id4);
+				if($this->isDangerous($id2)) return false;
+				if($s2) break; //i cant goto label which wasnt declared before
+				
+				if($this->isDangerous($id3)) return false;
+				if($s3) break;
+				
+				if($this->isDangerous($id4)) return false;
+				if($s4) break;
+				
+				if(!($this->entity instanceof Chicken)){
+					return false;
+				}
+			}
+			break;
 		}
 		$this->faceEntity($ox, $oy, $oz);
 		if($this->entity->knockbackTime <= 0){

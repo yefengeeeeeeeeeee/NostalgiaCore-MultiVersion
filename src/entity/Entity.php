@@ -446,7 +446,7 @@ class Entity extends Position
 							break;
 						case LAVA: // Lava damage
 						case STILL_LAVA:
-							if ($this->inBlockNonVector($x, $y, $z)) {
+							if ((!$this->isPlayer() && StaticBlock::getBoundingBoxForBlockCoords($id, $x, $y, $z)->intersectsWith($this->boundingBox)) || ($this->isPlayer() && $this->inBlockNonVector($x, $y, $z))) {
 								$this->harm(5, "lava");
 								$this->fire = 300;
 								$this->updateMetadata();
@@ -454,7 +454,7 @@ class Entity extends Position
 							}
 							break;
 						case FIRE: // Fire block damage
-							if ($this->inBlockNonVector($x, $y, $z)) {
+							if ((!$this->isPlayer() && StaticBlock::getBoundingBoxForBlockCoords($id, $x, $y, $z)->intersectsWith($this->boundingBox)) || ($this->isPlayer() && $this->inBlockNonVector($x, $y, $z))) {
 								$this->harm(1, "fire");
 								$this->fire = 300;
 								$this->updateMetadata();
