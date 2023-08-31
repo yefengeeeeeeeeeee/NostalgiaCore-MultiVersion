@@ -174,9 +174,6 @@ class PluginAPI extends stdClass{
 				}
 			}
 		}
-		if($pharCnt > 0){
-			console("[WARNING] PHAR Plugin format is experemental and might cause bugs.");
-		}
 	}
 
 	public function load($file){

@@ -69,7 +69,7 @@ class PlayerAPI{
 							}
 							
 						}else{
-							$message = "was killed by {$e->name}";
+							$message = " was killed by {$e->name}";
 						}
 					}
 				}else{
