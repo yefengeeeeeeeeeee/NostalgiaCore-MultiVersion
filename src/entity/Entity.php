@@ -333,7 +333,7 @@ class Entity extends Position
 
 	public function environmentUpdate()
 	{
-		$hasUpdate = Entity::$updateOnTick ? $this->class === ENTITY_MOB : false; // force true for mobs
+		$hasUpdate = $this->class === ENTITY_MOB; // force true for mobs
 		$time = microtime(true);
 		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true and $this->player->blocked !== true && ! $this->dead){
 			foreach($this->server->api->entity->getRadius($this, 2, ENTITY_ITEM) as $item){ //TODO vanilla method of searching/radius
@@ -429,7 +429,7 @@ class Entity extends Position
 					switch ($id) {
 						case WATER:
 						case STILL_WATER: // Drowing
-							if ($this->fire > 0 and $this->inBlockNonVector($x, $y, $z)) {
+							if ($this->fire > 0 and $this->inBlock(new Vector3($x, $y, $z))) {
 								$this->fire = 0;
 								$this->updateMetadata();
 							}
@@ -446,7 +446,7 @@ class Entity extends Position
 							break;
 						case LAVA: // Lava damage
 						case STILL_LAVA:
-							if ((!$this->isPlayer() && StaticBlock::getBoundingBoxForBlockCoords($id, $x, $y, $z)->intersectsWith($this->boundingBox)) || ($this->isPlayer() && $this->inBlockNonVector($x, $y, $z))) {
+							if ($this->inBlock(new Vector3($x, $y, $z))) {
 								$this->harm(5, "lava");
 								$this->fire = 300;
 								$this->updateMetadata();
@@ -454,7 +454,7 @@ class Entity extends Position
 							}
 							break;
 						case FIRE: // Fire block damage
-							if ((!$this->isPlayer() && StaticBlock::getBoundingBoxForBlockCoords($id, $x, $y, $z)->intersectsWith($this->boundingBox)) || ($this->isPlayer() && $this->inBlockNonVector($x, $y, $z))) {
+							if ($this->inBlock(new Vector3($x, $y, $z))) {
 								$this->harm(1, "fire");
 								$this->fire = 300;
 								$this->updateMetadata();
@@ -468,7 +468,7 @@ class Entity extends Position
 							}
 							break;
 						default:
-							if($this->inBlockNonVector($x, $y, $z, 0.7) && $y == $endY and !StaticBlock::getIsTransparent($id) && ($this->class === ENTITY_MOB || $this->class === ENTITY_PLAYER)){
+							if($this->inBlock(new Vector3($x, $y, $z), 0.7) && $y == $endY and !StaticBlock::getIsTransparent($id) && ($this->class === ENTITY_MOB || $this->class === ENTITY_PLAYER)){
 								
 							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
 								$this->air = 200;

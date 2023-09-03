@@ -12,10 +12,8 @@ abstract class RailBaseBlock extends FlowableBlock //TODO move some methods here
 		if($down->getID() !== AIR and $down instanceof SolidBlock){
 			
 			$this->level->setBlock($block, $this, true, false, true);
-			if(RailBlock::$shouldconnectrails){
-				$logic = new RailLogic($this);
-				$logic->place(false, true);
-			}
+			$logic = new RailLogic($this);
+			$logic->place(false, true);
 			return true;
 		}
 		return false;

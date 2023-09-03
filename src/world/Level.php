@@ -356,11 +356,11 @@ class Level{
 			if($e->class === ENTITY_MOB && !$e->isPlayer()){
 				++$this->totalMobsAmount;
 			}
-			if($e->needsUpdate){
+			if($e->isPlayer() || $e->needsUpdate){
 				$e->update();
 			}
 		}
-		if(Entity::$updateOnTick && $server->ticks % 40 === 0){ //40 ticks delay
+		if($server->ticks % 40 === 0){ //40 ticks delay
 			$this->mobSpawner->handle();
 		}
 	}

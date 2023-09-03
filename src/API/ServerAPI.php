@@ -137,10 +137,12 @@ class ServerAPI{
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
 			"auto-save" => true,
+			"enable-mob-ai" => true,
 		]);
 
 		$this->parseProperties();
 		MobSpawner::$MOB_LIMIT = $this->getProperty("mobs-amount", 50);
+		Entity::$allowedAI = $this->getProperty("enable-mob-ai", true);
 		//Load advanced properties
 		define("DEBUG", $this->getProperty("debug", 1));
 		define("ADVANCED_CACHE", $this->getProperty("enable-advanced-cache", false));

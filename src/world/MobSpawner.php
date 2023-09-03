@@ -23,11 +23,11 @@ class MobSpawner{
 
 	public function spawnMobs(){
 		$phase = $this->server->api->time->getPhase($this->level);
-		if(self::$spawnAnimals && $phase == "day"){ //Animal
+		if(self::$spawnAnimals && ($phase == "day" || $phase == "sunrise")){ //Animal
 			$type = mt_rand(10, 13);
 			$baby = false; //TODO baby
 			$grassOnly = true;
-		}elseif(self::$spawnMobs && $phase == "night"){ //Monster, true night
+		}elseif(self::$spawnMobs && ($phase == "night" || $phase == "sunset")){ //Monster, true night
 			$type = mt_rand(32, 35);
 			$grassOnly = false;
 			$baby = 2;

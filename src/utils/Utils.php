@@ -753,7 +753,7 @@ class Utils{
 	public static function readLong($x, $signed = true){
 		$value = "0";
 		if($signed === true){
-			$negative = ((ord($x[0]) & 0x80) === 0x80) ? true : false;
+			$negative = ((ord($x[0]) & 0x80) === 0x80);
 			if($negative){
 				$x = ~$x;
 			}
@@ -763,9 +763,9 @@ class Utils{
 
 		for($i = 0; $i < 8; $i += 4){
 			$value = bcmul($value, "4294967296", 0); //4294967296 == 2^32
-			$value = bcadd($value, 0x1000000 * ord(@$x[$i]) + ((ord(@$x[$i + 1]) << 16) | (ord(@$x[$i + 2]) << 8) | ord(@$x[$i + 3])), 0);
+			$value = bcadd($value, 0x1000000 * ord($x[$i] ?? 0) + ((ord($x[$i + 1] ?? 0) << 16) | (ord($x[$i + 2] ?? 0) << 8) | ord($x[$i + 3] ?? 0)), 0);
 		}
-		return ($negative === true ? "-" . $value : $value);
+		return ($negative ? "-$value" : $value);
 	}
 
 	public static function writeLLong($value){

@@ -77,11 +77,8 @@ class PocketMinecraftServer{
 		console("[INFO] Loading extra.properties...");
 		$this->extraprops = new Config(DATA_PATH . "extra.properties", CONFIG_PROPERTIES, [
 			"version" => "5",
-			"experemental-mob-features" => true,
-			"enable-mob-ai" => false,
 			"enable-nether-reactor" => true,
 			"enable-explosions" => true,
-			"enable-rail-connection" => true,
 			"save-player-data" => true,
 			"save-console-data" => true,
 			"query-plugins" => false,
@@ -91,20 +88,15 @@ class PocketMinecraftServer{
 			"discord-bot-name" => "NostalgiaCore Logger",
 			"despawn-mobs" => true, 
 			"mob-despawn-ticks" => 18000,
-			"16x16x16_chunk_sending" => false
-			
+			"16x16x16_chunk_sending" => false,
+			"experimental-mob-ai" => false,			
 		]);
 		Player::$smallChunks = $this->extraprops->get("16x16x16_chunk_sending");
 		Living::$despawnMobs = $this->extraprops->get("despawn-mobs");
 		Living::$despawnTimer = $this->extraprops->get("mob-despawn-ticks");
-		Entity::$allowedAI = $this->extraprops->get("enable-mob-ai");
-		Entity::$updateOnTick = $this->extraprops->get("experemental-mob-features");
 		PocketMinecraftServer::$SAVE_PLAYER_DATA = $this->extraprops->get("save-player-data");
-		if(Entity::$updateOnTick){
-			console("[WARNING] Experemental mob features are enabled. Unpredictable behavior.");
-		}
+		MobController::$ADVANCED = $this->extraprops->get("experimental-mob-ai");
 		Explosion::$enableExplosions = $this->extraprops->get("enable-explosions");
-		RailBlock::$shouldconnectrails = $this->extraprops->get("enable-rail-connection"); //Rail connection in config
 		NetherReactorBlock::$enableReactor = $this->extraprops->get("enable-nether-reactor");
 		if($this->extraprops->get("discord-msg") == true){
 			if($this->extraprops->get("discord-webhook-url") !== "none"){
@@ -223,7 +215,6 @@ class PocketMinecraftServer{
 					$t->stop = true;
 					$t->notify();
 				}, $this->asyncThread);
-				//@$this->asyncThread->stop = true;
 			}
 		}
 	}

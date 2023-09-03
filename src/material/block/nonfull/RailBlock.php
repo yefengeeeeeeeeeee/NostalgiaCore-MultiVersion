@@ -8,8 +8,6 @@ class RailBlock extends RailBaseBlock{
 		$this->isSolid = false;
 	}
 	
-	public static $shouldconnectrails = true;
-	
 	public function updateState(){
 		//$logic = (new RailLogic($this));
 		//if($logic->countPotentialConnections() == 3){

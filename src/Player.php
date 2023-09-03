@@ -1482,7 +1482,7 @@ class Player{
 						$this->server->api->entity->spawnAll($this);
 						$this->server->api->entity->spawnToAll($this->entity);
 
-						$this->server->schedule(5, [$this->entity, "update"], [], true);
+						//$this->server->schedule(5, [$this->entity, "update"], [], true);
 						$this->server->schedule(2, [$this->entity, "updateMovement"], [], true);
 						$this->sendArmor();
 						$array = explode("@n", (string)$this->server->motd);
