@@ -26,6 +26,7 @@ class LitPumpkinBlock extends SolidBlock implements LightingBlock{
 			$this->level->setBlock($block, $this, true, false, true);
 			return true;
 		}
+		return false;
 	}
 	
 	public function getDrops(Item $item, Player $player){
