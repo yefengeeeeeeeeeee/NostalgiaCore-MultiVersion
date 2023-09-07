@@ -34,7 +34,7 @@ class LavaBlock extends LiquidBlock implements LightingBlock{
 		for($side = 0; $side <= 5; ++$side){
 			$b = $this->getSide($side);
 			if($b instanceof WaterBlock){
-				$level = $this->meta & 0x06;
+				$level = $this->meta & 0x07;
 				if($level == 0x00){
 					$this->level->setBlock($b, new ObsidianBlock(), false, false, true);
 				}else{
@@ -66,9 +66,9 @@ class LavaBlock extends LiquidBlock implements LightingBlock{
 			return false;
 		}
 		
-		if($this->checkWater()){
+		/*if($this->checkWater()){
 			return;
-		}
+		}*/
 		
 		$falling = $this->meta >> 3;
 		$down = $this->getSide(0);
