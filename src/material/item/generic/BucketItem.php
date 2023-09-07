@@ -25,7 +25,7 @@ class BucketItem extends Item{
 			}
 		}elseif($this->meta === WATER){
 			//Support Make Non-Support Water to Support Water
-			if($block->getID() === AIR || ( $block instanceof WaterBlock && ($block->getMetadata() & 0x07) != 0x00 ) ){
+			if($block->getID() === AIR || ( $block instanceof WaterBlock && ($block->getMetadata() & 0x07) != 0x00 ) || ($block instanceof LavaBlock)){
 				$water = new WaterBlock();
 				$level->setBlock($block, $water, true, false, true);
 				ServerAPI::request()->api->block->scheduleBlockUpdate($block, 5, BLOCK_UPDATE_NORMAL);
