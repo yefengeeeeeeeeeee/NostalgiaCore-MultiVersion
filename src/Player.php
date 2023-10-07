@@ -294,6 +294,7 @@ class Player{
 		$sendtime = microtime(true);
 
 		$size = $this->MTU - 34;
+		if($size <= 0) return false;
 		$buffer = str_split($packet->buffer, $size);
 		$bigCnt = $this->bigCnt;
 		$this->bigCnt = ($this->bigCnt + 1) % 0x10000;
