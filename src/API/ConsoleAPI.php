@@ -245,10 +245,9 @@ class ConsoleAPI{
 				}
 				$cmds = [];
 				foreach($this->help as $c => $h){
-					if($this->server->api->dhandle("console.command." . $c, ["cmd" => $c, "parameters" => [], "issuer" => $issuer, "alias" => false]) === false or $this->server->api->dhandle("console.command", ["cmd" => $c, "parameters" => [], "issuer" => $issuer, "alias" => false]) === false){
-						continue;
+					if(isset($this->server->api->ban->cmdWhitelist[$c]) || !($issuer instanceof Player) || $this->server->api->ban->isOp($issuer)){
+						$cmds[$c] = $h;
 					}
-					$cmds[$c] = $h;
 				}
 
 				$max = ceil(count($cmds) / 5);
