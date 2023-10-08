@@ -205,6 +205,21 @@ class Level{
 		
 	}
 	
+	public function checkSleep(){ //TODO events?
+		if(count($this->players) == 0) return false;
+		if($this->server->api->time->getPhase($this->level)  === "night"){ //TODO vanilla
+			foreach($this->players as $p){
+				if($p->isSleeping == false || $p->sleepingTime < 100){
+					return false;
+				}
+			}
+			$this->server->api->time->set("day", $this->level);
+		}
+		foreach($this->players as $p){
+			$p->stopSleep();
+		}
+	}
+	
 	public function checkThings(){
 		if(!isset($this->level)){
 			return false;
@@ -360,6 +375,9 @@ class Level{
 				$e->update();
 			}
 		}
+		
+		$this->checkSleep();
+		
 		if($server->ticks % 40 === 0){ //40 ticks delay
 			$this->mobSpawner->handle();
 		}

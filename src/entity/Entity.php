@@ -188,6 +188,7 @@ class Entity extends Position
 		$this->speedY += $vY;
 		$this->speedZ += $vZ;
 	}
+	
 	public function isMovingHorizontally()
 	{
 		return ($this->speedX > 0.01 || $this->speedX < - 0.01) || ($this->speedZ > 0.01 || $this->speedZ < - 0.01);
@@ -703,10 +704,13 @@ class Entity extends Position
 			$this->updateMovement();
 		}
 		
+		if($this->isPlayer()){
+			$this->player->entityTick();
+		}
+		
 		$this->needsUpdate = $hasUpdate;
 		$this->lastUpdate = $now;
 	}
-	
 	public function isOnLadder(){
 		$x = (int)$this->x;
 		$y = (int)$this->boundingBox->minY;
