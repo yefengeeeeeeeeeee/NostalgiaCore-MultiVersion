@@ -258,7 +258,11 @@ class PlayerAPI{
 				$level = $issuer->entity->level->getName();
 				$compass = [0 => "X+", 1 => "Z+", 2 => "X-", 3 => "Z-", null => "null"];
 				$direction = $compass[$issuer->entity->getDirection()];
-				return "Your coordinates: X: $x, Y: $y, Z: $z, world: $level.\nDirection: $direction";
+				
+				$xChunk = $x >> 4;
+				$zChunk = $z >> 4;
+				
+				return "Your coordinates: X: $x ($xChunk), Y: $y, Z: $z ($zChunk), world: $level.\nDirection: $direction";
 		}
 		return $output;
 	}
