@@ -1504,11 +1504,10 @@ class Player{
 				}
 				break;
 			case ProtocolInfo::MOVE_PLAYER_PACKET:
-				
 				if($this->spawned === false){
 					break;
 				}
-				
+				if($this->isSleeping) break;
 				if(($this->entity instanceof Entity) and $packet->messageIndex > $this->lastMovement){
 					$this->lastMovement = $packet->messageIndex;
 					$newPos = new Vector3($packet->x, $packet->y, $packet->z);
