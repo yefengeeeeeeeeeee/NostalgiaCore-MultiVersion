@@ -2,12 +2,12 @@
 
 class SignPostBlock extends TransparentBlock{
 	
-	private $faces = array(
+	public static $faces = [
 		2 => 2,
 		3 => 3,
 		4 => 4,
 		5 => 5,
-	);
+	];
 	
 	public function __construct($meta = 0){
 		parent::__construct(SIGN_POST, $meta, "Sign Post");
@@ -18,12 +18,12 @@ class SignPostBlock extends TransparentBlock{
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isSolid && $face !== 0){
-			if(!isset($this->faces[$face])){
+			if(!isset(self::$faces[$face])){
 				$this->meta = floor((($player->entity->yaw + 180) * 16 / 360) + 0.5) & 0x0F;
 				$this->level->setBlock($block, BlockAPI::get(SIGN_POST, $this->meta), true, false, true);
 				return true;
 			}else{
-				$this->meta = $this->faces[$face];
+				$this->meta = self::$faces[$face];
 				$this->level->setBlock($block, BlockAPI::get(WALL_SIGN, $this->meta, true, false, true));
 				return true;
 			}

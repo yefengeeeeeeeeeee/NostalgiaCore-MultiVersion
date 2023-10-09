@@ -129,13 +129,13 @@ class Item{
 		SHEARS => "ShearsItem",
 		
 	);
-	protected $block;
-	protected $id;
-	protected $meta;
+	public $block;
+	public $id;
+	public $meta;
 	public $count;
-	protected $maxStackSize = 64;
-	protected $durability = 0;
-	protected $name;
+	public $maxStackSize = 64;
+	public $durability = 0;
+	public $name;
 	public $isActivable = false;
 	
 	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown"){

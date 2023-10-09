@@ -913,7 +913,7 @@ class Entity extends Position
 			]
 		];
 		$d[16]["value"] = $this->data["State"];
-		if($this->class === ENTITY_PLAYER){
+		if($this->isPlayer()){
 			if($this->player->isSleeping !== false){
 				$d[16]["value"] = 2;
 				$d[17]["value"] = [

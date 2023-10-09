@@ -1,6 +1,14 @@
 <?php
 
 class LadderBlock extends TransparentBlock{
+	
+	public static $faces = [
+		3 => 2,
+		2 => 3,
+		5 => 4,
+		4 => 5,
+	];
+	
 	public function __construct($meta = 0){
 		parent::__construct(LADDER, $meta, "Ladder");
 		$this->isSolid = false;
@@ -23,13 +31,7 @@ class LadderBlock extends TransparentBlock{
 		
 		if($type === BLOCK_UPDATE_NORMAL){
 			$side = $this->getMetadata();
-			$faces = array( //magical tranformation
-					3 => 2,
-					2 => 3,
-					5 => 4,
-					4 => 5,
-			);
-			if($this->getSide($faces[$side]) instanceof AirBlock){ //Replace with common break method
+			if($this->getSide(self::$faces[$side]) instanceof AirBlock){ //Replace with common break method
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id, 0, 1));
 				$this->level->setBlock($this, new AirBlock(), true, false, true);
 				return BLOCK_UPDATE_NORMAL;
