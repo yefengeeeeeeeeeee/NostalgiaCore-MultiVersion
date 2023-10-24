@@ -404,23 +404,23 @@ class Entity extends Position
 		$endZ = ceil($this->boundingBox->maxZ);
 		$waterDone = false;
 		//$bup = new AxisAlignedBB($startX, $startY + 1, $startZ, $endX, $endY, $endZ);
-		
-		for($i = 0; $i < 8; ++$i){
-			$x = ((($i >> 0) % 2) - 0.5) * $this->width * 0.8;
-			$y= ((($i >> 1) % 2) - 0.5) * 0.1;
-			$z = ((($i >> 2) % 2) - 0.5) * $this->width * 0.8;
-			
-			$blockX = (int) ($this->x + $x);
-			$blockY = (int) ($this->y + $this->getEyeHeight() + $y);
-			$blockZ = (int) ($this->z + $z);
-			
-			if(!StaticBlock::getIsTransparent($this->level->level->getBlockID($blockX, $blockY, $blockZ))){
-				$this->harm(1, "suffocation"); // Suffocation
-				$hasUpdate = true;
-				break;
+		if(!($this instanceof Painting)){ //TODO better way to fix
+			for($i = 0; $i < 8; ++$i){
+				$x = ((($i >> 0) % 2) - 0.5) * $this->width * 0.8;
+				$y= ((($i >> 1) % 2) - 0.5) * 0.1;
+				$z = ((($i >> 2) % 2) - 0.5) * $this->width * 0.8;
+				
+				$blockX = (int) ($this->x + $x);
+				$blockY = (int) ($this->y + $this->getEyeHeight() + $y);
+				$blockZ = (int) ($this->z + $z);
+				
+				if(!StaticBlock::getIsTransparent($this->level->level->getBlockID($blockX, $blockY, $blockZ))){
+					$this->harm(1, "suffocation"); // Suffocation
+					$hasUpdate = true;
+					break;
+				}
 			}
 		}
-		
 		for ($y = $startY; $y <= $endY; ++$y){
 			for ($x = $startX; $x <= $endX; ++$x){
 				for ($z = $startZ; $z <= $endZ; ++$z){
@@ -1429,6 +1429,7 @@ class Entity extends Position
 			$pk->event = EntityEventPacket::ENTITY_DEAD;
 			$this->server->api->player->broadcastPacket($this->level->players, $pk);
 		}
+
 		if($this->player instanceof Player){
 			$this->player->blocked = true;
 			$this->server->api->dhandle("player.death", [
@@ -1439,7 +1440,12 @@ class Entity extends Position
 				$this->server->api->ban->ban($this->player->username);
 			}
 		} else{
-			$this->server->api->schedule(40, [$this, "close"], []);
+			if($this instanceof Painting){ //TODO better fix
+				$this->close();
+			}
+			else{
+				$this->server->api->schedule(40, [$this, "close"], []);
+			}
 		}
 	}
 	
