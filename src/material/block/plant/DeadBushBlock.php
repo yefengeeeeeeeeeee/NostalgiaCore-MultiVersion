@@ -28,9 +28,11 @@ class DeadBushBlock extends FlowableBlock{
 	
 		public function getDrops(Item $item, Player $player){
 			if($item->isShears()){
-				return array(
-				array(DEAD_BUSH, 0, 1),
-			);
+				return [
+					[DEAD_BUSH, 0, 1],
+				];
 			}
+			
+			return [];
 		}
 }

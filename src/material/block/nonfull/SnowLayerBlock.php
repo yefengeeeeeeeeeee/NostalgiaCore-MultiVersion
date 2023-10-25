@@ -34,5 +34,7 @@ class SnowLayerBlock extends FlowableBlock{
 				array(SNOWBALL, 0, 1),
 			);
 		}
+		
+		return array();
 	}
 }
