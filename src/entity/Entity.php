@@ -526,8 +526,27 @@ class Entity extends Position
 				if(Utils::in_range($this->speedY, -0.007, 0.007)){
 					$this->speedY = 0;
 				}
+				
+				$horizontalMultiplyFactor = 0.91;
+				if($this->onGround){
+					$horizontalMultiplyFactor = 0.54;
+					$b = $this->level->level->getBlockID(floor($this->x), floor($this->boundingBox->minX) - 1, floor($this->z));
+					if($b > 0){
+						$horizontalMultiplyFactor = StaticBlock::getSlipperiness($b) * 0.91;
+					}
+				}
+				if($this->inWater){
+					$this->speedX *= 0.8;
+					$this->speedY *= 0.8;
+					$this->speedZ *= 0.8;
+				}else{
+					$this->speedX *= $horizontalMultiplyFactor;
+					$this->speedY *= 0.98;
+					$this->speedZ *= $horizontalMultiplyFactor;
+				}
+				
 				$savedSpeedY = $this->speedY;
-				if($this->class === ENTITY_MOB || $this->class === ENTITY_ITEM || ($this->class === ENTITY_OBJECT && $this->type === OBJECT_PRIMEDTNT)){
+				if($this->class === ENTITY_MOB || $this->class === ENTITY_ITEM || ($this->class === ENTITY_OBJECT && $this->type === OBJECT_PRIMEDTNT) || $this->class === ENTITY_FALLING){
 					$water = false;
 					$aABB = $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ);
 					$x0 = floor($aABB->minX);
@@ -560,23 +579,7 @@ class Entity extends Position
 					$this->inWater = $water;
 				}
 				$support = $savedSpeedY != $this->speedY && $savedSpeedY < 0;
-				$horizontalMultiplyFactor = 0.91;
-				if($support){
-					$horizontalMultiplyFactor = 0.54;
-					$b = $this->level->level->getBlockID(floor($this->x), floor($this->boundingBox->minX) - 1, floor($this->z));
-					if($b > 0){
-						$horizontalMultiplyFactor = StaticBlock::getSlipperiness($b) * 0.91;
-					}
-				}
-				if($this->inWater){
-					$this->speedX *= 0.8;
-					$this->speedY *= 0.8;
-					$this->speedZ *= 0.8;
-				}else{
-					$this->speedX *= $horizontalMultiplyFactor;
-					$this->speedY *= 0.98;
-					$this->speedZ *= $horizontalMultiplyFactor;
-				}
+				
 				if($this->speedX != 0){
 					$this->x += $this->speedX;
 					$update = true;
@@ -587,26 +590,10 @@ class Entity extends Position
 				}
 				if($this->speedY != 0){
 					$ny = $this->y + $this->speedY;
-					if($this->class === ENTITY_FALLING && $ny <= $this->y){
-						$x = (int) ($this->x - 0.5);
-						$z = (int) ($this->z - 0.5);
-						$lim = (int) floor($ny);
-						for($y = floor($this->y); $y >= $lim; --$y){
-							if(StaticBlock::getIsSolid($this->level->level->getBlockID($x, $y, $z))){
-								//$support = true;
-								$this->y = $ny;
-								$fall = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5)));
-								$down = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y) - 1), intval($this->z - 0.5)));
-								if($fall->isFullBlock === false or $down->isFullBlock === false){
-									$this->server->api->entity->drop($this, BlockAPI::getItem($this->data["Tile"] & 0xFFFF, 0, 1), true);
-								} else{
-									$this->level->setBlock($fall, BlockAPI::get($this->data["Tile"]), true, false, true);
-								}
-								$this->server->api->handle("entity.motion", $this);
-								$this->close();
-								return false;
-							}
-						}
+					if($this->class === ENTITY_FALLING && $support){
+						$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, $this->data["Tile"], 0);
+						$this->close();
+						return;
 					}
 					$this->y = $ny;
 					
@@ -700,7 +687,7 @@ class Entity extends Position
 		if($this->lastHeadYaw != $this->headYaw){
 			$this->sendHeadYaw();
 		}
-		if($this->class !== ENTITY_PLAYER && $update){
+		if($this->isPlayer() || $update){
 			$this->updateMovement();
 		}
 		
