@@ -8,7 +8,7 @@ class GravelBlock extends FallableBlock{
 	
 	public function getDrops(Item $item, Player $player){
 		return [
-			[mt_rand(1,10) ? FLINT : GRAVEL, 0, 1],
+			[mt_rand(1,10) == 1 ? FLINT : GRAVEL, 0, 1],
 		];
 	}
 	

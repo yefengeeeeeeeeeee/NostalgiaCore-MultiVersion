@@ -3,6 +3,7 @@
 class MobController
 {
 	public static $ADVANCED = false;
+	public static $landed = false;
 	public static $DANGEROUS_BLOCKS = [
 		LAVA => true,
 		STILL_LAVA => true,
@@ -93,11 +94,10 @@ class MobController
 	}
 	
 	public function movementTick(){
-		if($this->isJumping() && $this->jumpTimeout <= 0){
+		if($this->isJumping() && $this->jumpTimeout <= 0 && $this->entity->onGround){
 			$this->jumpTimeout = 10;
-			$this->entity->speedY = 0.42;
+			$this->entity->speedY = 0.40;
 		}
-		
 		if($this->jumpTimeout > 0) --$this->jumpTimeout;
 	}
 	

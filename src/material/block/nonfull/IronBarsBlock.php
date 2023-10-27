@@ -32,7 +32,7 @@ class IronBarsBlock extends TransparentBlock{
 	}
 	
 	public static function canConnectTo($blockID) : bool{
-		return StaticBlock::getIsSolid($blockID) || $blockID == GLASS_PANE || $blockID == GLASS; //glass_pane & glass, in 1.5.2 iron fence is just BlockPane which is glass pane
+		return StaticBlock::getIsSolid($blockID) || $blockID == IRON_BARS || $blockID == GLASS;
 	}
 	
 }
