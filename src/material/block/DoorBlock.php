@@ -10,28 +10,61 @@ class DoorBlock extends TransparentBlock{
 		parent::__construct($id, $meta, $name);
 		$this->isSolid = false;
 	}
-	//TODO opened doors fix
+
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		$aabb = new AxisAlignedBB(0, 0, 0, 1, 2, 1);
-		switch(self::getState($level->level->getBlockDamage($x, $y, $z))){
+		$fullMeta = self::getFullBlockMetadata($level, $x, $y, $z);
+		switch($fullMeta & 3){
 			case 0:
-				$aabb->setBounds(0, 0, 0, 1, 1, 0.1875);
+				if(($fullMeta & 4) != 0){
+					if(($fullMeta & 16) == 0) $aabb->setBounds(0, 0, 0, 1, 1, 0.1875);
+					else $aabb->setBounds(0, 0, 1 - 0.1875, 1, 1, 1);
+				}else{
+					$aabb->setBounds(0, 0, 0, 0.1875, 1, 1);
+				}
 				break;
 			case 1:
-				$aabb->setBounds(1 - 0.1875, 0, 0, 1, 1, 1);
+				if(($fullMeta & 4) != 0){
+					if(($fullMeta & 16) == 0) $aabb->setBounds(1 - 0.1875, 0, 0, 1, 1, 1);
+					else $aabb->setBounds(0, 0, 0, 0.1875, 1, 1);
+				}else{
+					$aabb->setBounds(0, 0, 0, 1, 1, 0.1875);
+				}
 				break;
 			case 2:
-				$aabb->setBounds(0, 0, 1 - 0.1875, 1, 1, 1);
+				if(($fullMeta & 4) != 0){
+					if(($fullMeta & 16) == 0) $aabb->setBounds(0, 0, 1 - 0.1875, 1, 1, 1);
+					else $aabb->setBounds(0, 0, 0, 1, 1, 0.1875);
+				}else{
+					$aabb->setBounds(1 - 0.1875, 0, 0, 1, 1, 1);
+				}
 				break;
 			case 3:
-				$aabb->setBounds(0, 0, 0, 0.1875, 1, 1);
+				if(($fullMeta & 4) != 0){
+					if(($fullMeta & 16) == 0) $aabb->setBounds(0, 0, 0, 0.1875, 1, 1);
+					else $aabb->setBounds(1 - 0.1875, 0, 0, 1, 1, 1);
+				}else{
+					$aabb->setBounds(0, 0, 1 - 0.1875, 1, 1, 1);
+				}
 				break;
 		}
+		
+		
 		return [$aabb->offset($x, $y, $z)];
 	}
 	
-	public static function getState($meta){
-		return ($meta & 4) == 0 ? ($meta - 1) & 3 : $meta & 3;
+	public static function getFullBlockMetadata(Level $level, $x, $y, $z){
+		$myMeta = $level->level->getBlockDamage($x, $y, $z);
+		
+		if(($myMeta & 8) != 0){
+			$metaLower = $level->level->getBlockDamage($x, $y - 1, $z);
+			$metaUpper = $myMeta;
+		}else{
+			$metaLower = $myMeta;
+			$metaUpper = $level->level->getBlockDamage($x, $y + 1, $z);
+		}
+		
+		return $metaLower & 7 | (($myMeta & 8) != 0 ? 8 : 0) | (($metaUpper & 1 != 0) ? 16 : 0);
 	}
 	
 	/**
