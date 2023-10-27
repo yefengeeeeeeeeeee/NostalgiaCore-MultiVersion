@@ -408,7 +408,7 @@ class Entity extends Position
 		$endZ = ceil($this->boundingBox->maxZ);
 		$waterDone = false;
 		//$bup = new AxisAlignedBB($startX, $startY + 1, $startZ, $endX, $endY, $endZ);
-		if(!($this instanceof Painting)){ //TODO better way to fix
+		if(!($this instanceof Painting) && !($this->isPlayer() && $this->player->isSleeping !== false)){ //TODO better way to fix
 			for($i = 0; $i < 8; ++$i){
 				$x = ((($i >> 0) % 2) - 0.5) * $this->width * 0.8;
 				$y= ((($i >> 1) % 2) - 0.5) * 0.1;

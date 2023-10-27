@@ -128,6 +128,7 @@ class Player{
 		$this->isSleeping = $pos;
 		$this->sleepingTime = 0;
 		$this->teleport(new Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->level), false, false, false, false);
+		//TODO change player hitbox size after he starts sleeping
 		if($this->entity instanceof Entity){
 			$this->entity->updateMetadata();
 		}

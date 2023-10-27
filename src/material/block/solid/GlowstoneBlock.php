@@ -15,4 +15,8 @@ class GlowstoneBlock extends TransparentBlock implements LightingBlock{
 			array(GLOWSTONE_DUST, 0, mt_rand(2, 4)),
 		);
 	}
+	
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 1, $z + 1)];
+	}
 }
