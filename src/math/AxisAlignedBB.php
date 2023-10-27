@@ -28,6 +28,10 @@ class AxisAlignedBB{
 		return $this;
 	}
 
+	public function addMinMax($minX, $minY, $minZ, $maxX, $maxY, $maxZ){
+		return new AxisAlignedBB($this->minX + $minX, $this->minY + $minY, $this->minZ + $minZ, $this->maxX + $maxX, $this->maxY + $maxY, $this->maxZ + $maxZ);
+	}
+	
 	public function addCoord($x, $y, $z){
 		$minX = $this->minX;
 		$minY = $this->minY;

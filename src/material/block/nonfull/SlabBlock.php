@@ -22,6 +22,11 @@ class SlabBlock extends TransparentBlock{
 		$this->hardness = 30;
 	}
 	
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		if(($level->level->getBlockDamage($x, $y, $z) & 0x08) == 0x08) return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 1, $z + 1)];
+		return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 0.5, $z + 1)];
+	}
+	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			$this->meta &= 0x07;
 			if($face === 0){

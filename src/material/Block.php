@@ -157,6 +157,9 @@ abstract class Block extends Position{
 	
 	public static function onRandomTick(Level $level, $x, $y, $z){}
 	public static function fallOn(Level $level, $x, $y, $z, Entity $entity, $fallDistance){}
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		return [new AxisAlignedBB($x, $y, $z, $x, $y, $z)];
+	}
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;

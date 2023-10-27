@@ -1,6 +1,9 @@
 <?php
 
 class FenceGateBlock extends TransparentBlock{
+	
+	//TODO public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity)
+	
 	public function __construct($meta = 0){
 		parent::__construct(FENCE_GATE, $meta, "Fence Gate");
 		$this->isActivable = true;

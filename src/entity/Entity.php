@@ -351,8 +351,6 @@ class Entity extends Position
 							"target" => $item->eid
 						)) !== false){
 							$item->close();
-							// $item->spawntime = 0;
-							// $this->server->schedule(15, array($item, "close"));
 						}
 					}
 					
@@ -572,11 +570,13 @@ class Entity extends Position
 									$water = $y == ($y1 - 1);
 									$this->fallDistance = 0;
 								}
-								if(StaticBlock::getIsSolid($b)){
-									$blockBounds = StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
-									$this->speedY = $blockBounds->calculateYOffset($this->boundingBox, $this->speedY);
-									$this->speedX = $blockBounds->calculateXOffset($this->boundingBox, $this->speedX);
-									$this->speedZ = $blockBounds->calculateZOffset($this->boundingBox, $this->speedZ);
+								if($b != 0){
+									$blockBounds = Block::$class[$b]::getCollisionBoundingBoxes($this->level, $x, $y, $z, $this); //StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
+									foreach($blockBounds as $blockBound){
+										$this->speedY = $blockBound->calculateYOffset($this->boundingBox, $this->speedY);
+										$this->speedX = $blockBound->calculateXOffset($this->boundingBox, $this->speedX);
+										$this->speedZ = $blockBound->calculateZOffset($this->boundingBox, $this->speedZ);
+									}
 								}
 							}
 						}
