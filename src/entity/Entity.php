@@ -338,22 +338,27 @@ class Entity extends Position
 		$hasUpdate = $this->class === ENTITY_MOB; // force true for mobs
 		$time = microtime(true);
 		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true and $this->player->blocked !== true && ! $this->dead){
-			foreach($this->server->api->entity->getRadius($this, 2, ENTITY_ITEM) as $item){ //TODO vanilla method of searching/radius
+			$myBB = $this->boundingBox->grow(1, 0.5, 1);
+			foreach($this->server->api->entity->getRadius($this, 2, ENTITY_ITEM) as $item){
 				if(!$item->closed && $item->spawntime > 0 && $item->delayBeforePickup == 0){
-					if((($this->player->gamemode & 0x01) === 1 || $this->player->hasSpace($item->type, $item->meta, $item->stack) === true) && $this->server->api->dhandle("player.pickup", array(
-						"eid" => $this->player->eid,
-						"player" => $this->player,
-						"entity" => $item,
-						"block" => $item->type,
-						"meta" => $item->meta,
-						"target" => $item->eid
-					)) !== false){
-						$item->close();
-						// $item->spawntime = 0;
-						// $this->server->schedule(15, array($item, "close"));
+					if($item->boundingBox->intersectsWith($myBB)){ 
+						if((($this->player->gamemode & 0x01) === 1 || $this->player->hasSpace($item->type, $item->meta, $item->stack) === true) && $this->server->api->dhandle("player.pickup", array(
+							"eid" => $this->player->eid,
+							"player" => $this->player,
+							"entity" => $item,
+							"block" => $item->type,
+							"meta" => $item->meta,
+							"target" => $item->eid
+						)) !== false){
+							$item->close();
+							// $item->spawntime = 0;
+							// $this->server->schedule(15, array($item, "close"));
+						}
 					}
+					
 				}
 			}
+			unset($myBB);
 		} elseif($this->class === ENTITY_ITEM){
 			if(($time - $this->spawntime) >= 300){
 				$this->close(); // Despawn timer
