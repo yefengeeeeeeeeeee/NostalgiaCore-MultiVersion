@@ -26,6 +26,7 @@ class Entity extends Position
 	public $eid;
 	public $type;
 	public $name;
+	public $delayBeforePickup;
 	public $x, $y, $z;
 	public $speedX, $speedY, $speedZ, $speed;
 	public $lastX = 0, $lastY  = 0, $lastZ  = 0, $lastYaw  = 0, $lastPitch  = 0, $lastTime = 0, $lastHeadYaw = 0, $lastSpeedX = 0, $lastSpeedY = 0, $lastSpeedZ = 0;
@@ -338,7 +339,7 @@ class Entity extends Position
 		$time = microtime(true);
 		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true and $this->player->blocked !== true && ! $this->dead){
 			foreach($this->server->api->entity->getRadius($this, 2, ENTITY_ITEM) as $item){ //TODO vanilla method of searching/radius
-				if(!$item->closed && $item->spawntime > 0 && ($time - $item->spawntime) >= 0.6){
+				if(!$item->closed && $item->spawntime > 0 && $item->delayBeforePickup == 0){
 					if((($this->player->gamemode & 0x01) === 1 || $this->player->hasSpace($item->type, $item->meta, $item->stack) === true) && $this->server->api->dhandle("player.pickup", array(
 						"eid" => $this->player->eid,
 						"player" => $this->player,
@@ -667,6 +668,9 @@ class Entity extends Position
 		
 		if($this->knockbackTime > 0){
 			--$this->knockbackTime;
+		}
+		if($this->delayBeforePickup > 0){
+			--$this->delayBeforePickup;
 		}
 		if($this->moveTime > 0){
 			--$this->moveTime;
