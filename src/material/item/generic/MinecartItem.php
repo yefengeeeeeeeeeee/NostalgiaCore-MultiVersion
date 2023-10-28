@@ -12,9 +12,9 @@ class MinecartItem extends Item{
 		}
 		$server = ServerAPI::request();
 		$data = [
-			"x" => $target->getX(), 
+			"x" => $target->getX() + 0.5, 
 			"y" => $target->getY() + 0.8, 
-			"z" => $target->getZ(),
+			"z" => $target->getZ() + 0.5,
 			];
 		$e = $server->api->entity->add($level, ENTITY_OBJECT, OBJECT_MINECART, $data);
 		$server->api->entity->spawnToAll($e);

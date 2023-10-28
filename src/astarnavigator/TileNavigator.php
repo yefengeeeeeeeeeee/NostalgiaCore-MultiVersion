@@ -26,8 +26,8 @@ class TileNavigator implements ITileNavigator
 	
 	public function navigate(PathTile $from, PathTile $to, $maxDist)
 	{
-		$open = new SplPriorityQueue();
-		$open->insert($from, 0);
+		$open = [0 => $from];
+		//$open->insert(, 0);
 		$path = [];
 		$gScore = [];
 		$gScore[(string) $from] = 0;
@@ -37,16 +37,16 @@ class TileNavigator implements ITileNavigator
 		}
 		$visited = [];
 		$maxDist*=$maxDist; //no square root
-		while(!$open->isEmpty())
+		while(count($open) > 0)
 		{
-			$current = $open->top();
-			$open->next();
+			$current = array_pop($open);
 			if ($current == $to){
 				return $this->reconstructPath($path, $current);
 			}
 			foreach($this->neighborProvider->getNeighbors($current) as $neighbor)
 			{
-				if(!Utils::in_range(($from->x - $neighbor->x)*($from->x - $neighbor->x) + ($from->y - $neighbor->y)*($from->y - $neighbor->y) + ($from->z - $neighbor->z)*($from->z - $neighbor->z), -$maxDist, $maxDist)){ //Utils::distance_noroot($neighbor->asArray(), $from->asArray())
+				$dist = ($from->x - $neighbor->x)*($from->x - $neighbor->x) + ($from->y - $neighbor->y)*($from->y - $neighbor->y) + ($from->z - $neighbor->z)*($from->z - $neighbor->z);
+				if($dist < -$maxDist || $dist > $maxDist){ //Utils::distance_noroot($neighbor->asArray(), $from->asArray())
 					continue;
 				}
 				if(isset($visited[(string)$neighbor])){
@@ -58,7 +58,7 @@ class TileNavigator implements ITileNavigator
 				$tentativeG = $gScore[(string) $current] + $distbetweenCost;
 				if (!isset($has[(string)$neighbor]))
 				{
-					$open->insert($neighbor, -$tentativeG);
+					$open[-$tentativeG] = $neighbor;
 					$has[(string)$neighbor] = true;
 				}
 				elseif ($tentativeG >= $gScore[(string) $neighbor])

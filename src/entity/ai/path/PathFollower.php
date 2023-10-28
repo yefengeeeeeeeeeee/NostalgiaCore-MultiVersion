@@ -18,7 +18,7 @@ class PathFollower{
 			$this->entity->path = null;
 			$this->entity->currentIndex = 0;
 			$this->entity->currentNode = false;
-		}elseif($this->entity->path != null && ($this->entity->currentNode == false || $this->entity->ai->mobController->moveTo($this->entity->currentNode->x, $this->entity->currentNode->y, $this->entity->currentNode->z) === false)){
+		}elseif($this->entity->path != null && ($this->entity->currentNode == false || $this->entity->boundingBox->isXYZInside($this->entity->currentNode->x, $this->entity->currentNode->y, $this->entity->currentNode->z) || $this->entity->ai->mobController->moveTo($this->entity->currentNode->x, $this->entity->currentNode->y, $this->entity->currentNode->z) === false)){
 			$this->entity->currentNode = $this->entity->path[$this->entity->currentIndex++];
 		}
 	}

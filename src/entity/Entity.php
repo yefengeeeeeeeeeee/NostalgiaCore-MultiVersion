@@ -625,6 +625,9 @@ class Entity extends Position
 					$hasUpdate = true;
 					if(($this->server->ticks % 4 === 0 && $this->class === ENTITY_ITEM) || $this->class != ENTITY_ITEM){ //update item speed every 4 ticks
 						$this->server->api->handle("entity.motion", $this);
+						$this->lastSpeedZ = $this->speedZ;
+						$this->lastSpeedY = $this->speedY;
+						$this->lastSpeedX = $this->speedX;
 					}
 				}
 				$this->updateFallState($this->speedY);
@@ -1316,7 +1319,7 @@ class Entity extends Position
 	public function moveEntityWithOffset($oX, $oY, $oZ)
 	{
 		$oX = $oX === 0 ? $this->speedX : ($this->getSpeedModifer() * $oX * $this->getSpeed());
-		$oY = $oY <= 0 ? $this->speedY : (0.42);
+		$oY = $oY <= 0 ? $this->speedY : (0.40);
 		$oZ = $oZ === 0 ? $this->speedZ : ($this->getSpeedModifer() * $oZ * $this->getSpeed());
 		$this->setVelocity($oX, $oY, $oZ);
 	}
@@ -1436,7 +1439,7 @@ class Entity extends Position
 				$this->server->api->ban->ban($this->player->username);
 			}
 		} else{
-			if($this instanceof Painting){ //TODO better fix
+			if($this instanceof Painting || $this instanceof Minecart){ //TODO better fix
 				$this->close();
 			}
 			else{

@@ -62,7 +62,7 @@ class Minecart extends Vehicle{
 		$this->x = isset($this->data["TileX"]) ? $this->data["TileX"]:$this->x;
 		$this->y = isset($this->data["TileY"]) ? $this->data["TileY"]:$this->y;
 		$this->z = isset($this->data["TileZ"]) ? $this->data["TileZ"]:$this->z;
-		$this->setHealth(3, "generic");
+		$this->setHealth(1, "generic"); //orig: 3
 		$this->width = 0.98;
 		$this->height = 0.7;
 		$this->update();

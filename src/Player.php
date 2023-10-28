@@ -779,9 +779,6 @@ class Player{
 				$pk->speedY = $data->speedY;
 				$pk->speedZ = $data->speedZ;
 				$this->dataPacket($pk);
-				$data->lastSpeedZ = $data->speedZ;
-				$data->lastSpeedY = $data->speedY;
-				$data->lastSpeedX = $data->speedX;
 				break;
 			case "entity.animate":
 
