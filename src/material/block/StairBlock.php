@@ -15,7 +15,17 @@ class StairBlock extends TransparentBlock{
 		}
 		$this->hardness = 30;
 	}
-
+	/*public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		$bbs = [];
+		$meta = $level->level->getBlockDamage($x, $y, $z);
+		
+		if(($meta & 4) != 0){
+			$bbs[] = new AxisAlignedBB(0, 0.5, 0, 1, 1, 1);
+		}else{
+			$bbs[] = new AxisAlignedBB(0, 0, 0, 1, 0.5, 1);
+		}
+		
+	}*/ //TODO stair collision
 	/**
 	 * @param Item $item
 	 * @param Player $player
