@@ -33,6 +33,10 @@ class MobController
 		$this->jumping = $b;
 	}
 	
+	public function isRotationCompleted(){
+		return $this->finalHeadYaw === $this->entity->headYaw;
+	}
+	
 	public function moveNonInstant($x, $y, $z){
 		if($x == 0 && $y == 0 && $z == 0){
 			return false;
@@ -87,7 +91,7 @@ class MobController
 			break;
 		}
 		$this->faceEntity($ox, $oy, $oz);
-		if($this->entity->knockbackTime <= 0){
+		if($this->entity->knockbackTime <= 0 && $this->isRotationCompleted()){
 		    $this->entity->moveEntityWithOffset($ox, $oy, $oz);
 		}
 		return true;

@@ -15,6 +15,13 @@ class LiquidBlock extends TransparentBlock{
 		$this->isFullBlock = true;
 		$this->hardness = 500;
 	}
+	
+	public static function getPercentAir($meta){
+		if($meta >= 8) $meta = 0;
+		$f = ($meta + 1) / 9;
+		return $f;
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		return array();
 	}

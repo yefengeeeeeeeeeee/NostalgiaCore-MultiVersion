@@ -425,6 +425,33 @@ class Entity extends Position
 				}
 			}
 		}
+		
+		//air damage
+		if($this->isPlayer() || $this instanceof Living){
+			$d = $this->y + $this->getEyeHeight();
+			$x = floor($this->x);
+			$y = floor($d);
+			$z = floor($this->z);
+			
+			$id = $this->level->level->getBlockID($x, $y, $z);
+			if($id == WATER || $id == STILL_WATER){
+				$f = LiquidBlock::getPercentAir($this->level->level->getBlockDamage($x, $y, $z)) - 0.1111111;
+				$f1 = ($y + 1) - $f;
+				if($d < $f1){
+					console("losing air");
+					--$this->air;
+					if($this->air <= 0){
+						$this->harm(2, "water");
+					}
+				}else{
+					$this->air = 200; //TODO $this->maxAir;
+				}
+			}else{
+				$this->air = 200; //TODO $this->maxAir;
+			}
+		}
+		
+		
 		for ($y = $startY; $y <= $endY; ++$y){
 			for ($x = $startX; $x <= $endX; ++$x){
 				for ($z = $startZ; $z <= $endZ; ++$z){
@@ -437,16 +464,6 @@ class Entity extends Position
 							if ($this->fire > 0 and $this->inBlock(new Vector3($x, $y, $z))) {
 								$this->fire = 0;
 								$this->updateMetadata();
-							}
-							if ($this->air <= 0 && ! $waterDone) {
-								$this->harm(2, "water");
-								$hasUpdate = true;
-								$waterDone = true;
-							} elseif ($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER) and !$waterDone) {
-								$this->air -= 1;
-								$waterDone = true;
-								$this->updateMetadata();
-								$hasUpdate = true;
 							}
 							break;
 						case LAVA: // Lava damage
@@ -473,11 +490,6 @@ class Entity extends Position
 							}
 							break;
 						default:
-							if($this->inBlock(new Vector3($x, $y, $z), 0.7) && $y == $endY and !StaticBlock::getIsTransparent($id) && ($this->class === ENTITY_MOB || $this->class === ENTITY_PLAYER)){
-								
-							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
-								$this->air = 200;
-							}
 							break;
 					}
 				}
@@ -521,13 +533,13 @@ class Entity extends Position
 		if($this->isStatic === false){
 			if(!$this->isPlayer()){
 				$update = false;
-				if(Utils::in_range($this->speedX, -0.01, 0.01)){
+				if($this->speedX >= -0.001 && $this->speedX <= 0.001){
 					$this->speedX = 0;
 				}
-				if(Utils::in_range($this->speedZ, -0.01, 0.01)){
+				if($this->speedZ >= -0.001 && $this->speedZ <= 0.001){
 					$this->speedZ = 0;
 				}
-				if(Utils::in_range($this->speedY, -0.007, 0.007)){
+				if($this->speedY >= -0.001 && $this->speedY <= 0.001){
 					$this->speedY = 0;
 				}
 				
@@ -539,6 +551,7 @@ class Entity extends Position
 						$horizontalMultiplyFactor = StaticBlock::getSlipperiness($b) * 0.91;
 					}
 				}
+				
 				if($this->inWater){
 					$this->speedX *= 0.8;
 					$this->speedY *= 0.8;
@@ -812,8 +825,8 @@ class Entity extends Position
 		}
 	}
 	
-	public function getEyeHeight(){
-		return $this->isPlayer() ? 1.62 : $this->width;
+	public function getEyeHeight(){ //TODO in vanilla player's eyeHeight is 0.12
+		return $this->isPlayer() ? $this->height - 0.12 : $this->width * 0.85;
 	}
 	
 	public function interactWith(Entity $e, $action)
