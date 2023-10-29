@@ -438,7 +438,6 @@ class Entity extends Position
 				$f = LiquidBlock::getPercentAir($this->level->level->getBlockDamage($x, $y, $z)) - 0.1111111;
 				$f1 = ($y + 1) - $f;
 				if($d < $f1){
-					console("losing air");
 					--$this->air;
 					if($this->air <= 0){
 						$this->harm(2, "water");
