@@ -621,10 +621,10 @@ class Entity extends Position
 				$this->onGround = $support;
 
 				
-				if($this->hasGravity){
-					$this->speedY -= $this->inWater ? 0.02 : ($this->gravity); // TODO: replace with $gravity
+				if($this->hasGravity){ //TODO causes setEntityMotion packet flood, fix
+					$this->speedY -= $this->inWater ? 0.02 : ($this->gravity);
 					$update = true;
-				} elseif($this->lastX != $this->x || $this->lastZ != $this->z || $this->lastY != $this->z){
+				}elseif($this->lastX != $this->x || $this->lastZ != $this->z || $this->lastY != $this->z){
 					// $this->speedX = 0;
 					// $this->speedY = 0;
 					// $this->speedZ = 0;
@@ -1238,7 +1238,7 @@ class Entity extends Position
 		$this->last[3] = $this->yaw;
 		$this->last[4] = $this->pitch;
 		$this->last[5] = microtime(true);
-		$this->lastHeadYaw = $this->headYaw;
+		//$this->lastHeadYaw = $this->headYaw;
 	}
 
 	public function getPosition($round = false)

@@ -106,6 +106,7 @@ class MobController
 	}
 	
 	public function rotateTick(){ //TODO handle more rotation
+		$this->entity->lastHeadYaw = $this->entity->headYaw;
 		$w180 = Utils::wrapAngleTo180($this->finalHeadYaw - $this->entity->headYaw); 
 		$w180min = min(abs($w180), 20)*Utils::getSign($w180);
 		$this->entity->headYaw = Utils::wrapAngleTo360($this->entity->headYaw + $w180min);

@@ -1152,9 +1152,10 @@ class Player{
 	}
 	public function addEntityMovementUpdateToQueue(Entity $e){
 		$len = 0;
-		$packets = 1;
+		$packets = 0;
 		$motionSent = false;
 		$moveSent = false;
+		$headSent = false;
 		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0){
 			$motion = new SetEntityMotionPacket();
 			$motion->eid = $e->eid;
@@ -1179,15 +1180,20 @@ class Player{
 			++$packets;
 			$moveSent = true;
 		}
+		if($e->headYaw != $e->lastHeadYaw){
+			$headyaw = new RotateHeadPacket();
+			$headyaw->eid = $e->eid;
+			$headyaw->yaw = $e->headYaw;
+			$headyaw->encode();
+			$len += strlen($headyaw->buffer) + 1;
+			++$packets;
+			$headSent = true;
+		}
+		if($packets <= 0) return;
 		
-		$headyaw = new RotateHeadPacket();
-		$headyaw->eid = $e->eid;
-		$headyaw->yaw = $e->headYaw;
-		$headyaw->encode();
-		
-		$len = strlen($headyaw->buffer) + 1;
 		$MTU = $this->MTU - 24;
 		if(($this->entityMovementQueueLength + $len) >= $MTU){
+			console("force send");
 			$this->sendEntityMovementUpdateQueue();
 		}
 		if($motionSent){
@@ -1200,9 +1206,11 @@ class Player{
 			$move->reliability = 2;
 			$this->entityMovementQueue->data[] = $move;
 		}
-		$headyaw->messageIndex = $this->counter[3]++;
-		$headyaw->reliability = 2;
-		$this->entityMovementQueue->data[] = $headyaw;
+		if($headSent){
+			$headyaw->messageIndex = $this->counter[3]++;
+			$headyaw->reliability = 2;
+			$this->entityMovementQueue->data[] = $headyaw;
+		}
 		
 		$this->entityMovementQueueLength += 6*$packets + $len;
 	}
