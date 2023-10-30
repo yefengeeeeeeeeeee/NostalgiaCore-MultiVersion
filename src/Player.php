@@ -68,7 +68,10 @@ class Player{
 	private $packetStats;
 	private $chunkCount = [];
 	private $received = [];
-
+	
+	
+	public $entityMovementQueue;
+	public $entityMovementQueueLength = 0;
 	/**
 	 * @param integer $clientID
 	 * @param string $ip
@@ -94,6 +97,8 @@ class Player{
 		$this->hotbar = [0, -1, -1, -1, -1, -1, -1, -1, -1];
 		$this->packetStats = [0, 0];
 		$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+		$this->entityMovementQueue = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+		$this->entityMovementQueue->data = [];
 		$this->buffer->data = [];
 		$this->server->schedule(1, [$this, "handlePacketQueues"], [], true);
 		$this->server->schedule(20 * 60, [$this, "clearQueue"], [], true);
@@ -1136,7 +1141,72 @@ class Player{
 			}
 		}
 	}
-
+	public function sendEntityMovementUpdateQueue(){
+		if($this->entityMovementQueueLength > 0 and $this->entityMovementQueue instanceof RakNetPacket){
+			$this->entityMovementQueue->seqNumber = $this->counter[0]++;
+			$this->send($this->entityMovementQueue);
+		}
+		$this->entityMovementQueueLength = 0;
+		$this->entityMovementQueue = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+		$this->entityMovementQueue->data = [];
+	}
+	public function addEntityMovementUpdateToQueue(Entity $e){
+		$len = 0;
+		$packets = 1;
+		$motionSent = false;
+		$moveSent = false;
+		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0){
+			$motion = new SetEntityMotionPacket();
+			$motion->eid = $e->eid;
+			$motion->speedX = $e->speedX;
+			$motion->speedY = $e->speedY;
+			$motion->speedZ = $e->speedZ;
+			$motion->encode();
+			$len += 1 + strlen($motion->buffer);
+			++$packets;
+			$motionSent = true;
+		}
+		if($e->x != $e->lastX || $e->y != $e->lastY || $e->z != $e->lastZ || $e->yaw != $e->lastYaw || $e->pitch != $e->lastPitch){
+			$move = new MoveEntityPacket_PosRot();
+			$move->eid = $e->eid;
+			$move->x = $e->x;
+			$move->y = $e->y;
+			$move->z = $e->z;
+			$move->yaw = $e->yaw;
+			$move->pitch = $e->pitch;
+			$move->encode();
+			$len += strlen($move->buffer) + 1;
+			++$packets;
+			$moveSent = true;
+		}
+		
+		$headyaw = new RotateHeadPacket();
+		$headyaw->eid = $e->eid;
+		$headyaw->yaw = $e->headYaw;
+		$headyaw->encode();
+		
+		$len = strlen($headyaw->buffer) + 1;
+		$MTU = $this->MTU - 24;
+		if(($this->entityMovementQueueLength + $len) >= $MTU){
+			$this->sendEntityMovementUpdateQueue();
+		}
+		if($motionSent){
+			$motion->messageIndex = $this->counter[3]++;
+			$motion->reliability = 2;
+			$this->entityMovementQueue->data[] = $motion;
+		}
+		if($moveSent){
+			$move->messageIndex = $this->counter[3]++;
+			$move->reliability = 2;
+			$this->entityMovementQueue->data[] = $move;
+		}
+		$headyaw->messageIndex = $this->counter[3]++;
+		$headyaw->reliability = 2;
+		$this->entityMovementQueue->data[] = $headyaw;
+		
+		$this->entityMovementQueueLength += 6*$packets + $len;
+	}
+	
 	/**
 	 * @param string $reason Reason for closing connection
 	 * @param boolean $msg Set to false to silently disconnect player. No broadcast.

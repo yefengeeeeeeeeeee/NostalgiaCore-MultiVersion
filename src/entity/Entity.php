@@ -531,6 +531,7 @@ class Entity extends Position
 		++$this->counter;
 		if($this->isStatic === false){
 			if(!$this->isPlayer()){
+				$this->updateLast();
 				$update = false;
 				if($this->speedX >= -0.001 && $this->speedX <= 0.001){
 					$this->speedX = 0;
@@ -636,7 +637,7 @@ class Entity extends Position
 				if($update === true){
 					$hasUpdate = true;
 					if(($this->server->ticks % 4 === 0 && $this->class === ENTITY_ITEM) || $this->class != ENTITY_ITEM){ //update item speed every 4 ticks
-						$this->server->api->handle("entity.motion", $this);
+						//$this->server->api->handle("entity.motion", $this);
 						$this->lastSpeedZ = $this->speedZ;
 						$this->lastSpeedY = $this->speedY;
 						$this->lastSpeedX = $this->speedX;
@@ -778,9 +779,9 @@ class Entity extends Position
 						//TODO fix $this->setPosition($this->last[0], $this->last[1], $this->last[2], $this->last[3], $this->last[4]);
 					}
 				} else{
-					$this->updateLast();
 					$players = $this->server->api->player->getAll($this->level);
 					if($this->player instanceof Player){
+						$this->updateLast();
 						unset($players[$this->player->CID]);
 						$pk = new MovePlayerPacket();
 						$pk->eid = $this->eid;
@@ -792,20 +793,18 @@ class Entity extends Position
 						$pk->bodyYaw = $this->yaw;
 						$this->server->api->player->broadcastPacket($players, $pk);
 					} else{
-						
-						$pk = new MoveEntityPacket_PosRot();
+						/*$pk = new MoveEntityPacket_PosRot();
 						$pk->eid = $this->eid;
 						$pk->x = $this->x;
 						$pk->y = $this->y;
 						$pk->z = $this->z;
 						$pk->yaw = $this->yaw;
 						$pk->pitch = $this->pitch;
-						$this->server->api->player->broadcastPacket($players, $pk);
+						$this->server->api->player->broadcastPacket($players, $pk);*/
 					}
 				}
 			} else{
 				$this->updatePosition();
-				$this->updateLast();
 			}
 			
 		}
@@ -1095,10 +1094,10 @@ class Entity extends Position
 	}
 	
 	public function sendHeadYaw(){
-		$pk = new RotateHeadPacket;
+		/*$pk = new RotateHeadPacket;
 		$pk->eid = $this->eid;
 		$pk->yaw = $this->headYaw;
-		$this->server->api->player->broadcastPacket($this->level->players, $pk);
+		$this->server->api->player->broadcastPacket($this->level->players, $pk);*/
 	}
 	
 	public function setPosition(Vector3 $pos, $yaw = false, $pitch = false)
@@ -1290,12 +1289,12 @@ class Entity extends Position
 
 	public function sendMotion()
 	{
-		$pk = new SetEntityMotionPacket();
+		/*$pk = new SetEntityMotionPacket();
 		$pk->eid = $this->eid;
 		$pk->speedX = $this->speedX;
 		$pk->speedY = $this->speedY;
 		$pk->speedZ = $this->speedZ;
-		$this->server->api->player->broadcastPacket($this->level->players, $pk);
+		$this->server->api->player->broadcastPacket($this->level->players, $pk);*/
 	}
 
 	public function linkEntity(Entity $e, $type)
@@ -1318,14 +1317,14 @@ class Entity extends Position
 			$this->player->teleport(new Vector3($this->x, $this->y, $this->z));
 			return;
 		}
-		$pk = new MoveEntityPacket_PosRot();
+		/*$pk = new MoveEntityPacket_PosRot();
 		$pk->eid = $this->eid;
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
-		$this->server->api->player->broadcastPacket($this->level->players, $pk);
+		$this->server->api->player->broadcastPacket($this->level->players, $pk);*/
 	}
 
 	public function moveEntityWithOffset($oX, $oY, $oZ)

@@ -362,6 +362,7 @@ class Level{
 			}
 		}
 		$this->totalMobsAmount = 0;
+		$post = [];
 		foreach($this->entityList as $k => $e){
 			if(!($e instanceof Entity)){
 				unset($this->entityList[$k]);
@@ -373,8 +374,20 @@ class Level{
 			}
 			if($e->isPlayer() || $e->needsUpdate){
 				$e->update();
+				if(!$e->isPlayer()) $post[] = $k;
 			}
 		}
+		foreach($this->players as $player){
+			foreach($post as $eid){
+				$e = $this->entityList[$eid] ?? false;
+				if(!($e instanceof Entity)){
+					continue;
+				}
+				$player->addEntityMovementUpdateToQueue($e);
+			}
+			$player->sendEntityMovementUpdateQueue();
+		}
+		
 		
 		$this->checkSleep();
 		
