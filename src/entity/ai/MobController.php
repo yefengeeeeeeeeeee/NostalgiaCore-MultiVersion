@@ -91,7 +91,7 @@ class MobController
 			break;
 		}
 		$this->faceEntity($ox, $oy, $oz);
-		if($this->entity->knockbackTime <= 0 && $this->isRotationCompleted()){
+		if($this->entity->knockbackTime <= 0){// && $this->isRotationCompleted()){
 		    $this->entity->moveEntityWithOffset($ox, $oy, $oz);
 		}
 		return true;
