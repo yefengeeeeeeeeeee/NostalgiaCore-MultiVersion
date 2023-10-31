@@ -71,6 +71,7 @@ abstract class Living extends Entity implements Damageable, Pathfindable{
 			$this->close();
 			return;
 		}
+		if($this->closed) return;
 		if(!$this->dead && Entity::$allowedAI && $this->idleTime <= 0) {
 			$this->ai->updateTasks();
 		}
