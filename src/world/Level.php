@@ -11,6 +11,8 @@ class Level{
 	 */
 	public $entityList;
 	
+	public $entitiesInLove = [];
+	
 	public $tiles, $blockUpdates, $nextSave, $players = [], $level, $mobSpawner, $totalMobsAmount = 0;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
 	

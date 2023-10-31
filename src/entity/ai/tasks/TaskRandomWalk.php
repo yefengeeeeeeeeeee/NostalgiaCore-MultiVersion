@@ -33,8 +33,8 @@ class TaskRandomWalk extends TaskBase
 	{
 		if(($ai->entity instanceof Creeper && $ai->entity->isIgnited()) || $ai->entity->hasPath() || $ai->isStarted("TaskTempt") ||$ai->isStarted("TaskAttackPlayer")) {
 			return false;
-		}
-		return !$ai->entity->inPanic && !$ai->isStarted("TaskEatTileGoal")&& !$ai->isStarted("TaskLookAround") && !$ai->isStarted("TaskLookAtPlayer") && mt_rand(0, 120) == 0;
+		} // i really need mutexBits
+		return !$ai->entity->inPanic && !$ai->isStarted("TaskMate")  && !$ai->isStarted("TaskEatTileGoal") && !$ai->isStarted("TaskLookAround") && !$ai->isStarted("TaskLookAtPlayer") && mt_rand(0, 120) == 0;
 	}
 
 	

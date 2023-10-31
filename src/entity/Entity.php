@@ -687,27 +687,7 @@ class Entity extends Position
 		}
 		
 		
-		if($this->knockbackTime > 0){
-			--$this->knockbackTime;
-		}
-		if($this->delayBeforePickup > 0){
-			--$this->delayBeforePickup;
-		}
-		if($this->moveTime > 0){
-			--$this->moveTime;
-		}
-		if($this->lookTime > 0){
-			--$this->lookTime;
-		}
-		if($this->idleTime > 0){
-			--$this->idleTime;
-		}
-		
-		
-		if($this->inAction){
-			++$this->inActionCounter;
-		}
-		
+		$this->counterUpdate();
 		
 		if($this->lastHeadYaw != $this->headYaw){
 			$this->sendHeadYaw();
@@ -1025,7 +1005,30 @@ class Entity extends Position
 				break;
 		}
 	}
-
+	
+	public function counterUpdate(){
+		if($this->knockbackTime > 0){
+			--$this->knockbackTime;
+		}
+		if($this->delayBeforePickup > 0){
+			--$this->delayBeforePickup;
+		}
+		if($this->moveTime > 0){
+			--$this->moveTime;
+		}
+		if($this->lookTime > 0){
+			--$this->lookTime;
+		}
+		if($this->idleTime > 0){
+			--$this->idleTime;
+		}
+		
+		
+		if($this->inAction){
+			++$this->inActionCounter;
+		}
+	}
+	
 	public function close()
 	{
 		if($this->closed === false){

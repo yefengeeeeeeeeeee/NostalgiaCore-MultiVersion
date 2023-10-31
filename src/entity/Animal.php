@@ -17,6 +17,7 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 		
 		$this->ai->addTask(new TaskTempt());
 		$this->ai->addTask(new TaskPanic());
+		$this->ai->addTask(new TaskMate());
 	}
 	
 	public function harm($dmg, $cause = "generic", $force = false){
@@ -31,11 +32,21 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 	}
 	
 	public function breed(){
-		$c = $this->spawnChild();
-		if($this->server->dhandle("entity.animal.breed", ["parent" => $this, "child" => $c]) !== false){
-			$c->parent = $this;
+		if($this->server->dhandle("entity.animal.breed", ["parent" => $this]) !== false){
+			$c = $this->spawnChild();
+			$c->parent = $this; //TODO save eid to avoid memory leaks?
 			$this->server->api->entity->spawnToAll($c);
+			return $c;
 		}
+		return false;
+	}
+	
+	public function resetInLove(){
+		$this->inLove = 0;
+	}
+	
+	public function canMate($ent){
+		return $ent->eid != $this->eid && $this->type === $ent->type && $this->isInLove() && $ent->isInLove();
 	}
 	
 	public function update(){
@@ -46,6 +57,11 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 			$this->updateMetadata();
 		}else{
 			$this->setAge($age);
+		}
+		if($this->isInLove() && !isset($this->level->entitiesInLove[$this->eid])){
+			$this->level->entitiesInLove[$this->eid] = true;
+		}else if(!$this->isInLove() && isset($this->level->entitiesInLove[$this->eid])){
+			unset($this->level->entitiesInLove[$this->eid]);
 		}
 	}
 	
@@ -88,8 +104,10 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 	public function interactWith(Entity $e, $action){
 		if($e->isPlayer() && $action === InteractPacket::ACTION_HOLD){
 			$slot = $e->player->getHeldItem();
-			if($this->isFood($slot->getID())){
-				$e->player->removeItem($slot->getID(), $slot->getMetadata(), 1);
+			if($this->isFood($slot->getID()) && $this->inLove <= 0 && !$this->isBaby()){ //TODO check vanilla
+				if(($e->player->gamemode & 0x01) === SURVIVAL){
+					$e->player->removeItem($slot->getID(), $slot->getMetadata(), 1);
+				}
 				$this->inLove = 600; //600 ticks, original mehod from mcpe
 				return true;
 			}
@@ -103,7 +121,7 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 			--$this->inLove;
 		}
 	}
-
+	
 	public function getDrops(){
 		if($this->isBaby()){
 			return [];
