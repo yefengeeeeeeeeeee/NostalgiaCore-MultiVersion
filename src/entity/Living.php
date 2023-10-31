@@ -69,6 +69,7 @@ abstract class Living extends Entity implements Damageable, Pathfindable{
 	public function update(){
 		if(self::$despawnMobs && ++$this->ticksExisted > self::$despawnTimer){
 			$this->close();
+			return;
 		}
 		if(!$this->dead && Entity::$allowedAI && $this->idleTime <= 0) {
 			$this->ai->updateTasks();
