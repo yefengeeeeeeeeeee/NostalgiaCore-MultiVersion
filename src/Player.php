@@ -80,7 +80,7 @@ class Player{
 	 */
 	public function __construct($clientID, $ip, $port, $MTU){
 		$this->bigCnt = 0;
-		$this->MTU = $MTU;
+		$this->MTU = min($MTU, 1100);
 		$this->server = ServerAPI::request();
 		$this->lastBreak = microtime(true);
 		$this->clientID = $clientID;
@@ -1193,7 +1193,6 @@ class Player{
 		
 		$MTU = $this->MTU - 24;
 		if(($this->entityMovementQueueLength + $len) >= $MTU){
-			console("force send");
 			$this->sendEntityMovementUpdateQueue();
 		}
 		if($motionSent){
