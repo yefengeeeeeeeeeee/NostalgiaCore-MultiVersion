@@ -1190,7 +1190,7 @@ class Player{
 			$headSent = true;
 		}
 		if($packets <= 0) return;
-		
+		//console("Update {$e}: $packets, mot: $motionSent, mov: $moveSent, hed: $headSent");
 		$MTU = $this->MTU - 24;
 		if(($this->entityMovementQueueLength + $len) >= $MTU){
 			$this->sendEntityMovementUpdateQueue();

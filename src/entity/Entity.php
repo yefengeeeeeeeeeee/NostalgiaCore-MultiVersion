@@ -565,6 +565,10 @@ class Entity extends Position
 				$savedSpeedY = $this->speedY;
 				if($this->class === ENTITY_MOB || $this->class === ENTITY_ITEM || ($this->class === ENTITY_OBJECT && $this->type === OBJECT_PRIMEDTNT) || $this->class === ENTITY_FALLING){
 					$water = false;
+					if($this->hasGravity){
+						$this->speedY -= $this->inWater ? 0.02 : ($this->gravity);
+					}
+					$savedSpeedY = $this->speedY;
 					$aABB = $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ);
 					$x0 = floor($aABB->minX);
 					$x1 = ceil($aABB->maxX);
@@ -573,8 +577,6 @@ class Entity extends Position
 					$z0 = floor($aABB->minZ);
 					$z1 = ceil($aABB->maxZ);
 					
-					$ywMin = floor($aABB->minY + 0.4);
-					$ywMax = ceil($aABB->maxY - 0.4);
 					for($x = $x0; $x <= $x1; ++$x){
 						for($y = $y0; $y <= $y1; ++$y){
 							for($z = $z0; $z <= $z1; ++$z){
@@ -621,10 +623,7 @@ class Entity extends Position
 				$this->onGround = $support;
 
 				
-				if($this->hasGravity){ //TODO causes setEntityMotion packet flood, fix
-					$this->speedY -= $this->inWater ? 0.02 : ($this->gravity);
-					$update = true;
-				}elseif($this->lastX != $this->x || $this->lastZ != $this->z || $this->lastY != $this->z){
+				if($this->lastX != $this->x || $this->lastZ != $this->z || $this->lastY != $this->z){
 					// $this->speedX = 0;
 					// $this->speedY = 0;
 					// $this->speedZ = 0;
