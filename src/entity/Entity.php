@@ -395,9 +395,6 @@ class Entity extends Position
 			} else{
 				$hasUpdate = true;
 			}
-			if(($this->player instanceof Player) and ($this->player->gamemode & 0x01) === CREATIVE){ // Remove fire effects in next tick
-				$this->fire = 1;
-			}
 		}
 
 		$startX = floor($this->boundingBox->minX);
@@ -470,6 +467,9 @@ class Entity extends Position
 							if ($this->inBlock(new Vector3($x, $y, $z))) {
 								$this->harm(5, "lava");
 								$this->fire = 300;
+								if($this->isPlayer() and ($this->player->gamemode & 0x01) === CREATIVE){
+									$this->fire = 1;
+								}
 								$this->updateMetadata();
 								$hasUpdate = true;
 							}
@@ -478,6 +478,9 @@ class Entity extends Position
 							if ($this->inBlock(new Vector3($x, $y, $z))) {
 								$this->harm(1, "fire");
 								$this->fire = 300;
+								if($this->isPlayer() and ($this->player->gamemode & 0x01) === CREATIVE){
+									$this->fire = 1;
+								}
 								$this->updateMetadata();
 								$hasUpdate = true;
 							}

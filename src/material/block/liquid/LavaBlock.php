@@ -69,9 +69,12 @@ class LavaBlock extends LiquidBlock implements LightingBlock{
 		/*if($this->checkWater()){
 			return;
 		}*/
-		
 		$falling = $this->meta >> 3;
 		$down = $this->getSide(0);
+		if($down instanceof WaterBlock) {
+			$this->level->fastSetBlockUpdate($down->x, $down->y, $down->z, STONE, 0, true);
+			return;
+		}
 		
 		$from = $this->getFrom();
 		if($from !== null || $level == 0x00){

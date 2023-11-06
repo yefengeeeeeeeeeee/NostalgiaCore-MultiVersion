@@ -34,7 +34,7 @@ class WaterBlock extends LiquidBlock{
 			}
 			$b = $this->getSide($side);
 			if($b instanceof LavaBlock){
-				$level = $b->meta & 0x06;
+				$level = $b->meta & 0x07;
 				if($level == 0x00){
 					$this->level->setBlock($b, new ObsidianBlock(), false, false, true);
 				}else{

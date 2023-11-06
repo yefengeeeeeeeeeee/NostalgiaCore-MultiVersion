@@ -167,6 +167,9 @@ class LevelAPI{
 				break;
 			case "save-all":
 				$output .= "Saving...\n";
+				foreach($this->server->clients as $p){
+					$p->sendChat("Saving world, server might lag a bit...");
+				}
 				$save = $this->server->saveEnabled;
 				$this->server->saveEnabled = true;
 				$this->saveAll();
