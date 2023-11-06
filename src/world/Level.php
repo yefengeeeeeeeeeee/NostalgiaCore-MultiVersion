@@ -351,7 +351,7 @@ class Level{
 				$index = $this->level->getIndex($cX, $cZ);
 				if(!isset($this->level->chunks[$index]) || $this->level->chunks[$index] === false) continue;
 				for($c = 0; $c <= 20; ++$c){
-					$xyz = mt_rand(0, 0xffffffff) >> 2;//TODO fix php5
+					$xyz = mt_rand(0, 0xffffffff) >> 2;
 					$x = $xyz & 0xf;
 					$z = ($xyz >> 8) & 0xf; //TODO might be possible to make some micro optmizations
 					$y = ($xyz >> 16) & 0x7f;

@@ -350,7 +350,7 @@ class Utils{
 	}
 
 	public static function readShort($str, $signed = true){
-		if(strlen($str) === 0){
+		if(strlen($str) < 2){
 			return;
 		}
 
