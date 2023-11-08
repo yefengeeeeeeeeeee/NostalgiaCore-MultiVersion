@@ -1156,7 +1156,7 @@ class Player{
 		$motionSent = false;
 		$moveSent = false;
 		$headSent = false;
-		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0){
+		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
 			$motion = new SetEntityMotionPacket();
 			$motion->eid = $e->eid;
 			$motion->speedX = $e->speedX;
@@ -1171,7 +1171,7 @@ class Player{
 			$move = new MoveEntityPacket_PosRot();
 			$move->eid = $e->eid;
 			$move->x = $e->x;
-			$move->y = $e->y;
+			$move->y = $e instanceof ItemEntity ? $e->boundingBox->maxY : $e->y; //TODO fix items getting into farmland in client side somehow else
 			$move->z = $e->z;
 			$move->yaw = $e->yaw;
 			$move->pitch = $e->pitch;

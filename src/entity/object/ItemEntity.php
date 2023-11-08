@@ -9,6 +9,7 @@ class ItemEntity extends Entity{
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = array())
 	{
 		parent::__construct($level, $eid, $class, $type, $data);
+		$this->setSize(0.25, 0.25);
 		if(isset($data["item"]) and ($data["item"] instanceof Item)){
 			$this->meta = $this->data["item"]->getMetadata();
 			$this->stack = $this->data["item"]->count;
@@ -18,7 +19,6 @@ class ItemEntity extends Entity{
 		}
 		$this->hasGravity = true;
 		$this->setHealth(5, "generic");
-		$this->setSize(0.25, 0.25);
 		$this->gravity = 0.04;
 		$this->delayBeforePickup = 20;
 	}

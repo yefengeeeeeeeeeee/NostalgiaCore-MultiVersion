@@ -16,6 +16,10 @@ class FarmlandBlock extends TransparentBlock{
 		return $b->isTransparent && $b->id != 0;
 	}
 	
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 0.9375, $z + 1)];
+	}
+	
 	public static function fallOn(Level $level, $x, $y, $z, Entity $entity, $fallDistance){
 		$rv = lcg_value();
 		console("rv: $rv, fd: ".($fallDistance - 0.5));
