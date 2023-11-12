@@ -773,29 +773,16 @@ class Utils{
 	}
 
 	public static function writeLong($value){
-		$x = "";
-		$value = (string) $value;
-		if(!is_float($value)){
-			if(strval($value[0] == null ? '' : $value[0]) === "-"){
-				$negative = true;
-				$value = bcadd($value, "1");
-				if(strval($value[0]) === "-"){
-					$value = substr($value, 1);
-				}
-			}else{
-				$negative = false;
-			}
-			while(bccomp($value, "0", 0) > 0){
-				$temp = bcmod($value, "16777216");
-				$x = chr($temp >> 16) . chr($temp >> 8) . chr($temp) . $x;
-				$value = bcdiv($value, "16777216", 0);
-			}
-			$x = str_pad(substr($x, 0, 8), 8, "\x00", STR_PAD_LEFT);
-			if($negative === true){
-				$x = ~$x;
-			}
-			return $x;
-		}
+		return
+			chr(($value & 0xff00000000000000) >> 56).
+			chr(($value & 0x00ff000000000000) >> 48).
+			chr(($value & 0x0000ff0000000000) >> 40).
+			chr(($value & 0x000000ff00000000) >> 32).
+			chr(($value & 0x00000000ff000000) >> 24).
+			chr(($value & 0x0000000000ff0000) >> 16).
+			chr(($value & 0x000000000000ff00) >> 8).
+			chr(($value & 0x00000000000000ff))
+		;
 	}
 }
 
