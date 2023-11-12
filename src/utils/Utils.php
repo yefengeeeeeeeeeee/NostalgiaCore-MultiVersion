@@ -489,7 +489,7 @@ class Utils{
 	}
 
 	public static function getRandomBytes($length = 16, $secure = true, $raw = true, $startEntropy = "", &$rounds = 0, &$drop = 0){
-		return $raw ? bin2hex(random_bytes($length)) : random_bytes($length); //nobody would ever notice other parameters
+		return $raw ? random_bytes($length) : bin2hex(random_bytes($length)); //nobody would ever notice other parameters
 	}
 	
 	public static function chance($i){//GameHerobrine's code
