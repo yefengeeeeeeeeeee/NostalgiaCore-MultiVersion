@@ -638,12 +638,9 @@ class Entity extends Position
 
 				if($update === true){
 					$hasUpdate = true;
-					if(($this->server->ticks % 4 === 0 && $this->class === ENTITY_ITEM) || $this->class != ENTITY_ITEM){ //update item speed every 4 ticks
-						//$this->server->api->handle("entity.motion", $this);
-						$this->lastSpeedZ = $this->speedZ;
-						$this->lastSpeedY = $this->speedY;
-						$this->lastSpeedX = $this->speedX;
-					}
+					$this->lastSpeedZ = $this->speedZ;
+					$this->lastSpeedY = $this->speedY;
+					$this->lastSpeedX = $this->speedX;
 				}
 				$this->updateFallState($this->speedY);
 			} elseif($this->player instanceof Player){

@@ -11,7 +11,7 @@ class PocketMinecraftServer{
 	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $memoryStats, $async = [], $asyncID = 0;
 	
 	public $doTick, $levelData, $tiles, $entities, $schedule, $scheduleCnt, $whitelist, $spawn, $difficulty, $stop, $asyncThread;
-	
+	public static $FORCE_20_TPS = false;
 	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverip = "0.0.0.0"){
 		$this->port = (int) $port;
 		$this->doTick = true;
@@ -89,15 +89,20 @@ class PocketMinecraftServer{
 			"despawn-mobs" => true, 
 			"mob-despawn-ticks" => 18000,
 			"16x16x16_chunk_sending" => false,
-			"experimental-mob-ai" => false,			
+			"experimental-mob-ai" => false,	
+			"force-20-tps" => false,
 		]);
 		Player::$smallChunks = $this->extraprops->get("16x16x16_chunk_sending");
 		Living::$despawnMobs = $this->extraprops->get("despawn-mobs");
 		Living::$despawnTimer = $this->extraprops->get("mob-despawn-ticks");
+		self::$FORCE_20_TPS = $this->extraprops->get("force-20-tps");
 		PocketMinecraftServer::$SAVE_PLAYER_DATA = $this->extraprops->get("save-player-data");
 		MobController::$ADVANCED = $this->extraprops->get("experimental-mob-ai");
 		Explosion::$enableExplosions = $this->extraprops->get("enable-explosions");
 		NetherReactorBlock::$enableReactor = $this->extraprops->get("enable-nether-reactor");
+		if(self::$FORCE_20_TPS){
+			ConsoleAPI::warn("Forcing 20 tps. This may result in higher CPU usage!");
+		}
 		if($this->extraprops->get("discord-msg") == true){
 			if($this->extraprops->get("discord-webhook-url") !== "none"){
 				console("[INFO] Discord Logger is enabled.");
@@ -467,27 +472,38 @@ class PocketMinecraftServer{
 	public function process()
 	{
 		$lastLoop = 0;
-		while($this->stop === false){
-			$packet = $this->interface->readPacket();
-			if($packet instanceof Packet){
-				$this->packetHandler($packet);
-				$lastLoop = 0;
-			} elseif($this->tick() > 0){
-				$lastLoop = 0;
-			} else{
-				++ $lastLoop;
-				if($lastLoop < 16){
-					usleep(1);
-				} elseif($lastLoop < 128){
-					usleep(100);
-				} elseif($lastLoop < 256){
-					usleep(512);
-				} else{
-					usleep(10000);
-				}
+		
+		if(self::$FORCE_20_TPS){
+			while($this->stop === false){
+				$packet = $this->interface->readPacket();
+				if($packet instanceof Packet) $this->packetHandler($packet);
+				$this->tick();
 			}
-			$this->tick();
+		}else{
+			while($this->stop === false){
+				$packet = $this->interface->readPacket();
+				if($packet instanceof Packet){
+					$this->packetHandler($packet);
+					$lastLoop = 0;
+				} elseif($this->tick() > 0){
+					$lastLoop = 0;
+				} else{
+					++ $lastLoop;
+					if($lastLoop < 16){
+						usleep(1);
+					} elseif($lastLoop < 128){
+						usleep(100);
+					} elseif($lastLoop < 256){
+						usleep(512);
+					} else{
+						usleep(10000);
+					}
+				}
+				$this->tick();
+			}
 		}
+		
+		
 	}
 
 	public function packetHandler(Packet $packet){
