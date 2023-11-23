@@ -48,7 +48,7 @@ class EntityAPI{
 				}
 				
 				if(is_int($args[0])) $type = $args[0];
-				else $type = $mob[strtolower($args[0])];
+				else $type = $mob[strtolower($args[0])] ?? 0;
 				if($type < 10 || $type > 36){
 					return "Unknown mob.";
 				}

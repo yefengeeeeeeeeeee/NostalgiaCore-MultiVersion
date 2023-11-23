@@ -5,7 +5,7 @@ class Entity extends Position
 
 	const TYPE = - 1;
 	const CLASS_TYPE = - 1;
-	
+	const MIN_POSSIBLE_SPEED = 1/8000; //anything below will send 0 to player
 	public $counter = 0;
 	public $fallDistance = 0;
 	public static $updateOnTick, $allowedAI;
@@ -192,11 +192,11 @@ class Entity extends Position
 	
 	public function isMovingHorizontally()
 	{
-		return ($this->speedX > 0.01 || $this->speedX < - 0.01) || ($this->speedZ > 0.01 || $this->speedZ < - 0.01);
+		return ($this->speedX >= self::MIN_POSSIBLE_SPEED || $this->speedX <= -self::MIN_POSSIBLE_SPEED) || ($this->speedZ >= self::MIN_POSSIBLE_SPEED || $this->speedZ <= -self::MIN_POSSIBLE_SPEED);
 	}
 	public function isMoving()
 	{
-		return  $this->isMovingHorizontally() || ($this->speedY > 0.007 || $this->speedY < - 0.007);
+		return  $this->isMovingHorizontally() || ($this->speedY > self::MIN_POSSIBLE_SPEED || $this->speedY < -self::MIN_POSSIBLE_SPEED);
 	}
 
 	public function setVelocity($vX, $vY = 0, $vZ = 0)
@@ -536,13 +536,13 @@ class Entity extends Position
 			if(!$this->isPlayer()){
 				$this->updateLast();
 				$update = false;
-				if($this->speedX >= -0.001 && $this->speedX <= 0.001){
+				if($this->speedX > -self::MIN_POSSIBLE_SPEED && $this->speedX < self::MIN_POSSIBLE_SPEED){
 					$this->speedX = 0;
 				}
-				if($this->speedZ >= -0.001 && $this->speedZ <= 0.001){
+				if($this->speedZ > -self::MIN_POSSIBLE_SPEED && $this->speedZ < self::MIN_POSSIBLE_SPEED){
 					$this->speedZ = 0;
 				}
-				if($this->speedY >= -0.001 && $this->speedY <= 0.001){
+				if($this->speedY > -self::MIN_POSSIBLE_SPEED && $this->speedY < self::MIN_POSSIBLE_SPEED){
 					$this->speedY = 0;
 				}
 				
