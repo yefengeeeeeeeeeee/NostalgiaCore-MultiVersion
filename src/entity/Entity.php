@@ -5,7 +5,7 @@ class Entity extends Position
 
 	const TYPE = - 1;
 	const CLASS_TYPE = - 1;
-	const MIN_POSSIBLE_SPEED = 1/8000; //anything below will send 0 to player
+	const MIN_POSSIBLE_SPEED = 1/400; //anything below will send 0 to player
 	public $counter = 0;
 	public $fallDistance = 0;
 	public static $updateOnTick, $allowedAI;
