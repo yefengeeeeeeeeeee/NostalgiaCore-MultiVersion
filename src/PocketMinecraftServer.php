@@ -225,7 +225,7 @@ class PocketMinecraftServer{
 				"url" => $url,
 				"data" => [
 					"username" => $name,
-					"content" => $this->extraprops->get("discord-ru-smiles") ? str_replace("@", " ", str_replace("Ы", "<:ru_cool:960113011383738369>", str_replace("Ь", "<:ru_cry:960112920346390548>", str_replace("Ъ", "<:ru_happy:960112868601237504>", $msg)))) : str_replace("@", "", $msg)
+					"content" => $this->extraprops->get("discord-ru-smiles") ? str_replace("@", " ", str_replace("Ы", "<:imp_cool:1151085500396998719>", str_replace("Ь", "<:imp_badphp5:1151085478410457120>", str_replace("Ъ", "<:imp_gudjava:1151085431962742784>", str_replace("Ё", "<:imp_wut:1151085524241621012>", $msg))))) : str_replace("@", "", $msg)
 				],
 			], null);
 		}
