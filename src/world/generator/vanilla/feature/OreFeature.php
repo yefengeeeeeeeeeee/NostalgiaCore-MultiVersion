@@ -2,7 +2,7 @@
 
 class OreFeature
 {
-	public static function place(Level $level, MersenneTwister $rand, $x, $y, $z, $id, $amount){
+	public static function place(Level $level, MTRandom $rand, $x, $y, $z, $id, $amount){
 		$nextFloat = $rand->nextFloat() * 3.1415927;
 		
 		$sin = ($x + 8 + ((sin($nextFloat) * $amount) / 8));

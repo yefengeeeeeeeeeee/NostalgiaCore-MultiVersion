@@ -15,7 +15,7 @@ abstract class Feature
 		Feature::$MUSHROOM_RED = new FlowerFeature(RED_MUSHROOM);
 		
 	}
-	public function place(Level $level, MersenneTwister $rand, $x, $y, $z){ //TODO pass VanillaGenerator instance and update heightmap on ceratin block placement
+	public function place(Level $level, MTRandom $rand, $x, $y, $z){ //TODO pass VanillaGenerator instance and update heightmap on ceratin block placement
 		
 	}
 }

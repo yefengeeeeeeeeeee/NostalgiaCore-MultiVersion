@@ -76,7 +76,7 @@ class Biome
 		$this->name = $name;
 	}
 	
-	public function getTreeFeature(MersenneTwister $rand){
+	public function getTreeFeature(MTRandom $rand){
 		$rand->nextInt(); //it is necessary
 		return Feature::$TREE;
 	}

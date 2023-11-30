@@ -9,7 +9,7 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 	public $xCoord, $yCoord, $zCoord;
 	private $permutations = [];
 
-	public function __construct(MersenneTwister $random){
+	public function __construct(MTRandom $random){
 		$this->xCoord = $random->nextFloat() * 256;
 		$this->yCoord = $random->nextFloat() * 256;
 		$this->zCoord = $random->nextFloat() * 256;

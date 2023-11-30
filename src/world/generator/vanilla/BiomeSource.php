@@ -16,9 +16,9 @@ class BiomeSource
 	 */
 	public $temperatureNoises, $rainfallNoises, $detailNoises;
 	public function __construct(Level $level){
-		$this->temperatureNoise = new NoiseGeneratorOctaves(new MersenneTwister($level->getSeed() * 9871), 4);
-		$this->rainfallNoise = new NoiseGeneratorOctaves(new MersenneTwister($level->getSeed() * 39811), 4);
-		$this->detailNoise = new NoiseGeneratorOctaves(new MersenneTwister($level->getSeed() * 543321), 2);
+		$this->temperatureNoise = new NoiseGeneratorOctaves(new MTRandom($level->getSeed() * 9871), 4);
+		$this->rainfallNoise = new NoiseGeneratorOctaves(new MTRandom($level->getSeed() * 39811), 4);
+		$this->detailNoise = new NoiseGeneratorOctaves(new MTRandom($level->getSeed() * 543321), 2);
 	}
 	
 	public function getBiome($x, $z){

@@ -2,7 +2,7 @@
 
 class PineFeature extends Feature
 {
-	public function place(Level $level, MersenneTwister $rand, $x, $y, $z){
+	public function place(Level $level, MTRandom $rand, $x, $y, $z){
 		$l = $rand->nextInt(5) + 7;
 		$i1 = $l - $rand->nextInt(2) - 3;
 		$j1 = $l - $i1;

@@ -7,7 +7,7 @@ require_once("NoiseGenerator.php");
 class NoiseGeneratorOctaves extends NoiseGenerator{
 	public $octaves;
 	private $generatorCollection;
-	public function __construct(MersenneTwister $random, $octaves){	
+	public function __construct(MTRandom $random, $octaves){	
 		$this->generatorCollection = array();
 		$this->octaves = (int) $octaves;
 		for($o = 0; $o < $this->octaves; ++$o){

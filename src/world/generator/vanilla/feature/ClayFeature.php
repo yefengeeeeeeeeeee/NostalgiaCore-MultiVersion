@@ -1,7 +1,7 @@
 <?php
 class ClayFeature
 {
-	public static function place(Level $level, MersenneTwister $rand, $x, $y, $z){
+	public static function place(Level $level, MTRandom $rand, $x, $y, $z){
 		$size = 32;
 		$clayid = CLAY_BLOCK;
 		$id = $level->level->getBlockID($x, $y, $z);

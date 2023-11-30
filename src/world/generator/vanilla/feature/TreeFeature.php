@@ -1,7 +1,7 @@
 <?php
 class TreeFeature extends Feature
 {
-	public function place(Level $level, MersenneTwister $rand, $x, $y, $z){
+	public function place(Level $level, MTRandom $rand, $x, $y, $z){
 		$nextInt = $rand->nextInt(3) + 4;
 		$z2 = true;
 		if($y < 1 || $y + $nextInt + 1 > 128) return false;

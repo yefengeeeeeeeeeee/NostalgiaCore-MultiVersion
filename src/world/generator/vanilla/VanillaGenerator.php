@@ -51,7 +51,7 @@ class VanillaGenerator implements LevelGenerator
 	{
 		$this->level = $level;
 		$this->biomeSource = new BiomeSource($level);
-		$this->rand = new MersenneTwister($level->getSeed());
+		$this->rand = new MTRandom($level->getSeed());
 		$this->upperInterpolationNoise = new NoiseGeneratorOctaves($this->rand, 16);
 		$this->lowerInterpolationNoise = new NoiseGeneratorOctaves($this->rand, 16);
 		$this->interpolationNoise = new NoiseGeneratorOctaves($this->rand, 8);
@@ -229,7 +229,7 @@ class VanillaGenerator implements LevelGenerator
 				$b = $biome->topBlock;
 				$b2 = $biome->fillerBlock;
 				for($blockY = 127; $blockY >= 0; --$blockY){
-					if($blockY <= $this->rand->nextIntBndn(5)){
+					if($blockY <= $this->rand->nextInt(5)){
 						$chunks[$blockY >> 4][($blockY & 0xf) + ($blockZ << 5) + ($blockX << 9)] = "\x07";
 					}else{
 						$b3 = ord($chunks[$blockY >> 4][($blockY & 0xf) + ($blockZ << 5) + ($blockX << 9)]);
@@ -261,7 +261,7 @@ class VanillaGenerator implements LevelGenerator
 								--$i;
 								$chunks[$blockY >> 4][($blockY & 0xf) + ($blockZ << 5) + ($blockX << 9)] = chr($b2);
 								if($i == 0 && $b2 == SAND){
-									$i = $this->rand->nextIntBndn(4);
+									$i = $this->rand->nextInt(4);
 									$b2 = SANDSTONE;
 								}
 							}

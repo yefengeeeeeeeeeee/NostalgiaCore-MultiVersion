@@ -1,7 +1,7 @@
 <?php
 class SpruceFeature extends Feature
 {
-	public function place(Level $level, MersenneTwister $rand, $x, $y, $z){
+	public function place(Level $level, MTRandom $rand, $x, $y, $z){
 		$nextInt = $rand->nextInt(4) + 6;
 		$nextInt2 = 1 + $rand->nextInt(2);
 		$i2 = $nextInt - $nextInt2;
