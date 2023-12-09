@@ -152,6 +152,11 @@ abstract class Block extends Position{
 		STAINED_CLAY => "StainedClayBlock",
 		LILY_PAD => "LilypadBlock",
 		DOUBLE_PLANT => "DoubleTallGrass",
+		SPRUCE_FENCE_GATE => "SpruceFenceGateBlock",
+		BIRCH_FENCE_GATE => "BirchFenceGateBlock",
+		JUNGLE_FENCE_GATE => "JungleFenceGateBlock",
+		ACACIA_FENCE_GATE => "AcaciaFenceGateBlock",
+		DARK_OAK_FENCE_GATE => "DarkOakFenceGateBlock"
 	);
 	protected $id;
 	protected $meta;

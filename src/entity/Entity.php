@@ -785,7 +785,6 @@ class Entity extends Position
 						$pk->bodyYaw = $this->yaw;
 						$this->server->api->player->broadcastPacket($players, $pk);
 					} else{
-						
 						$pk = new MoveEntityPacket;
 						$pk->entities = [[$this->eid, $this->x, $this->y, $this->z, $this->yaw, $this->pitch]];
 						$this->server->api->player->broadcastPacket($players, $pk);
