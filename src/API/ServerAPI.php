@@ -138,10 +138,12 @@ class ServerAPI{
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
 			"auto-save" => true,
+			"chunk-send-delay-ticks" => 5,
 		]);
 		Biome::init();
 		$this->parseProperties();
 		MobSpawner::$MOB_LIMIT = $this->getProperty("mobs-amount", 50);
+		LevelAPI::$defaultLevelType = $this->getProperty("level-type");
 		//Load advanced properties
 		define("DEBUG", $this->getProperty("debug", 1));
 		define("ADVANCED_CACHE", $this->getProperty("enable-advanced-cache", false));
@@ -151,6 +153,7 @@ class ServerAPI{
 		}
 		MobSpawner::$spawnAnimals = $this->getProperty("spawn-animals");
 		MobSpawner::$spawnMobs = $this->getProperty("spawn-mobs");
+		PocketMinecraftServer::$chukSendDelay = $this->getProperty("chunk-send-delay-ticks");
 		if($this->getProperty("upnp-forwarding") == true){
 			console("[INFO] [UPnP] Trying to port forward...");
 			UPnP_PortForward($this->getProperty("server-port"));

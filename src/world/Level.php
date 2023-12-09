@@ -20,8 +20,8 @@ class Level{
 	public $entityList;
 	public $tiles, $blockUpdates, $nextSave, $players = [], $level, $mobSpawner;
 	public $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
-	
-	private $generator;
+	public $resendBlocksToPlayers = [];
+	public $generator;
 	public function __construct(PMFLevel $level, Config $entities, Config $tiles, Config $blockUpdates, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
@@ -85,16 +85,19 @@ class Level{
 	}
 	
 	public function fastSetBlockUpdate($x, $y, $z, $id, $meta, $updateBlocksAround = false){
+		$x = (int)$x;
+		$y = (int)$y;
+		$z = (int)$z;
 		$this->level->setBlock($x, $y, $z, $id, $meta);
-		$pk = new UpdateBlockPacket;
-		$pk->x = $x;
-		$pk->y = $y;
-		$pk->z = $z;
-		$pk->block = $id;
-		$pk->meta = $meta;
-		$this->server->api->player->broadcastPacket($this->players, $pk);
+		$this->sendBlockToAll($x, $y, $z);
 		if($updateBlocksAround){
 			$this->server->api->block->blockUpdateAround(new Position($x, $y, $z, $this), BLOCK_UPDATE_NORMAL, 1);
+		}
+	}
+	
+	public function sendBlockToAll($x, $y, $z){
+		foreach($this->players as $p){
+			$this->resendBlocksToPlayers[$p->CID]["$x.$y.$z"] = true;
 		}
 	}
 	
@@ -107,7 +110,35 @@ class Level{
 		unset($this->mobSpawner->level);
 	}
 	
-
+	public function checkSleep(){ //TODO events?
+		if(count($this->players) == 0) return false;
+		if($this->server->api->time->getPhase($this->level)  === "night"){ //TODO vanilla
+			foreach($this->players as $p){
+				if($p->isSleeping == false || $p->sleepingTime < 100){
+					return false;
+				}
+			}
+			$this->server->api->time->set("day", $this->level);
+		}
+		foreach($this->players as $p){
+			$p->stopSleep();
+		}
+	}
+	
+	public function fastSetBlockUpdateMeta($x, $y, $z, $meta, $updateBlock = false){
+		$this->level->setBlockDamage($x, $y, $z, $meta);
+		$pk = new UpdateBlockPacket;
+		$pk->x = $x;
+		$pk->y = $y;
+		$pk->z = $z;
+		$pk->block = $this->level->getBlockID($x, $y, $z);
+		$pk->meta = $meta;
+		$this->server->api->player->broadcastPacket($this->players, $pk);
+		if($updateBlock){
+			$this->server->api->block->blockUpdateAround(new Position($x, $y, $z, $this), BLOCK_UPDATE_NORMAL, 1);
+		}
+	}
+	
 	public function getOrderedFullChunk($X, $Z){
 		$X = (int)$X;
 		$Z = (int)$Z;
@@ -126,7 +157,7 @@ class Level{
 		$tileEntities = "";
 		if($gen) $this->level->generateChunk($X, $Z, $this->generator);
 		if(!$this->level->isChunkLoaded($X, $Z)){
-			$this->level->loadChunk($X, $Z);
+			$this->level->loadChunk($X, $Z, true);
 		}
 		$miniChunks = [];
 			
@@ -158,33 +189,54 @@ class Level{
 		}
 
 		$nbt = new NBT_new(NBT_new::LITTLE_ENDIAN);
-        foreach($chunkTiles as $tile){ //TODO non-hardcoded nbt data
+        foreach($chunkTiles as $tile){ //TODO rewrite TileEntity system
 			switch($tile->class){
-				case "Sign":
+				case TILE_SIGN:
 					$text = $tile->getText();
-						$nbt->setData(new Compound("", array(
-							new StringTag("Text1", $text[0]),
-							new StringTag("Text2", $text[1]),
-							new StringTag("Text3", $text[2]),
-							new StringTag("Text4", $text[3]),
-							new StringTag("id", "Sign"),
-							new IntTag("x", (int) $tile->x),
-							new IntTag("y", (int) $tile->y),
-							new IntTag("z", (int) $tile->z)
-						)));
-						$tileEntities .= $nbt->write();
+					$nbt->setData(new Compound("", array(
+						new StringTag("Text1", $text[0]),
+						new StringTag("Text2", $text[1]),
+						new StringTag("Text3", $text[2]),
+						new StringTag("Text4", $text[3]),
+						new StringTag("id", TILE_SIGN),
+						new IntTag("x", (int) $tile->x),
+						new IntTag("y", (int) $tile->y),
+						new IntTag("z", (int) $tile->z)
+					)));
+					$tileEntities .= $nbt->write();
 					break;
-				case "Furnace":
-						//nutting, not spawnable :D
+				case TILE_FURNACE:
+					//nutting, not spawnable :D
 					break;
-				case "Chest":
+				case TILE_CHEST:
+					if($tile->isPaired()){
 						$nbt->setData(new Compound("", array(
 							new StringTag("id", "Chest"),
 							new IntTag("x", (int) $tile->x),
 							new IntTag("y", (int) $tile->y),
-							new IntTag("z", (int) $tile->z)
+							new IntTag("z", (int) $tile->z),
+							new IntTag("pairx", (int) $tile->getPair()->x),
+							new IntTag("pairz", (int) $tile->getPair()->z)
 						)));
-						$tileEntities .= $nbt->write();
+					}else{
+						$nbt->setData(new Compound("", array(
+							new StringTag("id", TILE_CHEST),
+							new IntTag("x", (int) $tile->x),
+							new IntTag("y", (int) $tile->y),
+							new IntTag("z", (int) $tile->z),
+						)));
+					}
+					$tileEntities .= $nbt->write();
+					break;
+				case TILE_MOB_SPAWNER:
+					$nbt->setData(new Compound("", array(
+						new StringTag("id", TILE_MOB_SPAWNER),
+						new IntTag("x", (int) $tile->x),
+						new IntTag("y", (int) $tile->y),
+						new IntTag("z", (int) $tile->z),
+						new IntTag("EntityId", (int) $tile->data["EntityId"]),
+					)));
+					$tileEntities .= $nbt->write();
 					break;
 			}
 		}
@@ -263,8 +315,11 @@ class Level{
 	}
 
 	public function freeAllChunks(Player $player){
-		foreach($this->usedChunks as $i => $c){
-			unset($this->usedChunks[$i][$player->CID]);
+		foreach($player->chunksLoaded as $chunk => $c){
+			$xz = explode(":", $chunk);
+			$x = $xz[0];
+			$z = $xz[1];
+			$player->stopUsingChunk($x, $z);
 		}
 	}
 
@@ -293,7 +348,7 @@ class Level{
 		}
 		$now = microtime(true);
 		$this->players = $this->server->api->player->getAll($this);
-		
+		$this->checkSleep();
 		if(count($this->changedCount) > 0){
 			arsort($this->changedCount);
 			$resendChunks = [];
@@ -419,9 +474,45 @@ class Level{
 			}
 		}
 		
+		foreach($this->level->fakeLoaded as $ind => $val){
+			$xz = explode(".", $val);
+			$this->level->unloadChunk($xz[0], $xz[1]);
+			unset($this->level->fakeLoaded[$ind]);
+		}
+		foreach($this->resendBlocksToPlayers as $playerCID => $blockz){
+			/**
+			 * @var Player $player
+			 */
+			$player = $this->server->clients[$playerCID] ?? false;
+			if($player instanceof Player){
+				foreach($blockz as $xyz => $_){
+					$xyzz = explode(".", $xyz);
+					if(count($xyzz) == 3){
+						$x = (int) $xyzz[0];
+						$y = (int) $xyzz[1];
+						$z = (int) $xyzz[2];
+						$idm = $this->level->getBlock($x, $y, $z);
+						//$player->addToBlockSendQueue(new UpdateBlockPacket($x, $y, $z, $idm[0], $idm[1]));
+						$pk = new UpdateBlockPacket;
+						$pk->x = $x;
+						$pk->y = $y;
+						$pk->z = $z;
+						$pk->block = $idm[0] & 0xff;
+						$pk->meta = $idm[1] & 0xff;
+						$player->addToBlockSendQueue($pk);
+					}
+					unset($blockz[$xyz]);
+				}
+				$player->sendBlockUpdateQueue();
+			}
+			unset($this->resendBlocksToPlayers[$playerCID]);
+		}
 	}
 	
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){
+		$pos->x = (int)$pos->x;
+		$pos->y = (int)$pos->y;
+		$pos->z = (int)$pos->z;
 		if(!isset($this->level) or (($pos instanceof Position) and $pos->level !== $this) or $pos->y < 0){
 			return false;
 		}
@@ -432,13 +523,7 @@ class Level{
 			}
 			$block->position($pos);
 			if($direct === true){
-				$pk = new UpdateBlockPacket;
-				$pk->x = $pos->x;
-				$pk->y = $pos->y;
-				$pk->z = $pos->z;
-				$pk->block = $block->getID();
-				$pk->meta = $block->getMetadata();
-				$this->server->api->player->broadcastPacket($this->players, $pk);
+				$this->sendBlockToAll($pos->x, $pos->y, $pos->z);
 			}else{
 				$i = ($pos->x >> 4) . ":" . ($pos->y >> 4) . ":" . ($pos->z >> 4);
 				if(!isset($this->changedBlocks[$i])){
@@ -477,7 +562,7 @@ class Level{
 			return false;
 		}
 		$this->changedCount[$X . ":" . $Y . ":" . $Z] = 4096;
-		if(ADVANCED_CACHE == true){
+		if(ADVANCED_CACHE){
 			Cache::remove("world:{$this->name}:$X:$Z");
 		}
 		return $this->level->setMiniChunk($X, $Z, $Y, $data);

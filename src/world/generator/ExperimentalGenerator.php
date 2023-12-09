@@ -66,7 +66,7 @@ class ExperimentalGenerator implements NewLevelGenerator{
 			new OreType(new LapisOreBlock(), 1, 6, 0, 32),
 			new OreType(new GoldOreBlock(), 2, 8, 0, 32),
 			new OreType(new DiamondOreBlock(), 1, 7, 0, 16),
-			new OreType(new EmeraldOreBlock(), 1, 7, 0, 16), //TODO vanilla
+			new OreType(new EmeraldOreBlock(), 1, 2, 0, 16), //TODO vanilla
 			
 			new OreType(new DirtBlock(), 20, 32, 0, 128),
 			new OreType(new GravelBlock(), 10, 16, 0, 128),
@@ -85,6 +85,7 @@ class ExperimentalGenerator implements NewLevelGenerator{
 		$tallGrass->setBaseAmount(5);
 		$tallGrass->setRandomAmount(0);
 		$this->populators[] = $tallGrass;
+		$this->caveGenerator = new CaveGenerator($this->level->getSeed());
 	}
 	
 	public function pickBiome(int $x, int $z){
@@ -103,11 +104,8 @@ class ExperimentalGenerator implements NewLevelGenerator{
 	
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->level->getSeed());
-		
 		$noiseArray = ExperimentalGenerator::getFastNoise3D($this->noiseBase, 16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
-		
 		$biomeCache = [];
-		
 		for($chunkY = 0; $chunkY < 8; ++$chunkY){
 			$chunk = "";
 			$startY = $chunkY << 4;
@@ -165,13 +163,15 @@ class ExperimentalGenerator implements NewLevelGenerator{
 			$this->level->setMiniChunk($chunkX, $chunkZ, $chunkY, $chunk);
 		}
 		
-		
 		foreach($this->genPopulators as $pop){
 			$pop->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
+		
+		$this->caveGenerator->generate($this->level, $chunkX, $chunkZ);
 	}
 	
 	public function populateChunk($chunkX, $chunkZ){
+		$this->level->level->setPopulated($chunkX, $chunkZ, true);
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->level->getSeed());
 		foreach($this->populators as $populator){
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);

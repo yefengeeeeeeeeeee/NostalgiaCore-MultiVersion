@@ -49,11 +49,11 @@ class Player{
 	private $ip;
 	private $port;
 	private $counter = [0, 0, 0, 0];
-	private $username;
-	private $iusername;
+	public $username;
+	public $iusername;
 	private $eid = false;
 	private $startAction = false;
-	private $isSleeping = false;
+	public $isSleeping = false;
 	private $chunksOrder = [];
 	private $lastMeasure = 0;
 	private $bandwidthRaw = 0;
@@ -68,6 +68,10 @@ class Player{
 	private $chunkCount = [];
 	private $received = [];
 	public $cratingItems;
+	public $sleepingTime = 0;
+	
+	public $blockSendQueue;
+	public $blockSendQueueLength = 0;
 	/**
 	 * @param integer $clientID
 	 * @param string $ip
@@ -94,7 +98,9 @@ class Player{
 		$this->packetStats = [0, 0];
 		$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$this->buffer->data = [];
-		$this->server->schedule(2, [$this, "handlePacketQueues"], [], true);
+		$this->blockSendQueue = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+		$this->blockSendQueue->data = [];
+		$this->server->schedule(1, [$this, "handlePacketQueues"], [], true);
 		$this->server->schedule(20 * 60, [$this, "clearQueue"], [], true);
 		$this->evid[] = $this->server->event("server.close", [$this, "close"]);
 		console("[DEBUG] New Session started with " . $ip . ":" . $port . ". MTU " . $this->MTU . ", Client ID " . $this->clientID, true, true, 2);
@@ -130,7 +136,7 @@ class Player{
 			$this->entity->updateMetadata();
 		}
 		$this->setSpawn($pos);
-		$this->server->schedule(60, [$this, "checkSleep"]);
+	
 		return true;
 	}
 
@@ -245,7 +251,23 @@ class Player{
 		$pk->teleport = true;
 		$this->dataPacket($pk);
 	}
-
+	public function addToBlockSendQueue(RakNetDataPacket $packet){
+		if($this->connected === false) return false;
+		
+		$packet->encode();
+		$len = strlen($packet->buffer) + 1;
+		$MTU = $this->MTU - 24;
+		
+		
+		if(($this->blockSendQueueLength + $len) >= $MTU){
+			$this->sendBlockUpdateQueue();
+		}
+		
+		$packet->messageIndex = $this->counter[3]++;
+		$packet->reliability = 2;
+		@$this->blockSendQueue->data[] = $packet;
+		$this->blockSendQueueLength += 6 + $len;
+	}
 	/**
 	 * @param integer $id
 	 * @param array $data
@@ -321,7 +343,17 @@ class Player{
 			$this->bandwidthRaw += $this->server->send($packet);
 		}
 	}
-
+	
+	
+	public function sendBlockUpdateQueue(){
+		if($this->blockSendQueueLength > 0 and $this->blockSendQueue instanceof RakNetPacket){
+			$this->blockSendQueue->seqNumber = $this->counter[0]++;
+			$this->send($this->blockSendQueue);
+		}
+		$this->blockSendQueueLength = 0;
+		$this->blockSendQueue = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+		$this->blockSendQueue->data = [];
+	}
 	public function sendBuffer(){
 		if($this->bufferLen > 0 and $this->buffer instanceof RakNetPacket){
 			$this->buffer->seqNumber = $this->counter[0]++;
@@ -330,7 +362,7 @@ class Player{
 		$this->bufferLen = 0;
 		$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$this->buffer->data = [];
-		$this->nextBuffer = microtime(true) + 0.1;
+		$this->nextBuffer = microtime(true) + 0.05;
 	}
 
 	/**
@@ -459,7 +491,7 @@ class Player{
 			}
 		}
 		
-		$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '" . $this->level->getName() . "' AND x >= " . (($X << 4) - 1) . " AND x < " . (($X << 4) + 17) . " AND z >= " . (($Z << 4) - 1) . " AND z < " . (($Z << 4) + 17) . ";");
+		/*$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '" . $this->level->getName() . "' AND x >= " . (($X << 4) - 1) . " AND x < " . (($X << 4) + 17) . " AND z >= " . (($Z << 4) - 1) . " AND z < " . (($Z << 4) + 17) . ";");
 		$this->lastChunk = false;
 		if($tiles !== false and $tiles !== true){
 			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
@@ -468,8 +500,8 @@ class Player{
 					$tile->spawn($this);
 				}
 			}
-		}
-		$this->stopUsingChunk($X, $Z); //just in case
+		}*/
+		//$this->stopUsingChunk($X, $Z); //just in case
 		$pk = new FullChunkDataPacket;
 		$pk->chunkX = $X;
 		$pk->chunkZ = $Z;
@@ -479,13 +511,18 @@ class Player{
 			return false;
 		}
 	}
-	
+	public $chunkTicker = 0;
 	public function entityTick(){
 		//ConsoleAPI::debug("{$this->username}, cl: ".count($this->chunksLoaded).", oc: ".count($this->chunksOrder));
 		if(count($this->chunksOrder) <= 0 && $this->level->generatorType != 0){
 			$this->orderChunks();
 		}
-		$this->getNextChunk($this->level);
+	
+		if($this->isSleeping) ++$this->sleepingTime;
+		if($this->chunkTicker++ > PocketMinecraftServer::$chukSendDelay){
+			$this->getNextChunk($this->level);
+			$this->chunkTicker = 0;
+		}
 	}
 	
 	public function getNextChunk($world){
@@ -502,7 +539,7 @@ class Player{
 			}
 		}
 
-		if(is_array($this->lastChunk)){
+		/*if(is_array($this->lastChunk)){
 			$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '" . $this->level->getName() . "' AND x >= " . ($this->lastChunk[0] - 1) . " AND x < " . ($this->lastChunk[0] + 17) . " AND z >= " . ($this->lastChunk[1] - 1) . " AND z < " . ($this->lastChunk[1] + 17) . ";");
 			$this->lastChunk = false;
 			if($tiles !== false and $tiles !== true){
@@ -513,7 +550,7 @@ class Player{
 					}
 				}
 			}
-		}
+		}*/
 
 		$c = key($this->chunksOrder);
 		$d = $c != null ? $this->chunksOrder[$c] : null;
@@ -531,6 +568,7 @@ class Player{
 		$z = $Z << 4;
 		$this->level->useChunk($X, $Z, $this);
 		$this->chunksLoaded["$X:$Z"] = true;
+		
 		$pk = new FullChunkDataPacket;
 		$pk->chunkX = $X;
 		$pk->chunkZ = $Z;
@@ -601,22 +639,6 @@ class Player{
 		$pk->slots = $this->inventory;
 		$pk->hotbar = $hotbar;
 		$this->dataPacket($pk);
-	}
-
-	public function checkSleep(){
-		if($this->isSleeping !== false){
-			if($this->server->api->time->getPhase($this->level) === "night"){
-				foreach($this->server->api->player->getAll($this->level) as $p){
-					if($p->isSleeping === false){
-						return false;
-					}
-				}
-				$this->server->api->time->set("day", $this->level);
-				foreach($this->server->api->player->getAll($this->level) as $p){
-					$p->stopSleep();
-				}
-			}
-		}
 	}
 
 	/**
@@ -788,9 +810,6 @@ class Player{
 				$pk = new SetEntityMotionPacket; //TODO one packet for all entities if possible
 				$pk->entities = [[$data->eid, $data->speedX, $data->speedY, $data->speedZ]];
 				$this->dataPacket($pk);
-				$data->lastSpeedZ = $data->speedZ;
-				$data->lastSpeedY = $data->speedY;
-				$data->lastSpeedX = $data->speedX;
 				break;
 			case "entity.animate":
 
@@ -1112,16 +1131,6 @@ class Player{
 							}elseif($p->messageIndex !== 0){
 								if(isset($this->received[$p->messageIndex])){
 									continue;
-								}
-								switch($p->pid()){
-									case 0x01:
-									case ProtocolInfo::PING_PACKET:
-									case ProtocolInfo::PONG_PACKET:
-									case ProtocolInfo::MOVE_PLAYER_PACKET:
-									case ProtocolInfo::REQUEST_CHUNK_PACKET:
-									case ProtocolInfo::ANIMATE_PACKET:
-									case ProtocolInfo::SET_HEALTH_PACKET:
-										break;
 								}
 							}
 							$this->received[$p->messageIndex] = true;
@@ -1532,9 +1541,11 @@ class Player{
 					$this->spawned = true;
 					$this->server->handle("player.spawn", $this);
 					$this->server->api->chat->broadcast($this->username." joined the game");
+					//console("Current position: {$this->entity}");
 					$this->server->api->player->spawnAllPlayers($this);
 					$this->server->api->player->spawnToAllPlayers($this);
 				}
+				if($this->isSleeping) break;
 				if(($this->entity instanceof Entity) and $packet->messageIndex > $this->lastMovement){
 					$this->lastMovement = $packet->messageIndex;
 					$newPos = new Vector3($packet->x, $packet->y, $packet->z);
@@ -1542,15 +1553,18 @@ class Player{
 						if($this->forceMovement->distance($newPos) <= 0.7){
 							$this->forceMovement = false;
 						}else{
+							//console("force");
 							$this->teleport($this->forceMovement, $this->entity->yaw, $this->entity->pitch, false);
 						}
 					}
 					$speed = $this->entity->getSpeedMeasure();
 					if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 9 and ($this->gamemode & 0x01) === 0x00) or $speed > 20 or $this->entity->distance($newPos) > 7)) or $this->server->api->handle("player.move", $this->entity) === false){
 						if($this->lastCorrect instanceof Vector3){
+							//console("last");
 							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 						}
 					}else{
+						//console("New Pos: $newPos");
 						$this->entity->setPosition($newPos, $packet->yaw, $packet->pitch);
 					}
 					$this->entity->updateAABB();
@@ -1627,10 +1641,7 @@ class Player{
 				//$this->lastChunk = [$packet->chunkX, $packet->chunkZ];
 				break;
 			case ProtocolInfo::UPDATE_BLOCK_PACKET:
-			    if($this->gamemode & 0x01 === 0){
-			        $this->level->setBlock(new Vector3($packet->x, $packet->y, $packet->z), BlockAPI::get($packet->block, $packet->meta));
-			    }
-				
+			    $this->level->resendBlocksToPlayers[$this->CID]["{$packet->x}.{$packet->y}.{$packet->z}"] = true;
 				break;
 			case ProtocolInfo::USE_ITEM_PACKET:
 				if(!($this->entity instanceof Entity)){
@@ -2216,6 +2227,7 @@ class Player{
 	
 	public function stopSleep(){
 		$this->isSleeping = false;
+		$this->sleepingTime = 0;
 		if($this->entity instanceof Entity){
 			$this->entity->updateMetadata();
 		}
