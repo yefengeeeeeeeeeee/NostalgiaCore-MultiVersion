@@ -81,7 +81,9 @@ class BlockAPI{
 		[ICE, 0],
 		[SNOW_BLOCK, 0],
 		[BROWN_MUSHROOM_BLOCK, 0],
-		[RED_MUSHROOM_BLOCK, 0],
+		[BROWN_MUSHROOM_BLOCK, 14],
+		[BROWN_MUSHROOM_BLOCK, 15],
+		[RED_MUSHROOM_BLOCK, 14],
 		[MYCELIUM, 0],
 		[PODZOL, 0],
 		[STAINED_CLAY, 0],
@@ -268,8 +270,13 @@ class BlockAPI{
 		[DYE, 11],
 		[DYE, 10],
 		[DYE, 9],
-		[DYE, 8]
-
+		[DYE, 8],
+		[DOUBLE_PLANT, 0],
+		[DOUBLE_PLANT, 1],
+		[DOUBLE_PLANT, 2],
+		[DOUBLE_PLANT, 3],
+		[DOUBLE_PLANT, 4],
+		[DOUBLE_PLANT, 5],
 	];
 	private $server;
 	private $scheduledUpdates = [];

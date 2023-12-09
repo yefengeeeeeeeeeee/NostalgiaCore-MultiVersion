@@ -1,7 +1,7 @@
 <?php
 
 class PocketMinecraftServer{
-
+	public static $chukSendDelay = 5;
 	public $tCnt, $ticks;
 	public $extraprops, $serverID, $interface, $database, $version, $invisible, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
 	/**
@@ -33,6 +33,8 @@ class PocketMinecraftServer{
 		console("[INFO] Starting Minecraft PE server on " . ($this->serverip === "0.0.0.0" ? "*" : $this->serverip) . ":" . $this->port);
 		EntityRegistry::registerEntities();
 		Structures::initialize();
+		Feature::init();
+		StaticBlock::init();
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
 		$this->serverID = $this->serverID === false ? Utils::readLong(substr(Utils::getUniqueID(true, $this->serverip . $this->port), 8)) : $this->serverID;
 		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)) : $this->seed;
@@ -86,8 +88,8 @@ class PocketMinecraftServer{
 			"discord-bot-name" => "NostalgiaCore Logger",
 			"despawn-mobs" => true, 
 			"mob-despawn-ticks" => 18000,
-			
 		]);
+		
 		Living::$despawnMobs = $this->extraprops->get("despawn-mobs");
 		Living::$despawnTimer = $this->extraprops->get("mob-despawn-ticks");
 		Entity::$allowedAI = $this->extraprops->get("enable-mob-ai");
@@ -225,7 +227,7 @@ class PocketMinecraftServer{
 				"url" => $url,
 				"data" => [
 					"username" => $name,
-					"content" => $this->extraprops->get("discord-ru-smiles") ? str_replace("@", " ", str_replace("Ы", "<:imp_cool:1151085500396998719>", str_replace("Ь", "<:imp_badphp5:1151085478410457120>", str_replace("Ъ", "<:imp_gudjava:1151085431962742784>", str_replace("Ё", "<:imp_wut:1151085524241621012>", $msg))))) : str_replace("@", "", $msg)
+					"content" => $this->extraprops->get("discord-ru-smiles") ? str_replace("@", " ", str_replace("�", "<:imp_cool:1151085500396998719>", str_replace("�", "<:imp_badphp5:1151085478410457120>", str_replace("�", "<:imp_gudjava:1151085431962742784>", str_replace("�", "<:imp_wut:1151085524241621012>", $msg))))) : str_replace("@", "", $msg)
 				],
 			], null);
 		}

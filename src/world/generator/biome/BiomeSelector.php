@@ -3,19 +3,19 @@
 class BiomeSelector
 {
 	/** @var Biome */
-	private $fallback;
+	public $fallback;
 	
 	/** @var NoiseGeneratorSimplex */
-	private $temperature;
+	public $temperature;
 	/** @var NoiseGeneratorSimplex */
-	private $rainfall;
+	public $rainfall;
 	
 	/** @var Biome[] */
 	public static $biomes = [];
 	
-	private $map = [];
+	public $map = [];
 	
-	private $lookup;
+	public $lookup;
 	
 	public function __construct(Random $random, Biome $fallback){
 		$this->fallback = $fallback;
@@ -91,7 +91,6 @@ class BiomeSelector
 	public function pickBiome($x, $z){
 		$temperature = (int) ($this->getTemperature($x, $z) * 63);
 		$rainfall = (int) ($this->getRainfall($x, $z) * 63);
-
 		$biomeId = $this->map[$temperature + ($rainfall << 6)] ?? -1;
 		return self::$biomes[$biomeId] ?? $this->fallback;
 	}

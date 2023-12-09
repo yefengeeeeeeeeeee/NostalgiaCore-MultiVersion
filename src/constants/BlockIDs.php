@@ -86,6 +86,7 @@ define("BLACK_WOOL", "35:15");
 define("DANDELION", 37);
 define("YELLOW_FLOWER", 37);
 define("ROSE", 38);
+define("MULTIFLOWER", 38);
 define("CYAN_FLOWER", 38); //NO
 define("RED_FLOWER", 38);
 define("BLUE_ORCHID", "38:1");
@@ -111,6 +112,7 @@ define("BRICKS_BLOCK", 45);
 define("TNT", 46);
 define("BOOKSHELF", 47);
 define("MOSS_STONE", 48);
+define("MOSSY_COBBLESTONE", 48);
 define("MOSSY_STONE", 48);
 define("OBSIDIAN", 49);
 define("TORCH", 50);

@@ -1,7 +1,7 @@
 <?php
 
 class FenceBlock extends TransparentBlock{
-	public function __construct($meta){
+	public function __construct($meta = 0){
 		parent::__construct(FENCE, $meta, "Fence");
 		$names = [
 			0 => "Oak Fence",
