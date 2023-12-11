@@ -614,10 +614,19 @@ class Entity extends Position
 				}
 				if($this->speedY != 0){
 					$ny = $this->y + $this->speedY;
-					if($this->class === ENTITY_FALLING && $support){
-						$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, $this->data["Tile"], 0);
-						$this->close();
-						return;
+					if($this->class === ENTITY_FALLING){
+						if($support){
+							$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, $this->data["Tile"], 0);
+							$this->close();
+							return;
+						}
+						$id = $this->level->level->getBlockID($this->x, $this->y, $this->z);
+						if($id > 0 && !StaticBlock::getIsSolid($id) && !StaticBlock::getIsLiquid($id)){
+							$this->server->api->entity->drop($this, BlockAPI::getItem($this->data["Tile"], 0, 1));
+							$this->close();
+							return;
+						}
+						
 					}
 					$this->y = $ny;
 					
