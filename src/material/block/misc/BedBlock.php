@@ -61,7 +61,7 @@ class BedBlock extends TransparentBlock{
 			
 			$d = $player->entity->getDirection();
 			$next = $this->getSide(self::$faces[(($d + 3) % 4)]);
-			$downNext = $this->getSide(0);
+			$downNext = $next->getSide(0);
 			if($next->isReplaceable === true and $downNext->isTransparent === false){
 				$meta = (($d + 3) % 4) & 0x03;
 				$this->level->setBlock($block, BlockAPI::get($this->id, $meta), true, false, true);
@@ -79,25 +79,35 @@ class BedBlock extends TransparentBlock{
 		$blockWest = $this->getSide(4);
 		
 		if(($this->meta & 0x08) === 0x08){ //This is the Top part of bed			
-			if($blockNorth->getID() === $this->id and $blockNorth->meta !== 0x08){ //Checks if the block ID and meta are right
-				$this->level->setBlock($blockNorth, new AirBlock(), true, false, true);
-			}elseif($blockSouth->getID() === $this->id and $blockSouth->meta !== 0x08){
-				$this->level->setBlock($blockSouth, new AirBlock(), true, false, true);
-			}elseif($blockEast->getID() === $this->id and $blockEast->meta !== 0x08){
-				$this->level->setBlock($blockEast, new AirBlock(), true, false, true);
-			}elseif($blockWest->getID() === $this->id and $blockWest->meta !== 0x08){
-				$this->level->setBlock($blockWest, new AirBlock(), true, false, true);
+			switch($this->meta & 0x7){
+				case 0:
+					if($blockNorth->id === $this->id) $this->level->setBlock($blockNorth, new AirBlock(), true, false, true);
+					break;
+				case 1:
+					if($blockEast->id === $this->id) $this->level->setBlock($blockEast, new AirBlock(), true, false, true);
+					break;
+				case 2:
+					if($blockSouth->id === $this->id) $this->level->setBlock($blockSouth, new AirBlock(), true, false, true);
+					break;
+				case 3:
+					if($blockWest->id === $this->id) $this->level->setBlock($blockWest, new AirBlock(), true, false, true);
+					break;
 			}
 		}else{ //Bottom Part of Bed
-			if($blockNorth->getID() === $this->id and ($blockNorth->meta & 0x08) === 0x08){
-				$this->level->setBlock($blockNorth, new AirBlock(), true, false, true);
-			}elseif($blockSouth->getID() === $this->id and ($blockSouth->meta & 0x08) === 0x08){
-				$this->level->setBlock($blockSouth, new AirBlock(), true, false, true);
-			}elseif($blockEast->getID() === $this->id and ($blockEast->meta & 0x08) === 0x08){
-				$this->level->setBlock($blockEast, new AirBlock(), true, false, true);
-			}elseif($blockWest->getID() === $this->id and ($blockWest->meta & 0x08) === 0x08){
-				$this->level->setBlock($blockWest, new AirBlock(), true, false, true);
-			}				
+			switch($this->meta & 0x7){
+				case 0:
+					if($blockSouth->id === $this->id) $this->level->setBlock($blockSouth, new AirBlock(), true, false, true);
+					break;
+				case 1:
+					if($blockWest->id === $this->id) $this->level->setBlock($blockWest, new AirBlock(), true, false, true);
+					break;
+				case 2:
+					if($blockNorth->id === $this->id) $this->level->setBlock($blockNorth, new AirBlock(), true, false, true);
+					break;
+				case 3:
+					if($blockEast->id === $this->id) $this->level->setBlock($blockEast, new AirBlock(), true, false, true);
+					break;
+			}
 		}
 		$this->level->setBlock($this, new AirBlock(), true, false, true);
 		return true;

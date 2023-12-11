@@ -199,10 +199,6 @@ class EntityAPI{
 		}
 	}
 	
-	public function updateRadius(Position $center, $radius = 15, $class = false){
-		//useless now? $this->server->query("UPDATE entities SET hasUpdate = 1 WHERE level = '" . $center->level->getName() . "' " . ($class !== false ? "AND class = $class " : "") . "AND abs(x - {$center->x}) <= $radius AND abs(y - {$center->y}) <= $radius AND abs(z - {$center->z}) <= $radius;");
-	}
-	
 	public function getRadius(Position $center, $radius = 15, $class = false){
 		$entities = [];
 		$l = $this->server->query("SELECT EID FROM entities WHERE level = '" . $center->level->getName() . "' " . ($class !== false ? "AND class = $class " : "") . "AND abs(x - {$center->x}) <= $radius AND abs(y - {$center->y}) <= $radius AND abs(z - {$center->z}) <= $radius;");
@@ -292,5 +288,12 @@ class EntityAPI{
 			return $level->entityList;
 		}
 		return $this->entities;
+	}
+	
+	/**
+	 * @deprecated this function doesnt do anything
+	 */
+	public function updateRadius(Position $center, $radius = 15, $class = false){
+		
 	}
 }
