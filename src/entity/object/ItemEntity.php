@@ -21,6 +21,6 @@ class ItemEntity extends Entity{
 		$this->setHealth(5, "generic");
 		$this->gravity = 0.04;
 		$this->delayBeforePickup = 20;
-		$this->stepHeight = false;
+		$this->stepHeight = 0;
 	}
 }
