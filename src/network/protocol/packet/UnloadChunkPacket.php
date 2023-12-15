@@ -4,11 +4,6 @@ class UnloadChunkPacket extends RakNetDataPacket
 {
 	public $chunkX, $chunkZ;
 	
-	public function __construct($chunkX = 0, $chunkZ = 0){
-		$this->chunkX = $chunkX;
-		$this->chunkZ = $chunkZ;
-	}
-	
 	public function encode()
 	{
 		$this->reset();

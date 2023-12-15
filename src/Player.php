@@ -430,8 +430,10 @@ class Player{
 		$ind = "$X:$Z";
 		if(isset($this->chunksLoaded[$ind])) unset($this->chunksLoaded[$ind]);
 		if(isset($this->chunksOrder[$ind])) unset($this->chunksOrder[$ind]);
-		
-		$this->dataPacket(new UnloadChunkPacket($X, $Z));
+		$cp = new UnloadChunkPacket;
+		$cp->x = $X;
+		$cp->z = $Z;
+		$this->dataPacket($cp);
 	}
 	public function orderChunks(){
 		if(!($this->entity instanceof Entity) or $this->connected === false){
@@ -441,10 +443,10 @@ class Player{
 		$Z = ((int)$this->entity->z) >> 4;
 		$this->chunksOrder = [];
 		//if($this->level->generatorType != 0) $chunkToUnload = $this->chunksLoaded;
-		$startX = $this->level->generatorType === 1 ? $X - 4 : 0;
-		$stopX = $this->level->generatorType === 1 ? $X + 4 : 15;
-		$startZ = $this->level->generatorType === 1 ? $Z - 4 : 0;
-		$stopZ = $this->level->generatorType === 1 ? $Z + 4 : 15;
+		$startX = $this->level->generatorType === 1 ? $X - PocketMinecraftServer::$chunkLoadingRadius : 0;
+		$stopX = $this->level->generatorType === 1 ? $X + PocketMinecraftServer::$chunkLoadingRadius : 15;
+		$startZ = $this->level->generatorType === 1 ? $Z - PocketMinecraftServer::$chunkLoadingRadius : 0;
+		$stopZ = $this->level->generatorType === 1 ? $Z + PocketMinecraftServer::$chunkLoadingRadius : 15;
 		for($x = $startX; $x <= $stopX; ++$x){
 			for($z = $startZ; $z <= $stopZ; ++$z){
 				$d = $x . ":" . $z;
