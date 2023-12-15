@@ -79,6 +79,9 @@ class Entity extends Position
 	public $onGround, $inWater;
 	public $carryoverDamage;
 	public $gravity;
+	
+	public $stepHeight = 0.5;
+	
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array())
 	{
 		$this->random = new Random();
@@ -150,6 +153,7 @@ class Entity extends Position
 				$this->y = isset($this->data["TileY"]) ? $this->data["TileY"] : $this->y;
 				$this->z = isset($this->data["TileZ"]) ? $this->data["TileZ"] : $this->z;
 				$this->setHealth(1, "generic");
+				$this->stepHeight = false;
 				// $this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
 				$this->width = 1;
 				$this->height = 1;
@@ -566,6 +570,11 @@ class Entity extends Position
 				}
 				
 				$savedSpeedY = $this->speedY;
+				$savedSpeedX = $this->speedX;
+				$savedSpeedZ = $this->speedZ;
+				$ultraMegaOldBB = clone $this->boundingBox;
+				$stepSuccess = false;
+				$beforeStepSpeedY = 0;
 				if($this->class === ENTITY_MOB || $this->class === ENTITY_ITEM || ($this->class === ENTITY_OBJECT && $this->type === OBJECT_PRIMEDTNT) || $this->class === ENTITY_FALLING){
 					$water = false;
 					if($this->hasGravity){
@@ -601,6 +610,53 @@ class Entity extends Position
 					}
 					$this->boundingBox->offset($this->speedX, $this->speedY, $this->speedZ);
 					$this->inWater = $water;
+					$fallingFlag = $this->onGround || $savedSpeedY != $this->speedY && $savedSpeedY < 0.0;
+					$beforeStepSpeedY = $this->speedY;
+					if($this->stepHeight > 0 && $fallingFlag && ($this->speedX != $savedSpeedX || $this->speedZ != $savedSpeedZ)){
+						$cx = $this->speedX;
+						$cy = $this->speedY;
+						$cz = $this->speedZ;
+						
+						$this->speedX = $savedSpeedX;
+						$this->speedY = $this->stepHeight;
+						$this->speedZ = $savedSpeedZ;
+						
+						$aabb = clone $this->boundingBox;
+						$this->boundingBox->setBB($ultraMegaOldBB);
+						$aaBBs = $this->level->getCubes($this, $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ));
+						
+						foreach($aaBBs as $bb){ //TODO optimize
+							$this->speedY = $bb->calculateYOffset($this->boundingBox, $this->speedY);
+						}
+						$this->boundingBox->offset(0, $this->speedY, 0);
+						
+						foreach($aaBBs as $bb){
+							$this->speedX = $bb->calculateXOffset($this->boundingBox, $this->speedX);
+						}
+						$this->boundingBox->offset($this->speedX, 0, 0);
+						
+						foreach($aaBBs as $bb){
+							$this->speedZ = $bb->calculateZOffset($this->boundingBox, $this->speedZ);
+						}
+						$this->boundingBox->offset(0, 0, $this->speedZ);
+						
+						//$this->speedY = -$this->stepHeight;
+						//foreach($aaBBs as $bb){ //TODO optimize
+						//	$this->speedY = $bb->calculateYOffset($this->boundingBox, $this->speedY);
+						//}
+						//$this->boundingBox->offset(0, $this->speedY, 0);
+						
+						if ($cx*$cx + $cz*$cz >= $this->speedX*$this->speedX + $this->speedZ*$this->speedZ)
+						{
+							$this->speedX = $cx;
+							$this->speedY = $cy;
+							$this->speedZ = $cz;
+							$this->boundingBox->setBB($aabb);
+						}else{
+							$stepSuccess = true;
+						}
+					}
+					
 				}
 				$support = $savedSpeedY != $this->speedY && $savedSpeedY < 0;
 				
@@ -614,6 +670,7 @@ class Entity extends Position
 				}
 				if($this->speedY != 0){
 					$ny = $this->y + $this->speedY;
+					if($stepSuccess) $this->speedY = $beforeStepSpeedY;
 					if($this->class === ENTITY_FALLING){
 						if($support){
 							$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, $this->data["Tile"], 0);

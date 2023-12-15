@@ -3,6 +3,7 @@
 class MobController
 {
 	public static $ADVANCED = false;
+	public static $AUTOJUMP = false;
 	public static $landed = false;
 	public static $DANGEROUS_BLOCKS = [
 		LAVA => true,
@@ -48,19 +49,21 @@ class MobController
 		$xf = $this->entity->x + ($this->entity->getSpeedModifer() * $ox * $this->entity->getSpeed());
 		$zf = $this->entity->z + ($this->entity->getSpeedModifer() * $oz * $this->entity->getSpeed());
 		$a = $b = $c = $d = 0;
-		$oy = $this->entity->onGround && (
-				StaticBlock::getIsSolid(($a = $this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y), ceil($zf)))) && 
+		if(self::$AUTOJUMP){
+			$oy = $this->entity->onGround && (
+				StaticBlock::getIsSolid(($a = $this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y), ceil($zf)))) &&
 				!StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y) + 1, ceil($zf)))
-			||
+				||
 				StaticBlock::getIsSolid(($b = $this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y), $zf - ($oz < 0)))) &&
 				!StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y) + 1, $zf - ($oz < 0)))
-			||
+				||
 				StaticBlock::getIsSolid(($c = $this->entity->level->level->getBlockID($xf - ($ox < 0), (int)($this->entity->y), $zf - ($oz < 0)))) &&
 				!StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), (int)($this->entity->y) + 1, $zf - ($oz < 0)))
-			||
+				||
 				StaticBlock::getIsSolid(($d = $this->entity->level->level->getBlockID($xf - ($ox < 0), (int)($this->entity->y), ceil($zf)))) &&
 				!StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), (int)($this->entity->y) + 1, ceil($zf)))
-		);
+				);
+		}
 		
 		while(self::$ADVANCED){
 			if($this->isDangerous($a) || $this->isDangerous($b) || $this->isDangerous($c) || $this->isDangerous($d)){
