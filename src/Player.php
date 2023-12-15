@@ -1432,9 +1432,9 @@ class Player{
 				$pk->spawnX = (int) $this->spawnPosition->x;
 				$pk->spawnY = (int) $this->spawnPosition->y;
 				$pk->spawnZ = (int) $this->spawnPosition->z;
-				$pk->x = (int) $this->entity->x;
-				$pk->y = (int) $this->entity->y;
-				$pk->z = (int) $this->entity->z;
+				$pk->x = $this->entity->x;
+				$pk->y = $this->entity->y;
+				$pk->z = $this->entity->z;
 				$pk->generator = $this->level->generatorType; //1 - inf, 0 - old, 2 - flat
 				$pk->gamemode = $this->gamemode & 0x01;
 				$pk->eid = 0;
@@ -1533,6 +1533,8 @@ class Player{
 					//console("Current position: {$this->entity}");
 					$this->server->api->player->spawnAllPlayers($this);
 					$this->server->api->player->spawnToAllPlayers($this);
+					$this->teleport($this->entity);
+					return;
 				}
 				if($this->isSleeping) break;
 				if(($this->entity instanceof Entity) and $packet->messageIndex > $this->lastMovement){
