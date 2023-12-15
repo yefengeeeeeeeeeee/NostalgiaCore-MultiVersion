@@ -75,15 +75,16 @@ class Level{
 	}
 	
 	/**
+	 * @param Entity $e
 	 * @param AxisAlignedBB $aABB
 	 * @return AxisAlignedBB[]
 	 */
-	public function getCubes(AxisAlignedBB $aABB) {
+	public function getCubes(Entity $e, AxisAlignedBB $aABB) {
 		$aABBs = [];
 		$x0 = floor($aABB->minX);
 		$x1 = ceil($aABB->maxX);
 		$y0 = floor($aABB->minY);
-		$y1 = round($aABB->maxY);
+		$y1 = ceil($aABB->maxY);
 		$z0 = floor($aABB->minZ);
 		$z1 = ceil($aABB->maxZ);
 		$x0 = $x0 < 0 ? 0 : $x0;
@@ -93,12 +94,15 @@ class Level{
 		$y1 = $y1 > 128 ? 128 : $y1;
 		$z1 = $z1 > 256 ? 256 : $z1;
 		
-		for($x = $x0; $x < $x1; ++$x) {
-			for($y = $y0; $y < $y1; ++$y) {
-				for($z = $z0; $z < $z1; ++$z) {
-					$b = $this->getBlockWithoutVector($x, $y, $z);
-					if($b != false && $b->boundingBox->intersectsWith($aABB) && $b->isSolid) {
-						$aABBs[] = $b->boundingBox;
+		for($x = $x0; $x <= $x1; ++$x) {
+			for($y = $y0; $y <= $y1; ++$y) {
+				for($z = $z0; $z <= $z1; ++$z) {
+					$bid = $this->level->getBlockID($x, $y, $z);
+					if($bid > 0){
+						$blockBounds = Block::$class[$bid]::getCollisionBoundingBoxes($this, $x, $y, $z, $e); //StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
+						foreach($blockBounds as $blockBound){
+							$aABBs[] = $blockBound;
+						}
 					}
 				}
 			}
