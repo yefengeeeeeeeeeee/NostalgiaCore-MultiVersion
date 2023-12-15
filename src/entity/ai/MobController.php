@@ -43,9 +43,9 @@ class MobController
 			return false;
 		}
 		
-		$ox = ($x > 0 ? 1 : ($x < 0 ? -1 : 0));
-		$oy = ($y > 0 ? 1 : ($y < 0 ? -1 : 0));
-		$oz = ($z > 0 ? 1 : ($z < 0 ? -1 : 0));
+		$ox = $x <=> 1;
+		$oy = $y <=> 1;
+		$oz = $z <=> 1;
 		$xf = $this->entity->x + ($this->entity->getSpeedModifer() * $ox * $this->entity->getSpeed());
 		$zf = $this->entity->z + ($this->entity->getSpeedModifer() * $oz * $this->entity->getSpeed());
 		$a = $b = $c = $d = 0;
@@ -100,10 +100,14 @@ class MobController
 		return true;
 	}
 	
+	public function canJump(){
+		return $this->isJumping() && $this->jumpTimeout <= 0 && $this->entity->onGround;
+	}
+	
 	public function movementTick(){
-		if($this->isJumping() && $this->jumpTimeout <= 0 && $this->entity->onGround){
+		if($this->canJump()){
 			$this->jumpTimeout = 10;
-			$this->entity->speedY = 0.40;
+			$this->entity->speedY = 0.50;
 		}
 		if($this->jumpTimeout > 0) --$this->jumpTimeout;
 	}

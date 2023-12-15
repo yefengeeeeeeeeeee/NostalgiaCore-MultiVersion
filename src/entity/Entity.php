@@ -81,7 +81,7 @@ class Entity extends Position
 	public $gravity;
 	
 	public $stepHeight = 0.5;
-	
+	public $enableAutojump = false;
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array())
 	{
 		$this->random = new Random();
@@ -504,16 +504,14 @@ class Entity extends Position
 		return $hasUpdate;
 	}
 	
-
+	public function updateEntityMovement(){}
 
 
 	public function isInVoid(){
 		return $this->y < -1.6;
 	}
-
 	
 	public function update(){
-
 		if($this->closed === true){
 			return false;
 		}
@@ -539,6 +537,7 @@ class Entity extends Position
 		if($this->isStatic === false){
 			if(!$this->isPlayer()){
 				$this->updateLast();
+				$this->updateEntityMovement();
 				$update = false;
 				if($this->speedX > -self::MIN_POSSIBLE_SPEED && $this->speedX < self::MIN_POSSIBLE_SPEED){
 					$this->speedX = 0;
@@ -612,6 +611,7 @@ class Entity extends Position
 					$this->inWater = $water;
 					$fallingFlag = $this->onGround || $savedSpeedY != $this->speedY && $savedSpeedY < 0.0;
 					$beforeStepSpeedY = $this->speedY;
+					
 					if($this->stepHeight > 0 && $fallingFlag && ($this->speedX != $savedSpeedX || $this->speedZ != $savedSpeedZ)){
 						$cx = $this->speedX;
 						$cy = $this->speedY;
@@ -658,8 +658,16 @@ class Entity extends Position
 					}
 					
 				}
-				$support = $savedSpeedY != $this->speedY && $savedSpeedY < 0;
 				
+				if($this->enableAutojump && $this instanceof Creature){
+					if(!$stepSuccess && $fallingFlag && ($this->speedX != $savedSpeedX || $this->speedZ != $savedSpeedZ)){
+						$this->ai->mobController->setJumping(true);
+					}else{
+						$this->ai->mobController->setJumping(false);
+					}
+				}
+				
+				$support = $savedSpeedY != $this->speedY && $savedSpeedY < 0;
 				if($this->speedX != 0){
 					$this->x += $this->speedX;
 					$update = true;
@@ -689,6 +697,7 @@ class Entity extends Position
 					
 					$update = true;
 				}
+				
 				$this->onGround = $support;
 
 				
@@ -837,15 +846,6 @@ class Entity extends Position
 						$pk->pitch = $this->pitch;
 						$pk->bodyYaw = $this->yaw;
 						$this->server->api->player->broadcastPacket($players, $pk);
-					} else{
-						/*$pk = new MoveEntityPacket_PosRot();
-						$pk->eid = $this->eid;
-						$pk->x = $this->x;
-						$pk->y = $this->y;
-						$pk->z = $this->z;
-						$pk->yaw = $this->yaw;
-						$pk->pitch = $this->pitch;
-						$this->server->api->player->broadcastPacket($players, $pk);*/
 					}
 				}
 			} else{
@@ -1385,14 +1385,6 @@ class Entity extends Position
 			$this->player->teleport(new Vector3($this->x, $this->y, $this->z));
 			return;
 		}
-		/*$pk = new MoveEntityPacket_PosRot();
-		$pk->eid = $this->eid;
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$this->server->api->player->broadcastPacket($this->level->players, $pk);*/
 	}
 
 	public function moveEntityWithOffset($oX, $oY, $oZ)
