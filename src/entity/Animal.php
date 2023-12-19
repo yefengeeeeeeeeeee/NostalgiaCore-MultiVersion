@@ -1,8 +1,5 @@
 <?php
-/*
-TODO:
-move methods
-*/
+
 abstract class Animal extends Creature implements Ageable, Breedable{
 	
 	public $parent;
@@ -104,11 +101,11 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 	public function interactWith(Entity $e, $action){
 		if($e->isPlayer() && $action === InteractPacket::ACTION_HOLD){
 			$slot = $e->player->getHeldItem();
-			if($this->isFood($slot->getID()) && $this->inLove <= 0 && !$this->isBaby()){ //TODO check vanilla
+			if($this->isFood($slot->getID()) && $this->inLove <= 0 && !$this->isBaby()){
 				if(($e->player->gamemode & 0x01) === SURVIVAL){
 					$e->player->removeItem($slot->getID(), $slot->getMetadata(), 1);
 				}
-				$this->inLove = 600; //600 ticks, original mehod from mcpe
+				$this->inLove = 600;
 				return true;
 			}
 		}

@@ -98,13 +98,11 @@ class VanillaGenerator implements LevelGenerator
 		for($i8 = 0; $i8 < 8; ++$i8){
 			OreFeature::place($this->level, $this->rand, $chunkXWorld + $this->rand->nextInt(16), $this->rand->nextInt(16),  $chunkZWorld + $this->rand->nextInt(16), REDSTONE_ORE, 7);
 		}
-		//for($i9 = 0; $i9 < 1; ++$i9){ //TODO loop is not neccessary
+		
 		OreFeature::place($this->level, $this->rand, $chunkXWorld + $this->rand->nextInt(16), $this->rand->nextInt(16),  $chunkZWorld + $this->rand->nextInt(16), DIAMOND_ORE, 7);
-		//}
-		//for($i10 = 0; $i10 < 1; ++$i10){
 		OreFeature::place($this->level, $this->rand, $chunkXWorld + $this->rand->nextInt(16), $this->rand->nextInt(16) + $this->rand->nextInt(16),  $chunkZWorld + $this->rand->nextInt(16), LAPIS_ORE, 6);
-		//}
-		//sample= (int) ((((this.treeNoise.getValue(chunkXWorld * 0.5f, chunkZWorld * 0.5f) / 8.0f) + (this.rand.nextFloat() * 4.0f)) + 4.0f) / 3.0f);
+		
+		
 		$sample = (int) (((($this->treeNoise->getValue($chunkXWorld * 0.5, $chunkZWorld * 0.5) / 8) + ($this->rand->nextFloat() * 4)) + 4) / 3);
 		$treesAmount = $this->rand->nextInt(10) == 0;
 		if($biome == Biome::$forest) $treesAmount += $sample + 2;
@@ -166,7 +164,6 @@ class VanillaGenerator implements LevelGenerator
 		}
 		$this->level->level->chunkChange[$index][-1] = true;
 		
-		//console($this->level->level->getBlockID($chunkX*16, 20, $chunkZ*16));
 	}
 	
 	public function populateLevel()

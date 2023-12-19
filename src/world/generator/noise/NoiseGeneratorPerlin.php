@@ -32,12 +32,9 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 		$d3 = $d + $this->xCoord;
 		$d4 = $d1 + $this->yCoord;
 		$d5 = $d2 + $this->zCoord;
-		$i = (int) $d3;
-		$j = (int) $d4;
-		$k = (int) $d5;
-		if($d3 < $i) --$i;
-		if($d4 < $j) --$j;
-		if($d5 < $k) --$k;
+		$i = floor($d3);
+		$j = floor($d4);
+		$k = floor($d5);
 		$l = $i & 0xff;
 		$i1 = $j & 0xff;
 		$j1 = $k & 0xff;

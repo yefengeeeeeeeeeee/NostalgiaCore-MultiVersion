@@ -518,7 +518,7 @@ class PMFLevel extends PMF{
 	}
 
 	public function doSaveRound(){
-		foreach($this->chunks as $index => $chunk){ //TODO fix variables($X, $Z are undefined)
+		foreach($this->chunks as $index => $chunk){
 			$this->getXZ($index, $X, $Z);
 			$this->saveChunk($X, $Z);
 		}

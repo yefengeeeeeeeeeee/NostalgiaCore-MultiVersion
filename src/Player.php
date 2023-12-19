@@ -2234,7 +2234,7 @@ class Player{
 					$tile->setSlot($packet->slot, $item);
 				}
 				break;
-			case ProtocolInfo::SEND_INVENTORY_PACKET: //TODO, Mojang, enable this ´^_^`
+			case ProtocolInfo::SEND_INVENTORY_PACKET:
 				if($this->spawned === false){
 					break;
 				}
@@ -2283,7 +2283,7 @@ class Player{
 					$this->entity->linkedEntity->sendMoveUpdate();
 				}
 				
-				break; //TODO player input-
+				break;
 			default:
 				console("[DEBUG] Unhandled 0x" . dechex($packet->pid()) . " data packet for " . $this->username . " (" . $this->clientID . "): " . print_r($packet, true), true, true, 2);
 				break;

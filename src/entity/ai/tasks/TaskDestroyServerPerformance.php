@@ -23,7 +23,7 @@ class TaskDestroyServerPerformance extends TaskTempt
 		if(Utils::distance_noroot($this->target, $ai->entity) > 100){
 			$ai->mobController->moveTo($this->target->x, floor($ai->entity->y), $this->target->z, false);
 		}else{
-			//TODO move away
+			
 		}
 		$ai->mobController->lookOn($this->target);
 		

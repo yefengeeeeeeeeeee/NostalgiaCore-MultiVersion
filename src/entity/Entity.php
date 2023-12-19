@@ -154,21 +154,19 @@ class Entity extends Position
 				$this->z = isset($this->data["TileZ"]) ? $this->data["TileZ"] : $this->z;
 				$this->setHealth(1, "generic");
 				$this->stepHeight = false;
-				// $this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
+
 				$this->width = 1;
 				$this->height = 1;
 				if($this->type === OBJECT_SNOWBALL){
 					$this->server->schedule(1210, array(
 						$this,
 						"update"
-					)); // Despawn
-						// $this->update();
+					));
 				}
 				break;
 		}
 		$this->radius = $this->width / 2;
 		$this->boundingBox = new AxisAlignedBB($this->x - $this->radius, $this->y, $this->z - $this->radius, $this->x + $this->radius, $this->y + $this->height, $this->z + $this->radius);
-		//$this->update();
 		$this->updateLast();
 		$this->updatePosition();
 		if($this->isInVoid()){
@@ -281,24 +279,6 @@ class Entity extends Position
 		return $this->width;
 	}
 
-	public function lookOn(Vector3 $target)
-	{
-		$horizontal = sqrt(pow(($target->x - $this->x), 2) + pow(($target->z - $this->z), 2));
-		$vertical = $target->y - ($this->y + - 0.5); /* 0.5 = $entity->getEyeHeight() */
-		$pitch = - asin($horizontal) / M_PI * 180; // negative is up, positive is down
-
-		$xDist = $target->x - $this->x;
-		$zDist = $target->z - $this->z;
-
-		$yaw = atan2($zDist, $xDist) / M_PI * 180 - 90;
-		if($yaw < 0){
-			$yaw += 360.0;
-		}
-		$this->yaw = $yaw;
-		$this->pitch = $pitch;
-		$this->server->query("UPDATE entities SET pitch = " . $this->pitch . ", yaw = " . $this->yaw . " WHERE EID = " . $this->eid . ";");
-	}
-
 	public function getDrops()
 	{
 		if($this->class === ENTITY_PLAYER and $this->player instanceof Player and ($this->player->gamemode & 0x01) === 0){
@@ -407,8 +387,7 @@ class Entity extends Position
 		$endX = ceil($this->boundingBox->maxX);
 		$endY = ceil($this->boundingBox->maxY);
 		$endZ = ceil($this->boundingBox->maxZ);
-		$waterDone = false;
-		//$bup = new AxisAlignedBB($startX, $startY + 1, $startZ, $endX, $endY, $endZ);
+		
 		if(!($this instanceof Painting) && !($this->isPlayer() && $this->player->isSleeping !== false)){ //TODO better way to fix
 			for($i = 0; $i < 8; ++$i){
 				$x = ((($i >> 0) % 2) - 0.5) * $this->width * 0.8;
@@ -597,7 +576,7 @@ class Entity extends Position
 									$this->fallDistance = 0;
 								}
 								if($b != 0){
-									$blockBounds = Block::$class[$b]::getCollisionBoundingBoxes($this->level, $x, $y, $z, $this); //StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
+									$blockBounds = Block::$class[$b]::getCollisionBoundingBoxes($this->level, $x, $y, $z, $this);
 									foreach($blockBounds as $blockBound){
 										$this->speedY = $blockBound->calculateYOffset($this->boundingBox, $this->speedY);
 										$this->speedX = $blockBound->calculateXOffset($this->boundingBox, $this->speedX);
@@ -639,12 +618,6 @@ class Entity extends Position
 							$this->speedZ = $bb->calculateZOffset($this->boundingBox, $this->speedZ);
 						}
 						$this->boundingBox->offset(0, 0, $this->speedZ);
-						
-						//$this->speedY = -$this->stepHeight;
-						//foreach($aaBBs as $bb){ //TODO optimize
-						//	$this->speedY = $bb->calculateYOffset($this->boundingBox, $this->speedY);
-						//}
-						//$this->boundingBox->offset(0, $this->speedY, 0);
 						
 						if ($cx*$cx + $cz*$cz >= $this->speedX*$this->speedX + $this->speedZ*$this->speedZ)
 						{
@@ -702,9 +675,6 @@ class Entity extends Position
 
 				
 				if($this->lastX != $this->x || $this->lastZ != $this->z || $this->lastY != $this->z){
-					// $this->speedX = 0;
-					// $this->speedY = 0;
-					// $this->speedZ = 0;
 					$this->server->api->handle("entity.move", $this);
 					$update = true;
 				}elseif ($this->lastYaw != $this->yaw || $this->lastPitch != $this->pitch || $this->lastHeadYaw != $this->headYaw) {
@@ -748,13 +718,11 @@ class Entity extends Position
 					$this->fallStart = $this->y;
 				}
 				
-				if(!$this->onGround && ($prevGroundState /*|| $this->y > $this->fallStart*/)){
+				if(!$this->onGround && $prevGroundState){
 					$this->fallStart = $this->y;
 				}
-				//if($prevGroundState != $this->onGround){
-				//	$this->player->sendChat("I am now" . ($this->onGround ? 'on Ground' : 'not on Ground')." and fd: ".$this->fallDistance);
-				//}
-				$this->updateFallState(Utils::getSign($this->speedY)*0.1);
+				
+				$this->updateFallState(($this->speedY <=> 0)*0.1);
 				if($this->onGround) $this->fallDistance = 0;
 				$hasUpdate = true;
 			}
@@ -763,9 +731,6 @@ class Entity extends Position
 		
 		$this->counterUpdate();
 		
-		if($this->lastHeadYaw != $this->headYaw){
-			$this->sendHeadYaw();
-		}
 		if($this->isPlayer() || $update){
 			$this->updateMovement();
 		}
@@ -829,8 +794,6 @@ class Entity extends Position
 				if($this->server->api->handle("entity.move", $this) === false){
 					if($this->class === ENTITY_PLAYER){
 						$this->player->teleport(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
-					} else{
-						//TODO fix $this->setPosition($this->last[0], $this->last[1], $this->last[2], $this->last[3], $this->last[4]);
 					}
 				} else{
 					$players = $this->server->api->player->getAll($this->level);
@@ -1157,15 +1120,7 @@ class Entity extends Position
 	{
 		$this->server->query("UPDATE entities SET level = '" . $this->level->getName() . "', x = " . $this->x . ", y = " . $this->y . ", z = " . $this->z . ", pitch = " . $this->pitch . ", yaw = " . $this->yaw . " WHERE EID = " . $this->eid . ";");
 		$this->sendMoveUpdate();
-		// $this->sendMotion();
 		$this->updateAABB();
-	}
-	
-	public function sendHeadYaw(){
-		/*$pk = new RotateHeadPacket;
-		$pk->eid = $this->eid;
-		$pk->yaw = $this->headYaw;
-		$this->server->api->player->broadcastPacket($this->level->players, $pk);*/
 	}
 	
 	public function setPosition(Vector3 $pos, $yaw = false, $pitch = false)
@@ -1306,7 +1261,6 @@ class Entity extends Position
 		$this->last[3] = $this->yaw;
 		$this->last[4] = $this->pitch;
 		$this->last[5] = microtime(true);
-		//$this->lastHeadYaw = $this->headYaw;
 	}
 
 	public function getPosition($round = false)
@@ -1328,10 +1282,9 @@ class Entity extends Position
 			for ($d1 = $entity->z - $this->z; $d * $d + $d1 * $d1 < 0.0001; $d1 = (lcg_value() - lcg_value()) * 0.01) {
 				$d = (lcg_value() - lcg_value()) * 0.01;
 			}
-			// attackedAtYaw = (float)((Math.atan2($d1, $d) * 180D) / 3.1415927410125732D) >
+			
 			$this->knockBack($d, $d1);
 			$this->knockbackTime = 10;
-			$this->sendMotion();
 			
 		}
 
@@ -1355,23 +1308,11 @@ class Entity extends Position
 		return $this->setHealth(min(20, $this->getHealth() + ((int) $health)), $cause);
 	}
 
-	public function sendMotion()
-	{
-		/*$pk = new SetEntityMotionPacket();
-		$pk->eid = $this->eid;
-		$pk->speedX = $this->speedX;
-		$pk->speedY = $this->speedY;
-		$pk->speedZ = $this->speedZ;
-		$this->server->api->player->broadcastPacket($this->level->players, $pk);*/
-	}
-
 	public function linkEntity(Entity $e, $type)
 	{
-		//if($e->isPlayer()){
 		$this->linkedEntity = $e;
 		$e->linkedEntity = $this;
 		$this->server->api->dhandle("entity.link", ["rider" => $e->eid, "riding" => $this->eid, "type" => 0]);
-		//}
 	}
 
 	public function isPlayer()
@@ -1543,7 +1484,6 @@ class Entity extends Position
 		if($this->speedY > 0.4){
 			$this->speedY = 0.4;
 		}
-		//$this->speedY /= 2;
 	}
 
 	public function getHealth()

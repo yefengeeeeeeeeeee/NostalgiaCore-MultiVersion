@@ -35,7 +35,6 @@ class ServerAPI{
 	 */
 	public $entity;
 
-	//TODO: Instead of hard-coding functions, use PHPDoc-compatible methods to load APIs.
 	/**
 	 * @var TimeAPI
 	 */
@@ -104,7 +103,6 @@ class ServerAPI{
 			}
 		}
 
-		$version = new VersionString();
 		console("[INFO] Starting Minecraft PE server version " . FORMAT_AQUA . CURRENT_MINECRAFT_VERSION);
 
 		console("[INFO] Loading properties...");
@@ -161,7 +159,7 @@ class ServerAPI{
 		$this->server->api = $this;
 		self::$serverRequest = $this->server;
 		$this->server->send2Discord("[INFO] Starting Minecraft PE server version " . CURRENT_MINECRAFT_VERSION);
-		console("[INFO] This server is running NostalgiaCore version " . ($version->isDev() ? FORMAT_YELLOW : "") . MAJOR_VERSION . FORMAT_RESET . " \"" . CODENAME . "\" (MCPE: " . CURRENT_MINECRAFT_VERSION . ") (API " . CURRENT_API_VERSION . ") (PHP " . PHP_VERSION . ")", true, true, 0);
+		console("[INFO] This server is running NostalgiaCore version " . MAJOR_VERSION . FORMAT_RESET . " \"" . CODENAME . "\" (MCPE: " . CURRENT_MINECRAFT_VERSION . ") (API " . CURRENT_API_VERSION . ") (PHP " . PHP_VERSION . ")", true, true, 0);
 		console("[INFO] NostalgiaCore is distributed under the LGPL License", true, true, 0);
 
 		$this->loadProperties();

@@ -25,7 +25,7 @@ class MobSpawner{
 		$phase = $this->server->api->time->getPhase($this->level);
 		if(self::$spawnAnimals && ($phase == "day" || $phase == "sunrise")){ //Animal
 			$type = mt_rand(10, 13);
-			$baby = false; //TODO baby
+			$baby = false;
 			$grassOnly = true;
 		}elseif(self::$spawnMobs && ($phase == "night" || $phase == "sunset")){ //Monster, true night
 			$type = mt_rand(32, 35);

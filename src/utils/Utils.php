@@ -73,7 +73,7 @@ class Utils{
 		return $angle < 0 ? $angle + 360 : $angle - 180;
 	}
 	public static function getSign($v){
-		return $v > 0 ? 1 : ($v < 0 ? -1  : 0);
+		return $v <=> 0;
 	}
 	
 	public static function clampDegrees($v){

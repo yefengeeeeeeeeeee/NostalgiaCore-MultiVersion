@@ -26,7 +26,7 @@ class LiquidBlock extends TransparentBlock{
 		return array();
 	}
 	
-	public function getLiquidHeight(){ //TODO lava,water meta
+	public function getLiquidHeight(){
 		return (($this->meta >= 8 ? 0 : $this->meta)+1) / 9;
 	}
 }

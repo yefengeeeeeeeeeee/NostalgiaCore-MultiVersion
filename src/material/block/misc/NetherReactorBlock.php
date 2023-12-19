@@ -58,12 +58,11 @@ class NetherReactorBlock extends SolidBlock{
 	}
 	
 	private function decay($x, $y, $z, $aOne, $aTwo, $aThree, $bOne, $bTwo, $bThree, $cOne, $cTwo, $cThree) {
-		for($a = $aOne; $a < $aTwo; $a += $aThree) { //wth those cycles are? TODO simplify if possible(makes server lag)
+		for($a = $aOne; $a < $aTwo; $a += $aThree) {
 			for($b = $bOne; $b < $bTwo; $b += $bThree) {
 				for($c = $cOne; $c < $cTwo; $c += $cThree) {
 					if ($this->level->level->getBlockID($x+$a, $y+$b, $z+$c) === NETHERRACK && lcg_value() > 0.75){
-						//$this->level->setBlock(new Vector3($x+$a, $y+$b, $z+$c), new AirBlock());
-						$this->level->fastSetBlockUpdate($x+$a, $y+$b, $z+$c, 0, 0); //TODO might be better to set not directly?
+						$this->level->fastSetBlockUpdate($x+$a, $y+$b, $z+$c, 0, 0);
 					}
 				}
 			}
@@ -192,7 +191,7 @@ class NetherReactorBlock extends SolidBlock{
 					$b = $this->level->level->getBlockID($x + $offsetX, $y + $yOffset, $z + $offsetZ);
 					switch($char){
 						case "G":
-							if($b === GOLD_BLOCK){ //TODO make it use structure class
+							if($b === GOLD_BLOCK){
 								break;
 							}
 							return false;

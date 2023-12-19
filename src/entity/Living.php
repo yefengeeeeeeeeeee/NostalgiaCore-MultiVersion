@@ -42,7 +42,7 @@ abstract class Living extends Entity implements Damageable, Pathfindable{
 		return true;
 	}
 	public function collideHandler(){
-		$this->level->applyCallbackToNearbyEntities($this, [$this, "applyCollision"], 2); //TODO radiuses
+	
 	}
 	
 	public function applyCollision(Entity $collided){

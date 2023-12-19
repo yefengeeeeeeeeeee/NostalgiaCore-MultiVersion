@@ -47,7 +47,7 @@ class RailLogic
 			if($logic != null && $this->connectsTo($logic)){
 				$this->railPositions[$ind] = new Vector3($logic->x, $logic->y, $logic->z);
 			}else{
-				unset($this->railPositions[$ind--]); //TODO check?
+				unset($this->railPositions[$ind--]);
 				$this->railPositions = array_values($this->railPositions); //reindexing
 			}
 		}
@@ -63,7 +63,6 @@ class RailLogic
 	}
 	
 	public function canConnectTo(RailLogic $rail){
-		//return this.isRailChunkPositionCorrect(par1BlockBaseRailLogic) ? true : (this.railChunkPosition.size() == 2 ? false : (this.railChunkPosition.isEmpty() ? true : true));
 		return $this->connectsTo($rail) ? true : (count($this->railPositions) == 2 ? false : (empty($this->railPositions) ? true : true));
 	}
 	

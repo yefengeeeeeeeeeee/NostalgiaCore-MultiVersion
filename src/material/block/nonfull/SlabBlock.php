@@ -1,19 +1,21 @@
 <?php
 
 class SlabBlock extends TransparentBlock{
+	
+	public static $NAMES = [
+		0 => "Stone",
+		1 => "Sandstone",
+		2 => "Wooden",
+		3 => "Cobblestone",
+		4 => "Brick",
+		5 => "Stone Brick",
+		6 => "Quartz",
+		7 => "",
+	];
+	
 	public function __construct($meta = 0){
 		parent::__construct(SLAB, $meta, "Slab");
-		$names = array( //TODO make it static
-			0 => "Stone",
-			1 => "Sandstone",
-			2 => "Wooden",
-			3 => "Cobblestone",
-			4 => "Brick",
-			5 => "Stone Brick",
-			6 => "Quartz",
-			7 => "",
-		);
-		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper ":"") . $names[$this->meta & 0x07] . " Slab";	
+		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper ":"") . self::$NAMES[$this->meta & 0x07] . " Slab";	
 		if(($this->meta & 0x08) === 0x08){
 			$this->isFullBlock = true;
 		}else{
