@@ -1331,7 +1331,7 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketReceiveEvent($this, $packet)) === BaseEvent::DENY){
 			return;
 		}
-		ConsoleAPI::debug("Got packet: {$packet->pid()}");
+		
 		switch($packet->pid()){
 			case 0x01:
 				break;

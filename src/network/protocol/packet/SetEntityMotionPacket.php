@@ -17,9 +17,9 @@ class SetEntityMotionPacket extends RakNetDataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);
-		$this->putShort((int) ($this->speedX * 400));
-		$this->putShort((int) ($this->speedY * 400));
-		$this->putShort((int) ($this->speedZ * 400));
+		$this->putShort((int) ($this->speedX * 8000));
+		$this->putShort((int) ($this->speedY * 8000));
+		$this->putShort((int) ($this->speedZ * 8000));
 	}
 
 }
