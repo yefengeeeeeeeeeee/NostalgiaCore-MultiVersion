@@ -2271,9 +2271,9 @@ class Player{
 				if($this->entity->linkedEntity instanceof Entity){
 					$pk = new SetEntityMotionPacket;
 					$pk->eid = $this->entity->linkedEntity->eid;
-					$pk->speedX = ($this->entity->x - $this->entity->linkedEntity->x)*30;
-					$pk->speedY = ($this->entity->y - $this->entity->linkedEntity->y)*30;
-					$pk->speedZ = ($this->entity->z - $this->entity->linkedEntity->z)*30;
+					$pk->speedX = ($this->entity->x - $this->entity->linkedEntity->x)*1.2;
+					$pk->speedY = ($this->entity->y - $this->entity->linkedEntity->y)*1.2;
+					$pk->speedZ = ($this->entity->z - $this->entity->linkedEntity->z)*1.2;
 					foreach($this->level->players as $p){
 						if($p->entity->eid != $this->entity->eid){
 							$p->dataPacket(clone $pk);

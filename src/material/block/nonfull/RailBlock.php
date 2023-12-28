@@ -9,10 +9,10 @@ class RailBlock extends RailBaseBlock{
 	}
 	
 	public function updateState(){
-		//$logic = (new RailLogic($this));
-		//if($logic->countPotentialConnections() == 3){
-		//	$logic->place(false, false);
-		//}
+		$logic = (new RailLogic($this));
+		if($logic->countPotentialConnections() == 3){
+			$logic->place(false, false);
+		}
 	}
 	
 }

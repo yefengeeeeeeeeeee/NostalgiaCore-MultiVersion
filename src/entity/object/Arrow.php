@@ -144,13 +144,6 @@ class Arrow extends Projectile{
 			$pk->speedY = $this->speedY;
 			$pk->speedZ = $this->speedZ;
 			$player->dataPacket($pk);
-			
-			$pk = new SetEntityMotionPacket;
-			$pk->eid = $this->eid;
-			$pk->speedX = $this->speedX;
-			$pk->speedY = $this->speedY;
-			$pk->speedZ = $this->speedZ;
-			$player->dataPacket($pk);
 		}
 	}
 }

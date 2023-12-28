@@ -1016,16 +1016,11 @@ class Entity extends Position
 				$pk->x = $this->x;
 				$pk->y = $this->y;
 				$pk->z = $this->z;
-				$pk->did = - $this->data["Tile"];
-				$player->dataPacket($pk);
-
-				$pk = new SetEntityMotionPacket();
-				$pk->eid = $this->eid;
 				$pk->speedX = $this->speedX;
 				$pk->speedY = $this->speedY;
 				$pk->speedZ = $this->speedZ;
+				$pk->did = -$this->data["Tile"];
 				$player->dataPacket($pk);
-				break;
 		}
 	}
 	

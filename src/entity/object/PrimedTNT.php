@@ -48,10 +48,7 @@ class PrimedTNT extends Entity{
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->did = 0;		
-		$player->dataPacket($pk);
-		$pk = new SetEntityMotionPacket;
-		$pk->eid = $this->eid;
+		$pk->did = 1;
 		$pk->speedX = $this->speedX;
 		$pk->speedY = $this->speedY;
 		$pk->speedZ = $this->speedZ;
