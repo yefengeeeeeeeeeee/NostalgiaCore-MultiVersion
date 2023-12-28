@@ -1331,6 +1331,7 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketReceiveEvent($this, $packet)) === BaseEvent::DENY){
 			return;
 		}
+		ConsoleAPI::debug("Got packet: {$packet->pid()}");
 		switch($packet->pid()){
 			case 0x01:
 				break;
@@ -1917,7 +1918,7 @@ class Player{
 				$this->teleport($this->spawnPosition);
 				if($this->entity instanceof Entity){
 					$this->entity->fire = 0;
-					$this->entity->air = 300;
+					$this->entity->air = $this->entity->maxAir;
 					$this->entity->setHealth(20, "respawn", true);
 					$this->entity->updateMetadata();
 				}else{

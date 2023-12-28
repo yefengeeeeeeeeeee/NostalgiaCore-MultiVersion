@@ -21,6 +21,7 @@ class Entity extends Position
 	public $boundingBox;
 	public $age;
 	public $air;
+	public $maxAir = 300;
 	public $spawntime;
 	public $dmgcounter;
 	public $eid;
@@ -103,7 +104,7 @@ class Entity extends Position
 		$this->health = 20;
 		$this->hasGravity = false;
 		$this->dmgcounter = array(0, 0, 0);
-		$this->air = 200;
+		$this->air = $this->maxAir;
 		$this->fire = 0;
 		$this->crouched = false;
 		$this->invincible = false;
@@ -360,7 +361,7 @@ class Entity extends Position
 
 		if($this->dead === true){
 			$this->fire = 0;
-			$this->air = 200;
+			$this->air = $this->maxAir;
 			return false;
 		}
 		if($this->isInVoid()){
@@ -423,10 +424,10 @@ class Entity extends Position
 						$this->harm(2, "water");
 					}
 				}else{
-					$this->air = 200; //TODO $this->maxAir;
+					$this->air = $this->maxAir;
 				}
 			}else{
-				$this->air = 200; //TODO $this->maxAir;
+				$this->air = $this->maxAir;
 			}
 		}
 		
@@ -500,14 +501,8 @@ class Entity extends Position
 			$this->lastUpdate = $now;
 			return;
 		}
-		$tdiff = $now - $this->lastUpdate;
-		if($this->tickCounter === 0){
-			$this->tickCounter = 1;
-			$hasUpdate = $this->environmentUpdate();
-		} else{
-			$hasUpdate = true;
-			$this->tickCounter = 0;
-		}
+		
+		$hasUpdate = $this->environmentUpdate();
 
 		if($this->closed === true){
 			return false;
@@ -1418,7 +1413,7 @@ class Entity extends Position
 	public function makeDead($cause){
 		if($this->server->api->dhandle("entity.death", ["entity" => $this, "cause" => $cause]) === false) return false;
 		$this->spawnDrops();
-		$this->air = 200;
+		$this->air = $this->maxAir;
 		$this->fire = 0;
 		$this->crouched = false;
 		$this->fallY = false;
