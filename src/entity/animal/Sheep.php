@@ -113,6 +113,6 @@ class Sheep extends Animal{
 		if(mt_rand(0, 500)){
 			return 0x0;
 		}
-		return 0x0;
+		return 0x6;
 	}
 }

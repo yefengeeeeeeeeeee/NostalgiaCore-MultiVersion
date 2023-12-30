@@ -526,7 +526,7 @@ class Entity extends Position
 				$horizontalMultiplyFactor = 0.91;
 				if($this->onGround){
 					$horizontalMultiplyFactor = 0.54;
-					$b = $this->level->level->getBlockID(floor($this->x), floor($this->boundingBox->minX) - 1, floor($this->z));
+					$b = $this->level->level->getBlockID(floor($this->x), floor($this->boundingBox->minY) - 1, floor($this->z));
 					if($b > 0){
 						$horizontalMultiplyFactor = StaticBlock::getSlipperiness($b) * 0.91;
 					}
