@@ -80,6 +80,9 @@ class Utils{
 		return floor(($v % 360 + 360) % 360);
 	}
 	
+	/**
+	 * PHP8 has internal function for doing it: {@link str_ends_with}
+	 */
 	public static function endsWith($str, $check) {
 		return substr($str, -strlen($check)) === $check;
 	}
@@ -98,26 +101,6 @@ class Utils{
 	
 	public static function in_range($num, $min, $max){
 		return $num >= $min && $num <= $max;
-	}
-	
-	public function xrange($start, $limit, $step = 1) {
-		if ($start <= $limit) {
-			if ($step <= 0) {
-				throw new LogicException('Step must be positive');
-			}
-			
-			for ($i = $start; $i <= $limit; $i += $step) {
-				yield $i;
-			}
-		} else {
-			if ($step >= 0) {
-				throw new LogicException('Step must be negative');
-			}
-			
-			for ($i = $start; $i >= $limit; $i += $step) {
-				yield $i;
-			}
-		}
 	}
 	
 	public static function getUniqueID($raw = false, $extra = ""){
@@ -461,10 +444,6 @@ class Utils{
 			$offset += $l;
 		}
 		return $data;
-	}
-	
-	public static function php8_nulcoal(&$arr, $else){
-		return isset($arr) ? $arr : $else;
 	}
 	
 	public static function readTriad($str){

@@ -22,7 +22,7 @@ class RailLogic
 		$this->updateConnections($meta);
 	}
 	public function getRail($v){
-		if(($b = $this->level->getBlock($v)) instanceof RailBaseBlock){
+		if(($b = $this->level->getBlock($v)) instanceof RailBaseBlock){ //TODO git rid of getBlock
 			return new RailLogic($b);
 		}elseif(($b = $this->level->getBlockWithoutVector($v->x, $v->y + 1, $v->z)) instanceof RailBaseBlock){
 			return new RailLogic($b);

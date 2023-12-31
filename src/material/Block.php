@@ -133,12 +133,12 @@ abstract class Block extends Position{
 			INFO_UPDATE2 => "InfoUpdate2Block",
 			RESERVED6 => "Reserved6Block",
 	);
-	protected $id;
-	protected $meta;
-	protected $name;
-	protected $breakTime;
+	public $id;
+	public $meta;
+	public $name;
+	public $breakTime;
 	public $boundingBox;
-	protected $hardness;
+	public $hardness;
 	public $isActivable = false;
 	public $breakable = true;
 	public $isFlowable = false;

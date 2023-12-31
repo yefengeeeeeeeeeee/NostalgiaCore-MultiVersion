@@ -30,10 +30,6 @@ class DirtBlock extends SolidBlock{
 		}*/
 	}
 
-	public function getBlockID($x, $y, $z){
-		return $this->level->getBlock(new Vector3($x, $y, $z))->getID();
-	}
-
 	public static function getGrassInRadius(Level $level, $x, $y, $z){ //umwut (although kinda faster than for loop =D)
 		if($level->level->getBlockID($x+1, $y, $z+1) == 2) return true;
 		if($level->level->getBlockID($x+1, $y, $z) == 2) return true;

@@ -8,24 +8,24 @@ class SugarcaneBlock extends FlowableBlock{
 	}
 	
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array(SUGARCANE, 0, 1),
-		);
+		return [
+			[SUGARCANE, 0, 1],
+		];
 	}
 	
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
-			if($this->getSide(0)->getID() !== SUGARCANE_BLOCK){
+			if($this->level->level->getBlockID($this->x, $this->y - 1, $this->z) != SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
-					$b = $this->level->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
-					if($b->getID() === AIR){
-						$this->level->setBlock($b, new SugarcaneBlock(), true, false, true);							
-						break;
+					$b = $this->level->level->getBlockID($this->x, $this->y + $y, $this->z);
+					if($b == AIR){
+						$this->level->fastSetBlockUpdate($this->x, $this->y + $y, $this->z, SUGARCANE_BLOCK, 0, true);
 					}
 				}
 				$this->meta = 0;
-				$this->level->setBlock($this, $this, true, false, true);
+				$this->level->fastSetBlockUpdateMeta($this->x, $this->y, $this->z, $this->meta, true);
 			}
+			
 			if(($player->gamemode & 0x01) === 0){
 				$player->removeItem(DYE,0x0F,1);
 			}

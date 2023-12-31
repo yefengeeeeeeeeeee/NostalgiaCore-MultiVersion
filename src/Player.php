@@ -72,6 +72,10 @@ class Player{
 	
 	public $entityMovementQueue;
 	public $entityMovementQueueLength = 0;
+	
+	public $blockUpdateQueue;
+	public $blockUpdateQueueLength = 0;
+	
 	/**
 	 * @param integer $clientID
 	 * @param string $ip
@@ -96,10 +100,16 @@ class Player{
 		$this->slot = 0;
 		$this->hotbar = [0, -1, -1, -1, -1, -1, -1, -1, -1];
 		$this->packetStats = [0, 0];
+		
 		$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+		$this->buffer->data = [];
+		
 		$this->entityMovementQueue = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$this->entityMovementQueue->data = [];
-		$this->buffer->data = [];
+		
+		$this->blockUpdateQueue = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+		$this->blockUpdateQueue->data = [];
+		
 		$this->server->schedule(1, [$this, "handlePacketQueues"], [], true);
 		$this->server->schedule(20 * 60, [$this, "clearQueue"], [], true);
 		$this->evid[] = $this->server->event("server.close", [$this, "close"]);
@@ -1142,7 +1152,7 @@ class Player{
 		}
 	}
 	public function sendEntityMovementUpdateQueue(){
-		if($this->entityMovementQueueLength > 0 and $this->entityMovementQueue instanceof RakNetPacket){
+		if($this->entityMovementQueueLength > 0 && $this->entityMovementQueue instanceof RakNetPacket){
 			$this->entityMovementQueue->seqNumber = $this->counter[0]++;
 			$this->send($this->entityMovementQueue);
 		}
@@ -1150,6 +1160,39 @@ class Player{
 		$this->entityMovementQueue = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$this->entityMovementQueue->data = [];
 	}
+	
+	public function sendBlockUpdateQueue(){
+		if($this->blockUpdateQueueLength > 0 && $this->blockUpdateQueue instanceof RakNetPacket){
+			$this->blockUpdateQueue->seqNumber = $this->counter[0]++;
+			$this->send($this->blockUpdateQueue);
+		}
+		$this->blockUpdateQueueLength = 0;
+		$this->blockUpdateQueue = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+		$this->blockUpdateQueue->data = [];
+	}
+	
+	public function addBlockUpdateIntoQueue($x, $y, $z, $id, $meta){
+		$packet = new UpdateBlockPacket();
+		$packet->x = $x;
+		$packet->y = $y;
+		$packet->z = $z;
+		$packet->block = $id;
+		$packet->meta = $meta;
+		$packet->encode();
+		
+		$len = 1 + strlen($packet->buffer);
+		$MTU = $this->MTU - 24;
+		
+		if(($this->blockUpdateQueueLength + $len) >= $MTU){
+			$this->sendBlockUpdateQueue();
+		}
+		
+		$packet->messageIndex = $this->counter[3]++;
+		$packet->reliability = 2;
+		@$this->blockUpdateQueue->data[] = $packet;
+		$this->blockUpdateQueueLength = 6 + $len;
+	}
+	
 	public function addEntityMovementUpdateToQueue(Entity $e){
 		$len = 0;
 		$packets = 0;

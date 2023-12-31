@@ -17,6 +17,7 @@ class Level{
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
 	
 	public $randInt1, $randInt2;
+	public $queuedBlockUpdates = [];
 	
 	public static $randomUpdateBlocks = [
 		FIRE => true,
@@ -321,13 +322,7 @@ class Level{
 	}
 	public function fastSetBlockUpdateMeta($x, $y, $z, $meta, $updateBlock = false){
 		$this->level->setBlockDamage($x, $y, $z, $meta);
-		$pk = new UpdateBlockPacket;
-		$pk->x = $x;
-		$pk->y = $y;
-		$pk->z = $z;
-		$pk->block = $this->level->getBlockID($x, $y, $z);
-		$pk->meta = $meta;
-		$this->server->api->player->broadcastPacket($this->players, $pk);
+		$this->addBlockToSendQueue($x, $y, $z, $this->level->getBlockID($x, $y, $z), $meta);
 		if($updateBlock){
 			$this->server->api->block->blockUpdateAround(new Position($x, $y, $z, $this), BLOCK_UPDATE_NORMAL, 1);
 		}
@@ -335,13 +330,7 @@ class Level{
 	
 	public function fastSetBlockUpdate($x, $y, $z, $id, $meta, $updateBlocksAround = false){
 		$this->level->setBlock($x, $y, $z, $id, $meta);
-		$pk = new UpdateBlockPacket;
-		$pk->x = $x;
-		$pk->y = $y;
-		$pk->z = $z;
-		$pk->block = $id;
-		$pk->meta = $meta;
-		$this->server->api->player->broadcastPacket($this->players, $pk);
+		$this->addBlockToSendQueue($x, $y, $z, $id, $meta);
 		if($updateBlocksAround){
 			$this->server->api->block->blockUpdateAround(new Position($x, $y, $z, $this), BLOCK_UPDATE_NORMAL, 1);
 		}
@@ -392,6 +381,17 @@ class Level{
 				$player->addEntityMovementUpdateToQueue($e);
 			}
 			$player->sendEntityMovementUpdateQueue();
+			
+			foreach($this->queuedBlockUpdates as $update){
+				$x = $update[0];
+				$y = $update[1];
+				$z = $update[2];
+				$idmeta = $this->level->getBlock($x, $y, $z);
+				$id = $idmeta[0];
+				$meta = $idmeta[1];
+				$player->addBlockUpdateIntoQueue($x, $y, $z, $id, $meta);
+			}
+			$player->sendBlockUpdateQueue();
 		}
 		
 		
@@ -400,6 +400,10 @@ class Level{
 		if($server->ticks % 40 === 0){ //40 ticks delay
 			$this->mobSpawner->handle();
 		}
+	}
+	
+	public function addBlockToSendQueue($x, $y, $z, $id, $meta){
+		$this->queuedBlockUpdates["$x $y $z"] = [$x, $y, $z, $id, $meta];
 	}
 	
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){
@@ -413,13 +417,7 @@ class Level{
 			}
 			$block->position($pos);
 			if($direct === true){
-				$pk = new UpdateBlockPacket;
-				$pk->x = $pos->x;
-				$pk->y = $pos->y;
-				$pk->z = $pos->z;
-				$pk->block = $block->getID();
-				$pk->meta = $block->getMetadata();
-				$this->server->api->player->broadcastPacket($this->players, $pk);
+				$this->addBlockToSendQueue($pos->x, $pos->y, $pos->z, $pos->id, $pos->meta);
 			}else{
 				$i = ($pos->x >> 4) . ":" . ($pos->y >> 4) . ":" . ($pos->z >> 4);
 				if(!isset($this->changedBlocks[$i])){
