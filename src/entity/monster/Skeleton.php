@@ -9,7 +9,6 @@ class Skeleton extends Monster{
 		$this->ai->removeTask("TaskAttackPlayer");
 		//$this->ai->addTask(new TaskDestroyServerPerformance());
 		$this->setSpeed(0.25);
-		$this->update();
 	}
 	
 	public function getAttackDamage(){
@@ -36,9 +35,9 @@ class Skeleton extends Monster{
 		}
 	}
 	
-	public function update(){
+	public function update($now){
 		$this->updateBurning();
-		parent::update();
+		parent::update($now);
 	}
 	
 	public function getDrops(){

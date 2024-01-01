@@ -7,7 +7,6 @@ class PigZombie extends Monster{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 12, "generic");
 		$this->setName("Pigman");
 		$this->setSpeed(0.25);
-		$this->update();
 	}
 	public function getAttackDamage(){
 		return 5;

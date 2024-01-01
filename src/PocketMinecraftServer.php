@@ -595,7 +595,7 @@ class PocketMinecraftServer{
 			unset($this->tickMeasure[key($this->tickMeasure)]);
 			++$this->ticks;
 			foreach($this->api->level->levels as $l){
-				$l->onTick($this);
+				$l->onTick($this, $time);
 			}
 			return $this->tickerFunction($time);
 		}

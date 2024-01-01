@@ -9,7 +9,6 @@ class Pig extends Animal implements Rideable{
 		$this->server = ServerAPI::request();
 		$this->setName("Pig");
 		$this->setSpeed(0.25);
-		$this->update();
 	}
 	/**
 	 * @return boolean

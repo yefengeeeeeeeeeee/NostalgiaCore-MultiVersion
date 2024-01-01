@@ -447,7 +447,7 @@ class Utils{
 	}
 	
 	public static function readTriad($str){
-		return @unpack("N", "\x00" . $str)[1];
+		return strlen($str) < 3 ? false : @unpack("N", "\x00$str")[1];
 	}
 
 	public static function writeDataArray($data){
@@ -582,16 +582,13 @@ class Utils{
 	}
 
 	public static function writeBool($b){
-		return Utils::writeByte($b === true ? 1 : 0);
+		return Utils::writeByte($b ? 1 : 0);
 	}
 
 	public static function readInt($str){
 		if(strlen($str) <= 0) return; 
-		if(PHP_INT_SIZE === 8){
-			return @unpack("N", $str)[1] << 32 >> 32;
-		}else{
-			return @unpack("N", $str)[1];
-		}
+		
+		return @unpack("N", $str)[1] << 32 >> 32; //php has no signed long unpack
 	}
 
 	public static function writeInt($value){
@@ -602,12 +599,12 @@ class Utils{
 	}
 
 	public static function readFloat($str){
-		list(, $value) = ENDIANNESS === BIG_ENDIAN ? @unpack("f", $str) : @unpack("f", strrev($str));
+		list(, $value) = unpack("G", $str);
 		return $value;
 	}
 
 	public static function writeFloat($value){
-		return ENDIANNESS === BIG_ENDIAN ? pack("f", $value) : strrev(pack("f", $value));
+		return pack("G", $value);
 	}
 
 	public static function printFloat($value){
@@ -615,60 +612,37 @@ class Utils{
 	}
 
 	public static function readDouble($str){
-		list(, $value) = ENDIANNESS === BIG_ENDIAN ? @unpack("d", $str) : @unpack("d", strrev($str));
+		list(, $value) = @unpack("E", $str);
 		return $value;
 	}
 
 	public static function writeDouble($value){
-		return ENDIANNESS === BIG_ENDIAN ? pack("d", $value) : strrev(pack("d", $value));
+		return pack("E", $value);
 	}
 
 	public static function readLDouble($str){
-		list(, $value) = ENDIANNESS === BIG_ENDIAN ? @unpack("d", strrev($str)) : @unpack("d", $str);
+		list(, $value) = @unpack("e", $str);
 		return $value;
 	}
 
 	public static function writeLDouble($value){
-		return ENDIANNESS === BIG_ENDIAN ? strrev(pack("d", $value)) : pack("d", $value);
+		return pack("e", $value);
 	}
 
 	public static function readLLong($str){
-		return Utils::readLong(strrev($str));
+		return unpack("P", $str)[1];
 	}
 
 	public static function readLong($x, $signed = true){
-		$value = "0";
-		if($signed === true){
-			$negative = ((ord($x[0]) & 0x80) === 0x80);
-			if($negative){
-				$x = ~$x;
-			}
-		}else{
-			$negative = false;
-		}
-
-		for($i = 0; $i < 8; $i += 4){
-			$value = bcmul($value, "4294967296", 0); //4294967296 == 2^32
-			$value = bcadd($value, 0x1000000 * ord($x[$i] ?? 0) + ((ord($x[$i + 1] ?? 0) << 16) | (ord($x[$i + 2] ?? 0) << 8) | ord($x[$i + 3] ?? 0)), 0);
-		}
-		return ($negative ? "-$value" : $value);
+		return unpack("J", $x)[1]; //signed is useless since number cant be more than 2^63-1 in php
 	}
 
 	public static function writeLLong($value){
-		return strrev(Utils::writeLong($value));
+		return pack("P", $value);
 	}
 
 	public static function writeLong($value){
-		return
-			chr(($value & 0xff00000000000000) >> 56).
-			chr(($value & 0x00ff000000000000) >> 48).
-			chr(($value & 0x0000ff0000000000) >> 40).
-			chr(($value & 0x000000ff00000000) >> 32).
-			chr(($value & 0x00000000ff000000) >> 24).
-			chr(($value & 0x0000000000ff0000) >> 16).
-			chr(($value & 0x000000000000ff00) >> 8).
-			chr(($value & 0x00000000000000ff))
-		;
+		return pack("J", $value);
 	}
 }
 

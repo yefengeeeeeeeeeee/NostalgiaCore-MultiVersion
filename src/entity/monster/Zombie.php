@@ -7,7 +7,6 @@ class Zombie extends Monster{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 12, "generic");
 		$this->setName("Zombie");
 		$this->setSpeed(0.23);
-		$this->update();
 	}
 	
 	public function getArmorValue(){
@@ -38,9 +37,9 @@ class Zombie extends Monster{
 		return 4; //TODO vanillafy(zombies might be able to hold items)
 	}
 	
-	public function update(){
+	public function update($now){
 		$this->updateBurning();
-		parent::update();
+		parent::update($now);
 	}
 	
 	public function getDrops(){

@@ -7,7 +7,6 @@ class Spider extends Monster{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 8, "generic");
 		$this->setName("Spider");
 		$this->setSpeed(0.3);
-		$this->update();
 	}
 	
 	public function getDrops(){

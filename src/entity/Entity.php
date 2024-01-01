@@ -318,10 +318,12 @@ class Entity extends Position
 		}
 	}
 
-	public function environmentUpdate()
+	public function environmentUpdate($time)
 	{
 		$hasUpdate = $this->class === ENTITY_MOB; // force true for mobs
-		$time = microtime(true);
+		
+		$tickDiff = ($time - $this->lastUpdate) / 0.05;
+		
 		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true and $this->player->blocked !== true && ! $this->dead){
 			$myBB = $this->boundingBox->grow(1, 0.5, 1);
 			foreach($this->server->api->entity->getRadius($this, 2, ENTITY_ITEM) as $item){
@@ -419,9 +421,11 @@ class Entity extends Position
 				$f = LiquidBlock::getPercentAir($this->level->level->getBlockDamage($x, $y, $z)) - 0.1111111;
 				$f1 = ($y + 1) - $f;
 				if($d < $f1){
-					--$this->air;
-					if($this->air <= 0){
+					$this->air -= 1*$tickDiff;
+					if($this->isPlayer())console($this->air.":".$tickDiff.":".($time - $this->lastUpdate));
+					if($this->air <= -20){
 						$this->harm(2, "water");
+						$this->air = 0; //harm every 1 second
 					}
 				}else{
 					$this->air = $this->maxAir;
@@ -491,18 +495,17 @@ class Entity extends Position
 		return $this->y < -1.6;
 	}
 	
-	public function update(){
+	public function update($now){
 		if($this->closed === true){
 			return false;
 		}
 		
-		$now = microtime(true);
 		if($this->check === false){
 			$this->lastUpdate = $now;
 			return;
 		}
 		
-		$hasUpdate = $this->environmentUpdate();
+		$hasUpdate = $this->environmentUpdate($now);
 
 		if($this->closed === true){
 			return false;
@@ -906,7 +909,7 @@ class Entity extends Position
 			],
 			1 => [
 				"type" => 1,
-				"value" => $this->air
+				"value" => (int)$this->air
 			],
 			14 => [
 				"type" => 0,

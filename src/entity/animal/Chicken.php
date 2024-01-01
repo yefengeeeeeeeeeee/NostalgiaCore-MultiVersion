@@ -10,7 +10,6 @@ class Chicken extends Animal{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 4, "generic");
 		$this->setName('Chicken');
 		$this->setSpeed(0.25);
-		$this->update();
 	}
 	public function isFood($id){
 		return $id === PUMPKIN_SEEDS || $id === MELON_SEEDS || $id === BEETROOT_SEEDS || $id === WHEAT_SEEDS;
@@ -18,8 +17,8 @@ class Chicken extends Animal{
 	
 	public function fall(){} //chickens have no fall dmg?
 	
-	public function update(){
-		parent::update();
+	public function update($now){
+		parent::update($now);
 		if($this->timeUntilEgg-- <= 0 && !$this->isBaby()){
 			$this->dropAnEgg();
 			$this->timeUntilEgg = mt_rand(0,6000) + 6000;

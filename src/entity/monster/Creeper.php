@@ -10,7 +10,6 @@ class Creeper extends Monster{
 		$this->setName("Creeper");
 		$this->ignited = 0;
 		$this->setSpeed(0.25);
-		$this->update();
 		$this->timeUntilExplode = $this->isIgnited() ? self::EXPL_TIME : 0;
 	}
 	
@@ -58,8 +57,8 @@ class Creeper extends Monster{
 		}
 		
 	}
-	public function update(){
-		if($this->isIgnited() && $this->target instanceof Entity && Utils::distance_noroot($this->target, $this) > 49){
+	public function update($now){
+		if($this->isIgnited() && $this->target instanceof Entity && Utils::distance_noroot($this->target, $this) > 49){ //TODO move somewhere else
 			$this->setIgnited(-1); //broken in vanilla too
 			$this->timeUntilExplode = 0;
 		}
@@ -69,7 +68,7 @@ class Creeper extends Monster{
 		if($this->timeUntilExplode >= 0){
 			--$this->timeUntilExplode;
 		}
-		parent::update();
+		parent::update($now);
 	}
 
 	public function explode()

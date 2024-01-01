@@ -65,7 +65,7 @@ class Arrow extends Projectile{
 			$p->directDataPacket(clone $pk);
 		}
 	}
-	public function update(){
+	public function update($now){
 		$this->needsUpdate = false; //TODO reenable
 		return;
 		//parent::update();

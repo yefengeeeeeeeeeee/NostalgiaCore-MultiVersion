@@ -336,7 +336,7 @@ class Level{
 		}
 	}
 	
-	public function onTick(PocketMinecraftServer $server){
+	public function onTick(PocketMinecraftServer $server, $currentTime){
 		//$ents = $server->api->entity->getAll($this);
 		if(!$this->stopTime) ++$this->time;
 		for($cX = 0; $cX < 16; ++$cX){
@@ -368,7 +368,7 @@ class Level{
 				++$this->totalMobsAmount;
 			}
 			if($e->isPlayer() || $e->needsUpdate){
-				$e->update();
+				$e->update($currentTime);
 				if(!$e->isPlayer()) $post[] = $k;
 			}
 		}
@@ -417,7 +417,7 @@ class Level{
 			}
 			$block->position($pos);
 			if($direct === true){
-				$this->addBlockToSendQueue($pos->x, $pos->y, $pos->z, $pos->id, $pos->meta);
+				$this->addBlockToSendQueue($pos->x, $pos->y, $pos->z, $block->id, $block->meta);
 			}else{
 				$i = ($pos->x >> 4) . ":" . ($pos->y >> 4) . ":" . ($pos->z >> 4);
 				if(!isset($this->changedBlocks[$i])){

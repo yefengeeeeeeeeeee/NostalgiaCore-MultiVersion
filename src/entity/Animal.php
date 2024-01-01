@@ -46,8 +46,8 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 		return $ent->eid != $this->eid && $this->type === $ent->type && $this->isInLove() && $ent->isInLove();
 	}
 	
-	public function update(){
-		parent::update();
+	public function update($now){
+		parent::update($now);
 		$age = $this->getAge() + 1; //100 - fast. debug, 1 - normal
 		if($age >= 0 && $this->isBaby()){
 			$this->setAge($age);
