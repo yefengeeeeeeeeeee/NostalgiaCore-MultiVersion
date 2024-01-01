@@ -294,13 +294,7 @@ class Level{
 	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true, $send = true){
 		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true and $send !== false){
 			if($direct === true){
-				$pk = new UpdateBlockPacket;
-				$pk->x = $pos->x;
-				$pk->y = $pos->y;
-				$pk->z = $pos->z;
-				$pk->block = $block->getID();
-				$pk->meta = $block->getMetadata();
-				$this->server->api->player->broadcastPacket($this->players, $pk);
+				$this->addBlockToSendQueue($pos->x, $pos->y, $pos->z, $block->id, $block->meta);
 			}elseif($direct === false){
 				if(!($pos instanceof Position)){
 					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
@@ -372,6 +366,14 @@ class Level{
 				if(!$e->isPlayer()) $post[] = $k;
 			}
 		}
+		
+		$this->checkSleep();
+		
+		if($server->ticks % 40 === 0){ //40 ticks delay
+			$this->mobSpawner->handle();
+		}
+		
+		
 		foreach($this->players as $player){
 			foreach($post as $eid){
 				$e = $this->entityList[$eid] ?? false;
@@ -392,13 +394,6 @@ class Level{
 				$player->addBlockUpdateIntoQueue($x, $y, $z, $id, $meta);
 			}
 			$player->sendBlockUpdateQueue();
-		}
-		
-		
-		$this->checkSleep();
-		
-		if($server->ticks % 40 === 0){ //40 ticks delay
-			$this->mobSpawner->handle();
 		}
 	}
 	

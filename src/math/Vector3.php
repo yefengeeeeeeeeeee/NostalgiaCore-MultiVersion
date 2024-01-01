@@ -135,7 +135,7 @@ class Vector3{
 		if(($x instanceof Vector3) === true){
 			return $this->distanceSquared($x->x, $x->y, $x->z);
 		}else{
-			return pow($this->x - $x, 2) + pow($this->y - $y, 2) + pow($this->z - $z, 2);
+			return ($this->x - $x)*($this->x - $x) + ($this->y - $y)*($this->y - $y) + ($this->z - $z)*($this->z - $z);
 		}
 	}
 
