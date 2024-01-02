@@ -618,7 +618,7 @@ class PocketMinecraftServer{
 				$this->preparedSQL->updateAction->execute();
 				if(isset($this->schedule[$cid]) && is_array($this->schedule[$cid]) && isset($this->schedule[$cid][0]) && is_callable($this->schedule[$cid][0])){
 					++$actionCount;
-					$return = call_user_func($this->schedule[$cid][0], $this->schedule[$cid][1], $this->schedule[$cid][2]);
+					$return = @call_user_func($this->schedule[$cid][0] ?? function(){}, $this->schedule[$cid][1], $this->schedule[$cid][2]); //somehow args can be null
 				}else{
 					$return = false;
 				}
