@@ -1190,7 +1190,7 @@ class Player{
 		$packet->messageIndex = $this->counter[3]++;
 		$packet->reliability = 2;
 		@$this->blockUpdateQueue->data[] = $packet;
-		$this->blockUpdateQueueLength = 6 + $len;
+		$this->blockUpdateQueueLength += 6 + $len;
 	}
 	
 	public function addEntityMovementUpdateToQueue(Entity $e){
