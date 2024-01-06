@@ -422,7 +422,6 @@ class Entity extends Position
 				$f1 = ($y + 1) - $f;
 				if($d < $f1){
 					$this->air -= 1*$tickDiff;
-					if($this->isPlayer())console($this->air.":".$tickDiff.":".($time - $this->lastUpdate));
 					if($this->air <= -20){
 						$this->harm(2, "water");
 						$this->air = 0; //harm every 1 second
