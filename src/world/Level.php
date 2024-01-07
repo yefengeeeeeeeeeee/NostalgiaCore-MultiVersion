@@ -249,33 +249,23 @@ class Level{
 			$this->changedCount = [];
 
 			if(count($this->changedBlocks) > 0){
-				foreach($this->changedBlocks as $blocks){
+				foreach($this->changedBlocks as $i => $blocks){
 					foreach($blocks as $b){
 						$pk = new UpdateBlockPacket;
-						$pk->x = $b->x;
-						$pk->y = $b->y;
-						$pk->z = $b->z;
-						$pk->block = $b->getID();
-						$pk->meta = $b->getMetadata();
+						$pk->x = $b[0];
+						$pk->y = $b[1];
+						$pk->z = $b[2];
+						$pk->block = $b[3];
+						$pk->meta = $b[4];
 						$this->server->api->player->broadcastPacket($this->players, $pk);
 					}
+					unset($this->changedBlocks[$i]);
 				}
 				$this->changedBlocks = [];
 			}
 		}
 
 		if($this->nextSave < $now){
-			foreach($this->usedChunks as $i => $c){
-				if(count($c) === 0){
-					unset($this->usedChunks[$i]);
-					$X = explode(".", $i);
-					$Z = array_pop($X);
-					$X = array_pop($X);
-					if(!$this->isSpawnChunk($X, $Z)){
-						$this->level->unloadChunk((int) $X, (int) $Z, $this->server->saveEnabled);
-					}
-				}
-			}
 			$this->save(false, false);
 		}
 	}
@@ -308,7 +298,7 @@ class Level{
 					$this->changedBlocks[$i] = [];
 					$this->changedCount[$i] = 0;
 				}
-				$this->changedBlocks[$i][] = clone $block;
+				$this->changedBlocks[$i][] = [$block->x, $block->y, $block->z, $block->id, $block->getMetadata()];
 				++$this->changedCount[$i];
 			}
 		}
@@ -422,7 +412,7 @@ class Level{
 				if(ADVANCED_CACHE == true){
 					Cache::remove("world:{$this->name}:" . ($pos->x >> 4) . ":" . ($pos->z >> 4));
 				}
-				$this->changedBlocks[$i][] = clone $block;
+				$this->changedBlocks[$i][] = [$block->x, $block->y, $block->z, $block->id, $block->getMetadata()];
 				++$this->changedCount[$i];
 			}
 
