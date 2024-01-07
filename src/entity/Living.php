@@ -2,7 +2,7 @@
 
 abstract class Living extends Entity implements Damageable, Pathfindable{
 	
-	public static $despawnMobs, $despawnTimer, $entityPushing;
+	public static $despawnMobs, $despawnTimer, $entityPushing = false;
 	
 	public $target, $ai;
 	public $pathFinder, $path = null, $currentIndex = 0, $currentNode, $pathFollower;
@@ -42,7 +42,23 @@ abstract class Living extends Entity implements Damageable, Pathfindable{
 		return true;
 	}
 	public function collideHandler(){
-	
+		$rd = ceil($this->radius);
+		$minChunkX = ((int)($this->x - $rd)) >> 4;
+		$minChunkZ = ((int)($this->z - $rd)) >> 4;
+		$maxChunkX = ((int)($this->x + $rd)) >> 4;
+		$maxChunkZ = ((int)($this->z + $rd)) >> 4;
+		
+		//TODO also index by chunkY?
+		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
+			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
+				$ind = "$chunkX $chunkZ";
+				foreach($this->level->entityListPositioned[$ind] ?? [] as $entid){
+					if($this->level->entityList[$entid] instanceof Entity){
+						$this->applyCollision($this->level->entityList[$entid]);
+					}
+				}
+			}
+		}
 	}
 	
 	public function applyCollision(Entity $collided){
@@ -83,9 +99,9 @@ abstract class Living extends Entity implements Damageable, Pathfindable{
 		$this->ai->mobController->rotateTick();
 		$this->ai->mobController->movementTick();
 		
-		/*if(self::$entityPushing){
-		 $this->collideHandler();
-		 }*/
+		if(self::$entityPushing){
+			$this->collideHandler();
+		}
 		if($this->onGround){
 			//if(!$this->hasPath() && $this->pathFinder instanceof ITileNavigator){
 			//	$this->path = $this->pathFinder->navigate(new PathTileXYZ($this->x, $this->y, $this->z, $this->level), new PathTileXYZ($this->x + mt_rand(-10, 10), $this->y + mt_rand(-1, 1), $this->z + mt_rand(-10, 10), $this->level), 10);

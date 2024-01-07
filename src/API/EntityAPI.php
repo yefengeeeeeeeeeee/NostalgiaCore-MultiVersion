@@ -162,6 +162,9 @@ class EntityAPI{
 		}else{
 			$this->entities[$eid] = new Entity($level, $eid, $class, $type, $data);
 		}
+		$cX = (int)$this->entities[$eid]->x >> 4;
+		$cZ = (int)$this->entities[$eid]->z >> 4;
+		$level->entityListPositioned["$cX $cZ"][$eid] = $eid;
 		$level->entityList[$eid] = &$this->entities[$eid];
 		$this->server->handle("entity.add", $this->entities[$eid]);
 		return $this->entities[$eid];
@@ -182,6 +185,12 @@ class EntityAPI{
 	public function remove($eid){
 		if(isset($this->entities[$eid])){
 			$this->entities[$eid]->closed = true;
+			if($this->entities[$eid]->level instanceof Level){
+				$cX = (int)$this->entities[$eid]->x >> 4;
+				$cZ = (int)$this->entities[$eid]->z >> 4;
+				$index = "$cX $cZ";
+				unset($this->entities[$eid]->level->entityListPositioned[$index][$eid]);
+			}
 			if($this->entities[$eid]->isPlayer()){
 				$pk = new RemovePlayerPacket;
 				$pk->eid = $eid;

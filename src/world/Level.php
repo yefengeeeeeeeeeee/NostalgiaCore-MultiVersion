@@ -11,6 +11,7 @@ class Level{
 	 */
 	public $entityList;
 	
+	public $entityListPositioned = [];
 	public $entitiesInLove = [];
 	
 	public $tiles, $blockUpdates, $nextSave, $players = [], $level, $mobSpawner, $totalMobsAmount = 0;
@@ -321,7 +322,6 @@ class Level{
 	}
 	
 	public function onTick(PocketMinecraftServer $server, $currentTime){
-		//$ents = $server->api->entity->getAll($this);
 		if(!$this->stopTime) ++$this->time;
 		for($cX = 0; $cX < 16; ++$cX){
 			for($cZ = 0; $cZ < 16; ++$cZ){
@@ -343,11 +343,16 @@ class Level{
 		$this->totalMobsAmount = 0;
 		$post = [];
 		foreach($this->entityList as $k => $e){
+			
 			if(!($e instanceof Entity)){
 				unset($this->entityList[$k]);
 				unset($this->server->entities[$k]);
+				//TODO try to remove from $entityListPositioned?
 				continue;
 			}
+			$curChunkX = (int)$e->x >> 4;
+			$curChunkZ = (int)$e->z >> 4;
+			
 			if($e->class === ENTITY_MOB && !$e->isPlayer()){
 				++$this->totalMobsAmount;
 			}
@@ -355,6 +360,17 @@ class Level{
 				$e->update($currentTime);
 				if(!$e->isPlayer()) $post[] = $k;
 			}
+			
+			if($e instanceof Entity){
+				$newChunkX = (int)$e->x >> 4;
+				$newChunkZ = (int)$e->z >> 4;
+				if($curChunkX != $newChunkX || $curChunkZ != $newChunkZ){
+					$index = "$curChunkX $curChunkZ"; //while creating index like $curChunkX << 32 | $curChunkZ is faster, placing it inside list is slow
+					$newIndex = "$newChunkX $newChunkZ";
+					unset($this->entityListPositioned[$index][$e->eid]);
+					$this->entityListPositioned[$newIndex][$e->eid] = $e->eid; //set to e->eid to avoid possible memory leaks
+				}
+			}	
 		}
 		
 		$this->checkSleep();
@@ -385,6 +401,25 @@ class Level{
 			}
 			$player->sendBlockUpdateQueue();
 		}
+	}
+	
+	public function getEntitiesNearby(Entity $e, $radius = 5){
+		$minChunkX = ((int)($e->x - $radius)) >> 4;
+		$minChunkZ = ((int)($e->z - $radius)) >> 4;
+		$maxChunkX = ((int)($e->x + $radius)) >> 4;
+		$maxChunkZ = ((int)($e->z + $radius)) >> 4;
+		$ents = [];
+		//TODO also index by chunkY?
+		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
+			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
+				$ind = "$chunkX $chunkZ";
+				foreach($this->entityListPositioned[$ind] ?? [] as $entid){
+					$ents[$entid] = $this->entityList[$entid];
+				}
+			}
+		}
+		unset($ents[$e->eid]);
+		return $ents;
 	}
 	
 	public function addBlockToSendQueue($x, $y, $z, $id, $meta){

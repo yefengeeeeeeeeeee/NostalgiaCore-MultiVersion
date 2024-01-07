@@ -110,8 +110,9 @@ class Player{
 		$this->blockUpdateQueue = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$this->blockUpdateQueue->data = [];
 		
-		$this->server->schedule(1, [$this, "handlePacketQueues"], [], true);
 		$this->server->schedule(20 * 60, [$this, "clearQueue"], [], true);
+		$this->server->schedule(1, [$this, "handlePacketQueues"], [], true);
+		
 		$this->evid[] = $this->server->event("server.close", [$this, "close"]);
 		console("[DEBUG] New Session started with " . $ip . ":" . $port . ". MTU " . $this->MTU . ", Client ID " . $this->clientID, true, true, 2);
 	}
@@ -1365,6 +1366,7 @@ class Player{
 	}
 	public function entityTick(){
 		if($this->isSleeping) ++$this->sleepingTime;
+		$this->handlePacketQueues();
 	}
 	public function handleDataPacket(RakNetDataPacket $packet){
 		if($this->connected === false){
@@ -1567,7 +1569,7 @@ class Player{
 				
 				
 				console("[INFO] " . FORMAT_AQUA . $this->username . FORMAT_RESET . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->eid . " at (" . $this->entity->level->getName() . ", " . round($this->entity->x, 2) . ", " . round($this->entity->y, 2) . ", " . round($this->entity->z, 2) . ")");
-				break;
+				return false; //return false so it will not be updated by tickerFunction
 			case ProtocolInfo::READY_PACKET:
 				if($this->loggedIn === false){
 					break;

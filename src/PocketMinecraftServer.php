@@ -89,10 +89,12 @@ class PocketMinecraftServer{
 			"16x16x16_chunk_sending" => false,
 			"experimental-mob-ai" => false,	
 			"force-20-tps" => false,
+			"enable-mob-pushing" => Living::$entityPushing
 		]);
 		Player::$smallChunks = $this->extraprops->get("16x16x16_chunk_sending");
 		Living::$despawnMobs = $this->extraprops->get("despawn-mobs");
 		Living::$despawnTimer = $this->extraprops->get("mob-despawn-ticks");
+		Living::$entityPushing = $this->extraprops->get("enable-mob-pushing");
 		self::$FORCE_20_TPS = $this->extraprops->get("force-20-tps");
 		PocketMinecraftServer::$SAVE_PLAYER_DATA = $this->extraprops->get("save-player-data");
 		MobController::$ADVANCED = $this->extraprops->get("experimental-mob-ai");

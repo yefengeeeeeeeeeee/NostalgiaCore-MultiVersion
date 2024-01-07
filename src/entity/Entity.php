@@ -1117,14 +1117,7 @@ class Entity extends Position
 	
 	public function setPosition(Vector3 $pos, $yaw = false, $pitch = false)
 	{
-		if($pos instanceof Position and $pos->level instanceof Level and $this->level !== $pos->level){
-			$this->level = $pos->level;
-			$this->server->preparedSQL->entity->setLevel->reset();
-			$this->server->preparedSQL->entity->setLevel->clear();
-			$this->server->preparedSQL->entity->setLevel->bindValue(":level", $this->level->getName(), SQLITE3_TEXT);
-			$this->server->preparedSQL->entity->setLevel->bindValue(":eid", $this->eid, SQLITE3_INTEGER);
-			$this->server->preparedSQL->entity->setLevel->execute();
-		}
+		
 		$this->x = $pos->x;
 		$this->y = $pos->y;
 		$this->z = $pos->z;
