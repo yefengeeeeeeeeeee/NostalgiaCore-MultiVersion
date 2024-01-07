@@ -2,7 +2,6 @@
 
 class CarpetBlock extends FlowableBlock{
 	public function __construct($meta = 0){
-		console($meta);
 		parent::__construct(CARPET, $meta, "Carpet");
 		$names = array(
 			0 => "White Carpet",
