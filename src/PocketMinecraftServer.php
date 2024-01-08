@@ -622,7 +622,7 @@ class PocketMinecraftServer{
 					++$actionCount;
 					try{
 						$return = @call_user_func($this->schedule[$cid][0] ?? function(){}, $this->schedule[$cid][1], $this->schedule[$cid][2]); //somehow args can be null
-					}catch(ValueError $e){
+					}catch(Throwable $e){
 						$return = false;
 					}
 				}else{
