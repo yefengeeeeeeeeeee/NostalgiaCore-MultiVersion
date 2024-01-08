@@ -398,10 +398,11 @@ class Level{
 				$id = $idmeta[0];
 				$meta = $idmeta[1];
 				$player->addBlockUpdateIntoQueue($x, $y, $z, $id, $meta);
-				unset($this->queuedBlockUpdates[$ind]);
 			}
 			$player->sendBlockUpdateQueue();
 		}
+		
+		$this->queuedBlockUpdates = [];
 	}
 	
 	public function getEntitiesNearby(Entity $e, $radius = 5){
