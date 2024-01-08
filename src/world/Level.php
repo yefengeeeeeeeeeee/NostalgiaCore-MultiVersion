@@ -390,7 +390,7 @@ class Level{
 			}
 			$player->sendEntityMovementUpdateQueue();
 			
-			foreach($this->queuedBlockUpdates as $update){
+			foreach($this->queuedBlockUpdates as $ind => $update){
 				$x = $update[0];
 				$y = $update[1];
 				$z = $update[2];
@@ -398,6 +398,7 @@ class Level{
 				$id = $idmeta[0];
 				$meta = $idmeta[1];
 				$player->addBlockUpdateIntoQueue($x, $y, $z, $id, $meta);
+				unset($this->queuedBlockUpdates[$ind]);
 			}
 			$player->sendBlockUpdateQueue();
 		}
