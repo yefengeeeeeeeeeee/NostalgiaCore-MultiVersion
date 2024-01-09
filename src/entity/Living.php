@@ -36,8 +36,11 @@ abstract class Living extends Entity implements Pathfindable{
 		return $this->aiMoveSpeed;
 	}
 	
+	public function getVerticalFaceSpeed(){
+		return 40; //unused in 0.8 but may be useful in 0.9/0.10
+	}
+	
 	public function setAIMoveSpeed($speed){
-		console("set spedd to $speed");
 		$this->aiMoveSpeed = $speed;
 		$this->moveForward = $speed;
 	}
@@ -182,7 +185,6 @@ abstract class Living extends Entity implements Pathfindable{
 			}
 			
 			//TODO onLadder
-			console($this->speedY);
 			$this->move($this->speedX, $this->speedY, $this->speedZ);
 			//TODO onLadder + isCollidedHorizonatlly => speedY = 0.2
 			

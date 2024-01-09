@@ -11,6 +11,8 @@ class Pig extends Animal implements Rideable{
 		$this->setSpeed(0.25);
 		
 		$this->ai->addTask(new TaskRandomWalk(0.25));
+		$this->ai->addTask(new TaskLookAtPlayer(6));
+		$this->ai->addTask(new TaskPanic(0.375));
 		
 	}
 	/**

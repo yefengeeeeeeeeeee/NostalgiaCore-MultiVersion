@@ -10,6 +10,8 @@ class PrimedTNT extends Entity{
 		}
 		$this->hasGravity = true;
 		$this->gravity = 0.04;
+		$this->setSize(0.98, 0.98);
+		$this->yOffset = $this->height / 2;
 		$this->setHealth(10000000, "generic");
 		$this->server->schedule(5, [$this, "updateFuse"], [], true);
 	}

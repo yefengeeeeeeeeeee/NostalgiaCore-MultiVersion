@@ -8,6 +8,7 @@ class FallingSand extends Entity{
 		$this->setHealth(PHP_INT_MAX, "generic");
 		$this->height = 0.98;
 		$this->width = 0.98;
+		$this->yOffset = $this->height / 2;
 		$this->hasGravity = true;
 		$this->gravity = 0.04;
 	}

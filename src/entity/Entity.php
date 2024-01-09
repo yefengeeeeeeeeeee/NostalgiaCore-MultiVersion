@@ -84,6 +84,8 @@ class Entity extends Position
 	
 	public $stepHeight = 0.5;
 	public $enableAutojump = false;
+	public $yOffset = 0.0;
+	public $noClip = false;
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array())
 	{
 		$this->random = new Random();
@@ -552,7 +554,7 @@ class Entity extends Position
 		$this->boundingBox->offset($dx, $dy, $dz);
 		$fallingFlag = $this->onGround || $savedDY != $dy && $savedDY < 0;
 		
-		if($this->stepHeight > 0 && $fallingFlag && /*($this->ySize < 0.05) && TODO ySuze*/ ($savedDX != $dx || $savedDZ != $dz)){
+		if($this->stepHeight > 0 && $fallingFlag && ($savedDX != $dx || $savedDZ != $dz)){
 			$cx = $dx;
 			$cy = $dy;
 			$cz = $dz;
@@ -600,7 +602,7 @@ class Entity extends Position
 		
 		//TODO step
 		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-		$this->y = $this->boundingBox->minY; //TODO + $this->yOffset - //TODO $this->ySize;
+		$this->y = $this->boundingBox->minY + $this->yOffset;// - //TODO - used when player is sneaking $this->ySize;
 		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
 		//$this.isCollidedHorizontally = savedDX != dx || savedDZ != dz;
 		//$this.isCollidedVertically = savedDY != dy;

@@ -26,6 +26,9 @@ class MobController
 	public $moveToX, $moveToY, $moveToZ;
 	public $speed;
 	public $updateMove = false;
+	
+	public $lookX, $lookY, $lookZ;
+	public $deltaLookYaw, $deltaLookPitch;
 	public $isLooking = false;
 	
 	
@@ -132,7 +135,17 @@ class MobController
 		$this->entity->pitch = 0;
 		if($this->isLooking){
 			$this->isLooking = false;
-			//TODO
+			
+			$diffX = $this->lookX - $this->entity->x;
+			$diffY = $this->lookY - ($this->entity->y + $this->entity->getEyeHeight());
+			$diffZ = $this->lookZ - $this->entity->z;
+			$distance = sqrt($diffX*$diffX + $diffZ*$diffZ);
+			
+			$v9 = (atan2($diffZ, $diffX)*180 / M_PI) - 90;
+			$v10 = -(atan2($diffY, $distance)*180 / M_PI);
+			
+			$this->entity->pitch = self::limitAngle($this->entity->pitch, $v10, $this->deltaLookPitch);
+			$this->entity->headYaw = self::limitAngle($this->entity->headYaw, $v9, $this->deltaLookYaw);
 		}else{
 			$this->entity->headYaw = self::limitAngle($this->entity->headYaw, $this->entity->renderYawOffset, 10);
 		}
@@ -160,8 +173,13 @@ class MobController
 		//$this->entity->headYaw = Utils::wrapAngleTo360($this->entity->headYaw + $w180min);
 	}
 	
-	public function moveTo($x, $y, $z, $camera = true){
-		//TODO fix return $this->moveNonInstant($x - floor($this->entity->x), $y - floor($this->entity->y), $z - floor($this->entity->z), $camera);
+	public function setLookPosition($posX, $posY, $posZ, $lookYaw, $lookPitch){
+		$this->lookX = $posX;
+		$this->lookY = $posY;
+		$this->lookZ = $posZ;
+		$this->deltaLookYaw = $lookYaw;
+		$this->deltaLookPitch = $lookPitch;
+		$this->isLooking = true;
 	}
 	
 	public function faceEntity($x, $y, $z){

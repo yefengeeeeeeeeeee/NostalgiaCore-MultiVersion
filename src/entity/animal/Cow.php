@@ -8,6 +8,8 @@ class Cow extends Animal{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 10, "generic");
 		$this->setName("Cow");
 		$this->ai->addTask(new TaskRandomWalk(0.2));
+		$this->ai->addTask(new TaskLookAtPlayer(6));
+		$this->ai->addTask(new TaskPanic(0.375));
 	}
 	
 	public function isFood($id){

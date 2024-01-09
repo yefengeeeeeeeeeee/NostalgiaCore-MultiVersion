@@ -10,6 +10,7 @@ class ItemEntity extends Entity{
 	{
 		parent::__construct($level, $eid, $class, $type, $data);
 		$this->setSize(0.25, 0.25);
+		$this->yOffset = $this->height / 2;
 		if(isset($data["item"]) and ($data["item"] instanceof Item)){
 			$this->meta = $this->data["item"]->getMetadata();
 			$this->stack = $this->data["item"]->count;

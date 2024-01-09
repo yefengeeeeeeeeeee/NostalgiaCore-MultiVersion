@@ -65,6 +65,7 @@ class Minecart extends Vehicle{
 		$this->setHealth(1, "generic"); //orig: 3
 		$this->width = 0.98;
 		$this->height = 0.7;
+		$this->yOffset = $this->height / 2;
 		$this->update();
 	}
 	
