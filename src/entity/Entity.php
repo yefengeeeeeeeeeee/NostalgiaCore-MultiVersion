@@ -6,6 +6,7 @@ class Entity extends Position
 	const TYPE = - 1;
 	const CLASS_TYPE = - 1;
 	const MIN_POSSIBLE_SPEED = 1/8000; //anything below will send 0 to player
+	
 	public $counter = 0;
 	public $fallDistance = 0;
 	public static $updateOnTick, $allowedAI;
@@ -486,9 +487,91 @@ class Entity extends Position
 		return $hasUpdate;
 	}
 	
+	public function moveFlying($strafe, $forward, $speed){ //TODO rename?
+		$v4 = $strafe*$strafe + $forward*$forward;
+		
+		if($v4 >= 1.0e-4){ //TODO dont use ugly scienfitic notation
+			$v4 = sqrt($v4);
+			if($v4 < 1) $v4 = 1;
+			
+			$v4 = $speed / $v4;
+			$strafe *= $v4;
+			$forward *= $v4;
+			
+			$v5 = sin($this->yaw * M_PI/180);
+			$v6 = cos($this->yaw * M_PI/180);
+			
+			$this->speedX += $strafe*$v6 - $forward*$v5;
+			$this->speedZ += $forward*$v6 + $strafe*$v5;
+			
+			//float var5 = MathHelper.sin(this.rotationYaw * (float)Math.PI / 180.0F);
+			//float var6 = MathHelper.cos(this.rotationYaw * (float)Math.PI / 180.0F);
+			//this.motionX += (double)(strafe * var6 - forward * var5);
+			//this.motionZ += (double)(forward * var6 + strafe * var5);
+		}
+	}
+	
 	public function updateEntityMovement(){}
 
-
+	public function move($dx, $dy, $dz){
+		//TODO ySize?
+		$movX = $this->x;
+		$movY = $this->y;
+		$movZ = $this->z;
+		
+		//TODO isInWeb
+		$savedDX = $dx;
+		$savedDY = $dy;
+		$savedDZ = $dz;
+		
+		$oldBB = clone $this->boundingBox;
+		
+		$aABB = $this->boundingBox->addCoord($dx, $dy, $dz);
+		$x0 = floor($aABB->minX);
+		$x1 = ceil($aABB->maxX);
+		$y0 = floor($aABB->minY);
+		$y1 = ceil($aABB->maxY);
+		$z0 = floor($aABB->minZ);
+		$z1 = ceil($aABB->maxZ);
+		
+		for($x = $x0; $x <= $x1; ++$x){
+			for($y = $y0; $y <= $y1; ++$y){
+				for($z = $z0; $z <= $z1; ++$z){
+					$b = $this->level->level->getBlockID($x, $y, $z);
+					if($b != 0){ //TODO might be better to use other method
+						$blockBounds = Block::$class[$b]::getCollisionBoundingBoxes($this->level, $x, $y, $z, $this);
+						foreach($blockBounds as $blockBound){
+							$dy = $blockBound->calculateYOffset($this->boundingBox, $dy);
+							$dx = $blockBound->calculateXOffset($this->boundingBox, $dx);
+							$dz = $blockBound->calculateZOffset($this->boundingBox, $dz);
+						}
+					}
+				}
+			}
+		}
+		$this->boundingBox->offset($dx, $dy, $dz);
+		$fallingFlag = $this->onGround || $savedDY != $dy && $savedDY < 0;
+		
+		//TODO step
+		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+		$this->y = $this->boundingBox->minY; //TODO + $this->yOffset - //TODO $this->ySize;
+		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+		//$this.isCollidedHorizontally = savedDX != dx || savedDZ != dz;
+		//$this.isCollidedVertically = savedDY != dy;
+		$this->onGround = $savedDY != $dy && $savedDY < 0.0;
+		//$this.isCollided = this.isCollidedHorizontally || this.isCollidedVertically;
+		
+		if($savedDX != $dx) $this->speedX = 0;
+		if($savedDY != $dy) $this->speedY = 0;
+		if($savedDZ != $dz) $this->speedZ = 0;
+		
+		//TODO more stuff
+		
+		//TODO block collisions?
+		//TODO deal fire damage here
+		
+	}
+	
 	public function isInVoid(){
 		return $this->y < -1.6;
 	}
@@ -513,7 +596,7 @@ class Entity extends Position
 			if(!$this->isPlayer()){
 				$this->updateLast();
 				$this->updateEntityMovement();
-				$update = false;
+				/*$update = false;
 				if($this->speedX > -self::MIN_POSSIBLE_SPEED && $this->speedX < self::MIN_POSSIBLE_SPEED){
 					$this->speedX = 0;
 				}
@@ -554,37 +637,8 @@ class Entity extends Position
 					if($this->hasGravity){
 						$this->speedY -= $this->inWater ? 0.02 : ($this->gravity);
 					}
-					$savedSpeedY = $this->speedY;
-					$aABB = $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ);
-					$x0 = floor($aABB->minX);
-					$x1 = ceil($aABB->maxX);
-					$y0 = floor($aABB->minY);
-					$y1 = ceil($aABB->maxY);
-					$z0 = floor($aABB->minZ);
-					$z1 = ceil($aABB->maxZ);
-					
-					for($x = $x0; $x <= $x1; ++$x){
-						for($y = $y0; $y <= $y1; ++$y){
-							for($z = $z0; $z <= $z1; ++$z){
-								
-								$b = $this->level->level->getBlockID($x, $y, $z);
-								if(($b == WATER || $b == STILL_WATER)){
-									$water |= $y == ($y1 - 1);
-									$this->fallDistance = 0;
-								}
-								if($b != 0){
-									$blockBounds = Block::$class[$b]::getCollisionBoundingBoxes($this->level, $x, $y, $z, $this);
-									foreach($blockBounds as $blockBound){
-										$this->speedY = $blockBound->calculateYOffset($this->boundingBox, $this->speedY);
-										$this->speedX = $blockBound->calculateXOffset($this->boundingBox, $this->speedX);
-										$this->speedZ = $blockBound->calculateZOffset($this->boundingBox, $this->speedZ);
-									}
-								}
-							}
-						}
-					}
-					$this->boundingBox->offset($this->speedX, $this->speedY, $this->speedZ);
-					$this->inWater = $water;
+					$this->move($this->speedX, $this->speedY, $this->speedZ);
+					$this->inWater = $water; TODO
 					$fallingFlag = $this->onGround || $savedSpeedY != $this->speedY && $savedSpeedY < 0.0;
 					$beforeStepSpeedY = $this->speedY;
 					
@@ -636,39 +690,7 @@ class Entity extends Position
 						$this->ai->mobController->setJumping(false);
 					}
 				}
-				
-				$support = $savedSpeedY != $this->speedY && $savedSpeedY < 0;
-				if($this->speedX != 0){
-					$this->x += $this->speedX;
-					$update = true;
-				}
-				if($this->speedZ != 0){
-					$this->z += $this->speedZ;
-					$update = true;
-				}
-				if($this->speedY != 0){
-					$ny = $this->y + $this->speedY;
-					if($stepSuccess) $this->speedY = $beforeStepSpeedY;
-					if($this->class === ENTITY_FALLING){
-						if($support){
-							$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, $this->data["Tile"], 0);
-							$this->close();
-							return;
-						}
-						$id = $this->level->level->getBlockID($this->x, $this->y, $this->z);
-						if($id > 0 && !StaticBlock::getIsSolid($id) && !StaticBlock::getIsLiquid($id)){
-							$this->server->api->entity->drop($this, BlockAPI::getItem($this->data["Tile"], 0, 1));
-							$this->close();
-							return;
-						}
-						
-					}
-					$this->y = $ny;
-					
-					$update = true;
-				}
-				
-				$this->onGround = $support;
+				}*/
 
 				
 				if($this->lastX != $this->x || $this->lastZ != $this->z || $this->lastY != $this->z){
@@ -1083,18 +1105,6 @@ class Entity extends Position
 		$angle = Utils::angle3D($pos2, $pos);
 		$this->yaw = $angle["yaw"];
 		$this->pitch = $angle["pitch"];
-	}
-
-	public function move(Vector3 $pos, $yaw = 0, $pitch = 0)
-	{
-		$this->x += $pos->x;
-		$this->y += $pos->y;
-		$this->z += $pos->z;
-		$this->yaw += $yaw;
-		$this->yaw %= 360;
-		$this->pitch += $pitch;
-		$this->pitch %= 90;
-		$this->updateAABB();
 	}
 
 	public function updateAABB()

@@ -11,10 +11,10 @@ abstract class Creature extends Living{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 1, "generic");
 		$this->enableAutojump = true;
 		//$this->setName((isset($mobs[$this->type]) ? $mobs[$this->type]:$this->type));
-		$this->ai->addTask(new TaskLookAround());
-		$this->ai->addTask(new TaskRandomWalk());
-		$this->ai->addTask(new TaskLookAtPlayer());
-		$this->ai->addTask(new TaskSwimming());
+		//$this->ai->addTask(new TaskLookAround());
+		//$this->ai->addTask(new TaskRandomWalk());
+		//$this->ai->addTask(new TaskLookAtPlayer());
+		//$this->ai->addTask(new TaskSwimming());
 	}
 	
 	public function createSaveData(){

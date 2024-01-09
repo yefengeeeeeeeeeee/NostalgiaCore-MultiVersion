@@ -12,9 +12,9 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 			$this->setAge(-24000);
 		}
 		
-		$this->ai->addTask(new TaskTempt());
-		$this->ai->addTask(new TaskPanic());
-		$this->ai->addTask(new TaskMate());
+		//$this->ai->addTask(new TaskTempt());
+		//$this->ai->addTask(new TaskPanic());
+		//$this->ai->addTask(new TaskMate());
 	}
 	
 	public function harm($dmg, $cause = "generic", $force = false){

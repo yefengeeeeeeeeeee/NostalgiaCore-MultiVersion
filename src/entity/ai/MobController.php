@@ -65,8 +65,8 @@ class MobController
 				);
 		}
 		
-		while(self::$ADVANCED){
-			if($this->isDangerous($a) || $this->isDangerous($b) || $this->isDangerous($c) || $this->isDangerous($d)){
+		while(self::$ADVANCED){	
+		if($this->isDangerous($a) || $this->isDangerous($b) || $this->isDangerous($c) || $this->isDangerous($d)){
 				return false;
 			}
 			$id1 = $this->entity->level->level->getBlockID($xf, $this->entity->y + $oy - 1, $zf);
