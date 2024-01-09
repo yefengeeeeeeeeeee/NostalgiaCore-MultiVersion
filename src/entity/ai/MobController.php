@@ -11,7 +11,7 @@ class MobController
 		FIRE => true,
 	];
 	/**
-	 * @var Entity
+	 * @var Living
 	 */
 	public $entity;
 	
@@ -19,6 +19,10 @@ class MobController
 	
 	protected $jumping;
 	protected $jumpTimeout;
+	
+	public $moveToX, $moveToY, $moveToZ;
+	public $speed;
+	public $updateMove = false;
 	
 	public function __construct($e){
 		$this->entity = $e;
@@ -38,89 +42,66 @@ class MobController
 		return $this->finalHeadYaw === $this->entity->headYaw;
 	}
 	
-	public function moveNonInstant($x, $y, $z, $camera = true){
-		if($x == 0 && $y == 0 && $z == 0){
-			return false;
-		}
-		
-		$ox = $x <=> 1;
-		$oy = $y <=> 1;
-		$oz = $z <=> 1;
-		$xf = $this->entity->x + ($this->entity->getSpeedModifer() * $ox * $this->entity->getSpeed());
-		$zf = $this->entity->z + ($this->entity->getSpeedModifer() * $oz * $this->entity->getSpeed());
-		$a = $b = $c = $d = 0;
-		if(self::$AUTOJUMP){
-			$oy = $this->entity->onGround && (
-				StaticBlock::getIsSolid(($a = $this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y), ceil($zf)))) &&
-				!StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y) + 1, ceil($zf)))
-				||
-				StaticBlock::getIsSolid(($b = $this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y), $zf - ($oz < 0)))) &&
-				!StaticBlock::getIsSolid($this->entity->level->level->getBlockID(ceil($xf), (int)($this->entity->y) + 1, $zf - ($oz < 0)))
-				||
-				StaticBlock::getIsSolid(($c = $this->entity->level->level->getBlockID($xf - ($ox < 0), (int)($this->entity->y), $zf - ($oz < 0)))) &&
-				!StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), (int)($this->entity->y) + 1, $zf - ($oz < 0)))
-				||
-				StaticBlock::getIsSolid(($d = $this->entity->level->level->getBlockID($xf - ($ox < 0), (int)($this->entity->y), ceil($zf)))) &&
-				!StaticBlock::getIsSolid($this->entity->level->level->getBlockID($xf - ($ox < 0), (int)($this->entity->y) + 1, ceil($zf)))
-				);
-		}
-		
-		while(self::$ADVANCED){	
-		if($this->isDangerous($a) || $this->isDangerous($b) || $this->isDangerous($c) || $this->isDangerous($d)){
-				return false;
-			}
-			$id1 = $this->entity->level->level->getBlockID($xf, $this->entity->y + $oy - 1, $zf);
-			if($this->isDangerous($id1)) return false;
-			if(!StaticBlock::getIsSolid($id1)){
-				$id2 = $this->entity->level->level->getBlockID($xf, $this->entity->y - 2, $zf);
-				$id3 = $this->entity->level->level->getBlockID($xf, $this->entity->y - 3, $zf);
-				$id4 = $this->entity->level->level->getBlockID($xf, $this->entity->y - 4, $zf);
-				$s2 = StaticBlock::getIsSolid($id2);
-				$s3 = StaticBlock::getIsSolid($id3);
-				$s4 = StaticBlock::getIsSolid($id4);
-				if($this->isDangerous($id2)) return false;
-				if($s2) break; //i cant goto label which wasnt declared before
-				
-				if($this->isDangerous($id3)) return false;
-				if($s3) break;
-				
-				if($this->isDangerous($id4)) return false;
-				if($s4) break;
-				
-				if(!($this->entity instanceof Chicken)){
-					return false;
-				}
-			}
-			break;
-		}
-		if($camera) $this->faceEntity($ox, $oy, $oz);
-		if($this->entity->knockbackTime <= 0 && $this->isRotationCompleted()){
-		    $this->entity->moveEntityWithOffset($ox, $oy, $oz);
-		}
-		return true;
+	public function setMovingOffset($x, $y, $z, $speed){
+		$this->moveToX = $this->entity->x + ($x);
+		$this->moveToY = $this->entity->y + ($y);
+		$this->moveToZ = $this->entity->z + ($z);
+		$this->speed = $speed;
+		$this->updateMove = true;
 	}
 	
 	public function canJump(){
 		return $this->isJumping() && $this->jumpTimeout <= 0 && $this->entity->onGround;
 	}
 	
+	public static function limitAngle($old, $newA, $limit){
+		$v4 = Utils::wrapAngleTo180($newA - $old);
+		
+		if($v4 > $limit) $v4 = $limit;
+		if($v4 < -$limit) $v4 = -$limit;
+		
+		return $old + $v4;
+	}
+	
 	public function movementTick(){
-		if($this->canJump()){
-			$this->jumpTimeout = 10;
-			$this->entity->speedY = 0.50;
+		$this->entity->moveForward = 0;
+		if($this->updateMove){
+			$this->updateMove = false;
+			$v1 = floor($this->entity->boundingBox->minY + 0.5);
+			
+			$diffX = $this->moveToX - $this->entity->x;
+			$diffZ = $this->moveToZ - $this->entity->z;
+			$diffY = $this->moveToY - $v1;
+			
+			$v8 = $diffX*$diffX + $diffY*$diffY + $diffZ*$diffZ;
+			
+			if($v8 >= 2.500000277905201E-7){ //TODO convert notation
+				$v10 = (atan2($diffZ, $diffX) * 180 / M_PI) - 90;
+				console("$v10: ".$v10);
+				$this->entity->yaw = self::limitAngle($this->entity->yaw, $v10, 30);
+				console("yaw: {$this->entity->yaw}");
+				$this->entity->setAIMoveSpeed($this->speed * $this->entity->getSpeedModifer());
+				
+				if($diffY > 0 && $diffX*$diffX + $diffZ*$diffZ < 1) $this->setJumping(true);
+			}
 		}
-		if($this->jumpTimeout > 0) --$this->jumpTimeout;
+		//TODO handle jumps somewhere
+		//if($this->canJump()){
+		//	$this->jumpTimeout = 10;
+		//	$this->entity->speedY = 0.50;
+		//}
+		//if($this->jumpTimeout > 0) --$this->jumpTimeout;
 	}
 	
 	public function rotateTick(){ //TODO handle more rotation
-		$this->entity->lastHeadYaw = $this->entity->headYaw;
-		$w180 = Utils::wrapAngleTo180($this->finalHeadYaw - $this->entity->headYaw); 
-		$w180min = min(abs($w180), 20)*Utils::getSign($w180);
-		$this->entity->headYaw = Utils::wrapAngleTo360($this->entity->headYaw + $w180min);
+		//$this->entity->lastHeadYaw = $this->entity->headYaw;
+		//$w180 = Utils::wrapAngleTo180($this->finalHeadYaw - $this->entity->headYaw); 
+		//$w180min = min(abs($w180), 20)*Utils::getSign($w180);
+		//$this->entity->headYaw = Utils::wrapAngleTo360($this->entity->headYaw + $w180min);
 	}
 	
 	public function moveTo($x, $y, $z, $camera = true){
-		return $this->moveNonInstant($x - floor($this->entity->x), $y - floor($this->entity->y), $z - floor($this->entity->z), $camera);
+		//TODO fix return $this->moveNonInstant($x - floor($this->entity->x), $y - floor($this->entity->y), $z - floor($this->entity->z), $camera);
 	}
 	
 	public function faceEntity($x, $y, $z){

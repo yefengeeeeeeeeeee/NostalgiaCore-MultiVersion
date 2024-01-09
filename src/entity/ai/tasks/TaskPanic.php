@@ -28,7 +28,7 @@ class TaskPanic extends TaskBase
 	{
 		--$this->selfCounter;
 		if($this->selfCounter % 20 === 0) $this->regenerateRandXZ();
-		$ai->mobController->moveNonInstant($this->randX, 0, $this->randZ);
+		//TODO fix $ai->mobController->moveNonInstant($this->randX, 0, $this->randZ);
 	}
 
 	public function canBeExecuted(EntityAI $ai)

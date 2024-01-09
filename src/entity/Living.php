@@ -10,6 +10,8 @@ abstract class Living extends Entity implements Pathfindable{
 	
 	public $landMovementFactor = 0.1; //TODO may not be constant
 	public $jumpMovementFactor = 0.02; //TODO may not be constant
+	public $aiMoveSpeed;
+	
 	
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 		$this->target = false;
@@ -28,6 +30,17 @@ abstract class Living extends Entity implements Pathfindable{
 			$this->harm($dmg, "fall");
 		}
 	}
+	
+	public function getAIMoveSpeed(){
+		return $this->aiMoveSpeed;
+	}
+	
+	public function setAIMoveSpeed($speed){
+		console("set spedd to $speed");
+		$this->aiMoveSpeed = $speed;
+		$this->moveForward = $speed;
+	}
+	
 	public function hasPath(){
 		return $this->path != null;
 	}
@@ -100,10 +113,10 @@ abstract class Living extends Entity implements Pathfindable{
 		if(!$this->dead && Entity::$allowedAI && $this->idleTime <= 0) {
 			$this->ai->updateTasks();
 		}
-		$this->ai->mobController->rotateTick();
+		
 		$this->ai->mobController->movementTick();
-		
-		
+		$this->ai->mobController->rotateTick();
+	
 		if(abs($this->speedX) < self::MIN_POSSIBLE_SPEED) $this->speedX = 0;
 		if(abs($this->speedZ) < self::MIN_POSSIBLE_SPEED) $this->speedZ = 0;
 		if(abs($this->speedY) < self::MIN_POSSIBLE_SPEED) $this->speedY = 0;

@@ -91,7 +91,7 @@ class Entity extends Position
 		$this->canBeAttacked = false;
 		$this->hasKnockback = false;
 		$this->level = $level;
-		$this->speedModifer = 0.7;
+		$this->speedModifer = 1;
 		$this->fallY = false;
 		$this->fallStart = false;
 		$this->server = ServerAPI::request();

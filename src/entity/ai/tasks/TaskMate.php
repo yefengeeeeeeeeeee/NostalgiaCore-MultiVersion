@@ -24,7 +24,7 @@ class TaskMate extends \TaskBase
 			$this->onEnd($ai);
 			return;
 		}
-		$ai->mobController->moveTo($movTo->x, $movTo->y, $movTo->z, false);
+		//TODO fix $ai->mobController->moveTo($movTo->x, $movTo->y, $movTo->z, false);
 		$ai->mobController->lookOn($movTo);
 		
 		--$this->selfCounter;
