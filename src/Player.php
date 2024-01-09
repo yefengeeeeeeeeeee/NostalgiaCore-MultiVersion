@@ -1218,7 +1218,7 @@ class Player{
 			$move = new MoveEntityPacket_PosRot();
 			$move->eid = $e->eid;
 			$move->x = $e->x;
-			$move->y = $e instanceof ItemEntity ? $e->boundingBox->maxY : $e->y; //TODO fix items getting into farmland in client side somehow else
+			$move->y = $e->y; //TODO fix items getting into farmland in client side somehow else
 			$move->z = $e->z;
 			$move->yaw = $e->yaw;
 			$move->pitch = $e->pitch;
