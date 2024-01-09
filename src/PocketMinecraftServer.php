@@ -439,7 +439,6 @@ class PocketMinecraftServer{
 		}
 		$this->schedule(20 * 15, [$this, "checkTicks"], [], true);
 		$this->schedule(20 * 60, [$this, "checkMemory"], [], true);
-		$this->schedule(20 * 45, "Cache::cleanup", [], true);
 		$this->schedule(20, [$this, "asyncOperationChecker"], [], true);
 	}
 
@@ -488,7 +487,7 @@ class PocketMinecraftServer{
 				} elseif($this->tick() > 0){
 					$lastLoop = 0;
 				} else{
-					++ $lastLoop;
+					++$lastLoop;
 					if($lastLoop < 16){
 						usleep(1);
 					} elseif($lastLoop < 128){

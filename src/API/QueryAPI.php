@@ -2,7 +2,7 @@
 
 class QueryAPI{
 
-	public static $NOT_FOUND_VALUE;
+	public static $NOT_FOUND_VALUE; //TODO just use null
 	private $queryData;
 	private $server;
 
