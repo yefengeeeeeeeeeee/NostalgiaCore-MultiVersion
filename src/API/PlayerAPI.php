@@ -480,7 +480,7 @@ class PlayerAPI{
 			}
 			$this->server->query("DELETE FROM players WHERE name = '" . $player->username . "';");
 			$this->server->api->entity->remove($player->eid);
-			unset($player->level->players[$this->CID]);
+			unset($player->level->players[$player->CID]);
 			if($player->entity instanceof Entity){
 				unset($player->entity->player);
 				//unset($player->entity);
