@@ -69,8 +69,11 @@ class Utils{
 	
 	public static function wrapAngleTo180($angle)
 	{
-		$angle = fmod($angle+180, 360);
-		return $angle < 0 ? $angle + 360 : $angle - 180;
+		$angle = fmod($angle, 360);
+		
+		if($angle >= 180) $angle -= 360;
+		if($angle < -180) $angle += 360;
+		return $angle;
 	}
 	public static function getSign($v){
 		return $v <=> 0;

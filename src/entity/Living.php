@@ -135,6 +135,8 @@ abstract class Living extends Entity implements Pathfindable{
 		
 		//Yaw rotation in 1.5 is handled in a bit different place but hopefully this will work too
 		$this->ai->mobController->updateHeadYaw();
+		
+		
 	}
 	
 	public function moveEntityWithHeading($strafe, $forward){
@@ -153,15 +155,17 @@ abstract class Living extends Entity implements Pathfindable{
 			$var8 = 0.16277136 / ($friction*$friction*$friction);
 			
 			if($this->onGround){
+				//all mobs have ai enabled in nc for now
+				$var5 = $this->getAIMoveSpeed();
 				//TODO if AIEnabled
-				{
+				//{
 					//TODO $var5 = getAIMoveSpeed
-				}
+				//}
 				//else
-				{
-					$var5 = $this->landMovementFactor;
-				}
-				$var5 *= $var8;
+				//{
+				//	$var5 = $this->landMovementFactor;
+				//}
+				//$var5 *= $var8;
 			}else{
 				$var5 = $this->jumpMovementFactor;
 			}

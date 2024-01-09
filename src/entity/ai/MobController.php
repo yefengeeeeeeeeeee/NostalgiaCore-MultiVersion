@@ -26,6 +26,8 @@ class MobController
 	public $moveToX, $moveToY, $moveToZ;
 	public $speed;
 	public $updateMove = false;
+	public $isLooking = false;
+	
 	
 	public function __construct($e){
 		$this->entity = $e;
@@ -123,12 +125,34 @@ class MobController
 			}
 			$this->entity->renderYawOffset = self::limitAngle2($this->entity->headYaw, $this->entity->renderYawOffset, $v5);
 		}
-		$this->entity->headYaw = $this->entity->renderYawOffset;
 	}
 	
 	public function rotateTick(){ //TODO handle more rotation
 		
+		$this->entity->pitch = 0;
+		if($this->isLooking){
+			$this->isLooking = false;
+			//TODO
+		}else{
+			$this->entity->headYaw = self::limitAngle($this->entity->headYaw, $this->entity->renderYawOffset, 10);
+		}
 		
+		/* Some stuff for pathfinder - nc doesnt have it now
+		 * float var11 = MathHelper.wrapAngleTo180_float(this.entity.rotationYawHead - this.entity.renderYawOffset);
+
+        if (!this.entity.getNavigator().noPath())
+        {
+            if (var11 < -75.0F)
+            {
+                this.entity.rotationYawHead = this.entity.renderYawOffset - 75.0F;
+            }
+
+            if (var11 > 75.0F)
+            {
+                this.entity.rotationYawHead = this.entity.renderYawOffset + 75.0F;
+            }
+        }
+		 */
 		
 		//$this->entity->lastHeadYaw = $this->entity->headYaw;
 		//$w180 = Utils::wrapAngleTo180($this->finalHeadYaw - $this->entity->headYaw); 
