@@ -729,10 +729,8 @@ class PocketMinecraftServer{
 		$info["tps"] = $this->getTPS();
 		$info["memory_usage"] = round((memory_get_usage() / 1024) / 1024, 2) . "MB";
 		$info["memory_peak_usage"] = round((memory_get_peak_usage() / 1024) / 1024, 2) . "MB";
-		$info["entities"] = $this->query("SELECT count(EID) as count FROM entities;", true);
-		$info["entities"] = $info["entities"]["count"];
-		$info["players"] = $this->query("SELECT count(CID) as count FROM players;", true);
-		$info["players"] = $info["players"]["count"];
+		$info["entities"] = count($this->entities);
+		$info["players"] = count($this->clients);
 		$info["events"] = count($this->eventsID);
 		$info["handlers"] = $this->query("SELECT count(ID) as count FROM handlers;", true);
 		$info["handlers"] = $info["handlers"]["count"];

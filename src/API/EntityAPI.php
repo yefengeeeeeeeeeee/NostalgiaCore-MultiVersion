@@ -204,22 +204,27 @@ class EntityAPI{
 			$this->server->api->dhandle("entity.remove", $this->entities[$eid]);
 			unset($this->entities[$eid]->level->entityList[$eid]);
 			unset($this->entities[$eid]);
-			$this->server->query("DELETE FROM entities WHERE EID = " . $eid . ";");
 		}
 	}
 	
 	public function getRadius(Position $center, $radius = 15, $class = false){
-		$entities = [];
-		$l = $this->server->query("SELECT EID FROM entities WHERE level = '" . $center->level->getName() . "' " . ($class !== false ? "AND class = $class " : "") . "AND abs(x - {$center->x}) <= $radius AND abs(y - {$center->y}) <= $radius AND abs(z - {$center->z}) <= $radius;");
-		if($l !== false and $l !== true){
-			while(($e = $l->fetchArray(SQLITE3_ASSOC)) !== false){
-				$e = $this->get($e["EID"]);
-				if($e instanceof Entity){
-					$entities[$e->eid] = $e;
+		$minChunkX = ((int)($center->x - $radius)) >> 4;
+		$minChunkZ = ((int)($center->z - $radius)) >> 4;
+		$maxChunkX = ((int)($center->x + $radius)) >> 4;
+		$maxChunkZ = ((int)($center->z - $radius)) >> 4;
+		$ents = [];
+		//TODO also index by chunkY?
+		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
+			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
+				$ind = "$chunkX $chunkZ";
+				foreach($center->level->entityListPositioned[$ind] ?? [] as $entid){
+					if($this->entities[$entid] instanceof Entity && ($class === false || $this->entities[$entid]->class == $class)){
+						$ents[$entid] = $this->entities[$entid];
+					}
 				}
 			}
 		}
-		return $entities;
+		return $ents;
 	}
 	
 	public function heal($eid, $heal, $cause){

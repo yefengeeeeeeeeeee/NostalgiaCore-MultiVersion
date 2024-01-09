@@ -99,10 +99,7 @@ require_once(FILE_PATH . "/src/entity/ai/tasks/TaskBase.php");
 require_once(FILE_PATH. "/src/entity/ai/tasks/TaskTempt.php");
 
 require_once(FILE_PATH . "/src/entity/Rideable.php");
-require_once(FILE_PATH . "/src/entity/Attachable.php");
-require_once(FILE_PATH . "/src/entity/Damageable.php");
 require_once(FILE_PATH . "/src/entity/Breedable.php");
-require_once(FILE_PATH . "/src/entity/Damageable.php");
 require_once(FILE_PATH . "/src/entity/Pathfindable.php");
 require_once(FILE_PATH . "/src/entity/Entity.php");
 require_once(FILE_PATH . "/src/entity/Living.php");

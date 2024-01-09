@@ -1,6 +1,6 @@
 <?php
 
-abstract class Living extends Entity implements Damageable, Pathfindable{
+abstract class Living extends Entity implements Pathfindable{
 	
 	public static $despawnMobs, $despawnTimer, $entityPushing = false;
 	

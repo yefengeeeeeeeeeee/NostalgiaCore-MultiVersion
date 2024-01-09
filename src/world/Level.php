@@ -364,13 +364,17 @@ class Level{
 			if($e instanceof Entity){
 				$newChunkX = (int)$e->x >> 4;
 				$newChunkZ = (int)$e->z >> 4;
-				if($curChunkX != $newChunkX || $curChunkZ != $newChunkZ){
+				if($e->level != $this && isset($this->entityListPositioned["$curChunkX $curChunkZ"])){
+					unset($this->entityListPositioned["$curChunkX $curChunkZ"][$e->eid]);
+				}else if($curChunkX != $newChunkX || $curChunkZ != $newChunkZ){
 					$index = "$curChunkX $curChunkZ"; //while creating index like $curChunkX << 32 | $curChunkZ is faster, placing it inside list is slow
 					$newIndex = "$newChunkX $newChunkZ";
 					unset($this->entityListPositioned[$index][$e->eid]);
 					$this->entityListPositioned[$newIndex][$e->eid] = $e->eid; //set to e->eid to avoid possible memory leaks
 				}
-			}	
+			}else if(isset($this->entityListPositioned["$curChunkX $curChunkZ"])){
+				unset($this->entityListPositioned["$curChunkX $curChunkZ"][$k]);
+			}
 		}
 		
 		$this->checkSleep();
@@ -405,22 +409,23 @@ class Level{
 		$this->queuedBlockUpdates = [];
 	}
 	
-	public function getEntitiesNearby(Entity $e, $radius = 5){
-		$minChunkX = ((int)($e->x - $radius)) >> 4;
-		$minChunkZ = ((int)($e->z - $radius)) >> 4;
-		$maxChunkX = ((int)($e->x + $radius)) >> 4;
-		$maxChunkZ = ((int)($e->z + $radius)) >> 4;
+	public function getEntitiesInAABB(AxisAlignedBB $bb){
+		$minChunkX = ((int)($bb->minX)) >> 4;
+		$minChunkZ = ((int)($bb->minZ)) >> 4;
+		$maxChunkX = ((int)($bb->maxX)) >> 4;
+		$maxChunkZ = ((int)($bb->maxZ)) >> 4;
 		$ents = [];
 		//TODO also index by chunkY?
 		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
 			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
 				$ind = "$chunkX $chunkZ";
-				foreach($this->entityListPositioned[$ind] ?? [] as $entid){
-					$ents[$entid] = $this->entityList[$entid];
+				foreach($this->level->entityListPositioned[$ind] ?? [] as $entid){
+					if($this->entityList[$entid] instanceof Entity && $this->entityList[$entid]->boundingBox->intersectsWith($bb)){
+						$ents[$entid] = $this->entityList[$entid];
+					}
 				}
 			}
 		}
-		unset($ents[$e->eid]);
 		return $ents;
 	}
 	

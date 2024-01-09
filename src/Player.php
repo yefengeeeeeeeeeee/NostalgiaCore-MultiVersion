@@ -204,7 +204,10 @@ class Player{
 				}
 
 				$this->level->freeAllChunks($this);
+				unset($this->level->players[$this->CID]);
 				$this->level = $pos->level;
+				
+				$this->level->players[$this->CID] = $this;
 				$this->chunksLoaded = [];
 				$this->server->api->entity->spawnToAll($this->entity);
 				$this->server->api->entity->spawnAll($this);

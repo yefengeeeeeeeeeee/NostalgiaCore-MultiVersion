@@ -116,7 +116,6 @@ class Entity extends Position
 		$this->gravity = 0.08;
 		$this->state = $this->data["State"] = isset($this->data["State"]) ? $this->data["State"] : 0;
 		$this->tickCounter = 0;
-		$this->server->query("INSERT OR REPLACE INTO entities (EID, level, type, class, health, hasUpdate) VALUES (" . $this->eid . ", '" . $this->level->getName() . "', " . $this->type . ", " . $this->class . ", " . $this->health . ", 0);");
 		$this->x = isset($this->data["x"]) ? (float) $this->data["x"] : 0;
 		$this->y = isset($this->data["y"]) ? (float) $this->data["y"] : 0;
 		$this->z = isset($this->data["z"]) ? (float) $this->data["z"] : 0;
@@ -1075,7 +1074,6 @@ class Entity extends Position
 	public function setName($name)
 	{
 		$this->name = $name;
-		// $this->server->query("UPDATE entities SET name = '".str_replace("'", "", $this->name)."' WHERE EID = ".$this->eid.";"); is this neccessary for database?
 	}
 
 	public function look($pos2)
@@ -1084,7 +1082,6 @@ class Entity extends Position
 		$angle = Utils::angle3D($pos2, $pos);
 		$this->yaw = $angle["yaw"];
 		$this->pitch = $angle["pitch"];
-		$this->server->query("UPDATE entities SET pitch = " . $this->pitch . ", yaw = " . $this->yaw . " WHERE EID = " . $this->eid . ";");
 	}
 
 	public function move(Vector3 $pos, $yaw = 0, $pitch = 0)
@@ -1096,7 +1093,6 @@ class Entity extends Position
 		$this->yaw %= 360;
 		$this->pitch += $pitch;
 		$this->pitch %= 90;
-		$this->server->query("UPDATE entities SET x = " . $this->x . ", y = " . $this->y . ", z = " . $this->z . ", pitch = " . $this->pitch . ", yaw = " . $this->yaw . " WHERE EID = " . $this->eid . ";");
 		$this->updateAABB();
 	}
 
@@ -1110,14 +1106,12 @@ class Entity extends Position
 
 	public function updatePosition()
 	{
-		$this->server->query("UPDATE entities SET level = '" . $this->level->getName() . "', x = " . $this->x . ", y = " . $this->y . ", z = " . $this->z . ", pitch = " . $this->pitch . ", yaw = " . $this->yaw . " WHERE EID = " . $this->eid . ";");
 		$this->sendMoveUpdate();
 		$this->updateAABB();
 	}
 	
 	public function setPosition(Vector3 $pos, $yaw = false, $pitch = false)
 	{
-		
 		$this->x = $pos->x;
 		$this->y = $pos->y;
 		$this->z = $pos->z;
@@ -1127,15 +1121,6 @@ class Entity extends Position
 		if($pitch !== false){
 			$this->pitch = $pitch;
 		}
-		$this->server->preparedSQL->entity->setPosition->reset();
-		$this->server->preparedSQL->entity->setPosition->clear();
-		$this->server->preparedSQL->entity->setPosition->bindValue(":x", $this->x, SQLITE3_TEXT);
-		$this->server->preparedSQL->entity->setPosition->bindValue(":y", $this->y, SQLITE3_TEXT);
-		$this->server->preparedSQL->entity->setPosition->bindValue(":z", $this->z, SQLITE3_TEXT);
-		$this->server->preparedSQL->entity->setPosition->bindValue(":pitch", $this->pitch, SQLITE3_TEXT);
-		$this->server->preparedSQL->entity->setPosition->bindValue(":yaw", $this->yaw, SQLITE3_TEXT);
-		$this->server->preparedSQL->entity->setPosition->bindValue(":eid", $this->eid, SQLITE3_INTEGER);
-		$this->server->preparedSQL->entity->setPosition->execute();
 	}
 	public function inBlockNonVector($x, $y, $z, $radius = 0.8)
 	{
@@ -1371,7 +1356,6 @@ class Entity extends Position
 			"cause" => $cause
 		)) !== false or $force === true){
 			$this->health = min(127, max(- 127, $health));
-			$this->server->query("UPDATE entities SET health = " . $this->health . " WHERE EID = " . $this->eid . ";");
 			if($harm === true){
 				$pk = new EntityEventPacket;
 				$pk->eid = $this->eid;
