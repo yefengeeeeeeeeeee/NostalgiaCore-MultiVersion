@@ -10,13 +10,13 @@ class TaskRandomWalk extends TaskBase
 	
 	public function onStart(EntityAI $ai)
 	{
-		$this->x = mt_rand(-10, 10);
-		$this->z = mt_rand(-10, 10);
+		$this->x = mt_rand(-1, 1);
+		$this->z = mt_rand(-1, 1);
 		if($this->x === 0 && $this->z === 0){
 			$this->reset();
 			return false;
 		}
-		$this->selfCounter = floor(5 * Utils::distance($ai->entity, $ai->entity->add($this->x, 0, $this->z)));
+		$this->selfCounter = mt_rand(80, 100);
 	}
 
 	public function onEnd(EntityAI $ai)

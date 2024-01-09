@@ -1242,6 +1242,7 @@ class Entity extends Position
 		$this->last[3] = $this->yaw;
 		$this->last[4] = $this->pitch;
 		$this->last[5] = microtime(true);
+		$this->lastHeadYaw = $this->headYaw;
 	}
 
 	public function getPosition($round = false)

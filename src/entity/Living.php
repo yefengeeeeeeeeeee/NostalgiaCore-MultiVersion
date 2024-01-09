@@ -12,6 +12,7 @@ abstract class Living extends Entity implements Pathfindable{
 	public $jumpMovementFactor = 0.02; //TODO may not be constant
 	public $aiMoveSpeed;
 	
+	public $renderYawOffset = 0.0; //used by head rotation, TODO better name
 	
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 		$this->target = false;
@@ -131,6 +132,9 @@ abstract class Living extends Entity implements Pathfindable{
 		if(self::$entityPushing){
 			$this->collideHandler();
 		}
+		
+		//Yaw rotation in 1.5 is handled in a bit different place but hopefully this will work too
+		$this->ai->mobController->updateHeadYaw();
 	}
 	
 	public function moveEntityWithHeading($strafe, $forward){

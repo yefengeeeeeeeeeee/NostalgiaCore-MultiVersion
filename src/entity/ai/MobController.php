@@ -17,6 +17,9 @@ class MobController
 	
 	public $finalYaw, $finalPitch, $finalHeadYaw;
 	
+	public $headYaw;
+	public $someTicker = 0;
+	
 	protected $jumping;
 	protected $jumpTimeout;
 	
@@ -53,7 +56,14 @@ class MobController
 	public function canJump(){
 		return $this->isJumping() && $this->jumpTimeout <= 0 && $this->entity->onGround;
 	}
-	
+	public static function limitAngle2($old, $newA, $limit){
+		$v4 = Utils::wrapAngleTo180($old - $newA);
+		
+		if($v4 < -$limit) $v4 = -$limit;
+		if($v4 >= $limit) $v4 = $limit;
+		
+		return $old - $v4;
+	}
 	public static function limitAngle($old, $newA, $limit){
 		$v4 = Utils::wrapAngleTo180($newA - $old);
 		
@@ -77,9 +87,7 @@ class MobController
 			
 			if($v8 >= 2.500000277905201E-7){ //TODO convert notation
 				$v10 = (atan2($diffZ, $diffX) * 180 / M_PI) - 90;
-				console("$v10: ".$v10);
 				$this->entity->yaw = self::limitAngle($this->entity->yaw, $v10, 30);
-				console("yaw: {$this->entity->yaw}");
 				$this->entity->setAIMoveSpeed($this->speed * $this->entity->getSpeedModifer());
 				
 				if($diffY > 0 && $diffX*$diffX + $diffZ*$diffZ < 1) $this->setJumping(true);
@@ -93,7 +101,35 @@ class MobController
 		//if($this->jumpTimeout > 0) --$this->jumpTimeout;
 	}
 	
+	public function updateHeadYaw(){
+		$diffX = $this->entity->x - $this->entity->lastX;
+		$diffZ = $this->entity->z - $this->entity->lastZ;
+		if(($diffX*$diffX + $diffZ*$diffZ) > 2.500000277905201E-7){ //TODO convert notation
+			$this->entity->renderYawOffset = $this->entity->yaw;
+			$this->entity->headYaw = self::limitAngle2($this->entity->renderYawOffset, $this->entity->headYaw, 75);
+			$this->headYaw = $this->entity->headYaw;
+			$this->someTicker = 0;
+		}else{
+			$v5 = 75;
+			if(abs($this->entity->headYaw - $this->headYaw) > 15){
+				$this->someTicker = 0;
+				$this->headYaw = $this->entity->headYaw;
+			}else{
+				++$this->someTicker;
+				
+				if($this->someTicker > 10){
+					$v5 = max(1 - ($this->someTicker - 10) / 10, 0) * 75;
+				}
+			}
+			$this->entity->renderYawOffset = self::limitAngle2($this->entity->headYaw, $this->entity->renderYawOffset, $v5);
+		}
+		$this->entity->headYaw = $this->entity->renderYawOffset;
+	}
+	
 	public function rotateTick(){ //TODO handle more rotation
+		
+		
+		
 		//$this->entity->lastHeadYaw = $this->entity->headYaw;
 		//$w180 = Utils::wrapAngleTo180($this->finalHeadYaw - $this->entity->headYaw); 
 		//$w180min = min(abs($w180), 20)*Utils::getSign($w180);
