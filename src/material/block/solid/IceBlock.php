@@ -6,6 +6,11 @@ class IceBlock extends TransparentBlock{
 		$this->hardness = 2.5;
 		$this->slipperiness = 0.98;
 	}
+	
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 1, $z + 1)];
+	}
+	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$ret = $this->level->setBlock($this, $this, true, false, true);
 		$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);

@@ -566,9 +566,10 @@ class Entity extends Position
 					for($x = $x0; $x <= $x1; ++$x){
 						for($y = $y0; $y <= $y1; ++$y){
 							for($z = $z0; $z <= $z1; ++$z){
+								
 								$b = $this->level->level->getBlockID($x, $y, $z);
-								if(($b === WATER || $b === STILL_WATER)){
-									$water = $y == ($y1 - 1);
+								if(($b == WATER || $b == STILL_WATER)){
+									$water |= $y == ($y1 - 1);
 									$this->fallDistance = 0;
 								}
 								if($b != 0){
