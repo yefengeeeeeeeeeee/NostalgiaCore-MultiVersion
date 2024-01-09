@@ -552,6 +552,52 @@ class Entity extends Position
 		$this->boundingBox->offset($dx, $dy, $dz);
 		$fallingFlag = $this->onGround || $savedDY != $dy && $savedDY < 0;
 		
+		if($this->stepHeight > 0 && $fallingFlag && /*($this->ySize < 0.05) && TODO ySuze*/ ($savedDX != $dx || $savedDZ != $dz)){
+			$cx = $dx;
+			$cy = $dy;
+			$cz = $dz;
+			
+			$dx = $savedDX;
+			$dy = $this->stepHeight;
+			$dz = $savedDZ;
+			$aabb1 = clone $this->boundingBox;
+			$this->boundingBox->setBB($oldBB);
+			
+			$aaBBs = $this->level->getCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz));
+			
+			foreach($aaBBs as $bb){ //TODO optimize
+				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
+			}
+			$this->boundingBox->offset(0, $dy, 0);
+			
+			foreach($aaBBs as $bb){
+				$dx = $bb->calculateXOffset($this->boundingBox, $dx);
+			}
+			$this->boundingBox->offset($dx, 0, 0);
+			
+			foreach($aaBBs as $bb){
+				$dz = $bb->calculateZOffset($this->boundingBox, $dz);
+			}
+			$this->boundingBox->offset(0, 0, $dz);
+			
+			$dy = -$this->stepHeight;
+			foreach($aaBBs as $bb){ //TODO optimize
+				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
+			}
+			$this->boundingBox->offset(0, $dy, 0);
+			
+			if ($cx*$cx + $cz*$cz >= $dx*$dx + $dz*$dz)
+			{
+				$dx = $cx;
+				$dy = $cy;
+				$dz = $cz;
+				$this->boundingBox->setBB($aabb1);
+			}//else{ TODO autojump
+			//	$stepSuccess = true;
+			//}
+			
+		}
+		
 		//TODO step
 		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
 		$this->y = $this->boundingBox->minY; //TODO + $this->yOffset - //TODO $this->ySize;
@@ -564,6 +610,7 @@ class Entity extends Position
 		if($savedDX != $dx) $this->speedX = 0;
 		if($savedDY != $dy) $this->speedY = 0;
 		if($savedDZ != $dz) $this->speedZ = 0;
+		
 		
 		//TODO more stuff
 		
@@ -632,56 +679,6 @@ class Entity extends Position
 				$ultraMegaOldBB = clone $this->boundingBox;
 				$stepSuccess = false;
 				$beforeStepSpeedY = 0;
-				if($this->class === ENTITY_MOB || $this->class === ENTITY_ITEM || ($this->class === ENTITY_OBJECT && $this->type === OBJECT_PRIMEDTNT) || $this->class === ENTITY_FALLING){
-					$water = false;
-					if($this->hasGravity){
-						$this->speedY -= $this->inWater ? 0.02 : ($this->gravity);
-					}
-					$this->move($this->speedX, $this->speedY, $this->speedZ);
-					$this->inWater = $water; TODO
-					$fallingFlag = $this->onGround || $savedSpeedY != $this->speedY && $savedSpeedY < 0.0;
-					$beforeStepSpeedY = $this->speedY;
-					
-					if($this->stepHeight > 0 && $fallingFlag && ($this->speedX != $savedSpeedX || $this->speedZ != $savedSpeedZ)){
-						$cx = $this->speedX;
-						$cy = $this->speedY;
-						$cz = $this->speedZ;
-						
-						$this->speedX = $savedSpeedX;
-						$this->speedY = $this->stepHeight;
-						$this->speedZ = $savedSpeedZ;
-						
-						$aabb = clone $this->boundingBox;
-						$this->boundingBox->setBB($ultraMegaOldBB);
-						$aaBBs = $this->level->getCubes($this, $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ));
-						
-						foreach($aaBBs as $bb){ //TODO optimize
-							$this->speedY = $bb->calculateYOffset($this->boundingBox, $this->speedY);
-						}
-						$this->boundingBox->offset(0, $this->speedY, 0);
-						
-						foreach($aaBBs as $bb){
-							$this->speedX = $bb->calculateXOffset($this->boundingBox, $this->speedX);
-						}
-						$this->boundingBox->offset($this->speedX, 0, 0);
-						
-						foreach($aaBBs as $bb){
-							$this->speedZ = $bb->calculateZOffset($this->boundingBox, $this->speedZ);
-						}
-						$this->boundingBox->offset(0, 0, $this->speedZ);
-						
-						if ($cx*$cx + $cz*$cz >= $this->speedX*$this->speedX + $this->speedZ*$this->speedZ)
-						{
-							$this->speedX = $cx;
-							$this->speedY = $cy;
-							$this->speedZ = $cz;
-							$this->boundingBox->setBB($aabb);
-						}else{
-							$stepSuccess = true;
-						}
-					}
-					
-				}
 				
 				if($this->enableAutojump && $this instanceof Creature){
 					if(!$stepSuccess && $fallingFlag && ($this->speedX != $savedSpeedX || $this->speedZ != $savedSpeedZ)){
