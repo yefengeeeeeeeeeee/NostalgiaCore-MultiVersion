@@ -7,7 +7,7 @@ class Cow extends Animal{
 		parent::__construct($level, $eid, $class, $type, $data);
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 10, "generic");
 		$this->setName("Cow");
-		$this->setSpeed(0.2);
+		$this->ai->addTask(new TaskRandomWalk(0.2));
 	}
 	
 	public function isFood($id){

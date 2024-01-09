@@ -10,19 +10,28 @@ class Chicken extends Animal{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 4, "generic");
 		$this->setName('Chicken');
 		$this->setSpeed(0.25);
+		
+		$this->ai->addTask(new TaskRandomWalk(0.25));
 	}
 	public function isFood($id){
 		return $id === PUMPKIN_SEEDS || $id === MELON_SEEDS || $id === BEETROOT_SEEDS || $id === WHEAT_SEEDS;
+	}
+	
+	public function updateEntityMovement(){
+		parent::updateEntityMovement();
+		
+		if($this->onGround && $this->speedY < 0) $this->speedY *= 0.6;
+	
+		if($this->timeUntilEgg-- <= 0 && !$this->isBaby()){
+			$this->dropAnEgg();
+			$this->timeUntilEgg = mt_rand(0,6000) + 6000;
+		}
 	}
 	
 	public function fall(){} //chickens have no fall dmg?
 	
 	public function update($now){
 		parent::update($now);
-		if($this->timeUntilEgg-- <= 0 && !$this->isBaby()){
-			$this->dropAnEgg();
-			$this->timeUntilEgg = mt_rand(0,6000) + 6000;
-		}
 	}
 	
 	public function dropAnEgg(){

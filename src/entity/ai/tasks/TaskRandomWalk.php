@@ -5,7 +5,7 @@ class TaskRandomWalk extends TaskBase
 	private $x, $z;
 	public $moveSpeed;
 	public function __construct($moveSpeed){
-		$this->moveSpeed = 0.25;
+		$this->moveSpeed = $moveSpeed;
 	}
 	
 	public function onStart(EntityAI $ai)

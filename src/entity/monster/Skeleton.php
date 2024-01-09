@@ -8,7 +8,8 @@ class Skeleton extends Monster{
 		$this->setName("Skeleton");
 		$this->ai->removeTask("TaskAttackPlayer");
 		//$this->ai->addTask(new TaskDestroyServerPerformance());
-		$this->setSpeed(0.25);
+		
+		$this->ai->addTask(new TaskRandomWalk(0.25));
 	}
 	
 	public function getAttackDamage(){

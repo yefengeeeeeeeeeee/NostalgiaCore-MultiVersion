@@ -11,6 +11,8 @@ class Creeper extends Monster{
 		$this->ignited = 0;
 		$this->setSpeed(0.25);
 		$this->timeUntilExplode = $this->isIgnited() ? self::EXPL_TIME : 0;
+		
+		$this->ai->addTask(new TaskRandomWalk(0.25));
 	}
 	
 	public function getAttackDamage(){

@@ -7,6 +7,8 @@ class Zombie extends Monster{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 12, "generic");
 		$this->setName("Zombie");
 		$this->setSpeed(0.23);
+		
+		$this->ai->addTask(new TaskRandomWalk(0.25));
 	}
 	
 	public function getArmorValue(){
