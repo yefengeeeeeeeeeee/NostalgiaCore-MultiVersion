@@ -89,12 +89,6 @@ class Level{
 		$y1 = ceil($aABB->maxY);
 		$z0 = floor($aABB->minZ);
 		$z1 = ceil($aABB->maxZ);
-		$x0 = $x0 < 0 ? 0 : $x0;
-		$y0 = $y0 < 0 ? 0 : $y0;
-		$z0 = $z0 < 0 ? 0 : $z0;
-		$x1 = $x1 > 256 ? 256 : $x1;
-		$y1 = $y1 > 128 ? 128 : $y1;
-		$z1 = $z1 > 256 ? 256 : $z1;
 		
 		for($x = $x0; $x <= $x1; ++$x) {
 			for($y = $y0; $y <= $y1; ++$y) {
@@ -361,6 +355,7 @@ class Level{
 			if($e instanceof Entity){
 				$newChunkX = (int)$e->x >> 4;
 				$newChunkZ = (int)$e->z >> 4;
+				
 				if($e->level != $this && isset($this->entityListPositioned["$curChunkX $curChunkZ"])){
 					unset($this->entityListPositioned["$curChunkX $curChunkZ"][$e->eid]);
 				}else if($curChunkX != $newChunkX || $curChunkZ != $newChunkZ){
@@ -404,6 +399,26 @@ class Level{
 		}
 		
 		$this->queuedBlockUpdates = [];
+	}
+	
+	public function isBoundingBoxOnFire(AxisAlignedBB $bb){
+		$minX = floor($bb->minX);
+		$maxX = ceil($bb->maxX);
+		$minY = floor($bb->minY);
+		$maxY = ceil($bb->maxY);
+		$minZ = floor($bb->minZ);
+		$maxZ = ceil($bb->maxZ);
+		
+		for($x = $minX; $x < $maxX; ++$x){
+			for($y = $minY; $y < $maxY; ++$y){
+				for($z = $minZ; $z < $maxZ; ++$z){
+					$blockAt = $this->level->getBlockID($x, $y, $z);
+					if($blockAt == FIRE || $blockAt == STILL_LAVA || $blockAt == LAVA) return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	public function getEntitiesInAABB(AxisAlignedBB $bb){

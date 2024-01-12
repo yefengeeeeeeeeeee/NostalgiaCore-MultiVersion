@@ -329,7 +329,7 @@ class Entity extends Position
 		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true and $this->player->blocked !== true && ! $this->dead){
 			$myBB = $this->boundingBox->grow(1, 0.5, 1);
 			foreach($this->server->api->entity->getRadius($this, 2, ENTITY_ITEM) as $item){
-				if(!$item->closed && $item->spawntime > 0 && $item->delayBeforePickup == 0){
+				if(!$item->closed && $item->spawntime > 0 && $item->delayBeforePickup <= 0){
 					if($item->boundingBox->intersectsWith($myBB)){ 
 						if((($this->player->gamemode & 0x01) === 1 || $this->player->hasSpace($item->type, $item->meta, $item->stack) === true) && $this->server->api->dhandle("player.pickup", array(
 							"eid" => $this->player->eid,
@@ -530,11 +530,11 @@ class Entity extends Position
 		
 		$aABB = $this->boundingBox->addCoord($dx, $dy, $dz);
 		$x0 = floor($aABB->minX);
-		$x1 = ceil($aABB->maxX);
+		$x1 = floor($aABB->maxX) + 1;
 		$y0 = floor($aABB->minY);
-		$y1 = ceil($aABB->maxY);
+		$y1 = floor($aABB->maxY) + 1;
 		$z0 = floor($aABB->minZ);
-		$z1 = ceil($aABB->maxZ);
+		$z1 = floor($aABB->maxZ) + 1;
 		
 		for($x = $x0; $x <= $x1; ++$x){
 			for($y = $y0; $y <= $y1; ++$y){
@@ -583,7 +583,7 @@ class Entity extends Position
 			$this->boundingBox->offset(0, 0, $dz);
 			
 			$dy = -$this->stepHeight;
-			foreach($aaBBs as $bb){ //TODO optimize
+			foreach($aaBBs as $bb){
 				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
 			}
 			$this->boundingBox->offset(0, $dy, 0);
@@ -600,25 +600,31 @@ class Entity extends Position
 			
 		}
 		
-		//TODO step
 		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-		$this->y = $this->boundingBox->minY + $this->yOffset;// - //TODO - used when player is sneaking $this->ySize;
+		$this->y = $this->boundingBox->minY + $this->yOffset;
 		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
 		//$this.isCollidedHorizontally = savedDX != dx || savedDZ != dz;
 		//$this.isCollidedVertically = savedDY != dy;
 		$this->onGround = $savedDY != $dy && $savedDY < 0.0;
 		//$this.isCollided = this.isCollidedHorizontally || this.isCollidedVertically;
+		$this->updateFallState($this->speedY);
+		
 		
 		if($savedDX != $dx) $this->speedX = 0;
 		if($savedDY != $dy) $this->speedY = 0;
 		if($savedDZ != $dz) $this->speedZ = 0;
 		
 		
-		//TODO more stuff
+		
+		//TODO more stuff -> onEntityWalking
 		
 		//TODO block collisions?
-		//TODO deal fire damage here
 		
+		
+		//TODO deal fire damage here
+		if($this->level->isBoundingBoxOnFire($this->boundingBox->contract(0.001, 0.001, 0.001))){
+			
+		}
 	}
 	
 	public function isInVoid(){
@@ -644,6 +650,7 @@ class Entity extends Position
 		if($this->isStatic === false){
 			if(!$this->isPlayer()){
 				$this->updateLast();
+				$this->updatePosition(); //TODO shouldnt be called in Entity
 				$this->updateEntityMovement();
 				/*$update = false;
 				if($this->speedX > -self::MIN_POSSIBLE_SPEED && $this->speedX < self::MIN_POSSIBLE_SPEED){
@@ -698,14 +705,11 @@ class Entity extends Position
 				}elseif ($this->lastYaw != $this->yaw || $this->lastPitch != $this->pitch || $this->lastHeadYaw != $this->headYaw) {
 					$update = true;
 				}
-
+				
 				if($update === true){
 					$hasUpdate = true;
-					$this->lastSpeedZ = $this->speedZ;
-					$this->lastSpeedY = $this->speedY;
-					$this->lastSpeedX = $this->speedX;
 				}
-				$this->updateFallState($this->speedY);
+				
 			} elseif($this->player instanceof Player){
 				$prevGroundState = $this->onGround;
 				$this->onGround = false;
@@ -829,10 +833,7 @@ class Entity extends Position
 						$this->server->api->player->broadcastPacket($players, $pk);
 					}
 				}
-			} else{
-				$this->updatePosition();
 			}
-			
 		}
 		$this->lastUpdate = $now;
 	}
@@ -1235,13 +1236,16 @@ class Entity extends Position
  
 	public function updateLast()
 	{
-		$this->last[0] = $this->x;
-		$this->last[1] = $this->y;
-		$this->last[2] = $this->z;
-		$this->last[3] = $this->yaw;
-		$this->last[4] = $this->pitch;
-		$this->last[5] = microtime(true);
+		$this->lastX = $this->x;
+		$this->lastY = $this->y;
+		$this->lastZ = $this->z;
+		$this->lastYaw = $this->yaw;
+		$this->lastPitch = $this->pitch;
+		$this->lastTime = microtime(true);
 		$this->lastHeadYaw = $this->headYaw;
+		$this->lastSpeedZ = $this->speedZ;
+		$this->lastSpeedY = $this->speedY;
+		$this->lastSpeedX = $this->speedX;
 	}
 
 	public function getPosition($round = false)

@@ -211,7 +211,7 @@ class EntityAPI{
 		$minChunkX = ((int)($center->x - $radius)) >> 4;
 		$minChunkZ = ((int)($center->z - $radius)) >> 4;
 		$maxChunkX = ((int)($center->x + $radius)) >> 4;
-		$maxChunkZ = ((int)($center->z - $radius)) >> 4;
+		$maxChunkZ = ((int)($center->z + $radius)) >> 4;
 		$ents = [];
 		//TODO also index by chunkY?
 		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){

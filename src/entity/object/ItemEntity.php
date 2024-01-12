@@ -25,12 +25,12 @@ class ItemEntity extends Entity{
 		$this->stepHeight = 0;
 	}
 	
+	public function counterUpdate(){
+		parent::counterUpdate();
+		if($this->delayBeforePickup > 0) --$this->delayBeforePickup;
+	}
+	
 	public function updateEntityMovement(){
-		//TODO it is weird on client side for some reason
-		if(abs($this->speedX) < self::MIN_POSSIBLE_SPEED) $this->speedX = 0;
-		if(abs($this->speedZ) < self::MIN_POSSIBLE_SPEED) $this->speedZ = 0;
-		if(abs($this->speedY) < self::MIN_POSSIBLE_SPEED) $this->speedY = 0;
-		
 		$this->speedY -= 0.04;
 		$this->noClip = false; //TODO pushOutofBlocks
 		$this->move($this->speedX, $this->speedY, $this->speedZ);
@@ -54,8 +54,12 @@ class ItemEntity extends Entity{
 		$this->speedY *= 0.98;
 		$this->speedZ *= $friction;
 		
-		//if($this->onGround) $this->speedY *= -0.5;
+		if($this->onGround) $this->speedY *= -0.5;
 		
 		//TODO ++age; despawn after age >= 6000; 
+		
+		if(abs($this->speedX) < self::MIN_POSSIBLE_SPEED) $this->speedX = 0;
+		if(abs($this->speedZ) < self::MIN_POSSIBLE_SPEED) $this->speedZ = 0;
+		if(abs($this->speedY) < self::MIN_POSSIBLE_SPEED) $this->speedY = 0;
 	}
 }

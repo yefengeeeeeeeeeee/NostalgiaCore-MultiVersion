@@ -110,7 +110,7 @@ class Player{
 		$this->blockUpdateQueue = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$this->blockUpdateQueue->data = [];
 		
-		$this->server->schedule(20 * 60, [$this, "clearQueue"], [], true);
+		//$this->server->schedule(20 * 60, [$this, "clearQueue"], [], true);
 		$this->server->schedule(1, [$this, "handlePacketQueues"], [], true);
 		
 		$this->evid[] = $this->server->event("server.close", [$this, "close"]);
