@@ -8,6 +8,7 @@ class Spider extends Monster{
 		$this->setName("Spider");
 		$this->setSpeed(0.3);
 		$this->ai->addTask(new TaskRandomWalk(0.25)); //TODO this mob doesnt use newAI -> speed is not correct
+		$this->ai->addTask(new TaskLookAround()); //TODO this mob doesnt use newAI
 	}
 	
 	public function getDrops(){

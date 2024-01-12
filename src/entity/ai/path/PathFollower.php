@@ -13,13 +13,18 @@ class PathFollower{
 	public function followPath(){
 		
 		if(!isset($this->entity) || !($this->entity instanceof Living)) return;
+		if(!$this->entity->hasPath()) return;
 		
-		if($this->entity->path != null && (is_array($this->entity->path) && count($this->entity->path) <= 0 || $this->entity->currentIndex >= count($this->entity->path))){
-			$this->entity->path = null;
-			$this->entity->currentIndex = 0;
-			$this->entity->currentNode = false;
-		}elseif($this->entity->path != null && ($this->entity->currentNode == false || $this->entity->boundingBox->isXYZInside($this->entity->currentNode->x, $this->entity->currentNode->y, $this->entity->currentNode->z) || $this->entity->ai->mobController->moveTo($this->entity->currentNode->x, $this->entity->currentNode->y, $this->entity->currentNode->z) === false)){
-			$this->entity->currentNode = $this->entity->path[$this->entity->currentIndex++];
+		if($this->entity->currentNode == null){
+			$this->entity->currentNode = $this->entity->path[$this->entity->currentIndex];
+		}
+		
+		$this->entity->ai->mobController->setMovingTarget($this->entity->currentNode->x, $this->entity->currentNode->y, $this->entity->currentNode->z, 0.25);
+		console($this->entity->currentNode.":".$this->entity->boundingBox);
+		if($this->entity->boundingBox->isXYZInsideNS($this->entity->currentNode->x, $this->entity->currentNode->y, $this->entity->currentNode->z)){
+			++$this->entity->currentIndex;
+			console("next");
+			$this->entity->currentNode = null;
 		}
 	}
 	

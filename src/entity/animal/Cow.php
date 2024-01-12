@@ -10,6 +10,9 @@ class Cow extends Animal{
 		$this->ai->addTask(new TaskRandomWalk(0.2));
 		$this->ai->addTask(new TaskLookAtPlayer(6));
 		$this->ai->addTask(new TaskPanic(0.375));
+		$this->ai->addTask(new TaskLookAround());
+		
+		//$this->ai->addTask(new TaskSwimming());
 	}
 	
 	public function isFood($id){

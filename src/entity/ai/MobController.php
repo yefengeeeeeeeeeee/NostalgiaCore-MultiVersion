@@ -49,7 +49,13 @@ class MobController
 	public function isRotationCompleted(){
 		return $this->finalHeadYaw === $this->entity->headYaw;
 	}
-	
+	public function setMovingTarget($x, $y, $z, $speed){
+		$this->moveToX = $x;
+		$this->moveToY = $y;
+		$this->moveToZ = $z;
+		$this->speed = $speed;
+		$this->updateMove = true;
+	}
 	public function setMovingOffset($x, $y, $z, $speed){
 		$this->moveToX = $this->entity->x + ($x);
 		$this->moveToY = $this->entity->y + ($y);

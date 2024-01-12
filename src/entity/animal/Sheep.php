@@ -17,7 +17,7 @@ class Sheep extends Animal{
 		$this->ai->addTask(new TaskLookAtPlayer(6));
 		$this->ai->addTask(new TaskPanic(0.375));
 		$this->ai->addTask(new TaskEatTileGoal());
-		
+		$this->ai->addTask(new TaskLookAround());
 	}
 	
 	public function createSaveData(){

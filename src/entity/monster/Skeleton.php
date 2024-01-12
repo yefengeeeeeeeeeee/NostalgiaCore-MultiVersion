@@ -10,6 +10,7 @@ class Skeleton extends Monster{
 		//$this->ai->addTask(new TaskDestroyServerPerformance());
 		
 		$this->ai->addTask(new TaskRandomWalk(0.25));
+		$this->ai->addTask(new TaskLookAround());
 	}
 	
 	public function getAttackDamage(){

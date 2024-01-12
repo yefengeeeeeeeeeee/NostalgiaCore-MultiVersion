@@ -9,6 +9,7 @@ class Zombie extends Monster{
 		$this->setSpeed(0.23);
 		
 		$this->ai->addTask(new TaskRandomWalk(0.25));
+		$this->ai->addTask(new TaskLookAround());
 	}
 	
 	public function getArmorValue(){
