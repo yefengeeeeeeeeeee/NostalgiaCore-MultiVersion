@@ -540,7 +540,7 @@ class Entity extends Position
 			for($y = $y0; $y <= $y1; ++$y){
 				for($z = $z0; $z <= $z1; ++$z){
 					$b = $this->level->level->getBlockID($x, $y, $z);
-					if($b != 0){ //TODO might be better to use other method
+					if($b != 0){
 						$blockBounds = Block::$class[$b]::getCollisionBoundingBoxes($this->level, $x, $y, $z, $this);
 						foreach($blockBounds as $blockBound){
 							$dy = $blockBound->calculateYOffset($this->boundingBox, $dy);
@@ -1110,8 +1110,8 @@ class Entity extends Position
 	public function updateAABB()
 	{
 		$this->boundingBox->setBounds(
-			$this->x - $this->radius, $this->y, $this->z - $this->radius, 
-			$this->x + $this->radius, $this->y + $this->height, $this->z + $this->radius
+			$this->x - $this->radius, $this->y - $this->yOffset, $this->z - $this->radius, 
+			$this->x + $this->radius, $this->y + $this->height - $this->yOffset, $this->z + $this->radius
 		);
 	}
 

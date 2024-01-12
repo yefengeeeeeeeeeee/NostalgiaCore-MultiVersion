@@ -57,9 +57,5 @@ class ItemEntity extends Entity{
 		if($this->onGround) $this->speedY *= -0.5;
 		
 		//TODO ++age; despawn after age >= 6000; 
-		
-		if(abs($this->speedX) < self::MIN_POSSIBLE_SPEED) $this->speedX = 0;
-		if(abs($this->speedZ) < self::MIN_POSSIBLE_SPEED) $this->speedZ = 0;
-		if(abs($this->speedY) < self::MIN_POSSIBLE_SPEED) $this->speedY = 0;
 	}
 }
