@@ -385,6 +385,8 @@ class Level{
 			}
 			$player->sendBlockUpdateQueue();
 		}
+		
+		$this->queuedBlockUpdates = [];
 	}
 	
 	public function addBlockToSendQueue($x, $y, $z, $id, $meta){
