@@ -21,7 +21,6 @@ class MobController
 	public $someTicker = 0;
 	
 	protected $jumping;
-	protected $jumpTimeout;
 	
 	public $moveToX, $moveToY, $moveToZ;
 	public $speed;
@@ -82,6 +81,11 @@ class MobController
 		if($v4 < -$limit) $v4 = -$limit;
 		
 		return $old + $v4;
+	}
+	
+	public function jumpTick(){
+		$this->entity->jumping = $this->jumping;
+		$this->jumping = false;
 	}
 	
 	public function movementTick(){

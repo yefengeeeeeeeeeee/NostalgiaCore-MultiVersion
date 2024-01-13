@@ -10,6 +10,7 @@ class PigZombie extends Monster{
 		
 		$this->ai->addTask(new TaskLookAround());
 		$this->ai->addTask(new TaskRandomWalk(0.25));
+		$this->ai->addTask(new TaskSwimming());
 	}
 	public function getAttackDamage(){
 		return 5;

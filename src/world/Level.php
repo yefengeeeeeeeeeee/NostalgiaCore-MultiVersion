@@ -76,6 +76,47 @@ class Level{
 		return true;
 	}
 	
+	//TODO public function canPlaceEntityOnSide()
+	
+	public function handleMaterialAcceleration(AxisAlignedBB $aabb, $materialType, Entity $entity){
+		$minX = floor($aabb->minX);
+		$maxX = ceil($aabb->maxX);
+		$minY = floor($aabb->minY);
+		$maxY = ceil($aabb->maxY);
+		$minZ = floor($aabb->minZ);
+		$maxZ = ceil($aabb->maxZ);
+		
+		//1.5.2 checks that all chunks exist, not needed here i think
+		
+		$appliedVelocity = false;
+		$velocityVec = new Vector3(0, 0, 0);
+		
+		for($x = $minX; $x < $maxX; ++$x){
+			for($y = $minY; $y < $maxY; ++$y){
+				for($z = $minZ; $z < $maxZ; ++$z){
+					[$block, $meta] = $this->level->getBlock($x, $y, $z);
+					if(($materialType == 0 && ($block == WATER || $block == STILL_WATER)) || ($materialType == 1 && ($block == LAVA || $block == STILL_LAVA))){ //TODO better material system
+						$v16 = ($y + 1) - LiquidBlock::getPercentAir($meta);
+						if($maxY >= $v16){
+							$appliedVelocity = true;
+							Block::$class[$block]::addVelocityToEntity($this, $x, $y, $z, $entity, $velocityVec);
+						}
+					}
+				}
+			}
+		}
+		
+		if($velocityVec->length() > 0){ //also checks is player flying
+			$velocityVec = $velocityVec->normalize(); //TODO do not use vec methods
+			$v18 = 0.014;
+			$entity->speedX += $velocityVec->x * $v18;
+			$entity->speedY += $velocityVec->y * $v18;
+			$entity->speedZ += $velocityVec->z * $v18;
+		}
+		
+		return $appliedVelocity;
+	}
+	
 	/**
 	 * @param Entity $e
 	 * @param AxisAlignedBB $aABB

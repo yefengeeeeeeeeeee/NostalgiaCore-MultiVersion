@@ -155,6 +155,7 @@ abstract class Block extends Position{
 	public $z = 0;
 	public $slipperiness;
 	
+	public static function addVelocityToEntity(Level $level, $x, $y, $z, Entity $entity, Vector3 $velocityVector){}
 	public static function onRandomTick(Level $level, $x, $y, $z){}
 	public static function fallOn(Level $level, $x, $y, $z, Entity $entity, $fallDistance){}
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){

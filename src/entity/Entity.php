@@ -319,7 +319,19 @@ class Entity extends Position
 			$this->server->api->entity->drop($this, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF), true);
 		}
 	}
-
+	
+	public function handleWaterMovement(){
+		if($this->level->handleMaterialAcceleration($this->boundingBox->expand(0, -0.4, 0)->contract(0.001, 0.001, 0.001), 0, $this)){
+			$this->fallDistance = 0;
+			$this->inWater = true;
+			$this->fire = 0;
+		}else{
+			$this->inWater = false;
+		}
+		
+		return $this->inWater;
+	}
+	
 	public function environmentUpdate($time)
 	{
 		$hasUpdate = $this->class === ENTITY_MOB; // force true for mobs
@@ -372,7 +384,10 @@ class Entity extends Position
 			$this->outOfWorld();
 			$hasUpdate = true;
 		}
-
+		if(!$this->isPlayer()){
+			$this->handleWaterMovement();
+		}
+		
 		if($this->fire > 0){
 			if(($this->fire % 20) === 0){
 				$this->harm(1, "burning");
@@ -410,6 +425,8 @@ class Entity extends Position
 				}
 			}
 		}
+		
+		
 		
 		//air damage
 		if($this->isPlayer() || $this instanceof Living){

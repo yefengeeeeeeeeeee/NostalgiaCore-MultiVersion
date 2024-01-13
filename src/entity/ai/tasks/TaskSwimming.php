@@ -16,15 +16,12 @@ class TaskSwimming extends TaskBase
 	{
 		if(!$ai->entity->inWater){
 			$this->reset();
-			$ai->mobController->setJumping(false);
 			return;
 		}
 		
 		if(lcg_value() < 0.8){ #1.5.2 method
 			$ai->mobController->setJumping(true);
 		}
-		
-		
 	}
 	
 	public function canBeExecuted(EntityAI $ai)

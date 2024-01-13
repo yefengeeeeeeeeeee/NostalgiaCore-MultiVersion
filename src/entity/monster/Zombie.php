@@ -10,6 +10,7 @@ class Zombie extends Monster{
 		
 		$this->ai->addTask(new TaskRandomWalk(0.25));
 		$this->ai->addTask(new TaskLookAround());
+		$this->ai->addTask(new TaskSwimming());
 	}
 	
 	public function getArmorValue(){
@@ -17,7 +18,7 @@ class Zombie extends Monster{
 	}
 	
 	public function updateBurning(){
-		if($this->fire > 0 or !$this->level->isDay()){
+		if($this->fire > 0 or !$this->level->isDay() || $this->inWater){ //TODO fix burning in water
 			return false;
 		}
 		

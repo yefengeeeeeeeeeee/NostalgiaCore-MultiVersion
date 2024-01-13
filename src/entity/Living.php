@@ -13,7 +13,7 @@ abstract class Living extends Entity implements Pathfindable{
 	public $aiMoveSpeed;
 	
 	public $renderYawOffset = 0.0; //used by head rotation, TODO better name
-	
+	public $jumping, $jumpTicks;
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 		$this->target = false;
 		$this->ai = new EntityAI($this);
@@ -115,7 +115,7 @@ abstract class Living extends Entity implements Pathfindable{
 	
 	public function updateEntityMovement(){
 		if(!$this->dead && Entity::$allowedAI && $this->idleTime <= 0) {
-			//$this->ai->updateTasks();
+			$this->ai->updateTasks();
 		}
 		//if($this->onGround){
 		//	if(!$this->hasPath() && $this->pathFinder instanceof ITileNavigator){
@@ -123,9 +123,27 @@ abstract class Living extends Entity implements Pathfindable{
 		//	}
 		//	$this->pathFollower->followPath();
 		//}
+		
+		
+		//not exactly here
+		if($this->jumping){
+			if(!$this->inWater){ //TODO also lava
+				if($this->onGround && $this->jumpTicks <= 0){
+					//TODO jump $this->jump();
+					$this->jumpTicks = 10;
+				}
+			}else{
+				$this->speedY += 0.04;
+			}
+		}else{
+			$this->jumpTicks = 0;
+		}
+		
+		
 		$this->ai->mobController->movementTick();
 		$this->ai->mobController->rotateTick();
-	
+		$this->ai->mobController->jumpTick();
+		
 		if(abs($this->speedX) < self::MIN_POSSIBLE_SPEED) $this->speedX = 0;
 		if(abs($this->speedZ) < self::MIN_POSSIBLE_SPEED) $this->speedZ = 0;
 		if(abs($this->speedY) < self::MIN_POSSIBLE_SPEED) $this->speedY = 0;
@@ -147,10 +165,28 @@ abstract class Living extends Entity implements Pathfindable{
 		
 	}
 	
+	public function counterUpdate(){
+		parent::counterUpdate();
+		if($this->jumpTicks > 0) --$this->jumpTicks;
+	}
+	
 	public function moveEntityWithHeading($strafe, $forward){
-		//TODO lava, water
-		//If not in lava in water ->
-		{
+		if($this->inWater){ //also check is player, and can it fly or not
+			$this->moveFlying($strafe, $forward, 0.04); //TODO speed: this.isAIEnabled() ? 0.04F : 0.02F
+			$this->move($this->speedX, $this->speedY, $this->speedZ);
+			$this->speedX *= 0.8;
+			$this->speedY *= 0.8;
+			$this->speedZ *= 0.8;
+			$this->speedY -= 0.02;
+			
+			//TODO: static speedY
+			//if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6 - this.posY + var9, this.motionZ))
+			//{
+			//	this.motionY = 0.3;
+			//}
+		}
+		//TODO lava
+		else{
 			$friction = 0.91;
 			
 			if($this->onGround){
