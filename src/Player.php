@@ -205,8 +205,11 @@ class Player{
 
 				$this->level->freeAllChunks($this);
 				unset($this->level->players[$this->CID]);
+				unset($this->level->entityListPositioned["{$this->entity->chunkX} {$this->entity->chunkZ}"][$this->eid]);
+				unset($this->level->entityList[$this->eid]);
 				$this->level = $pos->level;
-				
+				$this->entity->level = $this->level;
+				$this->level->entityList[$this->entity->eid] = $this->entity;
 				$this->level->players[$this->CID] = $this;
 				$this->chunksLoaded = [];
 				$this->server->api->entity->spawnToAll($this->entity);
@@ -1369,7 +1372,6 @@ class Player{
 	}
 	public function entityTick(){
 		if($this->isSleeping) ++$this->sleepingTime;
-		$this->handlePacketQueues();
 	}
 	public function handleDataPacket(RakNetDataPacket $packet){
 		if($this->connected === false){
@@ -1572,7 +1574,7 @@ class Player{
 				
 				
 				console("[INFO] " . FORMAT_AQUA . $this->username . FORMAT_RESET . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->eid . " at (" . $this->entity->level->getName() . ", " . round($this->entity->x, 2) . ", " . round($this->entity->y, 2) . ", " . round($this->entity->z, 2) . ")");
-				return false; //return false so it will not be updated by tickerFunction
+				break;
 			case ProtocolInfo::READY_PACKET:
 				if($this->loggedIn === false){
 					break;

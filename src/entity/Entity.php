@@ -86,6 +86,10 @@ class Entity extends Position
 	public $enableAutojump = false;
 	public $yOffset = 0.0;
 	public $noClip = false;
+	
+	public $chunkX = 0;
+	public $chunkZ = 0;
+	
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array())
 	{
 		$this->random = new Random();

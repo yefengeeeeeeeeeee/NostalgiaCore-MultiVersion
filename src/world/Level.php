@@ -355,6 +355,8 @@ class Level{
 	}
 	
 	public function onTick(PocketMinecraftServer $server, $currentTime){
+		safe_var_dump($this->players);
+		console($this->getName());
 		if(!$this->stopTime) ++$this->time;
 		for($cX = 0; $cX < 16; ++$cX){
 			for($cZ = 0; $cZ < 16; ++$cZ){
@@ -385,7 +387,6 @@ class Level{
 			}
 			$curChunkX = (int)$e->x >> 4;
 			$curChunkZ = (int)$e->z >> 4;
-			
 			if($e->class === ENTITY_MOB && !$e->isPlayer()){
 				++$this->totalMobsAmount;
 			}
@@ -397,7 +398,17 @@ class Level{
 			if($e instanceof Entity){
 				$newChunkX = (int)$e->x >> 4;
 				$newChunkZ = (int)$e->z >> 4;
-				
+				if($e->chunkX != $newChunkX || $e->chunkZ != $newChunkZ){
+					$oldIndex = "{$e->chunkX} {$e->chunkZ}";
+					unset($this->entityListPositioned[$oldIndex][$e->eid]);
+					
+					if($e->level == $this){
+						$e->chunkX = $newChunkX;
+						$e->chunkZ = $newChunkZ;
+						$newIndex = "$newChunkX $newChunkZ";
+						$this->entityListPositioned[$newIndex][$e->eid] = $e->eid;
+					}
+				}
 				if($e->level != $this && isset($this->entityListPositioned["$curChunkX $curChunkZ"])){
 					unset($this->entityListPositioned["$curChunkX $curChunkZ"][$e->eid]);
 				}else if($curChunkX != $newChunkX || $curChunkZ != $newChunkZ){
