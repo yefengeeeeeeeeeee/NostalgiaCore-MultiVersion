@@ -37,6 +37,33 @@ class StaticBlock
 			self::$boundingBoxes[$b->getID()] = $b->boundingBox;
 			self::$hardness[$b->getID()] = $b->getHardness();
 		}
+		
+		Block::$class[BED_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.5625, 1);
+		//Cake: has bounds based on world state
+		//Chest: has bounds based on world state
+		Block::$class[WHEAT_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.25, 1);
+		Block::$class[CARROT_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.25, 1);
+		Block::$class[POTATO_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.25, 1);
+		Block::$class[BEETROOT_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.25, 1); //i assume it extends class Crops
+		Block::$class[WHEAT_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.25, 1);
+		Block::$class[DEAD_BUSH]::setBlockBounds(0.1, 0, 0.1, 0.9, 0.8, 0.9);
+		Block::$class[DOOR_BLOCK]::setBlockBounds(0, 0, 0, 1, 1, 1); //has bounds based on rotation
+		Block::$class[FARMLAND]::setBlockBounds(0, 0, 0, 1, 0.9375, 1);
+		//Fence: bounds on state
+		//Fence Gate: bounds on state
+		Block::$class[TALL_GRASS]::setBlockBounds(0.1, 0, 0.1, 0.9, 0.8, 0.9);
+		Block::$class[MELON_STEM]::setBlockBounds(0.5 - 0.125, 0, 0.5 - 0.125, 0.5 + 0.125, 0.25, 0.5 + 0.125);
+		Block::$class[PUMPKIN_STEM]::setBlockBounds(0.5 - 0.125, 0, 0.5 - 0.125, 0.5 + 0.125, 0.25, 0.5 + 0.125);
+		Block::$class[SAPLING]::setBlockBounds(0.1, 0, 0.1, 0.9, 0.8, 0.9);
+		Block::$class[BROWN_MUSHROOM]::setBlockBounds(0.3, 0, 0.3, 0.8, 0.4, 0.8);
+		Block::$class[SLAB]::setBlockBounds(0, 0, 0, 1, 0.5, 1);
+		//Ladder: based on rotation
+		//Glass Pane: based on state
+		RailBaseBlock::setBlockBounds(0, 0, 0, 1, 0.125, 1);
+		Block::$class[SUGARCANE_BLOCK]::setBlockBounds(0.5 - 0.375, 0, 0.5 - 0.375, 0.5 + 0.375, 1, 0.5 + 0.375);
+		Block::$class[SNOW_LAYER]::setBlockBounds(0, 0, 0, 1, 0.125, 1);
+		//Stairs: based on different factors
+		//Stone wall: based on state
 	}
 	
 	public static function getBlock($id){
@@ -47,6 +74,7 @@ class StaticBlock
 		return self::$hardness[$id] ??  StaticBlock::DEFAULT_HARDNESS;
 	}
 	
+	//TODO: use static block min/max
 	public static function getBoundingBoxForBlockCoords($id, $x, $y, $z){
 		/**@var AxisAlignedBB $bb*/
 		$bb = self::$boundingBoxes[$id] ?? false;

@@ -522,11 +522,6 @@ class Entity extends Position
 			
 			$this->speedX += $strafe*$v6 - $forward*$v5;
 			$this->speedZ += $forward*$v6 + $strafe*$v5;
-			
-			//float var5 = MathHelper.sin(this.rotationYaw * (float)Math.PI / 180.0F);
-			//float var6 = MathHelper.cos(this.rotationYaw * (float)Math.PI / 180.0F);
-			//this.motionX += (double)(strafe * var6 - forward * var5);
-			//this.motionZ += (double)(forward * var6 + strafe * var5);
 		}
 	}
 	

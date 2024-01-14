@@ -38,7 +38,7 @@ class Zombie extends Monster{
 	}
 	
 	public function getAttackDamage(){
-		return 4; //TODO vanillafy(zombies might be able to hold items)
+		return 4;
 	}
 	
 	public function update($now){

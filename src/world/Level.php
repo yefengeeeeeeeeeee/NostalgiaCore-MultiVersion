@@ -76,7 +76,8 @@ class Level{
 		return true;
 	}
 	
-	//TODO public function canPlaceEntityOnSide()
+	//TODO mayPlace
+	
 	
 	public function handleMaterialAcceleration(AxisAlignedBB $aabb, $materialType, Entity $entity){
 		$minX = floor($aabb->minX);

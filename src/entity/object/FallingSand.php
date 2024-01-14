@@ -34,7 +34,7 @@ class FallingSand extends Entity{
 			
 			$x = floor($this->x);
 			$y = floor($this->y);
-			$z = floot($this->z);
+			$z = floor($this->z);
 			
 			if($this->fallTime == 1){
 				/* i dont think this is needed here?
@@ -52,14 +52,15 @@ class FallingSand extends Entity{
 				$this->speedX *= 0.7;
 				$this->speedZ *= 0.7;
 				$this->speedY *= -0.5;
-				
-				//1.5.2 has piston check, skipping
 				$this->close();
-				//if (!this.isBreakingAnvil && this.worldObj.canPlaceEntityOnSide(this.blockID, var1, var2, var3, true, 1, (Entity)null, (ItemStack)null) && !BlockSand.canFallBelow(this.worldObj, var1, var2 - 1, var3) && this.worldObj.setBlock(var1, var2, var3, this.blockID, this.metadata, 3))
-				//	
-				//}
-				//a check if block has tilentity, might be added after tile entities rewrite
-				
+				//TODO vanilla-like checking?
+				$this->level->fastSetBlockUpdate($x, $y, $z, $this->data["Tile"], 0); //TODO add metadata
+			}else if(($blockAt = $this->level->level->getBlockID($x, $y, $z)) != 0){
+				//TODO vanilla-like checking?
+				if(StaticBlock::getIsTransparent($blockAt) && !StaticBlock::getIsLiquid($blockAt)){
+					$this->close();
+					ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->data["Tile"], 0, 1)); //TODO add metadata
+				}
 			}
 		}
 	}
