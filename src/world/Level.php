@@ -477,7 +477,6 @@ class Level{
 		$maxChunkX = ((int)($bb->maxX)) >> 4;
 		$maxChunkZ = ((int)($bb->maxZ)) >> 4;
 		$ents = [];
-		console("nya $minChunkX $minChunkZ $maxChunkX $maxChunkZ");
 		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
 			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
 				$ind = "$chunkX $chunkZ";

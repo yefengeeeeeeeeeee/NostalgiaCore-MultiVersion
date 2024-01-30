@@ -95,7 +95,6 @@ class ItemEntity extends Entity{
 		if($this->closed) return;
 		
 		$friction = 0.98;
-		
 		if($this->onGround){
 			$friction = 0.588;
 			$v3 = $this->level->level->getBlockID($this->x, floor($this->boundingBox->minY) - 1, $this->z);

@@ -170,8 +170,10 @@ abstract class Living extends Entity implements Pathfindable{
 		if($this->jumpTicks > 0) --$this->jumpTicks;
 	}
 	
+	
 	public function moveEntityWithHeading($strafe, $forward){
 		if($this->inWater){ //also check is player, and can it fly or not
+			$prevPosY = $this->y;
 			$this->moveFlying($strafe, $forward, 0.04); //TODO speed: this.isAIEnabled() ? 0.04F : 0.02F
 			$this->move($this->speedX, $this->speedY, $this->speedZ);
 			$this->speedX *= 0.8;
@@ -179,11 +181,10 @@ abstract class Living extends Entity implements Pathfindable{
 			$this->speedZ *= 0.8;
 			$this->speedY -= 0.02;
 			
-			//TODO: static speedY
-			//if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6 - this.posY + var9, this.motionZ))
-			//{
-			//	this.motionY = 0.3;
-			//}
+			
+			if($this->isCollidedHorizontally && $this->isFree($this->speedX, $this->speedY + 0.6 - $this->y + $prevPosY, $this->speedZ)){
+				$this->speedY = 0.3;
+			}
 		}
 		//TODO lava
 		else{

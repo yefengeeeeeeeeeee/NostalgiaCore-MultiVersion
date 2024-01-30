@@ -90,6 +90,8 @@ class Entity extends Position
 	public $chunkX = 0;
 	public $chunkZ = 0;
 	
+	public $isCollidedHorizontally, $isCollidedVertically, $isCollided;
+	
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array())
 	{
 		$this->random = new Random();
@@ -552,9 +554,9 @@ class Entity extends Position
 		$z0 = floor($aABB->minZ);
 		$z1 = floor($aABB->maxZ) + 1;
 		
-		for($x = $x0; $x <= $x1; ++$x){
-			for($y = $y0; $y <= $y1; ++$y){
-				for($z = $z0; $z <= $z1; ++$z){
+		for($x = $x0; $x < $x1; ++$x){
+			for($y = $y0; $y < $y1; ++$y){
+				for($z = $z0; $z < $z1; ++$z){
 					$b = $this->level->level->getBlockID($x, $y, $z);
 					if($b != 0){
 						$blockBounds = Block::$class[$b]::getCollisionBoundingBoxes($this->level, $x, $y, $z, $this);
@@ -619,10 +621,10 @@ class Entity extends Position
 		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
 		$this->y = $this->boundingBox->minY + $this->yOffset;
 		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
-		//$this.isCollidedHorizontally = savedDX != dx || savedDZ != dz;
-		//$this.isCollidedVertically = savedDY != dy;
+		$this->isCollidedHorizontally = $savedDX != $dx || $savedDZ != $dz;
+		$this->isCollidedVertically = $savedDY != $dy;
 		$this->onGround = $savedDY != $dy && $savedDY < 0.0;
-		//$this.isCollided = this.isCollidedHorizontally || this.isCollidedVertically;
+		$this->isCollided = $this->isCollidedHorizontally || $this->isCollidedVertically;
 		$this->updateFallState($this->speedY);
 		
 		
@@ -641,6 +643,35 @@ class Entity extends Position
 		if($this->level->isBoundingBoxOnFire($this->boundingBox->contract(0.001, 0.001, 0.001))){
 			
 		}
+	}
+	
+	//in MCP it is called isOffsetPositionInLiquid, in 0.8 - isFree
+	public function isFree($offsetX, $offsetY, $offsetZ){
+		$offsetBB = $this->boundingBox->getOffsetBoundingBox($offsetX, $offsetY, $offsetZ);
+		
+		$minX = floor($offsetBB->minX);
+		$minY = floor($offsetBB->minY);
+		$minZ = floor($offsetBB->minZ);
+		$maxX = floor($offsetBB->maxX + 1);
+		$maxY = floor($offsetBB->maxY + 1);
+		$maxZ = floor($offsetBB->maxZ + 1);
+		
+		$hasLiquid = false;
+		$result = false;
+		for($x = $minX; $x < $maxX; ++$x){
+			for($z = $minZ; $z < $maxZ; ++$z){
+				for($y = $minY - 1; $y < $maxY; ++$y){
+					$v12 = $this->level->level->getBlockID($x, $y, $z);
+					if($y != ($minY - 1)) $hasLiquid |= StaticBlock::getIsLiquid($v12);
+					if($v12 != 0){
+						$result = true;
+						break 3;
+					}
+				}
+			}
+		}
+		if($result) return !$hasLiquid;
+		return false;
 	}
 	
 	public function isInVoid(){
