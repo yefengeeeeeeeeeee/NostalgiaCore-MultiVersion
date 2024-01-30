@@ -355,8 +355,6 @@ class Level{
 	}
 	
 	public function onTick(PocketMinecraftServer $server, $currentTime){
-		safe_var_dump($this->players);
-		console($this->getName());
 		if(!$this->stopTime) ++$this->time;
 		for($cX = 0; $cX < 16; ++$cX){
 			for($cZ = 0; $cZ < 16; ++$cZ){
@@ -473,6 +471,28 @@ class Level{
 		
 		return false;
 	}
+	public function getEntitiesInAABBOfType(AxisAlignedBB $bb, $class){
+		$minChunkX = ((int)($bb->minX)) >> 4;
+		$minChunkZ = ((int)($bb->minZ)) >> 4;
+		$maxChunkX = ((int)($bb->maxX)) >> 4;
+		$maxChunkZ = ((int)($bb->maxZ)) >> 4;
+		$ents = [];
+		console("nya $minChunkX $minChunkZ $maxChunkX $maxChunkZ");
+		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
+			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
+				$ind = "$chunkX $chunkZ";
+				foreach($this->entityListPositioned[$ind] ?? [] as $ind2 => $entid){
+					if(isset($this->entityList[$entid]) && $this->entityList[$entid] instanceof Entity && $this->entityList[$entid]->class === $class && $this->entityList[$entid]->boundingBox->intersectsWith($bb)){
+						$ents[$entid] = $this->entityList[$entid];
+					}else if(!isset($this->entityList[$entid])){
+						ConsoleAPI::debug("Removing entity from level array at index $ind/$ind2: $entid");
+						unset($this->entityListPositioned[$ind][$ind2]);
+					}
+				}
+			}
+		}
+		return $ents;
+	}
 	
 	public function getEntitiesInAABB(AxisAlignedBB $bb){
 		$minChunkX = ((int)($bb->minX)) >> 4;
@@ -484,9 +504,12 @@ class Level{
 		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
 			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
 				$ind = "$chunkX $chunkZ";
-				foreach($this->level->entityListPositioned[$ind] ?? [] as $entid){
-					if($this->entityList[$entid] instanceof Entity && $this->entityList[$entid]->boundingBox->intersectsWith($bb)){
+				foreach($this->entityListPositioned[$ind] ?? [] as $ind2 => $entid){
+					if(isset($this->entityList[$entid]) && $this->entityList[$entid] instanceof Entity && $this->entityList[$entid]->boundingBox->intersectsWith($bb)){
 						$ents[$entid] = $this->entityList[$entid];
+					}else if(!isset($this->entityList[$entid])){
+						ConsoleAPI::debug("Removing entity from level array at index $ind/$ind2: $entid");
+						unset($this->entityListPositioned[$ind][$ind2]);
 					}
 				}
 			}

@@ -1029,26 +1029,6 @@ class Entity extends Position
 				$player->dataPacket($pk);
 				$this->player->sendArmor($player);
 				break;
-			case ENTITY_ITEM:
-				$pk = new AddItemEntityPacket();
-				$pk->eid = $this->eid;
-				$pk->x = $this->x;
-				$pk->y = $this->y;
-				$pk->z = $this->z;
-				$pk->yaw = $this->yaw;
-				$pk->pitch = $this->pitch;
-				$pk->roll = 0;
-				$pk->item = BlockAPI::getItem($this->type, $this->meta, $this->stack);
-				$pk->metadata = $this->getMetadata();
-				$player->dataPacket($pk);
-
-				$pk = new SetEntityMotionPacket();
-				$pk->eid = $this->eid;
-				$pk->speedX = $this->speedX;
-				$pk->speedY = $this->speedY;
-				$pk->speedZ = $this->speedZ;
-				$player->dataPacket($pk);
-				break;
 			case ENTITY_FALLING:
 				$pk = new AddEntityPacket();
 				$pk->eid = $this->eid;

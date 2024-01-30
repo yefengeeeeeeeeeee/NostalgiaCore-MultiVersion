@@ -3,6 +3,7 @@
 class ItemEntity extends Entity{
 	const TYPE = "itemSpecial";
 	const CLASS_TYPE = ENTITY_ITEM;
+	public static $searchRadiusX = 0.5, $searchRadiusY = 0.0, $searchRadiusZ = 0.5;
 	
 	public $meta, $stack;
 	
@@ -30,17 +31,68 @@ class ItemEntity extends Entity{
 		if($this->delayBeforePickup > 0) --$this->delayBeforePickup;
 	}
 	
+	public function searchForOtherItemsNearby(){
+		$ents = $this->level->getEntitiesInAABBOfType($this->boundingBox->expand(self::$searchRadiusX, self::$searchRadiusY, self::$searchRadiusZ), ENTITY_ITEM);
+		
+		foreach($ents as $e){
+			$this->tryCombining($e);
+		}
+		
+	}
+	
+	public function spawn($player)
+	{
+		$pk = new AddItemEntityPacket();
+		$pk->eid = $this->eid;
+		$pk->x = $this->x;
+		$pk->y = $this->y;
+		$pk->z = $this->z;
+		$pk->yaw = $this->yaw;
+		$pk->pitch = $this->pitch;
+		$pk->roll = 0;
+		$pk->item = BlockAPI::getItem($this->type, $this->meta, $this->stack);
+		$pk->metadata = $this->getMetadata();
+		$player->dataPacket($pk);
+		
+		$pk = new SetEntityMotionPacket();
+		$pk->eid = $this->eid;
+		$pk->speedX = $this->speedX;
+		$pk->speedY = $this->speedY;
+		$pk->speedZ = $this->speedZ;
+		$player->dataPacket($pk);
+	}
+	
+	
+	public function tryCombining(Entity $another){
+		
+		if($another->eid == $this->eid) return false;
+		
+		if(!$another->closed && !$this->closed){
+			if($another->type == $this->type && $another->meta == $this->meta){
+				if(($another->stack + $this->stack) > 64) return false; //TODO dynamic stack size
+				
+				$another->stack += $this->stack;
+				$another->age = min($this->age, $another->age);
+				$this->close();
+				//TODO respawn another entity?
+			}
+		}
+	}
+	
 	public function updateEntityMovement(){
 		$this->speedY -= 0.04;
 		$this->noClip = false; //TODO pushOutofBlocks
 		$this->move($this->speedX, $this->speedY, $this->speedZ);
 		
 		$var1 = (int)$this->x != (int)$this->lastX || (int)$this->y != (int)$this->lastY || (int)$this->z != (int)$this->lastZ;
-		if($var1/* || $this->ticksExisted % 25 == 0*/){ //TODO ticksExisted(should be alternative in nc already)
+		
+		if($var1 || $this->counter % 25 == 0/* || $this->ticksExisted % 25 == 0*/){ //TODO ticksExisted(should be alternative in nc already)
 			//TODO check material
 			
-			//TODO search for other items
+			$this->searchForOtherItemsNearby(); //not in vanilla 0.8.1
 		}
+		
+		if($this->closed) return;
 		
 		$friction = 0.98;
 		
@@ -56,6 +108,7 @@ class ItemEntity extends Entity{
 		
 		if($this->onGround) $this->speedY *= -0.5;
 		
-		//TODO ++age; despawn after age >= 6000; 
+		++$this->age;
+		//TODO despawn after age >= 6000 ?; 
 	}
 }

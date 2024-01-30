@@ -217,9 +217,12 @@ class EntityAPI{
 		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
 			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
 				$ind = "$chunkX $chunkZ";
-				foreach($center->level->entityListPositioned[$ind] ?? [] as $entid){
-					if($this->entities[$entid] instanceof Entity && ($class === false || $this->entities[$entid]->class == $class)){
+				foreach($center->level->entityListPositioned[$ind] ?? [] as $ind2 => $entid){
+					if(isset($this->entities[$entid]) && $this->entities[$entid] instanceof Entity && ($class === false || $this->entities[$entid]->class == $class)){
 						$ents[$entid] = $this->entities[$entid];
+					}else if(!isset($this->entities[$entid])){
+						ConsoleAPI::debug("Removing entity from level array at index $ind/$ind2: $entid");
+						unset($center->level->entityListPositioned[$ind][$ind2]);
 					}
 				}
 			}
