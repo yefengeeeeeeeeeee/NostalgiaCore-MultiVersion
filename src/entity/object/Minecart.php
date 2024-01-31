@@ -66,7 +66,6 @@ class Minecart extends Vehicle{
 		$this->width = 0.98;
 		$this->height = 0.7;
 		$this->yOffset = $this->height / 2;
-		$this->update();
 	}
 	
 	public function getDrops(){
