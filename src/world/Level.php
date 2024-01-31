@@ -14,7 +14,12 @@ class Level{
 	public $entityListPositioned = [];
 	public $entitiesInLove = [];
 	
-	public $tiles, $blockUpdates, $nextSave, $players = [], $level, $mobSpawner, $totalMobsAmount = 0;
+	/**
+	 * @var Player[]
+	 */
+	public $players = [];
+	
+	public $tiles, $blockUpdates, $nextSave, $level, $mobSpawner, $totalMobsAmount = 0;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
 	
 	public $randInt1, $randInt2;

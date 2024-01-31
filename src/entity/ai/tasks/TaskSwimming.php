@@ -14,7 +14,7 @@ class TaskSwimming extends TaskBase
 
 	public function onUpdate(EntityAI $ai)
 	{
-		if(!$ai->entity->inWater || !$ai->entity->inLava){
+		if(!$ai->entity->inWater && !$ai->entity->inLava){
 			$this->reset();
 			return;
 		}
