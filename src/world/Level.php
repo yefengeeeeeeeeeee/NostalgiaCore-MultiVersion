@@ -454,11 +454,11 @@ class Level{
 	
 	public function isBoundingBoxOnFire(AxisAlignedBB $bb){
 		$minX = floor($bb->minX);
-		$maxX = ceil($bb->maxX);
+		$maxX = floor($bb->maxX + 1);
 		$minY = floor($bb->minY);
-		$maxY = ceil($bb->maxY);
+		$maxY = floor($bb->maxY + 1);
 		$minZ = floor($bb->minZ);
-		$maxZ = ceil($bb->maxZ);
+		$maxZ = floor($bb->maxZ + 1);
 		
 		for($x = $minX; $x < $maxX; ++$x){
 			for($y = $minY; $y < $maxY; ++$y){

@@ -91,6 +91,12 @@ class Entity extends Position
 	public $chunkZ = 0;
 	
 	public $isCollidedHorizontally, $isCollidedVertically, $isCollided;
+	/**
+	 * Amount of ticks you can be in fire until you start receiving damage
+	 * @var integer
+	 */
+	public $fireResistance = 1;
+	public $inWeb;
 	
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array())
 	{
@@ -156,6 +162,7 @@ class Entity extends Position
 				$this->hasKnockback = true;
 				$this->hasGravity = true;
 				$this->canBeAttacked = true;
+				$this->fireResistance = 20; //TODO fire resiatance for player
 				break;
 			case ENTITY_OBJECT:
 				$this->x = isset($this->data["TileX"]) ? $this->data["TileX"] : $this->x;
@@ -189,6 +196,11 @@ class Entity extends Position
 	
 	public function attackEntity($entity){
 
+	}
+	
+	public function setInWeb(){
+		$this->inWeb = true;
+		$this->fallDistance = 0;
 	}
 	
 	public function addVelocity($vX, $vY = 0, $vZ = 0)
@@ -394,7 +406,7 @@ class Entity extends Position
 			$this->handleWaterMovement();
 		}
 		
-		if($this->fire > 0){
+		if($this->fire > 0){ //TODO move somewhere
 			if(($this->fire % 20) === 0){
 				$this->harm(1, "burning");
 			}
@@ -446,7 +458,7 @@ class Entity extends Position
 				$f = LiquidBlock::getPercentAir($this->level->level->getBlockDamage($x, $y, $z)) - 0.1111111;
 				$f1 = ($y + 1) - $f;
 				if($d < $f1){
-					$this->air -= 1*$tickDiff;
+					$this->air -= $tickDiff;
 					if($this->air <= -20){
 						$this->harm(2, "water");
 						$this->air = 0; //harm every 1 second
@@ -515,7 +527,7 @@ class Entity extends Position
 	public function moveFlying($strafe, $forward, $speed){ //TODO rename?
 		$v4 = $strafe*$strafe + $forward*$forward;
 		
-		if($v4 >= 1.0e-4){ //TODO dont use ugly scienfitic notation
+		if($v4 >= 0.0001){
 			$v4 = sqrt($v4);
 			if($v4 < 1) $v4 = 1;
 			
@@ -532,14 +544,44 @@ class Entity extends Position
 	}
 	
 	public function updateEntityMovement(){}
-
+	
+	public function doBlocksCollision(){
+		$minX = floor($this->boundingBox->minX + 0.001);
+		$minY = floor($this->boundingBox->minY + 0.001);
+		$minZ = floor($this->boundingBox->minZ + 0.001);
+		$maxX = floor($this->boundingBox->maxX - 0.001);
+		$maxY = floor($this->boundingBox->maxY - 0.001);
+		$maxZ = floor($this->boundingBox->maxZ - 0.001);
+		
+		for($x = $minX; $x <= $maxX; ++$x){
+			for($y = $minY; $y <= $maxY; ++$y){
+				for($z = $minZ; $z <= $maxZ; ++$z){
+					$id = $this->level->level->getBlockID($x, $y, $z);
+					
+					if($id > 0){
+						Block::$class[$id]::onEntityCollidedWithBlock($this->level, $x, $y, $z, $this);
+					}
+				}
+			}
+		}
+		
+	}
+	
 	public function move($dx, $dy, $dz){
-		//TODO ySize?
 		$movX = $this->x;
 		$movY = $this->y;
 		$movZ = $this->z;
 		
-		//TODO isInWeb
+		if($this->inWeb){
+			$this->inWeb = false;
+			$dx *= 0.25;
+			$dy *= 0.05;
+			$dz *= 0.25;
+			
+			$this->speedX = $this->speedY = $this->speedZ = 0;
+		}
+		
+		
 		$savedDX = $dx;
 		$savedDY = $dy;
 		$savedDZ = $dz;
@@ -636,12 +678,21 @@ class Entity extends Position
 		
 		//TODO more stuff -> onEntityWalking
 		
-		//TODO block collisions?
+		$this->doBlocksCollision();
 		
 		
-		//TODO deal fire damage here
 		if($this->level->isBoundingBoxOnFire($this->boundingBox->contract(0.001, 0.001, 0.001))){
-			
+			$this->harm(1, "fire");
+			if($this->inWater){
+				++$this->fire;
+				if($this->fire == 0) $this->fire = 8;
+			}
+		}else if($this->fire <= 0){
+			$this->fire = -$this->fireResistance;
+		}
+		
+		if($this->inWater && $this->fire > 0){
+			$this->fire = -$this->fireResistance;
 		}
 	}
 	
@@ -1285,7 +1336,7 @@ class Entity extends Position
 		if (! $this->canBeAttacked) {
 			return false;
 		}
-		$dmg = $this->applyArmor($dmg, $cause); //TODO HURTCAM
+		$dmg = $this->applyArmor($dmg, $cause);
 		$ret = $this->setHealth(max(- 128, $this->getHealth() - ((int) $dmg)), $cause, $force);
 
 		if ($ret != false && $this->hasKnockback && is_numeric($cause) && ($entity = $this->server->api->entity->get($cause)) != false) {

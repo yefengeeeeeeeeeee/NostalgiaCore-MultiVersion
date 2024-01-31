@@ -2332,6 +2332,7 @@ class Player{
 					
 					$this->entity->linkedEntity->setPosition($this->entity);
 					$this->entity->linkedEntity->sendMoveUpdate();
+					//$this->entity->linkedEntity->moveFlying($packet->moveStrafe, $packet->moveForward, 1);
 				}
 				
 				break;

@@ -86,8 +86,13 @@ class ItemEntity extends Entity{
 		
 		$var1 = (int)$this->x != (int)$this->lastX || (int)$this->y != (int)$this->lastY || (int)$this->z != (int)$this->lastZ;
 		
-		if($var1 || $this->counter % 25 == 0/* || $this->ticksExisted % 25 == 0*/){ //TODO ticksExisted(should be alternative in nc already)
-			//TODO check material
+		if($var1 || $this->counter % 25 == 0){
+			$blockIDAt = $this->level->level->getBlockID(floor($this->x), floor($this->y), floor($this->z));
+			if($blockIDAt == LAVA || $blockIDAt == STILL_LAVA){
+				$this->speedY = 0.2;
+				$this->speedX = (lcg_value() - lcg_value()) * 0.2;
+				$this->speedZ = (lcg_value() - lcg_value()) * 0.2;
+			}
 			
 			$this->searchForOtherItemsNearby(); //not in vanilla 0.8.1
 		}
