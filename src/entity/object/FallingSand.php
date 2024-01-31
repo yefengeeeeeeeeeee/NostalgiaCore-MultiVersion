@@ -36,18 +36,6 @@ class FallingSand extends Entity{
 			$y = floor($this->y);
 			$z = floor($this->z);
 			
-			if($this->fallTime == 1){
-				/* i dont think this is needed here?
-				 * if (this.worldObj.getBlockId(var1, var2, var3) != this.blockID)
-                    {
-                        this.setDead();
-                        return;
-                    }
-
-                    this.worldObj.setBlockToAir(var1, var2, var3);
-				 */
-			}
-			
 			if($this->onGround){
 				$this->speedX *= 0.7;
 				$this->speedZ *= 0.7;

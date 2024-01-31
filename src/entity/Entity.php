@@ -97,7 +97,7 @@ class Entity extends Position
 	 */
 	public $fireResistance = 1;
 	public $inWeb;
-	
+	public $inLava;
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array())
 	{
 		$this->random = new Random();
@@ -338,6 +338,11 @@ class Entity extends Position
 		}
 	}
 	
+	public function handleLavaMovement(){ //TODO maybe try merging with water?
+		$this->inLava = $this->level->isLavaInBB($this->boundingBox->expand(-0.1, -0.4, -0.1));
+		return $this->inLava;
+	}
+	
 	public function handleWaterMovement(){
 		if($this->level->handleMaterialAcceleration($this->boundingBox->expand(0, -0.4, 0)->contract(0.001, 0.001, 0.001), 0, $this)){
 			$this->fallDistance = 0;
@@ -419,6 +424,13 @@ class Entity extends Position
 			}
 		}
 
+		if(!$this->isPlayer()) {
+			if($this->handleLavaMovement()){
+				//TODO this.setOnFireFromLava();
+				$this->fallDistance *= 0.5;
+			}
+		}
+		
 		$startX = floor($this->boundingBox->minX);
 		$startY = floor($this->boundingBox->minY);
 		$startZ = floor($this->boundingBox->minZ);
@@ -590,11 +602,11 @@ class Entity extends Position
 		
 		$aABB = $this->boundingBox->addCoord($dx, $dy, $dz);
 		$x0 = floor($aABB->minX);
-		$x1 = floor($aABB->maxX) + 1;
+		$x1 = floor($aABB->maxX + 1);
 		$y0 = floor($aABB->minY);
-		$y1 = floor($aABB->maxY) + 1;
+		$y1 = floor($aABB->maxY + 1);
 		$z0 = floor($aABB->minZ);
-		$z1 = floor($aABB->maxZ) + 1;
+		$z1 = floor($aABB->maxZ + 1);
 		
 		for($x = $x0; $x < $x1; ++$x){
 			for($y = $y0; $y < $y1; ++$y){
@@ -750,52 +762,6 @@ class Entity extends Position
 				$this->updateLast();
 				$this->updatePosition(); //TODO shouldnt be called in Entity
 				$this->updateEntityMovement();
-				/*$update = false;
-				if($this->speedX > -self::MIN_POSSIBLE_SPEED && $this->speedX < self::MIN_POSSIBLE_SPEED){
-					$this->speedX = 0;
-				}
-				if($this->speedZ > -self::MIN_POSSIBLE_SPEED && $this->speedZ < self::MIN_POSSIBLE_SPEED){
-					$this->speedZ = 0;
-				}
-				if($this->speedY > -self::MIN_POSSIBLE_SPEED && $this->speedY < self::MIN_POSSIBLE_SPEED){
-					$this->speedY = 0;
-				}
-				
-				$horizontalMultiplyFactor = 0.91;
-				if($this->onGround){
-					$horizontalMultiplyFactor = 0.54;
-					$b = $this->level->level->getBlockID(floor($this->x), floor($this->boundingBox->minY) - 1, floor($this->z));
-					if($b > 0){
-						$horizontalMultiplyFactor = StaticBlock::getSlipperiness($b) * 0.91;
-					}
-				}
-				
-				if($this->inWater){
-					$this->speedX *= 0.8;
-					$this->speedY *= 0.8;
-					$this->speedZ *= 0.8;
-				}else{
-					$this->speedX *= $horizontalMultiplyFactor;
-					$this->speedY *= 0.98;
-					$this->speedZ *= $horizontalMultiplyFactor;
-				}
-				
-				$savedSpeedY = $this->speedY;
-				$savedSpeedX = $this->speedX;
-				$savedSpeedZ = $this->speedZ;
-				$ultraMegaOldBB = clone $this->boundingBox;
-				$stepSuccess = false;
-				$beforeStepSpeedY = 0;
-				
-				if($this->enableAutojump && $this instanceof Creature){
-					if(!$stepSuccess && $fallingFlag && ($this->speedX != $savedSpeedX || $this->speedZ != $savedSpeedZ)){
-						$this->ai->mobController->setJumping(true);
-					}else{
-						$this->ai->mobController->setJumping(false);
-					}
-				}
-				}*/
-
 				
 				if($this->lastX != $this->x || $this->lastZ != $this->z || $this->lastY != $this->z){
 					$this->server->api->handle("entity.move", $this);

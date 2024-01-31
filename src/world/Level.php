@@ -77,7 +77,26 @@ class Level{
 	}
 	
 	//TODO mayPlace
-	
+	public function isLavaInBB($aabb){
+		$minX = floor($aabb->minX);
+		$maxX = floor($aabb->maxX + 1);
+		$minY = floor($aabb->minY);
+		$maxY = floor($aabb->maxY + 1);
+		$minZ = floor($aabb->minZ);
+		$maxZ = floor($aabb->maxZ + 1);
+		
+		for($x = $minX; $x < $maxX; ++$x){
+			for($y = $minY; $y < $maxY; ++$y){
+				for($z = $minZ; $z < $maxZ; ++$z){
+					$blockId = $this->level->getBlockID($x, $y, $z);
+					
+					if($blockId == LAVA || $blockId == STILL_LAVA) return true;
+				}
+			}
+		}
+		
+		return false;
+	}
 	
 	public function handleMaterialAcceleration(AxisAlignedBB $aabb, $materialType, Entity $entity){
 		$minX = floor($aabb->minX);

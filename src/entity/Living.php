@@ -185,9 +185,19 @@ abstract class Living extends Entity implements Pathfindable{
 			if($this->isCollidedHorizontally && $this->isFree($this->speedX, $this->speedY + 0.6 - $this->y + $prevPosY, $this->speedZ)){
 				$this->speedY = 0.3;
 			}
-		}
-		//TODO lava
-		else{
+		}else if($this->inLava){
+			$prevPosY = $this->y;
+			$this->moveFlying($strafe, $forward, 0.02);
+			$this->move($this->speedX, $this->speedY, $this->speedZ);
+			$this->speedX *= 0.5;
+			$this->speedY *= 0.5;
+			$this->speedZ *= 0.5;
+			$this->speedY -= 0.02;
+			
+			if($this->isCollidedHorizontally && $this->isFree($this->speedX, $this->speedY + 0.6 - $this->y + $prevPosY, $this->speedZ)){
+				$this->speedY = 0.3;
+			}
+		}else{
 			$friction = 0.91;
 			
 			if($this->onGround){
