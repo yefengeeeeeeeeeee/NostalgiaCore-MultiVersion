@@ -666,9 +666,7 @@ class Entity extends Position
 				$dy = $cy;
 				$dz = $cz;
 				$this->boundingBox->setBB($aabb1);
-			}//else{ TODO autojump
-			//	$stepSuccess = true;
-			//}
+			}
 			
 		}
 		
@@ -762,7 +760,7 @@ class Entity extends Position
 				$this->updateLast();
 				$this->updatePosition(); //TODO shouldnt be called in Entity
 				$this->updateEntityMovement();
-				
+				$update = false;
 				if($this->lastX != $this->x || $this->lastZ != $this->z || $this->lastY != $this->z){
 					$this->server->api->handle("entity.move", $this);
 					$update = true;
@@ -1214,7 +1212,7 @@ class Entity extends Position
 		$this->speedMeasure = array(0, 0, 0, 0, 0, 0, 0);
 	}
 
-	public function getSpeed()
+	public function getSpeed() //TODO rename to getBaseSpeed
 	{
 		return $this->speed;
 	}

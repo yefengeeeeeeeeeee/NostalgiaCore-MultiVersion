@@ -13,9 +13,9 @@ class Sheep extends Animal{
 		$this->data["Color"] = isset($this->data["Color"]) ? $this->data["Color"] : $this->sheepColor();
 		$this->setSpeed(0.25);
 		
-		$this->ai->addTask(new TaskRandomWalk(0.25)); //in 1.5.2 it is 0.23, but according to ida it should be 1.0 which is 0.25 if converted to 1.5.2?
+		$this->ai->addTask(new TaskRandomWalk(1.0));
 		$this->ai->addTask(new TaskLookAtPlayer(6));
-		$this->ai->addTask(new TaskPanic(0.375));
+		$this->ai->addTask(new TaskPanic(1.5));
 		$this->ai->addTask(new TaskEatTileGoal());
 		$this->ai->addTask(new TaskLookAround());
 		$this->ai->addTask(new TaskSwimming());

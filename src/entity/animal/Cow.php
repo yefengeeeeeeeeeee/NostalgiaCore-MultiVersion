@@ -7,9 +7,10 @@ class Cow extends Animal{
 		parent::__construct($level, $eid, $class, $type, $data);
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 10, "generic");
 		$this->setName("Cow");
-		$this->ai->addTask(new TaskRandomWalk(0.2));
+		$this->setSpeed(0.2);
+		$this->ai->addTask(new TaskRandomWalk(0.8));
 		$this->ai->addTask(new TaskLookAtPlayer(6));
-		$this->ai->addTask(new TaskPanic(0.375));
+		$this->ai->addTask(new TaskPanic(1.5));
 		$this->ai->addTask(new TaskLookAround());
 		$this->ai->addTask(new TaskSwimming());
 	}

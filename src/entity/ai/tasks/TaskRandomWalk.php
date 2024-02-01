@@ -3,9 +3,9 @@
 class TaskRandomWalk extends TaskBase
 {
 	private $x, $z;
-	public $moveSpeed;
-	public function __construct($moveSpeed){
-		$this->moveSpeed = $moveSpeed;
+	public $speedMultiplier;
+	public function __construct($speedMultiplier){
+		$this->speedMultiplier = $speedMultiplier;
 	}
 	
 	public function onStart(EntityAI $ai)
@@ -31,7 +31,7 @@ class TaskRandomWalk extends TaskBase
 			return false; //TODO Better way: block movement
 		}
 		--$this->selfCounter;
-		$ai->mobController->setMovingOffset($this->x, 0, $this->z, $this->moveSpeed);
+		$ai->mobController->setMovingOffset($this->x, 0, $this->z, $this->speedMultiplier);
 		//TODO fix $ai->mobController->moveNonInstant($this->x, 0, $this->z);
 	}
 

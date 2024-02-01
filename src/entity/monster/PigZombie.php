@@ -9,7 +9,7 @@ class PigZombie extends Monster{
 		$this->setSpeed(0.25);
 		
 		$this->ai->addTask(new TaskLookAround());
-		$this->ai->addTask(new TaskRandomWalk(0.25));
+		$this->ai->addTask(new TaskRandomWalk(1.0));
 		$this->ai->addTask(new TaskSwimming());
 	}
 	public function getAttackDamage(){

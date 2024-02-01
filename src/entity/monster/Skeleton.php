@@ -7,9 +7,10 @@ class Skeleton extends Monster{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 10, "generic");
 		$this->setName("Skeleton");
 		$this->ai->removeTask("TaskAttackPlayer");
+		$this->setSpeed(0.25);
 		//$this->ai->addTask(new TaskDestroyServerPerformance());
 		
-		$this->ai->addTask(new TaskRandomWalk(0.25));
+		$this->ai->addTask(new TaskRandomWalk(1.0));
 		$this->ai->addTask(new TaskLookAround());
 		$this->ai->addTask(new TaskSwimming());
 	}

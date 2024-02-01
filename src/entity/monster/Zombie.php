@@ -8,10 +8,10 @@ class Zombie extends Monster{
 		$this->setName("Zombie");
 		$this->setSpeed(0.23);
 		
-		$this->ai->addTask(new TaskRandomWalk(0.25));
+		$this->ai->addTask(new TaskRandomWalk(1.0));
 		$this->ai->addTask(new TaskLookAround());
 		$this->ai->addTask(new TaskSwimming());
-		$this->ai->addTask(new TaskAttackPlayer(0.25, 16));
+		$this->ai->addTask(new TaskAttackPlayer(1.0, 16)); //TODO fix range?
 	}
 	
 	public function getArmorValue(){

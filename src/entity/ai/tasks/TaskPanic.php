@@ -4,9 +4,9 @@ class TaskPanic extends TaskBase
 {
 	protected $randX = 2, $randZ = 2;
 	
-	public $moveSpeed;
-	public function __construct($moveSpeed){
-		$this->moveSpeed = $moveSpeed;
+	public $speedMultiplier;
+	public function __construct($speedMultiplier){
+		$this->speedMultiplier = $speedMultiplier;
 	}
 	
 	public function onStart(EntityAI $ai)
@@ -34,7 +34,7 @@ class TaskPanic extends TaskBase
 	{
 		--$this->selfCounter;
 		if($this->selfCounter % 20 === 0) $this->regenerateRandXZ();
-		$ai->mobController->setMovingOffset($this->randX, 0, $this->randZ, $this->moveSpeed);
+		$ai->mobController->setMovingOffset($this->randX, 0, $this->randZ, $this->speedMultiplier);
 	}
 
 	public function canBeExecuted(EntityAI $ai)

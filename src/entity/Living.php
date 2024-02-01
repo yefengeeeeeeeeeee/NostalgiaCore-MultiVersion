@@ -129,7 +129,7 @@ abstract class Living extends Entity implements Pathfindable{
 		if($this->jumping){
 			if(!$this->inWater){ //TODO also lava
 				if($this->onGround && $this->jumpTicks <= 0){
-					//TODO jump $this->jump();
+					$this->jump();
 					$this->jumpTicks = 10;
 				}
 			}else{
@@ -163,6 +163,12 @@ abstract class Living extends Entity implements Pathfindable{
 		$this->ai->mobController->updateHeadYaw();
 		
 		
+	}
+	
+	public function jump(){
+		$this->speedY = 0.42;
+		
+		//TODO also set AirBorne?
 	}
 	
 	public function counterUpdate(){
@@ -245,6 +251,10 @@ abstract class Living extends Entity implements Pathfindable{
 			$this->speedY *= 0.98;
 			$this->speedX *= $friction;
 			$this->speedZ *= $friction;
+			
+			if($this->isCollidedHorizontally && $this->enableAutojump){
+				$this->ai->mobController->setJumping(true); //non vanilla
+			}
 		}
 		
 		//TODO limbYaw - is it even needed?

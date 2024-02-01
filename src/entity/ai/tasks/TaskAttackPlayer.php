@@ -2,13 +2,13 @@
 
 class TaskAttackPlayer extends TaskBase
 {
-	public $moveSpeed;
+	public $speedMultiplier;
 	public $rangeSquared;
 	
 	public $attackCounter;
 	
 	public function __construct($speed, $range){
-		$this->moveSpeed = $speed;
+		$this->speedMultiplier = $speed;
 		$this->rangeSquared = $range*$range;
 	}
 	
@@ -25,7 +25,7 @@ class TaskAttackPlayer extends TaskBase
 			$this->reset();
 			return false;
 		}
-		$ai->mobController->setMovingTarget($ai->entity->target->x, $ai->entity->target->y, $ai->entity->target->z, $this->moveSpeed);
+		$ai->mobController->setMovingTarget($ai->entity->target->x, $ai->entity->target->y, $ai->entity->target->z, $this->speedMultiplier);
 		$ai->mobController->setLookPosition($ai->entity->target->x, $ai->entity->target->y + 0.12, $ai->entity->target->z, 10, $ai->entity->getVerticalFaceSpeed());
 		
 		--$this->attackCounter;

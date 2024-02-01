@@ -23,7 +23,7 @@ class MobController
 	protected $jumping;
 	
 	public $moveToX, $moveToY, $moveToZ;
-	public $speed;
+	public $speedMultiplier;
 	public $updateMove = false;
 	
 	public $lookX, $lookY, $lookZ;
@@ -52,14 +52,14 @@ class MobController
 		$this->moveToX = $x;
 		$this->moveToY = $y;
 		$this->moveToZ = $z;
-		$this->speed = $speed;
+		$this->speedMultiplier = $speed;
 		$this->updateMove = true;
 	}
 	public function setMovingOffset($x, $y, $z, $speed){
 		$this->moveToX = $this->entity->x + ($x);
 		$this->moveToY = $this->entity->y + ($y);
 		$this->moveToZ = $this->entity->z + ($z);
-		$this->speed = $speed;
+		$this->speedMultiplier = $speed;
 		$this->updateMove = true;
 	}
 	
@@ -103,7 +103,14 @@ class MobController
 			if($v8 >= 2.500000277905201E-7){ //TODO convert notation
 				$v10 = (atan2($diffZ, $diffX) * 180 / M_PI) - 90;
 				$this->entity->yaw = self::limitAngle($this->entity->yaw, $v10, 30);
-				$this->entity->setAIMoveSpeed($this->speed * $this->entity->getSpeedModifer());
+				$this->entity->setAIMoveSpeed($this->speedMultiplier * $this->entity->getSpeed() * $this->entity->getSpeedModifer());
+				//TODO 0.8.1 doesnt seem to make 2 multiplications here
+				/*
+				 * v15 = this->controlledEntity;
+			      speedMultiplier = this->speedMultiplier;
+			      v17 = v15->vtable->_virt_getBaseSpeed(v15);
+			      Mob::setSpeed(v15, speedMultiplier * v17);
+				 */
 				if($diffY > 0 && $diffX*$diffX + $diffZ*$diffZ < 1) $this->setJumping(true);
 			}
 		}
