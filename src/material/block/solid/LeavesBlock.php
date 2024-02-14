@@ -15,6 +15,11 @@ class LeavesBlock extends TransparentBlock{
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 1;
 	}
+	
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 1, $z + 1)];
+	}
+	
 	public static function createIndex($x, $y, $z){
 		return $x.".".$y.".".$z;
 	}

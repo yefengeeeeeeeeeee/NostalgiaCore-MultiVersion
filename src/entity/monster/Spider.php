@@ -7,6 +7,10 @@ class Spider extends Monster{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 8, "generic");
 		$this->setName("Spider");
 		$this->setSpeed(0.3);
+		$this->ai->addTask(new TaskRandomWalk(1.0)); //TODO this mob doesnt use newAI -> speed is not correct
+		$this->ai->addTask(new TaskLookAround()); //TODO this mob doesnt use newAI
+		$this->ai->addTask(new TaskSwimming());
+		$this->ai->addTask(new TaskAttackPlayer(1.0, 16)); //TODO fix range?
 	}
 	
 	public function getDrops(){

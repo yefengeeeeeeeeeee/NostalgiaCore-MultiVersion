@@ -1,6 +1,7 @@
 <?php
 
-class Painting extends Hanging{
+class Painting extends Entity{
+	const CLASS_TYPE = ENTITY_OBJECT;
 	const TYPE = OBJECT_PAINTING;
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		parent::__construct($level, $eid, $class, $type, $data);

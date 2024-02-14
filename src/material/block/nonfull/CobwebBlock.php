@@ -18,5 +18,9 @@ class CobwebBlock extends FlowableBlock{
 				array(COBWEB, 0, 1),
 			];
 		}
-	}	
+	}
+	
+	public static function onEntityCollidedWithBlock(Level $level, $x, $y, $z, Entity $entity){
+		$entity->setInWeb();
+	}
 }

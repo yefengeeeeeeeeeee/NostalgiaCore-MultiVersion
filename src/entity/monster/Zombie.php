@@ -7,6 +7,11 @@ class Zombie extends Monster{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 12, "generic");
 		$this->setName("Zombie");
 		$this->setSpeed(0.23);
+		
+		$this->ai->addTask(new TaskRandomWalk(1.0));
+		$this->ai->addTask(new TaskLookAround());
+		$this->ai->addTask(new TaskSwimming());
+		$this->ai->addTask(new TaskAttackPlayer(1.0, 16)); //TODO fix range?
 	}
 	
 	public function getArmorValue(){
@@ -14,7 +19,7 @@ class Zombie extends Monster{
 	}
 	
 	public function updateBurning(){
-		if($this->fire > 0 or !$this->level->isDay()){
+		if($this->fire > 0 or !$this->level->isDay() || $this->inWater){ //TODO fix burning in water
 			return false;
 		}
 		
@@ -34,7 +39,7 @@ class Zombie extends Monster{
 	}
 	
 	public function getAttackDamage(){
-		return 4; //TODO vanillafy(zombies might be able to hold items)
+		return 4;
 	}
 	
 	public function update($now){

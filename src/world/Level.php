@@ -11,13 +11,21 @@ class Level{
 	 */
 	public $entityList;
 	
+	public $entityListPositioned = [];
 	public $entitiesInLove = [];
 	
-	public $tiles, $blockUpdates, $nextSave, $players = [], $level, $mobSpawner, $totalMobsAmount = 0;
+	/**
+	 * @var Player[]
+	 */
+	public $players = [];
+	
+	public $tiles, $blockUpdates, $nextSave, $level, $mobSpawner, $totalMobsAmount = 0;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
 	
 	public $randInt1, $randInt2;
 	public $queuedBlockUpdates = [];
+	
+	public $forceDisableBlockQueue = false;
 	
 	public static $randomUpdateBlocks = [
 		FIRE => true,
@@ -75,6 +83,67 @@ class Level{
 		return true;
 	}
 	
+	//TODO mayPlace
+	public function isLavaInBB($aabb){
+		$minX = floor($aabb->minX);
+		$maxX = floor($aabb->maxX + 1);
+		$minY = floor($aabb->minY);
+		$maxY = floor($aabb->maxY + 1);
+		$minZ = floor($aabb->minZ);
+		$maxZ = floor($aabb->maxZ + 1);
+		
+		for($x = $minX; $x < $maxX; ++$x){
+			for($y = $minY; $y < $maxY; ++$y){
+				for($z = $minZ; $z < $maxZ; ++$z){
+					$blockId = $this->level->getBlockID($x, $y, $z);
+					
+					if($blockId == LAVA || $blockId == STILL_LAVA) return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public function handleMaterialAcceleration(AxisAlignedBB $aabb, $materialType, Entity $entity){
+		$minX = floor($aabb->minX);
+		$maxX = ceil($aabb->maxX);
+		$minY = floor($aabb->minY);
+		$maxY = ceil($aabb->maxY);
+		$minZ = floor($aabb->minZ);
+		$maxZ = ceil($aabb->maxZ);
+		
+		//1.5.2 checks that all chunks exist, not needed here i think
+		
+		$appliedVelocity = false;
+		$velocityVec = new Vector3(0, 0, 0);
+		
+		for($x = $minX; $x < $maxX; ++$x){
+			for($y = $minY; $y < $maxY; ++$y){
+				for($z = $minZ; $z < $maxZ; ++$z){
+					[$block, $meta] = $this->level->getBlock($x, $y, $z);
+					if(($materialType == 0 && ($block == WATER || $block == STILL_WATER)) || ($materialType == 1 && ($block == LAVA || $block == STILL_LAVA))){ //TODO better material system
+						$v16 = ($y + 1) - LiquidBlock::getPercentAir($meta);
+						if($maxY >= $v16){
+							$appliedVelocity = true;
+							Block::$class[$block]::addVelocityToEntity($this, $x, $y, $z, $entity, $velocityVec);
+						}
+					}
+				}
+			}
+		}
+		
+		if($velocityVec->length() > 0){ //also checks is player flying
+			$velocityVec = $velocityVec->normalize(); //TODO do not use vec methods
+			$v18 = 0.014;
+			$entity->speedX += $velocityVec->x * $v18;
+			$entity->speedY += $velocityVec->y * $v18;
+			$entity->speedZ += $velocityVec->z * $v18;
+		}
+		
+		return $appliedVelocity;
+	}
+	
 	/**
 	 * @param Entity $e
 	 * @param AxisAlignedBB $aABB
@@ -83,21 +152,15 @@ class Level{
 	public function getCubes(Entity $e, AxisAlignedBB $aABB) {
 		$aABBs = [];
 		$x0 = floor($aABB->minX);
-		$x1 = ceil($aABB->maxX);
+		$x1 = floor($aABB->maxX + 1);
 		$y0 = floor($aABB->minY);
-		$y1 = ceil($aABB->maxY);
+		$y1 = floor($aABB->maxY + 1);
 		$z0 = floor($aABB->minZ);
-		$z1 = ceil($aABB->maxZ);
-		$x0 = $x0 < 0 ? 0 : $x0;
-		$y0 = $y0 < 0 ? 0 : $y0;
-		$z0 = $z0 < 0 ? 0 : $z0;
-		$x1 = $x1 > 256 ? 256 : $x1;
-		$y1 = $y1 > 128 ? 128 : $y1;
-		$z1 = $z1 > 256 ? 256 : $z1;
+		$z1 = floor($aABB->maxZ + 1);
 		
-		for($x = $x0; $x <= $x1; ++$x) {
-			for($y = $y0; $y <= $y1; ++$y) {
-				for($z = $z0; $z <= $z1; ++$z) {
+		for($x = $x0; $x < $x1; ++$x) {
+			for($z = $z0; $z < $z1; ++$z) {
+				for($y = $y0 - 1; $y < $y1; ++$y) {
 					$bid = $this->level->getBlockID($x, $y, $z);
 					if($bid > 0){
 						$blockBounds = Block::$class[$bid]::getCollisionBoundingBoxes($this, $x, $y, $z, $e); //StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
@@ -291,9 +354,6 @@ class Level{
 				}
 				$block->position($pos);
 				$i = ($pos->x >> 4) . ":" . ($pos->y >> 4) . ":" . ($pos->z >> 4);
-				if(ADVANCED_CACHE == true){
-					Cache::remove("world:{$this->name}:" . ($pos->x >> 4) . ":" . ($pos->z >> 4));
-				}
 				if(!isset($this->changedBlocks[$i])){
 					$this->changedBlocks[$i] = [];
 					$this->changedCount[$i] = 0;
@@ -321,7 +381,6 @@ class Level{
 	}
 	
 	public function onTick(PocketMinecraftServer $server, $currentTime){
-		//$ents = $server->api->entity->getAll($this);
 		if(!$this->stopTime) ++$this->time;
 		for($cX = 0; $cX < 16; ++$cX){
 			for($cZ = 0; $cZ < 16; ++$cZ){
@@ -343,17 +402,47 @@ class Level{
 		$this->totalMobsAmount = 0;
 		$post = [];
 		foreach($this->entityList as $k => $e){
+			
 			if(!($e instanceof Entity)){
 				unset($this->entityList[$k]);
 				unset($this->server->entities[$k]);
+				//TODO try to remove from $entityListPositioned?
 				continue;
 			}
+			$curChunkX = (int)$e->x >> 4;
+			$curChunkZ = (int)$e->z >> 4;
 			if($e->class === ENTITY_MOB && !$e->isPlayer()){
 				++$this->totalMobsAmount;
 			}
 			if($e->isPlayer() || $e->needsUpdate){
 				$e->update($currentTime);
 				if(!$e->isPlayer()) $post[] = $k;
+			}
+			
+			if($e instanceof Entity){
+				$newChunkX = (int)$e->x >> 4;
+				$newChunkZ = (int)$e->z >> 4;
+				if($e->chunkX != $newChunkX || $e->chunkZ != $newChunkZ){
+					$oldIndex = "{$e->chunkX} {$e->chunkZ}";
+					unset($this->entityListPositioned[$oldIndex][$e->eid]);
+					
+					if($e->level == $this){
+						$e->chunkX = $newChunkX;
+						$e->chunkZ = $newChunkZ;
+						$newIndex = "$newChunkX $newChunkZ";
+						$this->entityListPositioned[$newIndex][$e->eid] = $e->eid;
+					}
+				}
+				if($e->level != $this && isset($this->entityListPositioned["$curChunkX $curChunkZ"])){
+					unset($this->entityListPositioned["$curChunkX $curChunkZ"][$e->eid]);
+				}else if($curChunkX != $newChunkX || $curChunkZ != $newChunkZ){
+					$index = "$curChunkX $curChunkZ"; //while creating index like $curChunkX << 32 | $curChunkZ is faster, placing it inside list is slow
+					$newIndex = "$newChunkX $newChunkZ";
+					unset($this->entityListPositioned[$index][$e->eid]);
+					$this->entityListPositioned[$newIndex][$e->eid] = $e->eid; //set to e->eid to avoid possible memory leaks
+				}
+			}else if(isset($this->entityListPositioned["$curChunkX $curChunkZ"])){
+				unset($this->entityListPositioned["$curChunkX $curChunkZ"][$k]);
 			}
 		}
 		
@@ -374,7 +463,7 @@ class Level{
 			}
 			$player->sendEntityMovementUpdateQueue();
 			
-			foreach($this->queuedBlockUpdates as $update){
+			foreach($this->queuedBlockUpdates as $ind => $update){
 				$x = $update[0];
 				$y = $update[1];
 				$z = $update[2];
@@ -389,8 +478,73 @@ class Level{
 		$this->queuedBlockUpdates = [];
 	}
 	
+	public function isBoundingBoxOnFire(AxisAlignedBB $bb){
+		$minX = floor($bb->minX);
+		$maxX = floor($bb->maxX + 1);
+		$minY = floor($bb->minY);
+		$maxY = floor($bb->maxY + 1);
+		$minZ = floor($bb->minZ);
+		$maxZ = floor($bb->maxZ + 1);
+		
+		for($x = $minX; $x < $maxX; ++$x){
+			for($y = $minY; $y < $maxY; ++$y){
+				for($z = $minZ; $z < $maxZ; ++$z){
+					$blockAt = $this->level->getBlockID($x, $y, $z);
+					if($blockAt == FIRE || $blockAt == STILL_LAVA || $blockAt == LAVA) return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	public function getEntitiesInAABBOfType(AxisAlignedBB $bb, $class){
+		$minChunkX = ((int)($bb->minX)) >> 4;
+		$minChunkZ = ((int)($bb->minZ)) >> 4;
+		$maxChunkX = ((int)($bb->maxX)) >> 4;
+		$maxChunkZ = ((int)($bb->maxZ)) >> 4;
+		$ents = [];
+		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
+			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
+				$ind = "$chunkX $chunkZ";
+				foreach($this->entityListPositioned[$ind] ?? [] as $ind2 => $entid){
+					if(isset($this->entityList[$entid]) && $this->entityList[$entid] instanceof Entity && $this->entityList[$entid]->class === $class && $this->entityList[$entid]->boundingBox->intersectsWith($bb)){
+						$ents[$entid] = $this->entityList[$entid];
+					}else if(!isset($this->entityList[$entid])){
+						ConsoleAPI::debug("Removing entity from level array at index $ind/$ind2: $entid");
+						unset($this->entityListPositioned[$ind][$ind2]);
+					}
+				}
+			}
+		}
+		return $ents;
+	}
+	
+	public function getEntitiesInAABB(AxisAlignedBB $bb){
+		$minChunkX = ((int)($bb->minX)) >> 4;
+		$minChunkZ = ((int)($bb->minZ)) >> 4;
+		$maxChunkX = ((int)($bb->maxX)) >> 4;
+		$maxChunkZ = ((int)($bb->maxZ)) >> 4;
+		$ents = [];
+		//TODO also index by chunkY?
+		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
+			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
+				$ind = "$chunkX $chunkZ";
+				foreach($this->entityListPositioned[$ind] ?? [] as $ind2 => $entid){
+					if(isset($this->entityList[$entid]) && $this->entityList[$entid] instanceof Entity && $this->entityList[$entid]->boundingBox->intersectsWith($bb)){
+						$ents[$entid] = $this->entityList[$entid];
+					}else if(!isset($this->entityList[$entid])){
+						ConsoleAPI::debug("Removing entity from level array at index $ind/$ind2: $entid");
+						unset($this->entityListPositioned[$ind][$ind2]);
+					}
+				}
+			}
+		}
+		return $ents;
+	}
+	
 	public function addBlockToSendQueue($x, $y, $z, $id, $meta){
-		$this->queuedBlockUpdates["$x $y $z"] = [$x, $y, $z, $id, $meta];
+		if(!$this->forceDisableBlockQueue)
+			$this->queuedBlockUpdates["$x $y $z"] = [$x, $y, $z, $id, $meta];
 	}
 	
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){
@@ -410,9 +564,6 @@ class Level{
 				if(!isset($this->changedBlocks[$i])){
 					$this->changedBlocks[$i] = [];
 					$this->changedCount[$i] = 0;
-				}
-				if(ADVANCED_CACHE == true){
-					Cache::remove("world:{$this->name}:" . ($pos->x >> 4) . ":" . ($pos->z >> 4));
 				}
 				$this->changedBlocks[$i][] = [$block->x, $block->y, $block->z, $block->id, $block->getMetadata()];
 				++$this->changedCount[$i];
@@ -442,9 +593,6 @@ class Level{
 			return false;
 		}
 		$this->changedCount[$X . ":" . $Y . ":" . $Z] = 4096;
-		if(ADVANCED_CACHE == true){
-			Cache::remove("world:{$this->name}:$X:$Z");
-		}
 		return $this->level->setMiniChunk($X, $Z, $Y, $data);
 	}
 
@@ -463,7 +611,6 @@ class Level{
 		if($force !== true and $this->isSpawnChunk($X, $Z)){
 			return false;
 		}
-		Cache::remove("world:{$this->name}:$X:$Z");
 		return $this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
 	}
 
@@ -471,13 +618,6 @@ class Level{
 		if(!isset($this->level)){
 			return false;
 		}
-		if(ADVANCED_CACHE == true and $Yndex == 0xff){
-			$identifier = "world:{$this->name}:$X:$Z";
-			if(($cache = Cache::get($identifier)) !== false){
-				return $cache;
-			}
-		}
-
 
 		$raw = [];
 		for($Y = 0; $Y < 8; ++$Y){
@@ -493,9 +633,6 @@ class Level{
 			foreach($raw as $mini){
 				$ordered .= substr($mini, $j << 5, 24); //16 + 8
 			}
-		}
-		if(ADVANCED_CACHE == true and $Yndex == 0xff){
-			Cache::add($identifier, $ordered, 60);
 		}
 		return $ordered;
 	}

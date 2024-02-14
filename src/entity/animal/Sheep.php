@@ -12,7 +12,13 @@ class Sheep extends Animal{
 		$this->data["Sheared"] = isset($this->data["Sheared"]) ? $this->data["Sheared"] : 0;
 		$this->data["Color"] = isset($this->data["Color"]) ? $this->data["Color"] : $this->sheepColor();
 		$this->setSpeed(0.25);
+		
+		$this->ai->addTask(new TaskRandomWalk(1.0));
+		$this->ai->addTask(new TaskLookAtPlayer(6));
+		$this->ai->addTask(new TaskPanic(1.5));
 		$this->ai->addTask(new TaskEatTileGoal());
+		$this->ai->addTask(new TaskLookAround());
+		$this->ai->addTask(new TaskSwimming());
 	}
 	
 	public function createSaveData(){

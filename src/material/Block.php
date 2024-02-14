@@ -155,11 +155,29 @@ abstract class Block extends Position{
 	public $z = 0;
 	public $slipperiness;
 	
+	public static $minX = 0, $minY = 0, $minZ = 0, $maxX = 1, $maxY = 1, $maxZ = 1;
+	public static function setBlockBounds($minX, $minY, $minZ, $maxX, $maxY, $maxZ){ //TODO call for some specific blocks
+		static::$minX = $minX;
+		static::$minY = $minY;
+		static::$minZ = $minZ;
+		static::$maxX = $maxX;
+		static::$maxY = $maxY;
+		static::$maxZ = $maxZ;
+	}
+	public static function getAABB(Level $level, $x, $y, $z){
+		return new AxisAlignedBB(static::$minX + $x, static::$minY + $y, static::$minZ + $z, static::$maxX + $x, static::$maxY + $y, static::$maxZ + $z);
+	}
+	
+	
+	public static function addVelocityToEntity(Level $level, $x, $y, $z, Entity $entity, Vector3 $velocityVector){}
 	public static function onRandomTick(Level $level, $x, $y, $z){}
 	public static function fallOn(Level $level, $x, $y, $z, Entity $entity, $fallDistance){}
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		return [new AxisAlignedBB($x, $y, $z, $x, $y, $z)];
 	}
+	public static function onEntityCollidedWithBlock(Level $level, $x, $y, $z, Entity $entity){}
+	
+	
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;

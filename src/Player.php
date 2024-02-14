@@ -110,8 +110,9 @@ class Player{
 		$this->blockUpdateQueue = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$this->blockUpdateQueue->data = [];
 		
+		//$this->server->schedule(20 * 60, [$this, "clearQueue"], [], true);
 		$this->server->schedule(1, [$this, "handlePacketQueues"], [], true);
-		$this->server->schedule(20 * 60, [$this, "clearQueue"], [], true);
+		
 		$this->evid[] = $this->server->event("server.close", [$this, "close"]);
 		console("[DEBUG] New Session started with " . $ip . ":" . $port . ". MTU " . $this->MTU . ", Client ID " . $this->clientID, true, true, 2);
 	}
@@ -203,7 +204,13 @@ class Player{
 				}
 
 				$this->level->freeAllChunks($this);
+				unset($this->level->players[$this->CID]);
+				unset($this->level->entityListPositioned["{$this->entity->chunkX} {$this->entity->chunkZ}"][$this->eid]);
+				unset($this->level->entityList[$this->eid]);
 				$this->level = $pos->level;
+				$this->entity->level = $this->level;
+				$this->level->entityList[$this->entity->eid] = $this->entity;
+				$this->level->players[$this->CID] = $this;
 				$this->chunksLoaded = [];
 				$this->server->api->entity->spawnToAll($this->entity);
 				$this->server->api->entity->spawnAll($this);
@@ -587,8 +594,6 @@ class Player{
 	}
 
 	public function sendInventorySlot($s){
-		$this->sendInventory();
-		return;
 		$s = (int) $s;
 		if(!isset($this->inventory[$s])){
 			$pk = new ContainerSetSlotPacket;
@@ -747,7 +752,7 @@ class Player{
 					$pk->target = $data["entity"]->eid;
 					$this->dataPacket($pk);
 					if(($this->gamemode & 0x01) === 0x00){
-						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack, false);
+						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack, true);
 					}
 					switch($data["entity"]->type){
 						case WOOD:
@@ -909,6 +914,15 @@ class Player{
 			}
 
 			if($m !== ""){
+				
+				/*$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_OPEN_DOOR_SOUND;
+				$pk->x = $this->entity->x;
+				$pk->y = $this->entity->y;
+				$pk->z = $this->entity->z;
+				$pk->data = 0;
+				$this->dataPacket($pk);*/
+				
 				$pk = new MessagePacket;
 				$pk->source = ($author instanceof Player) ? $author->username : $author;
 				$pk->message = TextFormat::clean($m); //Colors not implemented :(
@@ -1200,21 +1214,23 @@ class Player{
 		$moveSent = false;
 		$headSent = false;
 		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
-			$motion = new SetEntityMotionPacket();
-			$motion->eid = $e->eid;
-			$motion->speedX = $e->speedX;
-			$motion->speedY = $e->speedY;
-			$motion->speedZ = $e->speedZ;
-			$motion->encode();
-			$len += 1 + strlen($motion->buffer);
-			++$packets;
-			$motionSent = true;
+			if(!($e->speedY < 0 && $e->onGround)){
+				$motion = new SetEntityMotionPacket();
+				$motion->eid = $e->eid;
+				$motion->speedX = $e->speedX;
+				$motion->speedY = $e->speedY;
+				$motion->speedZ = $e->speedZ;
+				$motion->encode();
+				$len += 1 + strlen($motion->buffer);
+				++$packets;
+				$motionSent = true;
+			}
 		}
 		if($e->x != $e->lastX || $e->y != $e->lastY || $e->z != $e->lastZ || $e->yaw != $e->lastYaw || $e->pitch != $e->lastPitch){
 			$move = new MoveEntityPacket_PosRot();
 			$move->eid = $e->eid;
 			$move->x = $e->x;
-			$move->y = $e instanceof ItemEntity ? $e->boundingBox->maxY : $e->y; //TODO fix items getting into farmland in client side somehow else
+			$move->y = $e->y;
 			$move->z = $e->z;
 			$move->yaw = $e->yaw;
 			$move->pitch = $e->pitch;
@@ -2325,6 +2341,7 @@ class Player{
 					
 					$this->entity->linkedEntity->setPosition($this->entity);
 					$this->entity->linkedEntity->sendMoveUpdate();
+					//$this->entity->linkedEntity->moveFlying($packet->moveStrafe, $packet->moveForward, 1);
 				}
 				
 				break;

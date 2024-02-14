@@ -15,7 +15,7 @@ class MinecartItem extends Item{
 			"x" => $target->getX() + 0.5, 
 			"y" => $target->getY() + 0.8, 
 			"z" => $target->getZ() + 0.5,
-			];
+		];
 		$e = $server->api->entity->add($level, ENTITY_OBJECT, OBJECT_MINECART, $data);
 		$server->api->entity->spawnToAll($e);
 		if(($player->gamemode & 0x01) === 0x00){

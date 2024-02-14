@@ -3,15 +3,20 @@
 class TaskRandomWalk extends TaskBase
 {
 	private $x, $z;
+	public $speedMultiplier;
+	public function __construct($speedMultiplier){
+		$this->speedMultiplier = $speedMultiplier;
+	}
+	
 	public function onStart(EntityAI $ai)
 	{
-		$this->x = mt_rand(-16, 16);
-		$this->z = mt_rand(-16, 16);
+		$this->x = mt_rand(-1, 1);
+		$this->z = mt_rand(-1, 1);
 		if($this->x === 0 && $this->z === 0){
 			$this->reset();
 			return false;
 		}
-		$this->selfCounter = floor(5 * Utils::distance($ai->entity, $ai->entity->add($this->x, 0, $this->z)));
+		$this->selfCounter = mt_rand(80, 100);
 	}
 
 	public function onEnd(EntityAI $ai)
@@ -26,7 +31,8 @@ class TaskRandomWalk extends TaskBase
 			return false; //TODO Better way: block movement
 		}
 		--$this->selfCounter;
-		$ai->mobController->moveNonInstant($this->x, 0, $this->z);
+		$ai->mobController->setMovingOffset($this->x, 0, $this->z, $this->speedMultiplier);
+		//TODO fix $ai->mobController->moveNonInstant($this->x, 0, $this->z);
 	}
 
 	public function canBeExecuted(EntityAI $ai)

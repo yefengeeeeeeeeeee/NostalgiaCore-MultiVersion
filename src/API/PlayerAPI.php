@@ -32,7 +32,7 @@ class PlayerAPI{
 		$this->server->api->console->cmdWhitelist("ping");
 		$this->server->api->console->cmdWhitelist("spawn");
 		$this->server->api->console->cmdWhitelist("loc");
-		$this->server->preparedSQL->selectPlayersToHeal = $this->server->database->prepare("SELECT EID FROM entities WHERE class = " . ENTITY_PLAYER . " AND health < 20;");
+		//$this->server->preparedSQL->selectPlayersToHeal = $this->server->database->prepare("SELECT EID FROM entities WHERE class = " . ENTITY_PLAYER . " AND health < 20;");
 	}
 
 	public function registerCmd($cmd, $help = ""){
@@ -43,7 +43,7 @@ class PlayerAPI{
 		switch($event){
 			case "server.regeneration":
 				if($this->server->difficulty === 0){
-					$result = $this->server->preparedSQL->selectPlayersToHeal->execute();
+					//$result = $this->server->preparedSQL->selectPlayersToHeal->execute();
 					if($result !== false){
 						while(($player = $result->fetchArray()) !== false){
 							if(($player = $this->server->api->entity->get($player["EID"])) !== false){
@@ -365,6 +365,7 @@ class PlayerAPI{
 					"z" => $player->level->getSpawn()->z,
 				]);
 			}
+			$player->level->players[$CID] = $player;
 			$this->server->query("INSERT OR REPLACE INTO players (CID, ip, port, name) VALUES (" . $player->CID . ", '" . $player->ip . "', " . $player->port . ", '" . strtolower($player->username) . "');");
 		}
 	}
@@ -434,16 +435,8 @@ class PlayerAPI{
 
 	public function getAll($level = null){
 		if($level instanceof Level){
-			$clients = [];
-			$l = $this->server->query("SELECT EID FROM entities WHERE level = '" . $level->getName() . "' AND class = '" . ENTITY_PLAYER . "';");
-			if($l !== false and $l !== true){
-				while(($e = $l->fetchArray(SQLITE3_ASSOC)) !== false){
-					$e = $this->getByEID($e["EID"]);
-					if($e instanceof Player){
-						$clients[$e->CID] = $e;
-					}
-				}
-			}			return $clients;
+			//safe_var_dump($level->players);
+			return $level->players;
 
 		}
 		return $this->server->clients;
@@ -487,6 +480,7 @@ class PlayerAPI{
 			}
 			$this->server->query("DELETE FROM players WHERE name = '" . $player->username . "';");
 			$this->server->api->entity->remove($player->eid);
+			unset($player->level->players[$player->CID]);
 			if($player->entity instanceof Entity){
 				unset($player->entity->player);
 				//unset($player->entity);

@@ -89,10 +89,12 @@ class PocketMinecraftServer{
 			"16x16x16_chunk_sending" => false,
 			"experimental-mob-ai" => false,	
 			"force-20-tps" => false,
+			"enable-mob-pushing" => Living::$entityPushing
 		]);
 		Player::$smallChunks = $this->extraprops->get("16x16x16_chunk_sending");
 		Living::$despawnMobs = $this->extraprops->get("despawn-mobs");
 		Living::$despawnTimer = $this->extraprops->get("mob-despawn-ticks");
+		Living::$entityPushing = $this->extraprops->get("enable-mob-pushing");
 		self::$FORCE_20_TPS = $this->extraprops->get("force-20-tps");
 		PocketMinecraftServer::$SAVE_PLAYER_DATA = $this->extraprops->get("save-player-data");
 		MobController::$ADVANCED = $this->extraprops->get("experimental-mob-ai");
@@ -437,7 +439,6 @@ class PocketMinecraftServer{
 		}
 		$this->schedule(20 * 15, [$this, "checkTicks"], [], true);
 		$this->schedule(20 * 60, [$this, "checkMemory"], [], true);
-		$this->schedule(20 * 45, "Cache::cleanup", [], true);
 		$this->schedule(20, [$this, "asyncOperationChecker"], [], true);
 	}
 
@@ -486,7 +487,7 @@ class PocketMinecraftServer{
 				} elseif($this->tick() > 0){
 					$lastLoop = 0;
 				} else{
-					++ $lastLoop;
+					++$lastLoop;
 					if($lastLoop < 16){
 						usleep(1);
 					} elseif($lastLoop < 128){
@@ -620,7 +621,7 @@ class PocketMinecraftServer{
 					++$actionCount;
 					try{
 						$return = @call_user_func($this->schedule[$cid][0] ?? function(){}, $this->schedule[$cid][1], $this->schedule[$cid][2]); //somehow args can be null
-					}catch(Throwable $e){
+					}catch(TypeError $e){
 						$return = false;
 					}
 				}else{
@@ -727,10 +728,8 @@ class PocketMinecraftServer{
 		$info["tps"] = $this->getTPS();
 		$info["memory_usage"] = round((memory_get_usage() / 1024) / 1024, 2) . "MB";
 		$info["memory_peak_usage"] = round((memory_get_peak_usage() / 1024) / 1024, 2) . "MB";
-		$info["entities"] = $this->query("SELECT count(EID) as count FROM entities;", true);
-		$info["entities"] = $info["entities"]["count"];
-		$info["players"] = $this->query("SELECT count(CID) as count FROM players;", true);
-		$info["players"] = $info["players"]["count"];
+		$info["entities"] = count($this->api->entity->entities);
+		$info["players"] = count($this->clients);
 		$info["events"] = count($this->eventsID);
 		$info["handlers"] = $this->query("SELECT count(ID) as count FROM handlers;", true);
 		$info["handlers"] = $info["handlers"]["count"];

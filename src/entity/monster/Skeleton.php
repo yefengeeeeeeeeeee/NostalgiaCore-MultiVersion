@@ -7,8 +7,12 @@ class Skeleton extends Monster{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 10, "generic");
 		$this->setName("Skeleton");
 		$this->ai->removeTask("TaskAttackPlayer");
-		//$this->ai->addTask(new TaskDestroyServerPerformance());
 		$this->setSpeed(0.25);
+		//$this->ai->addTask(new TaskDestroyServerPerformance());
+		
+		$this->ai->addTask(new TaskRandomWalk(1.0));
+		$this->ai->addTask(new TaskLookAround());
+		$this->ai->addTask(new TaskSwimming());
 	}
 	
 	public function getAttackDamage(){
@@ -16,7 +20,7 @@ class Skeleton extends Monster{
 	}
 	
 	public function updateBurning(){
-		if($this->fire > 0 or !$this->level->isDay()){
+		if($this->fire > 0 or !$this->level->isDay() || $this->inWater){ //TODO fix burning in water
 			return false;
 		}
 		

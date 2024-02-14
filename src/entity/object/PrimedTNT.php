@@ -10,13 +10,15 @@ class PrimedTNT extends Entity{
 		}
 		$this->hasGravity = true;
 		$this->gravity = 0.04;
+		$this->setSize(0.98, 0.98);
+		$this->yOffset = $this->height / 2;
 		$this->setHealth(10000000, "generic");
-		$this->server->schedule(5, [$this, "updateFuse"], [], true);
+		//$this->server->schedule(5, [$this, "updateFuse"], [], true);
 	}
 	
 	public function getMetadata(){
 		$d = parent::getMetadata();
-		$d[16]["value"] = (int) max(0, $this->data["fuse"] - (microtime(true) - $this->spawntime) * 20);
+		$d[16]["value"] = (int) $this->data["fuse"];
 		return $d;
 	}
 	public function createSaveData(){
@@ -27,7 +29,40 @@ class PrimedTNT extends Entity{
 		
 		return $data;
 	}
-	public function updateFuse(){
+	
+	public function update($now){
+		if($this->closed) return;
+		$this->lastX = $this->x;
+		$this->lastY = $this->y;
+		$this->lastZ = $this->z;
+		
+		$this->speedY -= 0.04;
+		$this->move($this->speedX, $this->speedY, $this->speedZ);
+		$this->speedX *- 0.98;
+		$this->speedY *= 0.98;
+		$this->speedZ *= 0.98;
+		
+		if($this->onGround){
+			$this->speedX *= 0.6;
+			$this->speedZ *= 0.6;
+			
+			$this->speedY *= -0.5;
+		}
+		
+		$tickDiff = ($now - $this->lastUpdate) / 0.05;
+		
+		$this->data["fuse"] -= $tickDiff;
+		$this->updateMetadata();
+		if($this->data["fuse"] <= 0){
+			$this->close();
+			$explosion = new Explosion($this, $this->data["power"]);
+			$explosion->explode();
+		}
+		
+		$this->lastUpdate = $now;
+	}
+	
+	/*public function updateFuse(){
 		if($this->closed === true){
 			return false;
 		}
@@ -39,7 +74,7 @@ class PrimedTNT extends Entity{
 				$explosion->explode();
 			}
 		}
-	}
+	}*/
 	
 	public function spawn($player){
 		$pk = new AddEntityPacket;
