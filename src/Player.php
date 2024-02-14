@@ -594,6 +594,8 @@ class Player{
 	}
 
 	public function sendInventorySlot($s){
+		$this->sendInventory();
+		return;
 		$s = (int) $s;
 		if(!isset($this->inventory[$s])){
 			$pk = new ContainerSetSlotPacket;
@@ -1313,7 +1315,7 @@ class Player{
 			$this->chunkCount = [];
 			$this->cratingItems = [];
 			$this->received = [];
-			$this->entity->close();
+			//$this->entity->close();
 		}
 	}
 
