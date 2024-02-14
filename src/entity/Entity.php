@@ -1272,6 +1272,8 @@ class Entity extends Position
 				"Damage" => $this->meta,
 				"Count" => $this->stack,
 			];
+			
+			$data["id"] = 64; //ty shoghicp
 		}
 		return $data;
 	}
