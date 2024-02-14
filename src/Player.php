@@ -1313,6 +1313,7 @@ class Player{
 			$this->chunkCount = [];
 			$this->cratingItems = [];
 			$this->received = [];
+			$this->entity->close();
 		}
 	}
 

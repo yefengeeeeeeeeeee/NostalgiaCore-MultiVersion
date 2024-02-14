@@ -1399,7 +1399,7 @@ class Entity extends Position
 		if($health < $this->health){
 			$harm = true;
 			$dmg = $this->health - $health;
-			if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and (($this->player->gamemode & 0x01) === 0x00 or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and ! $this->dead){
+			if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and (($this->player->gamemode & 0x01) === 0x00 or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
 				$this->dmgcounter[0] = microtime(true) + 0.5;
 				$this->dmgcounter[1] = $dmg;
 			} else{

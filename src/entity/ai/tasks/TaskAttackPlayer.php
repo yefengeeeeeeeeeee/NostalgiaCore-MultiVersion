@@ -50,8 +50,8 @@ class TaskAttackPlayer extends TaskBase
 	
 	
 	public function isTargetValid(EntityAI $ai){
-		$e = $ai->entity; //TODO sometimes it keeps being valid even after getting invalid (/gm 1 -> /gm 0 switch)
-		if($e->target instanceof Entity){
+		$e = $ai->entity;
+		if($e->target instanceof Entity && !$e->target->closed){
 			$t = $e->target;
 			$xDiff = ($t->x - $e->x);
 			$yDiff = ($t->y - $e->y);
