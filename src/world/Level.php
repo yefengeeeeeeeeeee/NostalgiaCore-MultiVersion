@@ -401,7 +401,46 @@ class Level{
 		}
 		$this->totalMobsAmount = 0;
 		$post = [];
+		//console("ELP {$this->getName()}");
+		//var_dump($this->entityListPositioned);
 		foreach($this->entityList as $k => $e){
+			
+			if(!isset(CORRECT_ENTITY_CLASSES[$e->class])){
+				ConsoleAPI::warn("Entity $k has invalid class type! {$e->class}");
+				$e->close();
+				unset($this->entityList[$k]);
+				unset($this->server->entities[$k]);
+				
+				$curChunkX = (int)$e->x >> 4;
+				$curChunkZ = (int)$e->z >> 4;
+				$index = "$curChunkX $curChunkZ";
+				
+				if(isset($this->entityListPositioned[$index]) && isset($this->entityListPositioned[$index][$k])){
+					unset($this->entityListPositioned[$index][$k]);
+				}
+				
+				continue;
+			}
+			$dd = CORRECT_ENTITY_CLASSES[$e->class];
+			if($dd !== true && !isset($dd[$e->type])){
+				ConsoleAPI::warn("Entity $k has invalid entity type! {$e->class} {$e->type}");
+				$e->close();
+				
+				unset($this->entityList[$k]);
+				unset($this->server->entities[$k]);
+				
+				$curChunkX = (int)$e->x >> 4;
+				$curChunkZ = (int)$e->z >> 4;
+				$index = "$curChunkX $curChunkZ";
+				
+				if(isset($this->entityListPositioned[$index]) && isset($this->entityListPositioned[$index][$k])){
+					unset($this->entityListPositioned[$index][$k]);
+				}
+				
+				continue;
+			}
+			
+			
 			
 			if(!($e instanceof Entity)){
 				unset($this->entityList[$k]);

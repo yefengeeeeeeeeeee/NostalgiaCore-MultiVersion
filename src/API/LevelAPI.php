@@ -40,6 +40,12 @@ class LevelAPI{
 			console("[ERROR] Could not load level \"" . $name . "\"");
 			return false;
 		}
+		for($X = 0; $X < 16; ++$X){
+			for($Z = 0; $Z < 16; ++$Z){
+				$level->loadChunk($X, $Z);
+			}
+		}
+		
 		$entities = new Config($path . "entities.yml", CONFIG_YAML);
 		if(file_exists($path . "tileEntities.yml")){
 			@rename($path . "tileEntities.yml", $path . "tiles.yml");
@@ -94,6 +100,7 @@ class LevelAPI{
 		foreach($blockUpdates->getAll() as $bupdate){
 			if($bupdate["type"] !== BLOCK_UPDATE_RANDOM) $this->server->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"], (int) $bupdate["y"], (int) $bupdate["z"], $this->levels[$name]), (float) $bupdate["delay"], (int) $bupdate["type"]);
 		}
+		
 		return true;
 	}
 	/**
