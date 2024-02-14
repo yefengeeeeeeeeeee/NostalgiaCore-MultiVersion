@@ -15,7 +15,6 @@ class TaskAttackPlayer extends TaskBase
 	public function onStart(EntityAI $ai)
 	{
 		$this->selfCounter = 1;
-		console("found!");
 	}
 	
 	
