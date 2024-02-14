@@ -10,6 +10,7 @@ class Spider extends Monster{
 		$this->ai->addTask(new TaskRandomWalk(1.0)); //TODO this mob doesnt use newAI -> speed is not correct
 		$this->ai->addTask(new TaskLookAround()); //TODO this mob doesnt use newAI
 		$this->ai->addTask(new TaskSwimming());
+		$this->ai->addTask(new TaskAttackPlayer(1.0, 16)); //TODO fix range?
 	}
 	
 	public function getDrops(){

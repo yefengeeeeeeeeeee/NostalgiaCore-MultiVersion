@@ -1,5 +1,5 @@
 <?php
-class PigZombie extends Monster{
+class PigZombie extends Monster{ //TODO extends zombie
 	const TYPE = MOB_PIGMAN;
 	function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		$this->setSize(0.3, 1.95);
@@ -11,6 +11,7 @@ class PigZombie extends Monster{
 		$this->ai->addTask(new TaskLookAround());
 		$this->ai->addTask(new TaskRandomWalk(1.0));
 		$this->ai->addTask(new TaskSwimming());
+		$this->ai->addTask(new TaskAttackPlayer(1.0, 16)); //TODO fix range?
 	}
 	public function getAttackDamage(){
 		return 5;

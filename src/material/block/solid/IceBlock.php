@@ -17,10 +17,6 @@ class IceBlock extends TransparentBlock{
 		return $ret;
 	}
 	
-	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
-		return [new AxisAlignedBB($x, $y, $z, $x+1, $y+1, $z+1)];
-	}
-	
 	public function onBreak(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0){
 			$this->level->setBlock($this, new WaterBlock(), true, false, true);

@@ -29,7 +29,8 @@ class TaskAttackPlayer extends TaskBase
 		$ai->mobController->setLookPosition($ai->entity->target->x, $ai->entity->target->y + 0.12, $ai->entity->target->z, 10, $ai->entity->getVerticalFaceSpeed());
 		
 		--$this->attackCounter;
-		$v1 = $ai->entity->width * $ai->entity->width * 4;
+		$mult = $ai->entity instanceof Spider ? 1 : 2;
+		$v1 = $ai->entity->width * $ai->entity->width * $mult*$mult;
 		
 		$e = $ai->entity;
 		$t = $e->target;
