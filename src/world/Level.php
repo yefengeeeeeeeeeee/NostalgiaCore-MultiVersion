@@ -25,6 +25,8 @@ class Level{
 	public $randInt1, $randInt2;
 	public $queuedBlockUpdates = [];
 	
+	public $forceDisableBlockQueue = false;
+	
 	public static $randomUpdateBlocks = [
 		FIRE => true,
 		FARMLAND => true,
@@ -150,15 +152,15 @@ class Level{
 	public function getCubes(Entity $e, AxisAlignedBB $aABB) {
 		$aABBs = [];
 		$x0 = floor($aABB->minX);
-		$x1 = ceil($aABB->maxX);
+		$x1 = floor($aABB->maxX + 1);
 		$y0 = floor($aABB->minY);
-		$y1 = ceil($aABB->maxY);
+		$y1 = floor($aABB->maxY + 1);
 		$z0 = floor($aABB->minZ);
-		$z1 = ceil($aABB->maxZ);
+		$z1 = floor($aABB->maxZ + 1);
 		
-		for($x = $x0; $x <= $x1; ++$x) {
-			for($y = $y0; $y <= $y1; ++$y) {
-				for($z = $z0; $z <= $z1; ++$z) {
+		for($x = $x0; $x < $x1; ++$x) {
+			for($z = $z0; $z < $z1; ++$z) {
+				for($y = $y0 - 1; $y < $y1; ++$y) {
 					$bid = $this->level->getBlockID($x, $y, $z);
 					if($bid > 0){
 						$blockBounds = Block::$class[$bid]::getCollisionBoundingBoxes($this, $x, $y, $z, $e); //StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
@@ -541,7 +543,8 @@ class Level{
 	}
 	
 	public function addBlockToSendQueue($x, $y, $z, $id, $meta){
-		$this->queuedBlockUpdates["$x $y $z"] = [$x, $y, $z, $id, $meta];
+		if(!$this->forceDisableBlockQueue)
+			$this->queuedBlockUpdates["$x $y $z"] = [$x, $y, $z, $id, $meta];
 	}
 	
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){

@@ -94,7 +94,7 @@ class ItemEntity extends Entity{
 				$this->speedZ = (lcg_value() - lcg_value()) * 0.2;
 			}
 			
-			$this->searchForOtherItemsNearby(); //not in vanilla 0.8.1
+			//$this->searchForOtherItemsNearby(); //not in vanilla 0.8.1, TODO reenable after fixing not correct count in inv
 		}
 		
 		if($this->closed) return;
@@ -111,6 +111,10 @@ class ItemEntity extends Entity{
 		$this->speedZ *= $friction;
 		
 		if($this->onGround) $this->speedY *= -0.5;
+		
+		if(abs($this->speedX) < self::MIN_POSSIBLE_SPEED) $this->speedX = 0;
+		if(abs($this->speedZ) < self::MIN_POSSIBLE_SPEED) $this->speedZ = 0;
+		if(abs($this->speedY) < self::MIN_POSSIBLE_SPEED) $this->speedY = 0;
 		
 		++$this->age;
 		//TODO despawn after age >= 6000 ?; 

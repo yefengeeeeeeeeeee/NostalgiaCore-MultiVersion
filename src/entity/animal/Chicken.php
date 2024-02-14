@@ -24,7 +24,7 @@ class Chicken extends Animal{
 	public function updateEntityMovement(){
 		parent::updateEntityMovement();
 		
-		if($this->onGround && $this->speedY < 0) $this->speedY *= 0.6;
+		if(!$this->onGround && $this->speedY < 0) $this->speedY *= 0.6;
 	
 		if($this->timeUntilEgg-- <= 0 && !$this->isBaby()){
 			$this->dropAnEgg();

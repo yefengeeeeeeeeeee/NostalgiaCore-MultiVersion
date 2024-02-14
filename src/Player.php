@@ -594,8 +594,6 @@ class Player{
 	}
 
 	public function sendInventorySlot($s){
-		$this->sendInventory();
-		return;
 		$s = (int) $s;
 		if(!isset($this->inventory[$s])){
 			$pk = new ContainerSetSlotPacket;
@@ -754,7 +752,7 @@ class Player{
 					$pk->target = $data["entity"]->eid;
 					$this->dataPacket($pk);
 					if(($this->gamemode & 0x01) === 0x00){
-						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack, false);
+						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack, true);
 					}
 					switch($data["entity"]->type){
 						case WOOD:
@@ -916,6 +914,15 @@ class Player{
 			}
 
 			if($m !== ""){
+				
+				/*$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_OPEN_DOOR_SOUND;
+				$pk->x = $this->entity->x;
+				$pk->y = $this->entity->y;
+				$pk->z = $this->entity->z;
+				$pk->data = 0;
+				$this->dataPacket($pk);*/
+				
 				$pk = new MessagePacket;
 				$pk->source = ($author instanceof Player) ? $author->username : $author;
 				$pk->message = TextFormat::clean($m); //Colors not implemented :(
@@ -1207,15 +1214,17 @@ class Player{
 		$moveSent = false;
 		$headSent = false;
 		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
-			$motion = new SetEntityMotionPacket();
-			$motion->eid = $e->eid;
-			$motion->speedX = $e->speedX;
-			$motion->speedY = $e->speedY;
-			$motion->speedZ = $e->speedZ;
-			$motion->encode();
-			$len += 1 + strlen($motion->buffer);
-			++$packets;
-			$motionSent = true;
+			if(!($e->speedY < 0 && $e->onGround)){
+				$motion = new SetEntityMotionPacket();
+				$motion->eid = $e->eid;
+				$motion->speedX = $e->speedX;
+				$motion->speedY = $e->speedY;
+				$motion->speedZ = $e->speedZ;
+				$motion->encode();
+				$len += 1 + strlen($motion->buffer);
+				++$packets;
+				$motionSent = true;
+			}
 		}
 		if($e->x != $e->lastX || $e->y != $e->lastY || $e->z != $e->lastZ || $e->yaw != $e->lastYaw || $e->pitch != $e->lastPitch){
 			$move = new MoveEntityPacket_PosRot();

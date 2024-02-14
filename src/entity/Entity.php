@@ -441,7 +441,7 @@ class Entity extends Position
 		if(!($this instanceof Painting) && !($this->isPlayer() && $this->player->isSleeping !== false)){ //TODO better way to fix
 			for($i = 0; $i < 8; ++$i){
 				$x = ((($i >> 0) % 2) - 0.5) * $this->width * 0.8;
-				$y= ((($i >> 1) % 2) - 0.5) * 0.1;
+				$y = ((($i >> 1) % 2) - 0.5) * 0.1;
 				$z = ((($i >> 2) % 2) - 0.5) * $this->width * 0.8;
 				
 				$blockX = (int) ($this->x + $x);
@@ -609,8 +609,8 @@ class Entity extends Position
 		$z1 = floor($aABB->maxZ + 1);
 		
 		for($x = $x0; $x < $x1; ++$x){
-			for($y = $y0; $y < $y1; ++$y){
-				for($z = $z0; $z < $z1; ++$z){
+			for($z = $z0; $z < $z1; ++$z){
+				for($y = $y0 - 1; $y < $y1; ++$y){
 					$b = $this->level->level->getBlockID($x, $y, $z);
 					if($b != 0){
 						$blockBounds = Block::$class[$b]::getCollisionBoundingBoxes($this->level, $x, $y, $z, $this);

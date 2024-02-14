@@ -29,6 +29,7 @@ class WorldGenerator{
 	}
 
 	public function generate(){
+		$this->level->forceDisableBlockQueue = true;
 		$this->generator->init($this->level, $this->random);
 		for($Z = 0; $Z < $this->width; ++$Z){
 			for($X = 0; $X < $this->width; ++$X){
@@ -49,6 +50,7 @@ class WorldGenerator{
 
 		$this->level->setSpawn($this->generator->getSpawn());
 		$this->level->save(true, true);
+		$this->level->forceDisableBlockQueue = false;
 	}
 
 	public function close(){
