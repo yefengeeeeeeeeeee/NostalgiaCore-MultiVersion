@@ -667,7 +667,6 @@ class Entity extends Position
 				$dz = $cz;
 				$this->boundingBox->setBB($aabb1);
 			}
-			
 		}
 		
 		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;

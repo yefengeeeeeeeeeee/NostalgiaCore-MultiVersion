@@ -171,8 +171,10 @@ class StairBlock extends TransparentBlock{
 				$metaNearby = $level->level->getBlockDamage($x + 1, $y, $z);
 				
 				if(self::isBlocksStairsID($idNearby) && ($meta & 4) == ($metaNearby & 4)){
+					$minX = 0.5;
+					$maxX = 1.0;
 					$metaNearbyAnd3 = $metaNearby & 3;
-					
+
 					if($metaNearbyAnd3 == 3 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x, $y, $z - 1, $meta)){
 						$minZ = 0;
 						$maxZ = 0.5;

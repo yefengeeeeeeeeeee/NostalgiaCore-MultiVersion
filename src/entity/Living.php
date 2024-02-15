@@ -225,7 +225,7 @@ abstract class Living extends Entity implements Pathfindable{
 				//{
 				//	$var5 = $this->landMovementFactor;
 				//}
-				//$var5 *= $var8;
+				$var5 *= $var8;
 			}else{
 				$var5 = $this->jumpMovementFactor;
 			}
@@ -255,9 +255,6 @@ abstract class Living extends Entity implements Pathfindable{
 				$this->ai->mobController->setJumping(true); //non vanilla
 			}
 		}
-		
-		//TODO limbYaw - is it even needed?
-		
 	}
 	
 	public function sendMoveUpdate(){

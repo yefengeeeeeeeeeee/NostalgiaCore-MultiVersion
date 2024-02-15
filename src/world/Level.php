@@ -389,9 +389,9 @@ class Level{
 				for($c = 0; $c <= 20; ++$c){
 					$xyz = mt_rand(0, 0xffffffff) >> 2;
 					$x = $xyz & 0xf;
-					$z = ($xyz >> 8) & 0xf; //TODO might be possible to make some micro optmizations
+					$z = ($xyz >> 8) & 0xf;
 					$y = ($xyz >> 16) & 0x7f;
-					$id = $this->level->fastGetBlockID($cX, $y >> 4, $cZ, $x, $y & 0xf, $z, $index); //$this->level->getBlockID(($cX << 4) + $x, $y, $z + ($cZ << 4));
+					$id = $this->level->fastGetBlockID($cX, $y >> 4, $cZ, $x, $y & 0xf, $z, $index);
 					if(isset(self::$randomUpdateBlocks[$id])){
 						$cl = Block::$class[$id];
 						$cl::onRandomTick($this, ($cX << 4) + $x, $y, $z + ($cZ << 4));
