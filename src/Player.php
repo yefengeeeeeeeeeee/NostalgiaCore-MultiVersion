@@ -111,7 +111,6 @@ class Player{
 		$this->blockUpdateQueue->data = [];
 		
 		//$this->server->schedule(20 * 60, [$this, "clearQueue"], [], true);
-		$this->server->schedule(1, [$this, "handlePacketQueues"], [], true);
 		
 		$this->evid[] = $this->server->event("server.close", [$this, "close"]);
 		console("[DEBUG] New Session started with " . $ip . ":" . $port . ". MTU " . $this->MTU . ", Client ID " . $this->clientID, true, true, 2);
@@ -1066,8 +1065,8 @@ class Player{
 		if($this->connected === false){
 			return false;
 		}
-		ksort($this->received);
 		if(($cnt = count($this->received)) > PLAYER_MAX_QUEUE){
+			ksort($this->received);
 			foreach($this->received as $c => $t){
 				unset($this->received[$c]);
 				--$cnt;

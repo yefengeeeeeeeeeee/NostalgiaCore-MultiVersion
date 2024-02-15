@@ -595,6 +595,11 @@ class PocketMinecraftServer{
 			$this->tickMeasure[] = $this->lastTick = $time;
 			unset($this->tickMeasure[key($this->tickMeasure)]);
 			++$this->ticks;
+			
+			foreach($this->clients as $client){
+				$client->handlePacketQueues();
+			}
+			
 			foreach($this->api->level->levels as $l){
 				$l->onTick($this, $time);
 			}
