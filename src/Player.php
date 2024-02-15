@@ -1216,7 +1216,7 @@ class Player{
 		$moveSent = false;
 		$headSent = false;
 		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
-			if(!($e->speedY < 0 && $e->onGround)){
+			if(!($e->speedY < 0 && $e->onGround) || $e->speedX != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
 				$motion = new SetEntityMotionPacket();
 				$motion->eid = $e->eid;
 				$motion->speedX = $e->speedX;

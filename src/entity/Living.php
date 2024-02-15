@@ -63,11 +63,11 @@ abstract class Living extends Entity implements Pathfindable{
 		return true;
 	}
 	public function collideHandler(){
-		$rd = ceil($this->radius);
-		$minChunkX = ((int)($this->x - $rd)) >> 4;
-		$minChunkZ = ((int)($this->z - $rd)) >> 4;
-		$maxChunkX = ((int)($this->x + $rd)) >> 4;
-		$maxChunkZ = ((int)($this->z + $rd)) >> 4;
+		$bb = $this->boundingBox->expand(0.2, 0, 0.2);
+		$minChunkX = ((int)($bb->minX)) >> 4;
+		$minChunkZ = ((int)($bb->minZ)) >> 4;
+		$maxChunkX = ((int)($bb->minX)) >> 4;
+		$maxChunkZ = ((int)($bb->minZ)) >> 4;
 		
 		//TODO also index by chunkY?
 		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
@@ -75,7 +75,9 @@ abstract class Living extends Entity implements Pathfindable{
 				$ind = "$chunkX $chunkZ";
 				foreach($this->level->entityListPositioned[$ind] ?? [] as $entid){
 					if($this->level->entityList[$entid] instanceof Entity){
-						$this->applyCollision($this->level->entityList[$entid]);
+						if($bb->intersectsWith($this->level->entityList[$entid]->boundingBox)){
+							$this->applyCollision($this->level->entityList[$entid]);
+						}
 					}
 				}
 			}
@@ -83,7 +85,7 @@ abstract class Living extends Entity implements Pathfindable{
 	}
 	
 	public function applyCollision(Entity $collided){
-		if($collided->boundingBox->intersectsWith($this->boundingBox) && !($this->isPlayer() && $collided->isPlayer()) && $this->eid != $collided->eid){
+		if(!($this->isPlayer() && $collided->isPlayer()) && $this->eid != $collided->eid){
 			$diffX = $collided->x - $this->x;
 			$diffZ = $collided->z - $this->z;
 			$maxDiff = max(abs($diffX), abs($diffZ));
@@ -154,15 +156,12 @@ abstract class Living extends Entity implements Pathfindable{
 		$this->landMovementFactor *= $this->getSpeedModifer();
 		$this->moveEntityWithHeading($this->moveStrafing, $this->moveForward);
 		$this->landMovementFactor = $savedLandFactor;
+		//Yaw rotation in 1.5 is handled in a bit different place but hopefully this will work too
+		$this->ai->mobController->updateHeadYaw();
 		
 		if(self::$entityPushing){
 			$this->collideHandler();
 		}
-		
-		//Yaw rotation in 1.5 is handled in a bit different place but hopefully this will work too
-		$this->ai->mobController->updateHeadYaw();
-		
-		
 	}
 	
 	public function jump(){

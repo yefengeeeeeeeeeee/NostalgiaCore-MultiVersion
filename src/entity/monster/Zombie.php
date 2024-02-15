@@ -19,7 +19,7 @@ class Zombie extends Monster{
 	}
 	
 	public function updateBurning(){
-		if($this->fire > 0 or !$this->level->isDay() || $this->inWater){ //TODO fix burning in water
+		if($this->fire > 0 || !$this->level->isDay() || $this->inWater){ //TODO fix burning in water
 			return false;
 		}
 		
