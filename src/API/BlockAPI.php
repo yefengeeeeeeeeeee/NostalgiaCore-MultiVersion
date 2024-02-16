@@ -540,7 +540,6 @@ class BlockAPI{
 		$level = $block->onUpdate($type);
 		if($level === BLOCK_UPDATE_NORMAL){
 			$this->blockUpdateAround($block, $level);
-			$this->server->api->entity->updateRadius($pos, 1);
 		}
 		
 		return $level;

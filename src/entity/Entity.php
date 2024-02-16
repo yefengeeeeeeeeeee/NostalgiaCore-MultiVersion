@@ -213,6 +213,27 @@ class Entity extends Position
 		$this->speedZ += $vZ;
 	}
 	
+	public function applyCollision(Entity $collided){
+		if(!($this->isPlayer() && $collided->isPlayer()) && $this->eid != $collided->eid){
+			$diffX = $collided->x - $this->x;
+			$diffZ = $collided->z - $this->z;
+			$maxDiff = max(abs($diffX), abs($diffZ));
+			if($maxDiff > 0.01){
+				$sqrtMax = sqrt($maxDiff);
+				$diffX /= $sqrtMax;
+				$diffZ /= $sqrtMax;
+				
+				$col = (($v = 1 / $sqrtMax) > 1 ? 1 : $v);
+				$diffX *= $col;
+				$diffZ *= $col;
+				$diffX *= 0.05;
+				$diffZ *= 0.05;
+				$this->addVelocity(-$diffX, 0, -$diffZ);
+				$collided->addVelocity($diffX, 0, $diffZ);
+			}
+		}
+	}
+	
 	public function isMovingHorizontally()
 	{
 		return ($this->speedX >= self::MIN_POSSIBLE_SPEED || $this->speedX <= -self::MIN_POSSIBLE_SPEED) || ($this->speedZ >= self::MIN_POSSIBLE_SPEED || $this->speedZ <= -self::MIN_POSSIBLE_SPEED);
@@ -361,7 +382,7 @@ class Entity extends Position
 		
 		$tickDiff = ($time - $this->lastUpdate) / 0.05;
 		
-		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true and $this->player->blocked !== true && ! $this->dead){
+		if($this->isPlayer() && $this->player->spawned === true && $this->player->blocked !== true && !$this->dead){
 			$myBB = $this->boundingBox->grow(1, 0.5, 1);
 			foreach($this->server->api->entity->getRadius($this, 2, ENTITY_ITEM) as $item){
 				if(!$item->closed && $item->spawntime > 0 && $item->delayBeforePickup <= 0){
@@ -438,21 +459,12 @@ class Entity extends Position
 		$endY = ceil($this->boundingBox->maxY);
 		$endZ = ceil($this->boundingBox->maxZ);
 		
-		if(!($this instanceof Painting) && !($this->isPlayer() && $this->player->isSleeping !== false)){ //TODO better way to fix
-			for($i = 0; $i < 8; ++$i){
-				$x = ((($i >> 0) % 2) - 0.5) * $this->width * 0.8;
-				$y = ((($i >> 1) % 2) - 0.5) * 0.1;
-				$z = ((($i >> 2) % 2) - 0.5) * $this->width * 0.8;
-				
-				$blockX = (int) ($this->x + $x);
-				$blockY = (int) ($this->y + $this->getEyeHeight() + $y);
-				$blockZ = (int) ($this->z + $z);
-				
-				if(!StaticBlock::getIsTransparent($this->level->level->getBlockID($blockX, $blockY, $blockZ))){
-					$this->harm(1, "suffocation"); // Suffocation
-					$hasUpdate = true;
-					break;
-				}
+		if(!($this instanceof Painting) && !($this->isPlayer() && $this->player->isSleeping !== false)){ //TODO better way to fix	
+			$x = floor($this->x);
+			$y = floor($this->y + $this->getEyeHeight());
+			$z = floor($this->z);
+			if(!StaticBlock::getIsTransparent($this->level->level->getBlockID($x, $y, $z))){
+				$this->harm(1, "suffocation");
 			}
 		}
 		
@@ -761,7 +773,7 @@ class Entity extends Position
 				$this->updateEntityMovement();
 				$update = false;
 				if($this->lastX != $this->x || $this->lastZ != $this->z || $this->lastY != $this->z){
-					$this->server->api->handle("entity.move", $this);
+					//$this->server->api->handle("entity.move", $this);
 					$update = true;
 				}elseif ($this->lastYaw != $this->yaw || $this->lastPitch != $this->pitch || $this->lastHeadYaw != $this->headYaw) {
 					$update = true;
@@ -771,7 +783,7 @@ class Entity extends Position
 					$hasUpdate = true;
 				}
 				
-			} elseif($this->player instanceof Player){
+			} else{
 				$prevGroundState = $this->onGround;
 				$this->onGround = false;
 				$this->speedX = -($this->lastX - $this->x);
@@ -873,7 +885,7 @@ class Entity extends Position
 		}
 		$now = microtime(true);
 		if($this->isStatic === false and ($this->lastX != $this->x or $this->lastY != $this->y or $this->lastZ != $this->z or $this->lastYaw != $this->yaw or $this->lastPitch != $this->pitch or $this->lastHeadYaw != $this->headYaw)){
-			if($this->class === ENTITY_PLAYER or ($this->last[5] + 8) < $now){
+			if($this->class === ENTITY_PLAYER){
 				if($this->server->api->handle("entity.move", $this) === false){
 					if($this->class === ENTITY_PLAYER){
 						$this->player->teleport(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
@@ -912,7 +924,7 @@ class Entity extends Position
 	}
 	
 	public function getEyeHeight(){ //TODO in vanilla player's eyeHeight is 0.12
-		return $this->isPlayer() ? $this->height - 0.12 : $this->width * 0.85;
+		return $this->isPlayer() ? $this->height - 0.12 : $this->height * 0.85;
 	}
 	
 	public function interactWith(Entity $e, $action)

@@ -355,13 +355,12 @@ class PMFLevel extends PMF{
 		if($x < 0 || $x > 255 || $z < 0 || $z > 255 || $y < 0 || $y > 127){
 			return false;
 		}
+		
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		$block &= 0xFF;
-		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"] or $y < 0){
-			return false;
-		}
+		
 		$index = self::getIndex($X, $Z);
 		$aX = $x & 0xf;
 		$aZ = $z & 0xf;
@@ -391,7 +390,7 @@ class PMFLevel extends PMF{
 		$aZ = $z & 0xf;
 		$aY = $y & 0xf;
 		$m = ord($this->chunks[$index][$Y][(int) (($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9))]);
-		return ($y & 1) === 0 ? $m & 0x0F : $m >> 4;
+		return $y & 1 ? $m >> 4 : $m & 0x0F;
 	}
 
 	public function setBlockDamage($x, $y, $z, $damage){
@@ -402,9 +401,7 @@ class PMFLevel extends PMF{
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		$damage &= 0x0F;
-		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"] or $y < 0){
-			return false;
-		}
+		
 		$index = self::getIndex($X, $Z);
 		$aX = $x & 0xf;
 		$aZ = $z & 0xf;
@@ -431,12 +428,13 @@ class PMFLevel extends PMF{
 	}
 
 	public function getBlock($x, $y, $z){
-		$X = $x >> 4;
-		$Z = $z >> 4;
-		$Y = $y >> 4;
 		if($x < 0 || $x > 255 || $z < 0 || $z > 255 || $y < 0 || $y > 127){
 			return [AIR, 0];
 		}
+		
+		$X = $x >> 4;
+		$Z = $z >> 4;
+		$Y = $y >> 4;
 		
 		$index = self::getIndex($X, $Z);
 		if(!isset($this->chunks[$index]) || $this->chunks[$index] === false){
@@ -450,17 +448,12 @@ class PMFLevel extends PMF{
 		$aX = $x & 0xf;
 		$aZ = $z & 0xf;
 		$aY = $y & 0xf;
-		#Need to fix. But idk how.
 		
-		//if(is_string($this->chunks[$index][$Y])){ //PHP8 warn fix
 		$b = ord($this->chunks[$index][$Y][($aY + ($aX << 5) + ($aZ << 9))]);
+		
 		$m = ord($this->chunks[$index][$Y][(($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9))]);
-
-		if(($y & 1) === 0){
-			$m = $m & 0x0F;
-		}else{
-			$m = $m >> 4;
-		}
+		$m = ($y & 1) ? $m >> 4 : $m & 0xf;
+		
 		return [$b, $m];
 	}
 
@@ -488,11 +481,8 @@ class PMFLevel extends PMF{
 		$mindex = (int) (($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9));
 		$old_b = ord($this->chunks[$index][$Y][$bindex]);
 		$old_m = ord($this->chunks[$index][$Y][$mindex]);
-		if(($y & 1) === 0){
-			$m = ($old_m & 0xF0) | $meta;
-		}else{
-			$m = ($meta << 4) | ($old_m & 0x0F);
-		}
+		
+		$m = ($y & 1) ? (($meta << 4) | ($old_m & 0x0F)) : (($old_m & 0xF0) | $meta);
 
 		if($old_b !== $block or $old_m !== $m){
 			$this->chunks[$index][$Y][$bindex] = chr($block);

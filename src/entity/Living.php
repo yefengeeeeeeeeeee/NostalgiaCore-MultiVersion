@@ -76,31 +76,10 @@ abstract class Living extends Entity implements Pathfindable{
 				foreach($this->level->entityListPositioned[$ind] ?? [] as $entid){
 					if($this->level->entityList[$entid] instanceof Entity){
 						if($bb->intersectsWith($this->level->entityList[$entid]->boundingBox)){
-							$this->applyCollision($this->level->entityList[$entid]);
+							$this->level->entityList[$entid]->applyCollision($this);
 						}
 					}
 				}
-			}
-		}
-	}
-	
-	public function applyCollision(Entity $collided){
-		if(!($this->isPlayer() && $collided->isPlayer()) && $this->eid != $collided->eid){
-			$diffX = $collided->x - $this->x;
-			$diffZ = $collided->z - $this->z;
-			$maxDiff = max(abs($diffX), abs($diffZ));
-			if($maxDiff > 0.01){
-				$sqrtMax = sqrt($maxDiff);
-				$diffX /= $sqrtMax;
-				$diffZ /= $sqrtMax;
-				
-				$col = (($v = 1 / $sqrtMax) > 1 ? 1 : $v);
-				$diffX *= $col;
-				$diffZ *= $col;
-				$diffX *= 0.05;
-				$diffZ *= 0.05;
-				$this->addVelocity(-$diffX, 0, -$diffZ);
-				$collided->addVelocity($diffX, 0, $diffZ);
 			}
 		}
 	}
