@@ -1305,7 +1305,7 @@ class Entity extends Position
 
 	public function getPosition($round = false)
 	{
-		return ! isset($this->position) ? false : ($round === true ? array_map("floor", $this->position) : $this->position);
+		return !isset($this->position) ? false : ($round === true ? array_map("floor", $this->position) : $this->position);
 	}
 
 	public function harm($dmg, $cause = "generic", $force = false)

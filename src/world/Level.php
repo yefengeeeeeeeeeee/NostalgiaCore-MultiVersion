@@ -277,13 +277,13 @@ class Level{
 	
 	public function checkSleep(){ //TODO events?
 		if(count($this->players) == 0) return false;
-		if($this->server->api->time->getPhase($this->level)  === "night"){ //TODO vanilla
+		if($this->server->api->time->getPhase($this)  === "night"){ //TODO vanilla
 			foreach($this->players as $p){
 				if($p->isSleeping == false || $p->sleepingTime < 100){
 					return false;
 				}
 			}
-			$this->server->api->time->set("day", $this->level);
+			$this->server->api->time->set("day", $this);
 		}
 		foreach($this->players as $p){
 			$p->stopSleep();
