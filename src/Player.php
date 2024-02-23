@@ -753,7 +753,7 @@ class Player{
 					$pk->target = $data["entity"]->eid;
 					$this->dataPacket($pk);
 					if(($this->gamemode & 0x01) === 0x00){
-						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack, true);
+						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack, false);
 					}
 					switch($data["entity"]->type){
 						case WOOD:
