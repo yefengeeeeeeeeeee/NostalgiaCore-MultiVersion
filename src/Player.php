@@ -149,7 +149,6 @@ class Player{
 		}
 		
 		$spawnPoint = BedBlock::findStandUpPosition($this->level, $pos->x, $pos->y, $pos->z);
-		console($spawnPoint);	
 		if($spawnPoint == null) $spawnPoint = $pos->add(0.5, 1, 0.5);
 		else{
 			$spawnPoint->x += 0.5;
