@@ -78,10 +78,101 @@ class ItemEntity extends Entity{
 			}
 		}
 	}
-	
+	public function checkInTile($x, $y, $z){
+		$xFloor = floor($x);
+		$yFloor = floor($y);
+		$zFloor = floor($z);
+		
+		$id = $this->level->level->getBlockID($xFloor, $yFloor, $zFloor);
+		
+		if(StaticBlock::getIsSolid($id)){
+			$xDiff = $x - $xFloor;
+			
+			$id = $this->level->level->getBlockID($xFloor - 1, $yFloor, $zFloor);
+			$xNeg = StaticBlock::getIsSolid($id);
+			
+			$id = $this->level->level->getBlockID($xFloor + 1, $yFloor, $zFloor);
+			$xPos = StaticBlock::getIsSolid($id);
+			
+			$id = $this->level->level->getBlockID($xFloor, $yFloor - 1, $zFloor);
+			$yNeg = StaticBlock::getIsSolid($id);
+			
+			$id = $this->level->level->getBlockID($xFloor, $yFloor + 1, $zFloor);
+			$yPos = StaticBlock::getIsSolid($id);
+			
+			$id = $this->level->level->getBlockID($xFloor - 1, $yFloor, $zFloor - 1);
+			$zNeg = StaticBlock::getIsSolid($id);
+			
+			$zPos = $this->level->level->getBlockID($xFloor + 1, $yFloor, $zFloor + 1);
+			
+			if($xNeg || $xDiff >= 9999.0){ //TODO not needed check?
+				$v15 = 9999.0;
+				$v16 = -1;
+			}else{
+				$v15 = $xDiff;
+				$v16 = 0;
+			}
+			
+			if(!$xPos){
+				$v17 = 1 - $xDiff;
+				
+				if($v17 < $v15){
+					$v15 = $v17;
+					$v16 = 1;
+				}
+			}
+			
+			$yDiff = $y - $yFloor;
+			if(!$yNeg && $yDiff < $v15){
+				$v15 = $yDiff;
+				$v16 = 2;
+			}
+			
+			if(!$yPos){
+				$v19 = 1.0 - $yDiff;
+				if($v19 < $v15){
+					$v15 = $v19;
+					$v16 = 3;
+				}
+			}
+			
+			$zDiff = $z - $zFloor;
+			if(!$zNeg && $zDiff < $v15){
+				$v15 = $zDiff;
+				$v16 = 4;
+			}
+			
+			if(!StaticBlock::getIsSolid($zPos) && ((1.0 - $zDiff) < $v15)){
+				$v16 = 5;
+			}
+			
+			$v21 = lcg_value() * 0.2 + 0.1;
+			switch($v16){
+				case 0:
+					$v21 = -$v21;
+				case 1:
+					$this->speedX = $v21;
+					return 0;
+				case 2:
+					$v21 = -$v21;
+				case 3:
+					$this->speedY = $v21;
+					return 0;
+				case 4:
+					$v21 = -$v21;
+				case 5:
+					$this->speedZ = $v21;
+					return 0;
+			}
+			
+			return 0;
+		}
+	}
 	public function updateEntityMovement(){
+		//TODO custom update( method
 		$this->speedY -= 0.04;
-		$this->noClip = false; //TODO pushOutofBlocks
+		//$this->noClip = false;
+		$this->checkInTile($this->x, $this->y, $this->z);
 		$this->move($this->speedX, $this->speedY, $this->speedZ);
 		
 		$var1 = (int)$this->x != (int)$this->lastX || (int)$this->y != (int)$this->lastY || (int)$this->z != (int)$this->lastZ;
