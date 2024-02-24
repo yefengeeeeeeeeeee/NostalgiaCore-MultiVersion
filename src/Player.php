@@ -1653,6 +1653,7 @@ class Player{
 							$this->forceMovement = false;
 						}else{
 							$this->teleport($this->forceMovement, $this->entity->yaw, $this->entity->pitch, false);
+							break;
 						}
 					}
 					$speed = $this->entity->getSpeedMeasure();
