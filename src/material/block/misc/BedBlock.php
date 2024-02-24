@@ -8,12 +8,39 @@ class BedBlock extends TransparentBlock{
 		2 => 2,
 		3 => 5,
 	];
-	
+	const HEAD_DIRECTION_OFFSETS = [
+		[0, 1],
+		[-1, 0],
+		[0, -1],
+		[1, 0]
+	];
 	public function __construct($type = 0){
 		parent::__construct(BED_BLOCK, $type, "Bed Block");
 		$this->isActivable = true;
 		$this->isFullBlock = false;
 		$this->hardness = 1;
+	}
+	
+	public static function findStandUpPosition(Level $level, $x, $y, $z){
+		$blockMeta = $level->level->getBlockDamage($x, $y, $z);
+		$direction = $blockMeta & 0x3;
+		for($v7 = 0; $v7 <= 1; ++$v7){
+			$minX = $x - self::HEAD_DIRECTION_OFFSETS[$direction][0] * $v7 - 1;
+			$minZ = $z - self::HEAD_DIRECTION_OFFSETS[$direction][1] * $v7 - 1;
+			$maxX = $minX + 2;
+			$maxZ = $minZ + 2;
+			
+			for($xCheck = $minX; $xCheck <= $maxX; ++$xCheck){
+				for($zCheck = $minZ; $zCheck <= $maxZ; ++$zCheck){
+					$idCheck = $level->level->getBlockID($xCheck, $y - 1, $zCheck);
+					if(!StaticBlock::getIsTransparent($idCheck) && $level->level->getBlockID($xCheck, $y, $zCheck) == 0 && $level->level->getBlockID($xCheck, $y + 1, $zCheck) == 0){
+						return new Vector3($xCheck, $y, $zCheck);
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	public function onActivate(Item $item, Player $player){
