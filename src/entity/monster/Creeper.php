@@ -3,6 +3,7 @@ class Creeper extends Monster{
 	const TYPE = MOB_CREEPER;
 	const EXPL_TIME = 30;
 	public $timeUntilExplode;
+	public $activatedByPlayer = false;
 	function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		$this->setSize(0.6, 1.7);
 		parent::__construct($level, $eid, $class, $type, $data);
@@ -13,6 +14,7 @@ class Creeper extends Monster{
 		$this->timeUntilExplode = $this->isIgnited() ? self::EXPL_TIME : 0;
 		
 		$this->ai->addTask(new TaskRandomWalk(1.0));
+		$this->ai->addTask(new TaskAttackPlayer(1.25, 16));
 		$this->ai->addTask(new TaskLookAround());
 		$this->ai->addTask(new TaskSwimming());
 	}
