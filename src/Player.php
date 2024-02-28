@@ -1263,18 +1263,18 @@ class Player{
 			$this->sendEntityMovementUpdateQueue();
 		}
 		if($motionSent){
-			$motion->messageIndex = $this->counter[3]++;
-			$motion->reliability = 2;
+			$motion->messageIndex = 0; //force 0 cuz reliability 0
+			$motion->reliability = 0;
 			$this->entityMovementQueue->data[] = $motion;
 		}
 		if($moveSent){
-			$move->messageIndex = $this->counter[3]++;
-			$move->reliability = 2;
+			$move->messageIndex = 0;
+			$move->reliability = 0;
 			$this->entityMovementQueue->data[] = $move;
 		}
 		if($headSent){
-			$headyaw->messageIndex = $this->counter[3]++;
-			$headyaw->reliability = 2;
+			$headyaw->messageIndex = 0;
+			$headyaw->reliability = 0;
 			$this->entityMovementQueue->data[] = $headyaw;
 		}
 		

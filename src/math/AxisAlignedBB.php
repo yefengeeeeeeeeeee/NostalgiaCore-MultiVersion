@@ -66,14 +66,7 @@ class AxisAlignedBB{
 	}
 
 	public function expand($x, $y, $z){
-		$this->minX -= $x;
-		$this->minY -= $y;
-		$this->minZ -= $z;
-		$this->maxX += $x;
-		$this->maxY += $y;
-		$this->maxZ += $z;
-
-		return $this;
+		return new AxisAlignedBB($this->minX - $x, $this->minY - $y, $this->minZ - $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
 	}
 
 	public function offset($x, $y, $z){
@@ -92,14 +85,7 @@ class AxisAlignedBB{
 	}
 
 	public function contract($x, $y, $z){
-		$this->minX += $x;
-		$this->minY += $y;
-		$this->minZ += $z;
-		$this->maxX -= $x;
-		$this->maxY -= $y;
-		$this->maxZ -= $z;
-
-		return $this;
+		return new AxisAlignedBB($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX - $x, $this->maxY - $y, $this->maxZ - $z);
 	}
 
 	public function setBB(AxisAlignedBB $bb){
@@ -313,7 +299,7 @@ class AxisAlignedBB{
 	}
 	
 	public function __toString(){
-		return "min: {$this->minX}, {$this->minY}, {$this->minZ}, max:  {$this->maxX}, {$this->maxY}, {$this->maxZ}";
+		return "AABB min: {$this->minX}, {$this->minY}, {$this->minZ}, max:  {$this->maxX}, {$this->maxY}, {$this->maxZ}";
 	}
 	
 }
