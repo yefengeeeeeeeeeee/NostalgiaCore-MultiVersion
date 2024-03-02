@@ -136,7 +136,7 @@ class RCONInstance extends Thread{
 								}else{
 									$disconnect[$id] = $sock;
 									$this->writePacket($sock, -1, 2, "");
-									$this->logger->info("Unsuccessful connection from: /$addr:$port (wrong password)");
+									console("Unsuccessful connection from: /$addr:$port (wrong password)");
 								}
 								break;
 							case 2: //Command
