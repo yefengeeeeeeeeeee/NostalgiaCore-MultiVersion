@@ -627,9 +627,11 @@ class Entity extends Position
 					if($b != 0){
 						$blockBounds = Block::$class[$b]::getCollisionBoundingBoxes($this->level, $x, $y, $z, $this);
 						foreach($blockBounds as $blockBound){
-							$dy = $blockBound->calculateYOffset($this->boundingBox, $dy);
-							$dx = $blockBound->calculateXOffset($this->boundingBox, $dx);
-							$dz = $blockBound->calculateZOffset($this->boundingBox, $dz);
+							if($aABB->intersectsWith($blockBound)){
+								$dy = $blockBound->calculateYOffset($this->boundingBox, $dy);
+								$dx = $blockBound->calculateXOffset($this->boundingBox, $dx);
+								$dz = $blockBound->calculateZOffset($this->boundingBox, $dz);
+							}
 						}
 					}
 				}
