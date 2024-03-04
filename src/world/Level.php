@@ -467,7 +467,7 @@ class Level{
 		
 		$this->checkSleep();
 		
-		if($server->ticks % 40 === 0){ //40 ticks delay
+		if($server->ticks % 10 === 0){ //10 ticks delay
 			$this->mobSpawner->handle();
 		}
 		

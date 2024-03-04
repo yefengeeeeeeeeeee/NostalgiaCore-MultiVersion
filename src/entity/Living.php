@@ -90,7 +90,12 @@ abstract class Living extends Entity implements Pathfindable{
 			return;
 		}
 		if($this->closed) return;
-
+	
+		$check = $this->level->mobSpawner->checkDespawn($this);
+		if($check){
+			$this->close();
+			return;
+		}
 		parent::update($now);
 	}
 	

@@ -184,12 +184,18 @@ class EntityAPI{
 	
 	public function remove($eid){
 		if(isset($this->entities[$eid])){
+			$level = $this->entities[$eid]->level;
 			$this->entities[$eid]->closed = true;
-			if($this->entities[$eid]->level instanceof Level){
+			if($level instanceof Level){
 				$cX = (int)$this->entities[$eid]->x >> 4;
 				$cZ = (int)$this->entities[$eid]->z >> 4;
 				$index = "$cX $cZ";
-				unset($this->entities[$eid]->level->entityListPositioned[$index][$eid]);
+				unset($level->entityListPositioned[$index][$eid]);
+				if(isset($level->mobSpawner->entityAffectedPlayers[$eid])){
+					$pid = $level->mobSpawner->entityAffectedPlayers[$eid];
+					unset($level->mobSpawner->entityAffectedPlayers[$eid]);
+					unset($level->mobSpawner->playerAffectedEIDS[$pid][$eid]);
+				}
 			}
 			if($this->entities[$eid]->isPlayer()){
 				$pk = new RemovePlayerPacket;

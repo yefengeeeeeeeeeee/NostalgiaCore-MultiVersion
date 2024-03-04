@@ -1,10 +1,14 @@
 <?php
 
 class MobSpawner{
-	public static $spawnAnimals = false, $spawnMobs = false;
+	public static $spawnAnimals = false, $spawnMobs = false, $maxMobsNearPlayerAtOnce = 10;
 	private $server;
 	public $level;
+	public $totalMobsPerPlayer;
+	public $playerAffectedEIDS = [];
+	public $entityAffectedPlayers = [];
 	public static $MOB_LIMIT = 50;
+	
 	public function __construct(Level $level){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
@@ -13,11 +17,38 @@ class MobSpawner{
 	public function countEntities(){
 		return $this->level->totalMobsAmount;
 	}
-
+	
+	public function checkDespawn(Living $living){
+		if(!isset($this->entityAffectedPlayers[$living->eid])){
+			return false;
+		}
+		
+		$playerID = $this->entityAffectedPlayers[$living->eid];
+		$player = $this->level->entityList[$playerID] ?? false;
+		if($player === false){
+			//TODO try retargetting other player?
+			return true;
+		}else{
+			$diffX = $living->x - $player->x;
+			$diffZ = $living->z - $player->z;
+			$dist = $diffX*$diffX + $diffZ*$diffZ;
+			if($dist <= 512){
+				return false;
+			}
+			
+			return $dist > 4096 || mt_rand($dist, 4096) == $dist; //force despawn 64 blocks away or despawn randomly
+		}
+		
+	}
+	
 	public function handle(){
 		if($this->countEntities() > self::$MOB_LIMIT || count($this->level->players) <= 0){
 			return false; //not spawning
 		}
+		$svd = $this->totalMobsPerPlayer;
+		$this->totalMobsPerPlayer = min(ceil(self::$MOB_LIMIT / count($this->level->players)), self::$maxMobsNearPlayerAtOnce);
+		if($svd != $this->totalMobsPerPlayer) ConsoleAPI::debug("Changed total mobs per player from $svd to {$this->totalMobsPerPlayer}.");
+		
 		return $this->spawnMobs();
 	}
 
@@ -34,21 +65,45 @@ class MobSpawner{
 		}else{
 			return false;
 		}
-		$x = mt_rand(0,255);
-		$z = mt_rand(0,255);
-		$y = $this->getSafeY($x, $z, $grassOnly, $type >= 32 && $type <= 36 && $type != 35);
-		if(!$y || $y < 0){
-			return false;
-		}
-		$data = $this->genPosData($x, $y + 0.5, $z);
-		if($baby != 2) $data["IsBaby"] = $baby;
 		
-		$e = $this->server->api->entity->add($this->level, 2, $type, $data);
-		
-		if($e instanceof Entity){
-			$this->server->api->entity->spawnToAll($e);
-			//console("[DEBUG] $type spawned at $x, $y, $z");
+		foreach($this->level->players as $player){
+			
+			if(isset($this->playerAffectedEIDS[$player->entity->eid]) && count($this->playerAffectedEIDS[$player->entity->eid]) > $this->totalMobsPerPlayer){
+				continue;
+			}
+			
+			$x = mt_rand($player->entity->x - 32, $player->entity->x + 32);
+			$z = mt_rand($player->entity->z - 32, $player->entity->z + 32);
+			$diffX = $x-$player->entity->x;
+			$diffZ = $z-$player->entity->z;
+			$dist = $diffX*$diffX + $diffZ*$diffZ;
+			if($dist < 768){
+				continue;
+			}
+			
+			$y = $this->getSafeY($x, $z, $grassOnly, $type >= 32 && $type <= 36 && $type != 35);
+			if(!$y || $y < 0){
+				continue;
+			}
+			$data = $this->genPosData($x, $y + 0.5, $z);
+			if($baby != 2) $data["IsBaby"] = $baby;
+			
+			$e = $this->server->api->entity->add($this->level, 2, $type, $data);
+			
+			if($e instanceof Entity){
+				$this->server->api->entity->spawnToAll($e);
+				console("[DEBUG] $type spawned at $x, $y, $z");
+			}
+			if(!isset($this->playerAffectedEIDS[$player->entity->eid])){
+				$this->playerAffectedEIDS[$player->entity->eid] = [$e->eid => true];
+			}else{
+				$this->playerAffectedEIDS[$player->entity->eid][$e->eid] = true;
+			}
+			
+			$this->entityAffectedPlayers[$e->eid] = $player->entity->eid;
 		}
+		
+		
 		return true;
 	}
 	
