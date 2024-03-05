@@ -850,13 +850,13 @@ class Entity extends Position
 		if($this->isPlayer()){
 			
 			$x = floor($this->x);
-			$y = floor($this->y - 0.2);
+			$y = floor($this->y - 1); //TODO not 1
 			$z = floor($this->z);
 			$bid = $this->level->level->getBlockID($x, $y, $z);
-			
+			console($this->y.":".$y);
 			if($bid > 0){
 				$clz = StaticBlock::getBlock($bid);
-				$clz::fallOn($this->level, $x, $y, $z, $this, floor($this->fallStart - $this->y));
+				$clz::fallOn($this->level, $x, $y, $z, $this, ceil($this->fallStart - $this->y));
 			}
 			
 			$dmg = ceil($this->fallStart - $this->y - 3);
