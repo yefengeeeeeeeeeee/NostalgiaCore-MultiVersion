@@ -67,7 +67,6 @@ class MobSpawner{
 		}
 		
 		foreach($this->level->players as $player){
-			
 			if(isset($this->playerAffectedEIDS[$player->entity->eid]) && count($this->playerAffectedEIDS[$player->entity->eid]) > $this->totalMobsPerPlayer){
 				continue;
 			}

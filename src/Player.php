@@ -1984,7 +1984,7 @@ class Player{
 				}
 				$this->craftingItems = [];
 				$this->toCraft = [];
-				$this->teleport($this->spawnPosition);
+				$this->teleport($this->spawnPosition, false, false, true, false);
 				if($this->entity instanceof Entity){
 					$this->entity->fire = 0;
 					$this->entity->air = $this->entity->maxAir;

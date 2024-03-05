@@ -98,6 +98,7 @@ class Entity extends Position
 	public $fireResistance = 1;
 	public $inWeb;
 	public $inLava;
+	
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array())
 	{
 		$this->random = new Random();
@@ -810,6 +811,7 @@ class Entity extends Position
 					}
 				}
 				
+				
 				if($this->isOnLadder()){
 					$this->fallDistance = 0;
 					$this->fallStart = $this->y;
@@ -853,7 +855,6 @@ class Entity extends Position
 			$y = floor($this->y - 1); //TODO not 1
 			$z = floor($this->z);
 			$bid = $this->level->level->getBlockID($x, $y, $z);
-			console($this->y.":".$y);
 			if($bid > 0){
 				$clz = StaticBlock::getBlock($bid);
 				$clz::fallOn($this->level, $x, $y, $z, $this, ceil($this->fallStart - $this->y));
@@ -1326,6 +1327,14 @@ class Entity extends Position
 			}
 			
 			$this->knockBack($d, $d1);
+			if($this->isPlayer()){
+				$pk = new SetEntityMotionPacket();
+				$pk->eid = 0;
+				$pk->speedX = $this->speedX;
+				$pk->speedY = $this->speedY;
+				$pk->speedZ = $this->speedZ;
+				$this->player->directDataPacket($pk, 0);
+			}
 			$this->knockbackTime = 10;
 			
 		}
@@ -1365,7 +1374,7 @@ class Entity extends Position
 	public function sendMoveUpdate()
 	{
 		if($this->class === ENTITY_PLAYER){
-			$this->player->teleport(new Vector3($this->x, $this->y, $this->z));
+			$this->player->teleport(new Vector3($this->x, $this->y, $this->z), false, false, true, false);
 			return;
 		}
 	}
