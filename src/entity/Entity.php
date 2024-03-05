@@ -1527,6 +1527,7 @@ class Entity extends Position
 		$f = sqrt($d * $d + $d1 * $d1);
 		$f1 = 0.4;
 		$this->speedX /= 2;
+		$this->speedY /= 2;
 		$this->speedZ /= 2;
 		$this->speedX -= ($d / $f) * $f1;
 		$this->speedY += 0.4;
