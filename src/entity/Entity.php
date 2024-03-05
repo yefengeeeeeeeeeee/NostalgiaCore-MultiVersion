@@ -859,7 +859,7 @@ class Entity extends Position
 				$clz::fallOn($this->level, $x, $y, $z, $this, floor($this->fallStart - $this->y));
 			}
 			
-			$dmg = floor($this->fallStart - $this->y) - 3;
+			$dmg = ceil($this->fallStart - $this->y - 3);
 			if($dmg > 0){
 				$this->harm($dmg, "fall");
 			}

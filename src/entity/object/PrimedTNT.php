@@ -43,8 +43,8 @@ class PrimedTNT extends Entity{
 		$this->speedZ *= 0.98;
 		
 		if($this->onGround){
-			$this->speedX *= 0.6;
-			$this->speedZ *= 0.6;
+			$this->speedX *= 0.7;
+			$this->speedZ *= 0.7;
 			
 			$this->speedY *= -0.5;
 		}

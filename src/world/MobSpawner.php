@@ -92,7 +92,7 @@ class MobSpawner{
 			
 			if($e instanceof Entity){
 				$this->server->api->entity->spawnToAll($e);
-				console("[DEBUG] $type spawned at $x, $y, $z");
+				//ConsoleAPI::debug("$type spawned at $x, $y, $z");
 			}
 			if(!isset($this->playerAffectedEIDS[$player->entity->eid])){
 				$this->playerAffectedEIDS[$player->entity->eid] = [$e->eid => true];
