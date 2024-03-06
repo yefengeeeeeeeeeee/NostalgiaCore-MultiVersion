@@ -195,8 +195,8 @@ class Entity extends Position
 		return in_array($this->type, func_get_args());
 	}
 	
-	public function attackEntity($entity){
-
+	public function attackEntity($entity, $distance){
+		return false;
 	}
 	
 	public function setInWeb(){
@@ -654,7 +654,7 @@ class Entity extends Position
 			
 			$aaBBs = $this->level->getCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz));
 			
-			foreach($aaBBs as $bb){ //TODO optimize
+			foreach($aaBBs as $bb){
 				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
 			}
 			$this->boundingBox->offset(0, $dy, 0);

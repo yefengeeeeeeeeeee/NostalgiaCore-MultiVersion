@@ -57,11 +57,12 @@ class Creeper extends Monster{
 		$this->timeUntilExplode = self::EXPL_TIME;
 	}
 	
-	public function attackEntity($entity){
+	public function attackEntity($entity, $distance){
 		if(Utils::distance_noroot($entity, $this) <= 49 && !$this->isIgnited()){
 			$this->ignite();
+			return true;
 		}
-		
+		return false;
 	}
 	public function update($now){
 		if($this->isIgnited() && $this->target instanceof Entity && Utils::distance_noroot($this->target, $this) > 49){ //TODO move somewhere else

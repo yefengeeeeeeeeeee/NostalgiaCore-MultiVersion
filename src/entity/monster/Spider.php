@@ -12,7 +12,23 @@ class Spider extends Monster{
 		$this->ai->addTask(new TaskSwimming());
 		$this->ai->addTask(new TaskAttackPlayer(1.0, 16)); //TODO fix range?
 	}
-	
+	public function attackEntity($entity, $distance){
+		if($distance > 2.0 && $distance < 6.0){
+			if($this->onGround){
+				$diffX = $entity->x - $this->x;
+				$diffZ = $entity->z - $this->z;
+				$dist = sqrt($diffX*$diffX + $diffZ*$diffZ);
+				
+				$this->speedX = $diffX / $dist*0.5*0.8 + $this->speedX*0.2;
+				$this->speedZ = $diffZ / $dist*0.5*0.8 + $this->speedZ*0.2;
+				$this->speedY = 0.4;
+			}
+			return false;
+		}else{
+			return parent::attackEntity($entity, $distance);
+		}
+		
+	}
 	public function getDrops(){
 		return [
 			[STRING, 0, mt_rand(0,2)]

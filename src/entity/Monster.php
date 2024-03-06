@@ -9,7 +9,8 @@ class Monster extends Creature{
 		return 2;
 	}
 
-	public function attackEntity($entity){
+	public function attackEntity($entity, $distance){
 		$entity->harm($this->getAttackDamage(), $this->eid);
+		return true;
 	}
 }
