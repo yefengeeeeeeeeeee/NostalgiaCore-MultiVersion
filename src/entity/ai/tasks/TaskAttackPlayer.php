@@ -39,7 +39,6 @@ class TaskAttackPlayer extends TaskBase
 		if($dist <= $v1){
 			if($this->attackCounter <= 0){
 				 $this->attackCounter = $e->attackEntity($t, sqrt($dist)) ? 20 : 0;
-				
 			}
 		}
 		
