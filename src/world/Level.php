@@ -82,7 +82,102 @@ class Level{
 		
 		return true;
 	}
-	
+	/* TODO neccessary for projectiles
+	public function rayTraceBlocks(Vector3 $start, Vector3 $end){
+		
+		$par3 = false; //TODO move to params?
+		$par4 = true;
+		
+		$xStart = floor($start->x);
+		$yStart = floor($start->y);
+		$zStart = floor($start->z);
+		$xEnd = floor($end->x);
+		$yEnd = floor($end->y);
+		$zEnd = floor($end->z);
+		
+		[$startID, $startMeta] = $this->level->getBlock($xStart, $yStart, $zStart);
+		$block = StaticBlock::getBlock($startID);
+		//$block::updateShape($this, $xStart, $yStart, $zStart); //TODO better way to do it
+		$aabb = $block::getAABB($this, $xStart, $yStart, $zStart);
+		if($startID > 0 && $aabb != null){ //TODO also block::canColideCheck
+			$v14 = $block::clip($this, $xStart, $yStart, $zStart, $start, $end);
+			if($v14 != null) return $v14;
+		}
+		
+		for($i = 0; $i <= 200; ++$i){
+			
+			if($xStart == $xEnd && $yStart == $yEnd && $zStart == $zEnd){ //also add checks for nan?
+				console("$start $end");
+				return null;
+			}
+			
+			$v39 = $v40 = $v41 = true;
+			$v15 = $v17 = $v19 = 999.0; //nice mojang
+			
+			if($xEnd > $xStart) $v15 = $xStart + 1;
+			else if($xEnd < $xStart) $v15 = $xStart;
+			else $v39 = false;
+			
+			if($yEnd > $yStart) $v17 = $yStart + 1;
+			else if($yEnd < $yStart) $v17 = $yStart;
+			else $v40 = false;
+			
+			if($zEnd > $zStart) $v19 = $zStart + 1;
+			else if($zEnd < $zStart) $v19 = $zStart;
+			else $v41 = false;
+			
+			$v21 = $v23 = $v25 = 999.0; //nice mojang x2
+			$v27 = $end->x - $start->x;
+			$v29 = $end->y - $start->y;
+			$v31 = $end->z - $start->z;
+			
+			if($v39) $v21 = ($v15 - $start->x) / $v27;
+			if($v40) $v23 = ($v17 - $start->y) / $v29;
+			if($v41) $v25 = ($v19 - $start->z) / $v31;
+			
+			$v33 = false;
+			if($v21 < $v23 && $v21 < $v25){
+				$v42 = $xEnd > $xStart ? 4 : 5;
+				
+				$start->x = $v15;
+				$start->y += $v29 * $v21;
+				$start->z += $v31 * $v21;
+			}else if($v23 < $v25){
+				$v42 = $yEnd > $yStart ? 0 : 1;
+				
+				$start->x += $v27 * $v23;
+				$start->y = $v17;
+				$start->z += $v31 * $v23;
+			}else{
+				$v42 = $zEnd > $zStart ? 2 : 3;
+				
+				$start->x += $v27 * $v23;
+				$start->y += $v29 * $v21;
+				$start->z = $v19;
+			}
+			
+			$xStart = floor($start->x);
+			if($v42 == 5) --$xStart;
+			
+			$yStart = floor($start->y);
+			if($v42 == 1) --$yStart;
+			
+			$zStart = floor($start->z);
+			if($v42 == 3) --$zStart;
+			
+			[$blockID, $blockMeta] = $this->level->getBlock($xStart, $yStart, $zStart);
+			$block = StaticBlock::getBlock($blockID);
+			
+			$aabb = $block::getAABB($this, $xStart, $yStart, $zStart);
+			if($startID > 0 && $aabb != null){ //TODO also block::canColideCheck
+				$v38 = $block::clip($this, $xStart, $yStart, $zStart, $start, $end);
+				if($v38 != null) return $v38;
+			}
+		}
+		
+		return null;
+	}
+	 */
 	//TODO mayPlace
 	public function isLavaInBB($aabb){
 		$minX = floor($aabb->minX);

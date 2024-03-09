@@ -4,6 +4,10 @@ abstract class Living extends Entity implements Pathfindable{
 	
 	public static $despawnMobs, $despawnTimer, $entityPushing = false;
 	public $moveStrafing, $moveForward;
+	/**
+	 * @var Entity $target
+	 * @var EntityAI $ai
+	 */
 	public $target, $ai;
 	public $pathFinder, $path = null, $currentIndex = 0, $currentNode, $pathFollower;
 	public $ticksExisted = 0;
