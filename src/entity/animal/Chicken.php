@@ -18,7 +18,7 @@ class Chicken extends Animal{
 		$this->ai->addTask(new TaskSwimming());
 		$this->ai->addTask(new TaskTempt(1.0));
 		$this->ai->addTask(new TaskMate(1.0));
-		
+		$this->ai->addTask(new TaskFollowParent(1.0));
 	}
 	public function isFood($id){
 		return $id === PUMPKIN_SEEDS || $id === MELON_SEEDS || $id === BEETROOT_SEEDS || $id === WHEAT_SEEDS;

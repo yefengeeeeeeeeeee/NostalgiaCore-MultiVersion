@@ -21,6 +21,7 @@ class Sheep extends Animal{
 		$this->ai->addTask(new TaskSwimming());
 		$this->ai->addTask(new TaskTempt(1.0));
 		$this->ai->addTask(new TaskMate(1.0));
+		$this->ai->addTask(new TaskFollowParent(1.0));
 	}
 	
 	public function createSaveData(){

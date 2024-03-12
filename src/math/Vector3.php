@@ -132,7 +132,7 @@ class Vector3{
 	}
 
 	public function distanceSquared($x = 0, $y = 0, $z = 0){
-		if(($x instanceof Vector3) === true){
+		if($x instanceof Vector3){
 			return $this->distanceSquared($x->x, $x->y, $x->z);
 		}else{
 			return ($this->x - $x)*($this->x - $x) + ($this->y - $y)*($this->y - $y) + ($this->z - $z)*($this->z - $z);

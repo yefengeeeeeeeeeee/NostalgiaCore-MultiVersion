@@ -46,6 +46,9 @@ class TaskMate extends TaskBase
 		//this.theAnimal.setGrowingAge(6000); TODO growing age?
 		//this.targetMate.setGrowingAge(6000);
 		
+		$ai->entity->loveTimeout = 6000;
+		$entpar2->loveTimeout = 6000;
+		
 		$ai->entity->resetInLove();
 		$entpar2->resetInLove();
 		$baby->setAge(-24000);

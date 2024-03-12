@@ -5,6 +5,9 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 	public $parent;
 	public $inLove; //do NOT add it into metadata, it doesnt send it to player
 	public $age;
+	
+	public $loveTimeout;
+	
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		parent::__construct($level, $eid, $class, $type, $data);
 		$this->setAge(isset($data["Age"]) ? $data["Age"] : 0);
@@ -48,6 +51,11 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 	
 	public function update($now){
 		parent::update($now);
+		
+		if($this->loveTimeout > 0){
+			--$this->loveTimeout;
+		}
+		
 		$age = $this->getAge() + 1; //100 - fast. debug, 1 - normal
 		if($age >= 0 && $this->isBaby()){
 			$this->setAge($age);
@@ -101,7 +109,7 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 	public function interactWith(Entity $e, $action){
 		if($e->isPlayer() && $action === InteractPacket::ACTION_HOLD){
 			$slot = $e->player->getHeldItem();
-			if($this->isFood($slot->getID()) && $this->inLove <= 0 && !$this->isBaby()){
+			if($this->isFood($slot->getID()) && $this->inLove <= 0 && !$this->isBaby() && $this->loveTimeout <= 0){
 				if(($e->player->gamemode & 0x01) === SURVIVAL){
 					$e->player->removeItem($slot->getID(), $slot->getMetadata(), 1);
 				}

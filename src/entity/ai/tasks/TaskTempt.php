@@ -17,7 +17,7 @@ class TaskTempt extends TaskBase
 	
 	public function onUpdate(EntityAI $ai)
 	{
-		if(!$this->isTargetValid($ai)){
+		if(!$this->isTargetValid($ai) || $ai->entity->inPanic || $ai->isStarted("TaskMate")){
 			$this->reset();
 			return false;
 		}
