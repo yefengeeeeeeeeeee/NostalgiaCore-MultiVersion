@@ -158,7 +158,7 @@ class EntityAPI{
 		$efl = EntityRegistry::$entityList->getEntityFromTypeAndClass($type, $class);
 		if($efl instanceof PropertyEntity){
 			$class = $efl->getEntityName();
-			$this->entities[$eid] = new $class($level, $eid, $efl->getEntityClass(), $efl->getEntityClass() === ENTITY_ITEM ? $type : $efl->getEntityType(), $data);
+			$this->entities[$eid] = new $class($level, $eid, $efl->getEntityClass(), $efl->getEntityType(), $data);
 		}else{
 			$this->entities[$eid] = new Entity($level, $eid, $class, $type, $data);
 		}
@@ -261,12 +261,14 @@ class EntityAPI{
 			"speedY" => $speedY,
 			"speedZ" => $speedZ,
 			"item" => $item,
+			"itemID" => $item->getID()
 		];
+		
 		if($this->server->api->handle("item.drop", $data) !== false){
 			for($count = $item->count; $count > 0;){
 				$item->count = min($item->getMaxStackSize(), $count);
 				$count -= $item->count;
-				$e = $this->add($pos->level, ENTITY_ITEM, $item->getID(), $data);
+				$e = $this->add($pos->level, ENTITY_ITEM, ENTITY_ITEM_TYPE, $data);
 				$this->spawnToAll($e);
 				$this->server->api->handle("entity.motion", $e);
 			}
@@ -286,12 +288,13 @@ class EntityAPI{
 			"speedY" => 0.2,
 			"speedZ" => lcg_value() * 0.2 - 0.1,
 			"item" => $item,
+			"itemID" => $item->getID()
 		];
 		if($this->server->api->handle("item.drop", $data) !== false){
 			for($count = $item->count; $count > 0;){
 				$item->count = min($item->getMaxStackSize(), $count);
 				$count -= $item->count;
-				$e = $this->add($pos->level, ENTITY_ITEM, $item->getID(), $data);
+				$e = $this->add($pos->level, ENTITY_ITEM, ENTITY_ITEM_TYPE, $data);
 				$this->spawnToAll($e);
 				$this->server->api->handle("entity.motion", $e);
 			}

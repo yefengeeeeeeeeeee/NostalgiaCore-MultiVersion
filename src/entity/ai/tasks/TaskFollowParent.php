@@ -32,7 +32,7 @@ class TaskFollowParent extends TaskBase
 		}
 		$parent = $ai->entity->parent;
 		
-		$ai->mobController->setLookPosition($parent->x, $parent->y + $parent->getEyeHeight(), $parent->z, 30, $ai->entity->getVerticalFaceSpeed());
+		$ai->mobController->setLookPosition($parent->x, $parent->y + $parent->getEyeHeight(), $parent->z, 10, $ai->entity->getVerticalFaceSpeed());
 		$ai->mobController->setMovingTarget($parent->x, $parent->y, $parent->z, $this->speedMultiplier);
 	}
 	

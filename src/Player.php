@@ -760,9 +760,9 @@ class Player{
 					$pk->target = $data["entity"]->eid;
 					$this->dataPacket($pk);
 					if(($this->gamemode & 0x01) === 0x00){
-						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack, false);
+						$this->addItem($data["entity"]->itemID, $data["entity"]->meta, $data["entity"]->stack, false);
 					}
-					switch($data["entity"]->type){
+					switch($data["entity"]->itemID){
 						case WOOD:
 							AchievementAPI::grantAchievement($this, "mineWood");
 							break;
@@ -2074,7 +2074,6 @@ class Player{
 					$sX += cos($f3) * $f1;
 					$sY += ($this->entity->random->nextFloat() - $this->entity->random->nextFloat()) * 0.1;
 					$sZ += sin($f3) * $f1;
-					
 					$this->server->api->entity->dropRawPos(new Position($this->entity->x, $this->entity->y - 0.3 + $this->entity->height - 0.12, $this->entity->z, $this->level), $packet->item, $sX, $sY, $sZ);
 					$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0), false);
 				}

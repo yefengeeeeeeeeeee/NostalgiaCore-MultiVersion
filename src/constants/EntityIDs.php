@@ -25,7 +25,8 @@ define("ENTITY_OBJECT", 3);
 	define("OBJECT_MINECART", 84);
 
 define("ENTITY_ITEM", 4);
-
+	define("ENTITY_ITEM_TYPE", 64);
+	
 define("ENTITY_FALLING", 5);
 	define("FALLING_SAND", 66);
 	

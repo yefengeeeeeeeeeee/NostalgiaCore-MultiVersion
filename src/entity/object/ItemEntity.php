@@ -1,11 +1,11 @@
 <?php
 
 class ItemEntity extends Entity{
-	const TYPE = "itemSpecial";
+	const TYPE = ENTITY_ITEM_TYPE;
 	const CLASS_TYPE = ENTITY_ITEM;
 	public static $searchRadiusX = 0.5, $searchRadiusY = 0.0, $searchRadiusZ = 0.5;
 	
-	public $meta, $stack;
+	public $meta, $stack, $itemID;
 	
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = array())
 	{
@@ -13,11 +13,13 @@ class ItemEntity extends Entity{
 		$this->setSize(0.25, 0.25);
 		$this->yOffset = $this->height / 2;
 		if(isset($data["item"]) and ($data["item"] instanceof Item)){
-			$this->meta = $this->data["item"]->getMetadata();
-			$this->stack = $this->data["item"]->count;
+			$this->meta = $data["item"]->getMetadata();
+			$this->stack = $data["item"]->count;
+			$this->itemID = $data["item"]->getID();
 		} else{
-			$this->meta = (int) $this->data["meta"];
-			$this->stack = (int) $this->data["stack"];
+			$this->meta = (int) $data["meta"];
+			$this->stack = (int) $data["stack"];
+			$this->itemID = (int) $data["itemID"];
 		}
 		$this->hasGravity = true;
 		$this->setHealth(5, "generic");
@@ -50,7 +52,7 @@ class ItemEntity extends Entity{
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->roll = 0;
-		$pk->item = BlockAPI::getItem($this->type, $this->meta, $this->stack);
+		$pk->item = BlockAPI::getItem($this->itemID, $this->meta, $this->stack);
 		$pk->metadata = $this->getMetadata();
 		$player->dataPacket($pk);
 		
@@ -68,7 +70,7 @@ class ItemEntity extends Entity{
 		if($another->eid == $this->eid) return false;
 		
 		if(!$another->closed && !$this->closed){
-			if($another->type == $this->type && $another->meta == $this->meta){
+			if($another->itemID == $this->itemID && $another->meta == $this->meta){
 				if(($another->stack + $this->stack) > 64) return false; //TODO dynamic stack size
 				
 				$another->stack += $this->stack;

@@ -65,9 +65,10 @@ class LevelAPI{
 			$entity["pitch"] = $entity["Rotation"][1];
 			
 			if($entity["id"] === 64){ //Item Drop
-				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_ITEM, $entity["Item"]["id"], [
+				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_ITEM, ENTITY_ITEM_TYPE, [
 					"meta" => $entity["Item"]["Damage"],
 					"stack" => $entity["Item"]["Count"],
+					"itemID" => $entity["Item"]["id"],
 					"x" => $entity["Pos"][0],
 					"y" => $entity["Pos"][1],
 					"z" => $entity["Pos"][2],
