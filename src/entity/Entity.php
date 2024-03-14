@@ -613,32 +613,24 @@ class Entity extends Position
 		
 		$oldBB = clone $this->boundingBox;
 		
-		$aABB = $this->boundingBox->addCoord($dx, $dy, $dz);
-		$x0 = floor($aABB->minX);
-		$x1 = floor($aABB->maxX + 1);
-		$y0 = floor($aABB->minY);
-		$y1 = floor($aABB->maxY + 1);
-		$z0 = floor($aABB->minZ);
-		$z1 = floor($aABB->maxZ + 1);
 		
-		for($x = $x0; $x < $x1; ++$x){
-			for($z = $z0; $z < $z1; ++$z){
-				for($y = $y0 - 1; $y < $y1; ++$y){
-					$b = $this->level->level->getBlockID($x, $y, $z);
-					if($b != 0){
-						$blockBounds = Block::$class[$b]::getCollisionBoundingBoxes($this->level, $x, $y, $z, $this);
-						foreach($blockBounds as $blockBound){
-							if($aABB->intersectsWith($blockBound)){
-								$dy = $blockBound->calculateYOffset($this->boundingBox, $dy);
-								$dx = $blockBound->calculateXOffset($this->boundingBox, $dx);
-								$dz = $blockBound->calculateZOffset($this->boundingBox, $dz);
-							}
-						}
-					}
-				}
-			}
+		$aaBBs = $this->level->getCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz));
+		foreach($aaBBs as $bb){
+			$dy = $bb->calculateYOffset($this->boundingBox, $dy);
 		}
-		$this->boundingBox->offset($dx, $dy, $dz);
+		$this->boundingBox->offset(0, $dy, 0);
+		
+		foreach($aaBBs as $bb){
+			$dx = $bb->calculateXOffset($this->boundingBox, $dx);
+		}
+		$this->boundingBox->offset($dx, 0, 0);
+		
+		foreach($aaBBs as $bb){
+			$dz = $bb->calculateZOffset($this->boundingBox, $dz);
+		}
+		$this->boundingBox->offset(0, 0, $dz);
+		
+		
 		$fallingFlag = $this->onGround || $savedDY != $dy && $savedDY < 0;
 		
 		if($this->stepHeight > 0 && $fallingFlag && ($savedDX != $dx || $savedDZ != $dz)){
