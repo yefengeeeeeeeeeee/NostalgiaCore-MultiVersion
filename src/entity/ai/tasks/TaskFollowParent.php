@@ -18,7 +18,7 @@ class TaskFollowParent extends TaskBase
 
 	public function onUpdate(EntityAI $ai)
 	{
-		if(!$ai->entity->isBaby() || !($ai->entity->parent instanceof Entity) && $ai->entity->parent->dead){
+		if(!$ai->entity->isBaby() || !($ai->entity->parent instanceof Entity) || $ai->entity->parent->dead){
 			$this->reset();
 			$ai->entity->parent = null;
 			return false;

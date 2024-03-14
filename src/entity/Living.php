@@ -29,6 +29,7 @@ abstract class Living extends Entity implements Pathfindable{
 		$this->hasKnockback = true;
 		//if(self::$despawnMobs) $this->server->schedule(self::$despawnTimer, [$this, "close"]); //900*20
 	}
+	
 	public function fall(){
 		$dmg = ceil($this->fallDistance - 3);
 		if($dmg > 0){
@@ -117,7 +118,7 @@ abstract class Living extends Entity implements Pathfindable{
 		
 		//not exactly here
 		if($this->jumping){
-			if(!$this->inWater){ //TODO also lava
+			if(!$this->inWater && !$this->inLava){
 				if($this->onGround && $this->jumpTicks <= 0){
 					$this->jump();
 					$this->jumpTicks = 10;
@@ -167,7 +168,7 @@ abstract class Living extends Entity implements Pathfindable{
 	public function moveEntityWithHeading($strafe, $forward){
 		if($this->inWater){ //also check is player, and can it fly or not
 			$prevPosY = $this->y;
-			$this->moveFlying($strafe, $forward, 0.04); //TODO speed: this.isAIEnabled() ? 0.04F : 0.02F
+			$this->moveFlying($strafe, $forward, 0.02);
 			$this->move($this->speedX, $this->speedY, $this->speedZ);
 			$this->speedX *= 0.8;
 			$this->speedY *= 0.8;
@@ -200,26 +201,17 @@ abstract class Living extends Entity implements Pathfindable{
 				if($blockAt > 0) $friction = StaticBlock::getSlipperiness($blockAt) * 0.91;
 			}
 			
-			$var8 = 0.16277136 / ($friction*$friction*$friction);
+			$var8 = 0.16277 / ($friction*$friction*$friction);
 			
 			if($this->onGround){
-				//all mobs have ai enabled in nc for now
-				$var5 = $this->getAIMoveSpeed();
-				//TODO if AIEnabled
-				//{
-					//TODO $var5 = getAIMoveSpeed
-				//}
-				//else
-				//{
-				//	$var5 = $this->landMovementFactor;
-				//}
-				$var5 *= $var8;
+				$var5 = $this->getAIMoveSpeed();  //in vanilla it returns either this.seed or calls getBaseSpeed(depending on useNewAi)
+				$var5 *= $var8; //in vanilla it also multiplies by speedModifer
 			}else{
 				$var5 = $this->jumpMovementFactor;
 			}
 			
 			$this->moveFlying($strafe, $forward, $var5);
-			//1.5.2 recalculates friction, might be not neccessary
+			//recalculating friction, might be not neccessary
 			$friction = 0.91;
 			
 			if($this->onGround){
@@ -229,9 +221,17 @@ abstract class Living extends Entity implements Pathfindable{
 				if($blockAt > 0) $friction = StaticBlock::getSlipperiness($blockAt) * 0.91;
 			}
 			
-			//TODO onLadder
+			if($this->isOnLadder()){
+				$speedY = $this->speedY;
+				$this->fallDistance = 0;
+				if($speedY < -0.15) $this->speedY = -0.15;
+			}
+			
 			$this->move($this->speedX, $this->speedY, $this->speedZ);
-			//TODO onLadder + isCollidedHorizonatlly => speedY = 0.2
+			
+			if($this->isOnLadder() && $this->isCollidedHorizontally){
+				$this->speedY = 0.2;
+			}
 			
 			$this->speedY -= 0.08; //gravity
 			

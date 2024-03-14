@@ -1,6 +1,7 @@
 <?php
 class Spider extends Monster{
 	const TYPE = MOB_SPIDER;
+	
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 		$this->setSize(1.4, 0.9);
 		parent::__construct($level, $eid, $class, $type, $data);
@@ -12,6 +13,8 @@ class Spider extends Monster{
 		$this->ai->addTask(new TaskSwimming());
 		$this->ai->addTask(new TaskAttackPlayer(1.0, 16)); //TODO fix range?
 	}
+	
+	
 	public function attackEntity($entity, $distance){
 		if($distance > 2.0 && $distance < 6.0){
 			if($this->onGround){
@@ -24,11 +27,16 @@ class Spider extends Monster{
 				$this->speedY = 0.4;
 			}
 			return false;
-		}else{
+		}else if($distance <= 2.0){
 			return parent::attackEntity($entity, $distance);
 		}
 		
 	}
+	
+	public function isOnLadder(){
+		return $this->isCollidedHorizontally;
+	}
+	
 	public function getDrops(){
 		return [
 			[STRING, 0, mt_rand(0,2)]
