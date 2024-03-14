@@ -637,7 +637,7 @@ class Utils{
 	}
 
 	public static function readLong($x, $signed = true){
-		return unpack("J", $x)[1]; //signed is useless since number cant be more than 2^63-1 in php
+		return @unpack("J", $x)[1]; //signed is useless since number cant be more than 2^63-1 in php
 	}
 
 	public static function writeLLong($value){
