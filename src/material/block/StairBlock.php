@@ -65,7 +65,7 @@ class StairBlock extends TransparentBlock{
 					if($blockMetaNearbyAnd3 == 3 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x, $y, $z + 1, $blockMeta)){
 						$maxZ = 0.5;
 						$v13 = false;
-					}else if($blockMetaNearbyAnd3 == 2 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x, $y, $z - 1, $blockMeta)){
+					}elseif($blockMetaNearbyAnd3 == 2 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x, $y, $z - 1, $blockMeta)){
 						$minZ = 0.5;
 						$v13 = false;
 					}
@@ -84,7 +84,7 @@ class StairBlock extends TransparentBlock{
 					if($blockMetaNearbyAnd3 == 3 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x, $y, $z + 1, $blockMeta)){
 						$maxZ = 0.5;
 						$v13 = false;
-					}else if($blockMetaNearbyAnd3 == 2 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x, $y, $z - 1, $blockMeta)){
+					}elseif($blockMetaNearbyAnd3 == 2 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x, $y, $z - 1, $blockMeta)){
 						$minZ = 0.5;
 						$v13 = false;
 					}
@@ -103,7 +103,7 @@ class StairBlock extends TransparentBlock{
 					if($blockMetaNearbyAnd3 == 1 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x + 1, $y, $z, $blockMeta)){
 						$maxX = 0.5;
 						$v13 = false;
-					}else if($blockMetaNearbyAnd3 == 0 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x - 1, $y, $z, $blockMeta)){
+					}elseif($blockMetaNearbyAnd3 == 0 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x - 1, $y, $z, $blockMeta)){
 						$minX = 0.5;
 						$v13 = false;
 					}
@@ -119,7 +119,7 @@ class StairBlock extends TransparentBlock{
 					if($blockMetaNearbyAnd3 == 1 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x + 1, $y, $z, $blockMeta)){
 						$maxX = 0.5;
 						$v13 = false;
-					}else if($blockMetaNearbyAnd3 == 0 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x - 1, $y, $z, $blockMeta)){
+					}elseif($blockMetaNearbyAnd3 == 0 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x - 1, $y, $z, $blockMeta)){
 						$minX = 0.5;
 						$v13 = false;
 					}
@@ -159,7 +159,7 @@ class StairBlock extends TransparentBlock{
 						$minZ = 0;
 						$maxZ = 0.5;
 						$v13 = true;
-					}else if($metaNearbyAnd3 == 2 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x, $y, $z + 1, $meta)){
+					}elseif($metaNearbyAnd3 == 2 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x, $y, $z + 1, $meta)){
 						$minZ = 0.5;
 						$maxZ = 1.0;
 						$v13 = true;
@@ -179,7 +179,7 @@ class StairBlock extends TransparentBlock{
 						$minZ = 0;
 						$maxZ = 0.5;
 						$v13 = true;
-					}else if($metaNearbyAnd3 == 2 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x, $y, $z + 1, $meta)){
+					}elseif($metaNearbyAnd3 == 2 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x, $y, $z + 1, $meta)){
 						$minZ = 0.5;
 						$maxZ = 1.0;
 						$v13 = true;
@@ -198,7 +198,7 @@ class StairBlock extends TransparentBlock{
 					
 					if($metaNearbyAnd3 == 1 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x - 1, $y, $z, $meta)){
 						$v13 = true;
-					}else if($metaNearbyAnd3 == 0 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x + 1, $y, $z, $meta)){
+					}elseif($metaNearbyAnd3 == 0 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x + 1, $y, $z, $meta)){
 						$minX = 0.5;
 						$maxX = 1.0;
 						$v13 = true;
@@ -216,7 +216,7 @@ class StairBlock extends TransparentBlock{
 					
 					if($metaNearbyAnd3 == 1 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x - 1, $y, $z, $meta)){
 						$v13 = true;
-					}else if($metaNearbyAnd3 == 0 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x + 1, $y, $z, $meta)){
+					}elseif($metaNearbyAnd3 == 0 && !self::isStairsAtXYZAndAreTheirMetadataSame($level, $x + 1, $y, $z, $meta)){
 						$minX = 0.5;
 						$maxX = 1.0;
 						$v13 = true;

@@ -165,7 +165,7 @@ class AchievementAPI{
 			}else{
 				$data = $issuer->achievements;
 			}
-		}else if(!($issuer instanceof Player) || $this->server->api->ban->isOp($issuer->iusername)){
+		}elseif(!($issuer instanceof Player) || $this->server->api->ban->isOp($issuer->iusername)){
 			$player = $this->server->api->player->get($params[0]);
 			$data = $player instanceof Player ? $player->data : $this->server->api->player->getOffline(trim($params[0]), false);
 		}else{

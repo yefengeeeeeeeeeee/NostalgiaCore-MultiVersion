@@ -226,7 +226,7 @@ class EntityAPI{
 				foreach($center->level->entityListPositioned[$ind] ?? [] as $ind2 => $entid){
 					if(isset($this->entities[$entid]) && $this->entities[$entid] instanceof Entity && ($class === false || $this->entities[$entid]->class == $class)){
 						$ents[$entid] = $this->entities[$entid];
-					}else if(!isset($this->entities[$entid])){
+					}elseif(!isset($this->entities[$entid])){
 						ConsoleAPI::debug("Removing entity from level array at index $ind/$ind2: $entid");
 						unset($center->level->entityListPositioned[$ind][$ind2]);
 					}

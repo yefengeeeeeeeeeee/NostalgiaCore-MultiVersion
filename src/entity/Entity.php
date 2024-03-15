@@ -703,7 +703,7 @@ class Entity extends Position
 				++$this->fire;
 				if($this->fire == 0) $this->fire = 8;
 			}
-		}else if($this->fire <= 0){
+		}elseif($this->fire <= 0){
 			$this->fire = -$this->fireResistance;
 		}
 		

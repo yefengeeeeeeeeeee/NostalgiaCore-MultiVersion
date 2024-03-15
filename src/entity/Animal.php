@@ -65,7 +65,7 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 		}
 		if($this->isInLove() && !isset($this->level->entitiesInLove[$this->eid])){
 			$this->level->entitiesInLove[$this->eid] = true;
-		}else if(!$this->isInLove() && isset($this->level->entitiesInLove[$this->eid])){
+		}elseif(!$this->isInLove() && isset($this->level->entitiesInLove[$this->eid])){
 			unset($this->level->entitiesInLove[$this->eid]);
 		}
 	}

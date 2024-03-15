@@ -115,15 +115,15 @@ class Level{
 			$v15 = $v17 = $v19 = 999.0; //nice mojang
 			
 			if($xEnd > $xStart) $v15 = $xStart + 1;
-			else if($xEnd < $xStart) $v15 = $xStart;
+			elseif($xEnd < $xStart) $v15 = $xStart;
 			else $v39 = false;
 			
 			if($yEnd > $yStart) $v17 = $yStart + 1;
-			else if($yEnd < $yStart) $v17 = $yStart;
+			elseif($yEnd < $yStart) $v17 = $yStart;
 			else $v40 = false;
 			
 			if($zEnd > $zStart) $v19 = $zStart + 1;
-			else if($zEnd < $zStart) $v19 = $zStart;
+			elseif($zEnd < $zStart) $v19 = $zStart;
 			else $v41 = false;
 			
 			$v21 = $v23 = $v25 = 999.0; //nice mojang x2
@@ -142,7 +142,7 @@ class Level{
 				$start->x = $v15;
 				$start->y += $v29 * $v21;
 				$start->z += $v31 * $v21;
-			}else if($v23 < $v25){
+			}elseif($v23 < $v25){
 				$v42 = $yEnd > $yStart ? 0 : 1;
 				
 				$start->x += $v27 * $v23;
@@ -549,13 +549,13 @@ class Level{
 				}
 				if($e->level != $this && isset($this->entityListPositioned["$curChunkX $curChunkZ"])){
 					unset($this->entityListPositioned["$curChunkX $curChunkZ"][$e->eid]);
-				}else if($curChunkX != $newChunkX || $curChunkZ != $newChunkZ){
+				}elseif($curChunkX != $newChunkX || $curChunkZ != $newChunkZ){
 					$index = "$curChunkX $curChunkZ"; //while creating index like $curChunkX << 32 | $curChunkZ is faster, placing it inside list is slow
 					$newIndex = "$newChunkX $newChunkZ";
 					unset($this->entityListPositioned[$index][$e->eid]);
 					$this->entityListPositioned[$newIndex][$e->eid] = $e->eid; //set to e->eid to avoid possible memory leaks
 				}
-			}else if(isset($this->entityListPositioned["$curChunkX $curChunkZ"])){
+			}elseif(isset($this->entityListPositioned["$curChunkX $curChunkZ"])){
 				unset($this->entityListPositioned["$curChunkX $curChunkZ"][$k]);
 			}
 		}
@@ -623,7 +623,7 @@ class Level{
 				foreach($this->entityListPositioned[$ind] ?? [] as $ind2 => $entid){
 					if(isset($this->entityList[$entid]) && $this->entityList[$entid] instanceof Entity && $this->entityList[$entid]->class === $class && $this->entityList[$entid]->boundingBox->intersectsWith($bb)){
 						$ents[$entid] = $this->entityList[$entid];
-					}else if(!isset($this->entityList[$entid])){
+					}elseif(!isset($this->entityList[$entid])){
 						ConsoleAPI::debug("Removing entity from level array at index $ind/$ind2: $entid");
 						unset($this->entityListPositioned[$ind][$ind2]);
 					}
@@ -646,7 +646,7 @@ class Level{
 				foreach($this->entityListPositioned[$ind] ?? [] as $ind2 => $entid){
 					if(isset($this->entityList[$entid]) && $this->entityList[$entid] instanceof Entity && $this->entityList[$entid]->boundingBox->intersectsWith($bb)){
 						$ents[$entid] = $this->entityList[$entid];
-					}else if(!isset($this->entityList[$entid])){
+					}elseif(!isset($this->entityList[$entid])){
 						ConsoleAPI::debug("Removing entity from level array at index $ind/$ind2: $entid");
 						unset($this->entityListPositioned[$ind][$ind2]);
 					}

@@ -27,7 +27,7 @@ class Spider extends Monster{
 				$this->speedY = 0.4;
 			}
 			return false;
-		}else if($distance <= 2.0){
+		}elseif($distance <= 2.0){
 			return parent::attackEntity($entity, $distance);
 		}
 		

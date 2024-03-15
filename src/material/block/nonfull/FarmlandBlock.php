@@ -32,7 +32,7 @@ class FarmlandBlock extends TransparentBlock{
 		$b = $level->level->getBlockID($x, $y + 1, $z);
 		if(!StaticBlock::getIsFlowable($b)){
 			$level->fastSetBlockUpdate($x, $y, $z, DIRT, 0, true);
-		}else if($meta === 0 && mt_rand(0, 5) === 0){
+		}elseif($meta === 0 && mt_rand(0, 5) === 0){
 			$water = self::checkWaterStatic($level, $x, $y, $z);
 			if($water){
 				$level->fastSetBlockUpdate($x, $y, $z, FARMLAND, 1, true);
