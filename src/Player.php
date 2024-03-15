@@ -490,8 +490,18 @@ class Player{
 				$Yndex |= 1 << $iY;
 			}
 		}
+		$minX = ($X << 4);
+		$maxX = (($X << 4) + 16);
+		$minZ = ($Z << 4);
+		$maxZ = (($Z << 4) + 16);
 		
-		$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '" . $this->level->getName() . "' AND x >= " . (($X << 4) - 1) . " AND x < " . (($X << 4) + 17) . " AND z >= " . (($Z << 4) - 1) . " AND z < " . (($Z << 4) + 17) . ";");
+		$pk = new ChunkDataPacket;
+		$pk->chunkX = $X;
+		$pk->chunkZ = $Z;
+		$pk->data = $this->level->getOrderedChunk($X, $Z, $Yndex);
+		$cnt = $this->dataPacket($pk);
+
+		$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '{$this->level->getName()}' AND x >= $minX AND x <= $maxX AND z >= $minZ AND z <= $maxZ;");
 		$this->lastChunk = false;
 		if($tiles !== false and $tiles !== true){
 			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
@@ -502,11 +512,6 @@ class Player{
 			}
 		}
 		
-		$pk = new ChunkDataPacket;
-		$pk->chunkX = $X;
-		$pk->chunkZ = $Z;
-		$pk->data = $this->level->getOrderedChunk($X, $Z, $Yndex);
-		$cnt = $this->dataPacket($pk);
 		if($cnt === false){
 			return false;
 		}
