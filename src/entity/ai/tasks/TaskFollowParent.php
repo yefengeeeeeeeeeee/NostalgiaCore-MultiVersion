@@ -38,7 +38,7 @@ class TaskFollowParent extends TaskBase
 	
 	public function canBeExecuted(EntityAI $ai)
 	{
-		return $ai->entity->isBaby() && !$ai->entity->parent->dead; //TODO find a new parent if the current one is dead
+		return $ai->entity->isBaby() && ($ai->entity->parent instanceof Entity) && !$ai->entity->parent->dead; //TODO find a new parent if the current one is dead
 	}
 }
 

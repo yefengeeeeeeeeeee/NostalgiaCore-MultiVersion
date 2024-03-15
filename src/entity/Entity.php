@@ -96,6 +96,9 @@ class Entity extends Position
 	 * @var integer
 	 */
 	public $fireResistance = 1;
+	
+	public $isImmuneToFire = false;
+	
 	public $inWeb;
 	public $inLava;
 	
@@ -163,7 +166,7 @@ class Entity extends Position
 				$this->hasKnockback = true;
 				$this->hasGravity = true;
 				$this->canBeAttacked = true;
-				$this->fireResistance = 20; //TODO fire resiatance for player
+				$this->fireResistance = 20;
 				break;
 			case ENTITY_OBJECT:
 				$this->x = isset($this->data["TileX"]) ? $this->data["TileX"] : $this->x;
@@ -415,42 +418,43 @@ class Entity extends Position
 			}
 		}
 
-		//if($this->class !== ENTITY_PLAYER and ($this->x <= 0 or $this->z <= 0 or $this->x >= 256 or $this->z >= 256 or $this->y >= 128 or $this->y <= 0)){
-		//	$this->close();
-		//	return false;
-		//}
-
 		if($this->dead === true){
 			$this->fire = 0;
 			$this->air = $this->maxAir;
 			return false;
 		}
-		if($this->isInVoid()){
-			$this->outOfWorld();
-			$hasUpdate = true;
-		}
-		if(!$this->isPlayer()){
-			$this->handleWaterMovement();
-		}
+		
+		$this->handleWaterMovement();
 		
 		if($this->fire > 0){ //TODO move somewhere
-			if(($this->fire % 20) === 0){
-				$this->harm(1, "burning");
+			if(!$this->isImmuneToFire){
+				if(($this->fire % 20) == 0){
+					$this->harm(1, "burning");
+				}
+				--$this->fire;
+			}else{
+				$this->fire -= 4;
+				if($this->fire <= 0) $this->fire = 0;
 			}
-			$this->fire -= 10;
+			
 			if($this->fire <= 0){
-				$this->fire = 0;
 				$this->updateMetadata();
 			} else{
 				$hasUpdate = true;
 			}
 		}
 
-		if(!$this->isPlayer()) {
-			if($this->handleLavaMovement()){
-				//TODO this.setOnFireFromLava();
-				$this->fallDistance *= 0.5;
+		if($this->handleLavaMovement()){
+			if(!$this->isImmuneToFire){
+				$this->harm(4, "fire");
+				$oldOnFire = $this->fire;
+				if($oldOnFire < 20*30) $this->fire = 20*30; //30 seconds
 			}
+		}
+		
+		if($this->isInVoid()){
+			$this->outOfWorld();
+			$hasUpdate = true;
 		}
 		
 		$startX = floor($this->boundingBox->minX);
@@ -468,8 +472,6 @@ class Entity extends Position
 				$this->harm(1, "suffocation");
 			}
 		}
-		
-		
 		
 		//air damage
 		if($this->isPlayer() || $this instanceof Living){
@@ -493,57 +495,6 @@ class Entity extends Position
 				}
 			}else{
 				$this->air = $this->maxAir;
-			}
-		}
-		
-		
-		for ($y = $startY; $y <= $endY; ++$y){
-			for ($x = $startX; $x <= $endX; ++$x){
-				for ($z = $startZ; $z <= $endZ; ++$z){
-					$b = $this->level->level->getBlock($x, $y, $z);
-					$id = $b[0];
-					$meta = $b[1];
-					switch ($id) {
-						case WATER:
-						case STILL_WATER: // Drowing
-							if ($this->fire > 0 and $this->inBlock(new Vector3($x, $y, $z))) {
-								$this->fire = 0;
-								$this->updateMetadata();
-							}
-							break;
-						case LAVA: // Lava damage
-						case STILL_LAVA:
-							if ($this->inBlock(new Vector3($x, $y, $z))) {
-								$this->harm(5, "lava");
-								$this->fire = 300;
-								if($this->isPlayer() and ($this->player->gamemode & 0x01) === CREATIVE){
-									$this->fire = 1;
-								}
-								$this->updateMetadata();
-								$hasUpdate = true;
-							}
-							break;
-						case FIRE: // Fire block damage
-							if ($this->inBlock(new Vector3($x, $y, $z))) {
-								$this->harm(1, "fire");
-								$this->fire = 300;
-								if($this->isPlayer() and ($this->player->gamemode & 0x01) === CREATIVE){
-									$this->fire = 1;
-								}
-								$this->updateMetadata();
-								$hasUpdate = true;
-							}
-							break;
-						case CACTUS: // Cactus damage
-							if ((new AxisAlignedBB($x, $y, $z, $x + 1, $y + 1, $z + 1))->intersectsWith($this->boundingBox)) {
-								$this->harm(1, "cactus");
-								$hasUpdate = true;
-							}
-							break;
-						default:
-							break;
-					}
-				}
 			}
 		}
 		return $hasUpdate;
@@ -696,12 +647,12 @@ class Entity extends Position
 		
 		$this->doBlocksCollision();
 		
-		
+		$oldFire = $this->fire;
 		if($this->level->isBoundingBoxOnFire($this->boundingBox->contract(0.001, 0.001, 0.001))){
 			$this->harm(1, "fire");
-			if($this->inWater){
+			if(!$this->inWater){
 				++$this->fire;
-				if($this->fire == 0) $this->fire = 8;
+				if($this->fire == 0) $this->fire = 8*20;
 			}
 		}elseif($this->fire <= 0){
 			$this->fire = -$this->fireResistance;
@@ -709,6 +660,10 @@ class Entity extends Position
 		
 		if($this->inWater && $this->fire > 0){
 			$this->fire = -$this->fireResistance;
+		}
+		
+		if(($oldFire > 0 && $this->fire <= 0) || ($oldFire <= 0 && $this->fire > 0)){
+			$this->updateMetadata(); //TODO rewrite metadata
 		}
 	}
 	
@@ -754,13 +709,13 @@ class Entity extends Position
 			$this->lastUpdate = $now;
 			return;
 		}
-		
 		$hasUpdate = $this->environmentUpdate($now);
 
 		if($this->closed === true){
 			return false;
 		}
 		++$this->counter;
+		
 		if($this->isStatic === false){
 			if(!$this->isPlayer()){
 				$this->updateLast();
@@ -784,6 +739,18 @@ class Entity extends Position
 				$this->speedX = -($this->lastX - $this->x);
 				$this->speedY = -($this->lastY - $this->y);
 				$this->speedZ = -($this->lastZ - $this->z);
+				
+				$contractedCollisionBB = $this->boundingBox->contract(0.001, 0.001, 0.001);
+				$fireMinX = floor($contractedCollisionBB->minX);
+				$fireMinY = floor($contractedCollisionBB->minY);
+				$fireMinZ = floor($contractedCollisionBB->minZ);
+				$fireMaxX = floor($contractedCollisionBB->maxX + 1);
+				$fireMaxY = floor($contractedCollisionBB->maxY + 1);
+				$fireMaxZ = floor($contractedCollisionBB->maxZ + 1);
+				
+				$handleFire = false;
+				$handleCactus = false;
+				
 				for($x = floor($this->boundingBox->minX); $x < ceil($this->boundingBox->maxX); ++$x){
 					for($z = floor($this->boundingBox->minZ); $z < ceil($this->boundingBox->maxZ); ++$z){
 						for($y = floor($this->boundingBox->minY - 1); $y < ceil($this->boundingBox->maxY); ++$y){
@@ -793,6 +760,9 @@ class Entity extends Position
 								$block = $this->level->level->getBlock($x, $y, $z);
 								$id = $block[0];
 								$meta = $block[1];
+								$handleFire = $handleFire || (($id == FIRE || $id == STILL_LAVA || $id == LAVA) && $x >= $fireMinX && $x < $fireMaxX && $y >= $fireMinY && $y < $fireMaxY && $z >= $fireMinZ && $z < $fireMaxZ);
+								$handleCactus = $handleCactus || ($id == CACTUS && $x >= $fireMinX && $x <= $fireMaxX && $y >= $fireMinY && $y <= $fireMaxY && $z >= $fireMinZ && $z <= $fireMaxZ);
+								
 								if($id === WATER || $id === STILL_WATER || $id === COBWEB){
 									$this->fallDistance = 0;
 									$this->fallStart = $this->y;
@@ -802,7 +772,6 @@ class Entity extends Position
 						}
 					}
 				}
-				
 				
 				if($this->isOnLadder()){
 					$this->fallDistance = 0;
@@ -815,7 +784,30 @@ class Entity extends Position
 				
 				$this->updateFallState(($this->speedY <=> 0)*0.1);
 				if($this->onGround) $this->fallDistance = 0;
-				$hasUpdate = true;
+				
+				if($handleCactus){
+					$this->harm(1, "cactus");
+				}
+				$oldFire = $this->fire;
+				if($handleFire){
+					$this->harm(1, "fire");
+					if(!$this->inWater){
+						++$this->fire;
+						if($this->fire == 0) $this->fire = 8*20;
+					}
+				}elseif($this->fire <= 0){
+					$this->fire = -$this->fireResistance;
+				}
+				
+				if($this->inWater && $this->fire > 0){
+					$this->fire = -$this->fireResistance;
+				}
+				
+				if(($oldFire > 0 && $this->fire <= 0) || ($oldFire <= 0 && $this->fire > 0)){
+					$this->updateMetadata(); //TODO rewrite metadata
+				}
+				
+				$hasUpdate = true; 
 			}
 		}
 		

@@ -6,7 +6,11 @@ class CactusBlock extends TransparentBlock{
 		$this->isFullBlock = false;
 		$this->hardness = 2;
 	}
-
+	
+	public static function onEntityCollidedWithBlock(Level $level, $x, $y, $z, Entity $entity){
+		$entity->harm(1, "cactus");
+	}
+	
 	public static function onRandomTick(Level $level, $x, $y, $z){
 		//$b = $level->level->getBlock($x, $y - 1, $z);
 		$underID = $level->level->getBlockID($x, $y - 1, $z);

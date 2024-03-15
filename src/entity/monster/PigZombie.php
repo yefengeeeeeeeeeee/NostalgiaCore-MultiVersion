@@ -7,7 +7,7 @@ class PigZombie extends Monster{ //TODO extends zombie
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 12, "generic");
 		$this->setName("Pigman");
 		$this->setSpeed(0.25);
-		
+		$this->isImmuneToFire = true;
 		$this->ai->addTask(new TaskLookAround());
 		$this->ai->addTask(new TaskRandomWalk(1.0));
 		$this->ai->addTask(new TaskSwimming());
@@ -21,13 +21,5 @@ class PigZombie extends Monster{ //TODO extends zombie
 			[COOKED_PORKCHOP, 0, mt_rand(0,2)],
 			[GOLD_INGOT, 0, mt_rand(0,1)]
 		];
-	}
-	
-	public function harm($dmg, $cause = "generic", $force = false)
-	{
-		if($cause === "fire" || $cause === "lava" || $cause === "burning"){
-			return false;
-		}
-		return parent::harm($dmg, $cause, $force);
 	}
 }

@@ -31,8 +31,11 @@ class Skeleton extends Monster{
 			}
 		}
 		if($block === AIR){
+			$oldFire = $this->fire;
 			$this->fire = 160; //Value from 0.8.1
-			$this->updateMetadata();
+			if(($oldFire > 0 && $this->fire <= 0) || ($oldFire <= 0 && $this->fire > 0)){
+				$this->updateMetadata(); //TODO rewrite metadata
+			}
 			return true;
 		}else{
 			return false;
