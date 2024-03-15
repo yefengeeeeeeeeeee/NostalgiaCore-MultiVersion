@@ -30,9 +30,9 @@ class TaskRandomWalk extends TaskBase
 			$this->reset();
 			return false; //TODO Better way: block movement
 		}
+		
 		--$this->selfCounter;
 		$ai->mobController->setMovingOffset($this->x, 0, $this->z, $this->speedMultiplier);
-		//TODO fix $ai->mobController->moveNonInstant($this->x, 0, $this->z);
 	}
 
 	public function canBeExecuted(EntityAI $ai)

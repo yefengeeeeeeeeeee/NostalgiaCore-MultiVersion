@@ -39,7 +39,6 @@ class TaskEatTileGoal extends TaskBase
 			return ($idm[0] === TALL_GRASS && $idm[1] === 1) || $idb === GRASS;
 		}
 		return false;
-		//this.theEntity.getRNG().nextInt(this.theEntity.isChild() ? 50 : 1000) != 0
 	}
 
 }

@@ -49,7 +49,7 @@ class Arrow extends Projectile{
 		$this->yaw = (atan2($d, $d2) * 180) / M_PI;
 		$this->pitch = (atan2($d1, $f3) * 180) / M_PI;
 		$this->updatePosition();
-		$this->update();
+		//$this->update();
 		//TODO i guess? $ticksInGround = 0;
 	}
 	public function sendMoveUpdate()
