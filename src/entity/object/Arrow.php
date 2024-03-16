@@ -127,7 +127,7 @@ class Arrow extends Projectile{
 		$this->speedY -= $this->gravity;
 		
 		
-		$this->updatePosition();	
+		$this->updatePosition();
 		
 	}
 	

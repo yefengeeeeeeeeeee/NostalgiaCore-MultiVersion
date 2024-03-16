@@ -38,7 +38,7 @@ class Explosion{
 			$blockID = $BIDM[0];
 			$blockMeta = $BIDM[1];
 			if($blockID > 0){
-				$index = ($vBlock->x << 15) + ($vBlock->z << 7) + $vBlock->y;
+				$index = ($vBlock->x << 16) + ($vBlock->z << 8) + $vBlock->y;
 				
 				if(StaticBlock::getIsLiquid($blockID) && !isset($visited[$index])){
 					ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($vBlock->x, $vBlock->y, $vBlock->z, $this->level), 5, BLOCK_UPDATE_NORMAL);
@@ -47,15 +47,8 @@ class Explosion{
 				
 				$blastForce -= (StaticBlock::getHardness($blockID) / 5 + 0.3) * $this->stepLen;
 				if($blastForce > 0){
-					$index = ($vBlock->x << 15) + ($vBlock->z << 7) + $vBlock->y;
 					if(!isset($this->affectedBlocks[$index])){
-						$this->affectedBlocks[$index] = [
-							"x" => $vBlock->x,
-							"y" => $vBlock->y,
-							"z" => $vBlock->z,
-							"id" => $blockID,
-							"meta" => $blockMeta
-						];
+						$this->affectedBlocks[$index] = $blockID << 8 | $blockMeta;
 					}
 				}
 			}
@@ -133,35 +126,51 @@ class Explosion{
 		
 		
 		$send = [];
-		$source = $this->source->floor();
 		foreach($server->api->entity->getRadius($this->source, $radius) as $entity){
-			$impact = (1 - $this->source->distance($entity) / $radius) * 0.5; //placeholder, 0.7 should be exposure
-			$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
-			$entity->harm($damage, "explosion");
+			$distance = $this->source->distance($entity);
+			$distByRad = $distance / $this->size;
+			if($distByRad <= 1 && $distance != 0){
+				$diffX = ($entity->x - $this->source->x) / $distance;
+				$diffY = ($entity->y + $entity->getEyeHeight() - $this->source->y) / $distance;
+				$diffZ = ($entity->z - $this->source->z) / $distance;
+					
+				$impact = (1 - $distByRad) * 0.5; //TODO calculate block density around the entity instead of 0.5 
+				$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
+				$entity->harm($damage, "explosion");
+				$entity->speedX = $diffX * $impact; //TODO check is needed for player?
+				$entity->speedY = $diffY * $impact;
+				$entity->speedZ = $diffZ * $impact;
+			}
 		}
 		
-		foreach($this->affectedBlocks as $blockA){
-			if($blockA["id"] === TNT){
+		foreach($this->affectedBlocks as $xyz => $idm){
+			$id = $idm >> 8 & 0xff;
+			$meta = $idm & 0x0f;
+			$x = $xyz >> 16;
+			$z = $xyz >> 8 & 0xff;
+			$y = $xyz & 0xff;
+			//console("$x $y $z $id $meta");
+			if($id === TNT){
 				$data = [
-					"x" => $blockA["x"] + 0.5,
-					"y" => $blockA["y"] + 0.5,
-					"z" => $blockA["z"] + 0.5,
+					"x" => $x + 0.5,
+					"y" => $y + 0.5,
+					"z" => $z + 0.5,
 					"power" => 4,
 					"fuse" => mt_rand(10, 30), //0.5 to 1.5 seconds
 				];
 				$e = $server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
 				$server->api->entity->spawnToAll($e);
 			}elseif(mt_rand(0, 10000) < ((1 / $this->size) * 10000)){
-				$block = BlockAPI::get($blockA["id"], $blockA["meta"], new Position($blockA["x"], $blockA["y"], $blockA["z"], $this->level));
+				$block = BlockAPI::get($id, $meta, new Position($x, $y, $z, $this->level));
 				$dropz = $block->getDrops($this->air, $this->nullPlayer);
 				if(is_array($dropz)){
 					foreach($dropz as $drop){
-						$server->api->entity->drop(new Position($blockA["x"] + 0.5, $blockA["y"], $blockA["z"] + 0.5, $this->level), BlockAPI::getItem($drop[0], $drop[1], $drop[2])); //id, meta, count
+						$server->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $this->level), BlockAPI::getItem($drop[0], $drop[1], $drop[2])); //id, meta, count
 					}
 				}
 			}
-			$this->level->fastSetBlockUpdate($blockA["x"], $blockA["y"], $blockA["z"], 0, 0);
-			$send[] = new Vector3($blockA["x"] - $source->x, $blockA["y"] - $source->y, $blockA["z"] - $source->z);
+			$this->level->fastSetBlockUpdate($x, $y, $z, 0, 0);
+			$send[] = $xyz;
 		}
 		$pk = new ExplodePacket;
 		$pk->x = $this->source->x;
