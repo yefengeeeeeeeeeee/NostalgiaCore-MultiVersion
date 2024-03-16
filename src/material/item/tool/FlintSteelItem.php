@@ -13,7 +13,7 @@ class FlintSteelItem extends ItemTool{
 		}
 		if($block->getID() === AIR and ($target instanceof SolidBlock)){
 			$level->setBlock($block, new FireBlock(), true, false, true);
-			$block->level->scheduleBlockUpdate($block, Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
+			$level->scheduleBlockUpdate($block, 30, BLOCK_UPDATE_SCHEDULED);
 			return true;
 		}
 		return false;

@@ -36,6 +36,9 @@ class StaticBlock
 			self::$slipperiness[$b->getID()] = $b->slipperiness;
 			self::$boundingBoxes[$b->getID()] = $b->boundingBox;
 			self::$hardness[$b->getID()] = $b->getHardness();
+			
+			
+			FireBlock::setFlammabilityAndCatchingChance($b->getID(), 0, 0);
 		}
 		
 		Block::$class[BED_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.5625, 1);
@@ -64,6 +67,29 @@ class StaticBlock
 		Block::$class[SNOW_LAYER]::setBlockBounds(0, 0, 0, 1, 0.125, 1);
 		//Stairs: based on different factors
 		//Stone wall: based on state
+		
+		//Fire related stuff
+		FireBlock::setFlammabilityAndCatchingChance(PLANKS, 5, 20);
+		FireBlock::setFlammabilityAndCatchingChance(DOUBLE_WOOD_SLAB, 5, 20);
+		FireBlock::setFlammabilityAndCatchingChance(WOODEN_SLAB, 5, 20);
+		FireBlock::setFlammabilityAndCatchingChance(FENCE, 5, 20);
+		FireBlock::setFlammabilityAndCatchingChance(FENCE_GATE, 5, 20);
+		FireBlock::setFlammabilityAndCatchingChance(SIGN, 5, 20);
+		FireBlock::setFlammabilityAndCatchingChance(WALL_SIGN, 5, 20);
+		FireBlock::setFlammabilityAndCatchingChance(WOODEN_STAIRS, 5, 20);
+		FireBlock::setFlammabilityAndCatchingChance(BIRCH_WOODEN_STAIRS, 5, 20);
+		FireBlock::setFlammabilityAndCatchingChance(SPRUCE_WOODEN_STAIRS, 5, 20);
+		FireBlock::setFlammabilityAndCatchingChance(JUNGLE_WOODEN_STAIRS, 5, 20);
+		FireBlock::setFlammabilityAndCatchingChance(TRUNK, 5, 5);
+		FireBlock::setFlammabilityAndCatchingChance(LEAVES, 30, 60);
+		FireBlock::setFlammabilityAndCatchingChance(BOOKSHELF, 30, 20);
+		FireBlock::setFlammabilityAndCatchingChance(TNT, 15, 100);
+		FireBlock::setFlammabilityAndCatchingChance(TALL_GRASS, 60, 100);
+		FireBlock::setFlammabilityAndCatchingChance(WOOL, 30, 60);
+		FireBlock::setFlammabilityAndCatchingChance(CARPET, 30, 60);
+		FireBlock::setFlammabilityAndCatchingChance(COAL_BLOCK, 5, 5);
+		FireBlock::setFlammabilityAndCatchingChance(HAY_BALE, 60, 20);
+		FireBlock::setFlammabilityAndCatchingChance(SPONGE, 30, 60);
 	}
 	
 	public static function getBlock($id){
