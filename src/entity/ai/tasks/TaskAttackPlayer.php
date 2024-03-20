@@ -22,6 +22,7 @@ class TaskAttackPlayer extends TaskBase
 	{
 		if(!$this->isTargetValid($ai)){
 			$this->reset();
+			$this->onEnd($ai);
 			return false;
 		}
 		$ai->mobController->setMovingTarget($ai->entity->target->x, $ai->entity->target->y, $ai->entity->target->z, $this->speedMultiplier);
@@ -100,7 +101,7 @@ class TaskAttackPlayer extends TaskBase
 	
 	public function onEnd(EntityAI $ai)
     {
-		
+		$ai->entity->target = false;
 	}
 
 }

@@ -4,6 +4,7 @@ class TaskTempt extends TaskBase
 {
 	public function __construct($speed){
 		$this->speedMultiplier = $speed;
+		$this->targetDistance = 10*10;
 	}
 	
 	public function onStart(EntityAI $ai)
@@ -13,12 +14,14 @@ class TaskTempt extends TaskBase
 	
 	public function onEnd(EntityAI $ai)
 	{
+		$ai->entity->target = false;
 	}
 	
 	public function onUpdate(EntityAI $ai)
 	{
 		if(!$this->isTargetValid($ai) || $ai->entity->inPanic || $ai->isStarted("TaskMate")){
 			$this->reset();
+			$this->onEnd($ai);
 			return false;
 		}
 		
@@ -42,7 +45,7 @@ class TaskTempt extends TaskBase
 			$xDiff = ($t->x - $e->x);
 			$yDiff = ($t->y - $e->y);
 			$zDiff = ($t->z - $e->z);
-			return ($xDiff*$xDiff + $yDiff*$yDiff + $zDiff*$zDiff) <= 36;
+			return ($xDiff*$xDiff + $yDiff*$yDiff + $zDiff*$zDiff) <= $this->targetDistance;
 		}
 		return false;
 	}
@@ -59,7 +62,7 @@ class TaskTempt extends TaskBase
 			$xDiff = ($t->x - $e->x);
 			$yDiff = ($t->y - $e->y);
 			$zDiff = ($t->z - $e->z);
-			if(($xDiff*$xDiff + $yDiff*$yDiff + $zDiff*$zDiff) <= 36){
+			if(($xDiff*$xDiff + $yDiff*$yDiff + $zDiff*$zDiff) <= $this->targetDistance){
 				return true;
 			}
 		}
@@ -72,7 +75,7 @@ class TaskTempt extends TaskBase
 				$yDiff = $pt->y - $e->y;
 				$zDiff = $pt->z - $e->z;
 				$d = ($xDiff*$xDiff + $yDiff*$yDiff + $zDiff*$zDiff);
-				if($d <= 36){
+				if($d <= $this->targetDistance){
 					if($bestTargetDistance >= $d){
 						$closestTarget = $pt;
 						$bestTargetDistance = $d;

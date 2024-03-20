@@ -197,7 +197,11 @@ class Entity extends Position
 	public function isType(){
 		return in_array($this->type, func_get_args());
 	}
-	
+	/**
+	 * @param Entity $entity
+	 * @param int $distance
+	 * @return boolean
+	 */
 	public function attackEntity($entity, $distance){
 		return false;
 	}
