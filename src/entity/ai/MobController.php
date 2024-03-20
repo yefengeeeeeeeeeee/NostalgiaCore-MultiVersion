@@ -30,6 +30,7 @@ class MobController
 	public $deltaLookYaw, $deltaLookPitch;
 	public $isLooking = false;
 	
+	public $headYawIsYaw = false;
 	
 	public function __construct($e){
 		$this->entity = $e;
@@ -55,6 +56,7 @@ class MobController
 		$this->speedMultiplier = $speed;
 		$this->updateMove = true;
 	}
+	
 	public function setMovingOffset($x, $y, $z, $speed){
 		$this->moveToX = $this->entity->x + ($x);
 		$this->moveToY = $this->entity->y + ($y);
@@ -165,6 +167,9 @@ class MobController
 		}else{
 			$this->entity->headYaw = self::limitAngle($this->entity->headYaw, $this->entity->renderYawOffset, 10);
 		}
+		
+		if($this->headYawIsYaw) $this->entity->yaw = $this->entity->headYaw;
+		$this->headYawIsYaw = false;
 		
 		/* Some stuff for pathfinder - nc doesnt have it now
 		 * float var11 = MathHelper.wrapAngleTo180_float(this.entity.rotationYawHead - this.entity.renderYawOffset);

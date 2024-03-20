@@ -31,8 +31,10 @@ class TaskTempt extends TaskBase
 		$zdiff = ($target->z - $ai->entity->z);
 		$dist = $xdiff*$xdiff + $ydiff*$ydiff + $zdiff*$zdiff;
 		$ai->mobController->setLookPosition($target->x, $target->y + $target->getEyeHeight(), $target->z, 30, $ai->entity->getVerticalFaceSpeed());
-		if($dist >= 6.25){ //TODO update yaw even if dist is less
+		if($dist >= 6.25){
 			$ai->mobController->setMovingTarget($target->x, $target->y, $target->z, $this->speedMultiplier);
+		}else{
+			$ai->mobController->headYawIsYaw = true;
 		}
 		
 		
