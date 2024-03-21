@@ -1226,8 +1226,8 @@ class Player{
 		$motionSent = false;
 		$moveSent = false;
 		$headSent = false;
-		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
-			if(!($e->speedY < 0 && $e->onGround) || $e->speedX != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
+		//if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
+		//	if(!($e->speedY < 0 && $e->onGround) || $e->speedX != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
 				$motion = new SetEntityMotionPacket();
 				$motion->eid = $e->eid;
 				$motion->speedX = $e->speedX;
@@ -1237,9 +1237,9 @@ class Player{
 				$len += 1 + strlen($motion->buffer);
 				++$packets;
 				$motionSent = true;
-			}
-		}
-		if($e->x != $e->lastX || $e->y != $e->lastY || $e->z != $e->lastZ || $e->yaw != $e->lastYaw || $e->pitch != $e->lastPitch){
+		//	}
+		//}
+		//if($e->x != $e->lastX || $e->y != $e->lastY || $e->z != $e->lastZ || $e->yaw != $e->lastYaw || $e->pitch != $e->lastPitch){
 			$move = new MoveEntityPacket_PosRot();
 			$move->eid = $e->eid;
 			$move->x = $e->x;
@@ -1251,8 +1251,8 @@ class Player{
 			$len += strlen($move->buffer) + 1;
 			++$packets;
 			$moveSent = true;
-		}
-		if($e->headYaw != $e->lastHeadYaw){
+		//}
+		//if($e->headYaw != $e->lastHeadYaw){
 			$headyaw = new RotateHeadPacket();
 			$headyaw->eid = $e->eid;
 			$headyaw->yaw = $e->headYaw;
@@ -1260,7 +1260,7 @@ class Player{
 			$len += strlen($headyaw->buffer) + 1;
 			++$packets;
 			$headSent = true;
-		}
+		//}
 		if($packets <= 0) return;
 		//console("Update {$e}: $packets, mot: $motionSent, mov: $moveSent, hed: $headSent");
 		$MTU = $this->MTU - 24;
@@ -1879,9 +1879,12 @@ class Player{
 										//CANCEL but i am too lazy
 										$power = 0.1;
 									}
-									$e->critical = ($power === 1);
-									$e->shoot($e->speedX, $e->speedY, $e->speedZ, ($power+$power) * 1.5, 1.0);
-									$this->server->api->entity->spawnToAll($e);
+									if(DEBUG){
+										$e->critical = ($power === 1);
+										$e->shoot($e->speedX, $e->speedY, $e->speedZ, ($power+$power) * 1.5, 1.0);
+										$this->server->api->entity->spawnToAll($e);
+									}
+									
 								}
 							}
 						}

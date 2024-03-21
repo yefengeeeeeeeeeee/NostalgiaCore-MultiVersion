@@ -3,12 +3,20 @@
 class Arrow extends Projectile{
 	const TYPE = OBJECT_ARROW;
 	
-	public $criticial = false;
+	
 	public $shooterEID = 0;
 	public $shotByEntity;
-	public $airTicks = 0;
+	
 	public $inWall = false;
 	public $groundTicks = 0;
+	
+	public $xTile, $yTile, $zTile;
+	public $inTile, $inData;
+	public $shake;
+	public $inGround;
+	public $airTicks = 0;
+	public $criticial = false;
+	
 	function __construct(Level $level, $eid, $class, $type = 0, $data = [], $shooter = false){
 		parent::__construct($level, $eid, $class, $type, $data);
 		$this->gravity = 0.05;
@@ -66,68 +74,128 @@ class Arrow extends Projectile{
 		}
 	}
 	public function update($now){
-		$this->needsUpdate = false; //TODO reenable
-		return;
-		//parent::update();
-		if($this->closed || ($this->x > 255 || $this->x < 0 || $this->y < 0 || $this->z < 0 || $this->z > 255) || $this->groundTicks > 200) { //remove after 10 seconds in wall, idc about vanilla
-			$this->server->api->entity->remove($this->eid);
-			return;
-		}
-		
+		$this->lastX = $this->x;
+		$this->lastY = $this->y;
+		$this->lastZ = $this->z;
+		$this->lastPitch = $this->pitch;
+		$this->lastYaw = $this->yaw;
 		$this->needsUpdate = true;
-		if($this->inWall) {
-			++$this->groundTicks;
-			return; //yeah whatever
-		}
-		if($this->speedX != 0 or $this->speedY != 0 or $this->speedZ != 0){
-			$f = sqrt(($this->speedX * $this->speedX) + ($this->speedZ * $this->speedZ));
-			$this->yaw = (atan2($this->speedX, $this->speedZ) * 180 / M_PI);
-			$this->pitch = (atan2($this->speedY, $f) * 180 / M_PI);
-		}
-		$rt = $this->boundingBox->shrink(0.4, 0.4, 0.4)->addCoord($this->speedX, $this->speedY, $this->speedZ);
-		for($x = floor($rt->minX); $x < ceil($rt->maxX); ++$x){
-			for($z = floor($rt->minZ); $z < ceil($rt->maxZ); ++$z){
-				for($y = ceil($rt->minY); $y < ceil($rt->maxY); ++$y){
-					$b = $this->level->level->getBlockID($x, $y, $z);
-					if(StaticBlock::getIsSolid($b)){
-						$bb = StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
-						$this->speedY = $bb->calculateYOffset($this->boundingBox, $this->speedY);
-						$this->speedX = $bb->calculateXOffset($this->boundingBox, $this->speedX);
-						$this->speedZ = $bb->calculateZOffset($this->boundingBox, $this->speedZ);
-						$this->inWall = true;
-						break;
-					}
+		$this->handleWaterMovement(); //TODO: maybe just call parent::update(); ?
+		if($this->fire > 0){
+			if(!$this->isImmuneToFire){
+				if(($this->fire % 20) == 0){
+					$this->harm(1, "burning");
 				}
+				--$this->fire;
+			}else{
+				$this->fire -= 4;
+				if($this->fire <= 0) $this->fire = 0;
 			}
-		}
-		if(!$this->inWall){
-			$bbexp = $this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ)->expand(0, 0.2, 0);
-			foreach($this->level->entityList as $e){
-				if($e instanceof Entity && $e->eid !== $this->eid && !$e->closed && $e->canBeShot() && $e->boundingBox->intersectsWith($bbexp)){
-					if($this->shotByEntity && $this->shooterEID === $e->eid && $this->airTicks < 5) continue;
-					$dmg = ceil(sqrt($this->speedX * $this->speedX + $this->speedY * $this->speedY + $this->speedZ * $this->speedZ) * 2);
-					if($this->criticial){
-						$dmg += mt_rand(0, (int)($dmg/2+1));
-					}
-					$e->harm($dmg, $this->eid);
-					$this->closed = true;
-					break;
-				}
+			
+			if($this->fire <= 0){
+				$this->updateMetadata();
 			}
 		}
 		
-		$this->x += $this->speedX;
-		$this->y += $this->speedY;
-		$this->z += $this->speedZ;
-		++$this->airTicks; //TODO onGround state
+		if($this->handleLavaMovement()){
+			if(!$this->isImmuneToFire){
+				$this->harm(4, "fire");
+				$oldOnFire = $this->fire;
+				if($oldOnFire < 20*30) $this->fire = 20*30; //30 seconds
+			}
+		}
 		
-		$this->speedX *= 0.99;
-		$this->speedY *= 0.99;
-		$this->speedZ *= 0.99;
-		$this->speedY -= $this->gravity;
+		if($this->isInVoid()){
+			$this->outOfWorld();
+		}
+		//Entity::update end
 		
 		
-		$this->updatePosition();
+		if($this->lastPitch == $this->lastYaw && $this->lastYaw == 0){
+			$v1 = sqrt($this->speedX*$this->speedX + $this->speedZ*$this->speedZ);
+			$this->lastYaw = $this->yaw = atan2($this->speedX, $this->speedZ) * 180 / M_PI;
+			$this->lastPitch = $this->pitch = atan2($this->speedY, $v1) * 180 / M_PI;
+		}
+		
+		$v16 = $this->level->level->getBlockID($this->xTile, $this->yTile, $this->zTile);
+		if($v16 > 0){
+			//TODO this->inGround = true + checks
+		}
+		
+		if($this->shake > 0){
+			--$this->shake;
+		}
+		
+		if($this->inGround){
+			//TODO despawn after 1200 if if & meta == this->inTIle, this->inData
+		}else{
+			++$this->airTicks;
+			$start = new Vector3($this->x, $this->y, $this->z);
+			$end = new Vector3($this->x + $this->speedX, $this->y + $this->speedY, $this->z + $this->speedZ);
+			/**
+			 * @var MovingObjectPosition $v4
+			 */
+			$v4 = $this->level->rayTraceBlocks($start, $end);
+			$start = new Vector3($this->x, $this->y, $this->z); //TODO remove?
+			if($v4 != null){
+				$end = new Vector3($v4->hitVector->x, $v4->hitVector->y, $v4->hitVector->z);
+			}else{
+				$end = new Vector3($this->x + $this->speedX, $this->y + $this->speedY, $this->z + $this->speedZ);
+			}
+			
+			//TODO entity collisions
+			console($v4);
+			if($v4 != null){
+				if($v4->entityHit != null){
+					//TODO entity hit
+				}else{
+					$this->xTile = $v4->blockX;
+					$this->yTile = $v4->blockY;
+					$this->zTile = $v4->blockZ;
+					
+					[$this->inTile, $this->inData] = $this->level->level->getBlock($this->xTile, $this->yTile, $this->zTile);
+					
+					$this->speedX = $v4->hitVector->x - $this->x;
+					$this->speedY = $v4->hitVector->y - $this->y;
+					$this->speedZ = $v4->hitVector->z - $this->z;
+					
+					$v21 = sqrt($this->speedX*$this->speedX + $this->speedY*$this->speedY + $this->speedZ*$this->speedZ);
+					$this->x -= $this->speedX / $v21 * 0.05;
+					$this->y -= $this->speedY / $v21 * 0.05;
+					$this->z -= $this->speedZ / $v21 * 0.05;
+					
+					$this->inGround = true;
+					$this->shake = 7;
+					$this->criticial = false;
+				}
+			}
+			
+			$this->x += $this->speedX;
+			$this->y += $this->speedY;
+			$this->z += $this->speedZ;
+			$v21 = sqrt($this->speedX*$this->speedX + $this->speedZ*$this->speedZ);
+			$this->yaw = atan2($this->speedX, $this->speedZ) * 180 / M_PI;
+			$this->pitch = atan2($this->speedY, $v21) * 180 / M_PI;
+			
+			$this->pitch = $this->lastPitch + ($this->pitch - $this->lastPitch) * 0.2;
+			$this->yaw = $this->lastYaw + ($this->yaw - $this->lastYaw) * 0.2;
+			
+			$v24 = $this->inWater ? 0.8 : 0.99;
+			$this->speedX *= $v24;
+			$this->speedY *= $v24;
+			$this->speedZ *= $v24;
+			$this->speedY -= 0.05;
+			//$this->setP
+			$v7 = $this->width / 2;
+			$v8 = $this->height;
+			$this->boundingBox->setBounds($this->x - $v7, $this->y - $this->yOffset /*+ $this->ySize*/, $this->z - $v7, $this->x + $v7, $this->y - $this->yOffset + $v8 /*+ $this->ySize*/, $this->z + $v7);
+			
+			$this->doBlocksCollision();
+			console($this);
+			
+		}
+		
+		
 		
 	}
 	

@@ -23,7 +23,11 @@ class MovingObjectPosition{
 	protected function __construct(){
 
 	}
-
+	
+	public function __toString(){
+		return "MovingObjectPosition: {blockXYZ: {$this->blockX} {$this->blockY} {$this->blockZ}, side: {$this->sideHit} hitVec: {$this->hitVector} entityHit: {$this->entityHit}}";
+	}
+	
 	/**
 	 * @param int	 $x
 	 * @param int	 $y
@@ -39,6 +43,7 @@ class MovingObjectPosition{
 		$ob->blockX = $x;
 		$ob->blockY = $y;
 		$ob->blockZ = $z;
+		$ob->sideHit = $side;
 		$ob->hitVector = new Vector3($hitVector->x, $hitVector->y, $hitVector->z);
 		return $ob;
 	}
