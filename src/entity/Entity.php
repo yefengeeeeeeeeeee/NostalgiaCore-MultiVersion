@@ -1,7 +1,5 @@
 <?php
 
-use Ds\Vector;
-
 class Entity extends Position
 {
 
@@ -370,7 +368,7 @@ class Entity extends Position
 	}
 	
 	public function canSee(Entity $e){
-		return $this->level->rayTraceBlocks(new Vector($this->x, $this->y + $this->getEyeHeight(), $this->z), new Vector($e->x, $e->y + $e->getEyeHeight(), $e->z)) == null;
+		return $this->level->rayTraceBlocks(new Vector3($this->x, $this->y + $this->getEyeHeight(), $this->z), new Vector3($e->x, $e->y + $e->getEyeHeight(), $e->z)) == null;
 	}
 	
 	/**
