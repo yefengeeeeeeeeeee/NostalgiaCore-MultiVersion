@@ -1226,8 +1226,8 @@ class Player{
 		$motionSent = false;
 		$moveSent = false;
 		$headSent = false;
-		//if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
-		//	if(!($e->speedY < 0 && $e->onGround) || $e->speedX != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
+		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
+			if(!($e->speedY < 0 && $e->onGround) || $e->speedX != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
 				$motion = new SetEntityMotionPacket();
 				$motion->eid = $e->eid;
 				$motion->speedX = $e->speedX;
@@ -1237,9 +1237,9 @@ class Player{
 				$len += 1 + strlen($motion->buffer);
 				++$packets;
 				$motionSent = true;
-		//	}
-		//}
-		//if($e->x != $e->lastX || $e->y != $e->lastY || $e->z != $e->lastZ || $e->yaw != $e->lastYaw || $e->pitch != $e->lastPitch){
+			}
+		}
+		if($e->x != $e->lastX || $e->y != $e->lastY || $e->z != $e->lastZ || $e->yaw != $e->lastYaw || $e->pitch != $e->lastPitch){
 			$move = new MoveEntityPacket_PosRot();
 			$move->eid = $e->eid;
 			$move->x = $e->x;
@@ -1251,8 +1251,8 @@ class Player{
 			$len += strlen($move->buffer) + 1;
 			++$packets;
 			$moveSent = true;
-		//}
-		//if($e->headYaw != $e->lastHeadYaw){
+		}
+		if($e->headYaw != $e->lastHeadYaw){
 			$headyaw = new RotateHeadPacket();
 			$headyaw->eid = $e->eid;
 			$headyaw->yaw = $e->headYaw;
@@ -1260,7 +1260,7 @@ class Player{
 			$len += strlen($headyaw->buffer) + 1;
 			++$packets;
 			$headSent = true;
-		//}
+		}
 		if($packets <= 0) return;
 		//console("Update {$e}: $packets, mot: $motionSent, mov: $moveSent, hed: $headSent");
 		$MTU = $this->MTU - 24;
@@ -1845,46 +1845,44 @@ class Player{
 
 				switch($packet->action){
 					case 5: //Shot arrow
-						if($this->entity->inAction === true){
-							if($this->getSlot($this->slot)->getID() === BOW){
+						if($this->entity->inAction){
+							if($this->getSlot($this->slot)->getID() === BOW){ //TODO check arrow count
 								if($this->startAction !== false){
-									$time = microtime(true) - $this->startAction;
-									$d = [
-										"x" => $this->entity->x,
-										"y" => $this->entity->y + 1.6,
-										"z" => $this->entity->z,
-										"yaw" => $this->entity->yaw,
-										"pitch" => $this->entity->pitch
-									];
-									$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_ARROW, $d);
-									$e->speedX = -sin(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
-									$e->speedZ = cos(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
-									$e->speedY = -sin(($e->pitch / 180) * M_PI);
-									$e->shooterEID = $this->entity->eid;
-									$e->shotByEntity = true;
-									/**
-									 * Max usage: 72000ticks
-									 * initalPower = 72000 - (72000 - usedCtr)
-									 * power = initialPower / 20'
-									 * power = (power*power+power*2)/3
-									 * powerMax is 1, powerMin is 0.1
-									 * args: xvel, yvel, zvel, (power+power)*1.5, 1.0
-									 */
-									
 									$initalPower = $this->entity->inActionCounter;
 									$power = $initalPower / 20;
 									$power = ($power * $power + $power * 2) / 3;
-									if($power > 1.0) $power = 1;
-									elseif($power < 0.1){
-										//CANCEL but i am too lazy
-										$power = 0.1;
-									}
-									if(DEBUG){
+									if($power >= 0.1){
+										if($power > 1) $power = 1;
+										$this->server->dhandle("player.shoot", [
+											"player" => $this,
+											"power" => &$power,
+										]);
+										
+										$d = [
+											"x" => $this->entity->x,
+											"y" => $this->entity->y + 1.6,
+											"z" => $this->entity->z,
+											"yaw" => $this->entity->yaw,
+											"pitch" => $this->entity->pitch
+										];
+										$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_ARROW, $d);
+										$e->speedX = -sin(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
+										$e->speedZ = cos(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
+										$e->speedY = -sin(($e->pitch / 180) * M_PI);
+										$e->shooterEID = $this->entity->eid;
+										$e->shotByEntity = true;
+										/**
+										 * Max usage: 72000ticks
+										 * initalPower = 72000 - (72000 - usedCtr)
+										 * power = initialPower / 20'
+										 * power = (power*power+power*2)/3
+										 * powerMax is 1, powerMin is 0.1
+										 * args: xvel, yvel, zvel, (power+power)*1.5, 1.0
+										 */
 										$e->critical = ($power === 1);
 										$e->shoot($e->speedX, $e->speedY, $e->speedZ, ($power+$power) * 1.5, 1.0);
 										$this->server->api->entity->spawnToAll($e);
 									}
-									
 								}
 							}
 						}

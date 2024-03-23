@@ -7,15 +7,13 @@ class Arrow extends Projectile{
 	public $shooterEID = 0;
 	public $shotByEntity;
 	
-	public $inWall = false;
-	public $groundTicks = 0;
-	
 	public $xTile, $yTile, $zTile;
 	public $inTile, $inData;
 	public $shake;
 	public $inGround;
 	public $airTicks = 0;
 	public $criticial = false;
+	public $groundTicks = 0;
 	
 	function __construct(Level $level, $eid, $class, $type = 0, $data = [], $shooter = false){
 		parent::__construct($level, $eid, $class, $type, $data);
@@ -127,7 +125,25 @@ class Arrow extends Projectile{
 		}
 		
 		if($this->inGround){
-			//TODO despawn after 1200 if if & meta == this->inTIle, this->inData
+			
+			$this->speedZ = $this->speedX = $this->speedY = 0;
+			
+			[$blockID, $blockMeta] = $this->level->level->getBlock($this->xTile, $this->yTile, $this->zTile);
+			
+			if($blockID == $this->inTile && $blockMeta == $this->inData){
+				++$this->groundTicks;
+				if($this->groundTicks >= 1200){ //TODO customizeable?
+					$this->close();
+					return;
+				}
+			}else{
+				$this->inGround = false;
+				$this->speedX *= lcg_value() * 0.2;
+				$this->speedY *= lcg_value() * 0.2;
+				$this->speedZ *= lcg_value() * 0.2;
+				$this->groundTicks = $this->airTicks = 0;
+			}
+			
 		}else{
 			++$this->airTicks;
 			$start = new Vector3($this->x, $this->y, $this->z);
@@ -144,7 +160,6 @@ class Arrow extends Projectile{
 			}
 			
 			//TODO entity collisions
-			console($v4);
 			if($v4 != null){
 				if($v4->entityHit != null){
 					//TODO entity hit
@@ -191,8 +206,6 @@ class Arrow extends Projectile{
 			$this->boundingBox->setBounds($this->x - $v7, $this->y - $this->yOffset /*+ $this->ySize*/, $this->z - $v7, $this->x + $v7, $this->y - $this->yOffset + $v8 /*+ $this->ySize*/, $this->z + $v7);
 			
 			$this->doBlocksCollision();
-			console($this);
-			
 		}
 		
 		
