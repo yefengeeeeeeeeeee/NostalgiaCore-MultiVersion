@@ -1,5 +1,7 @@
 <?php
 
+use Ds\Vector;
+
 class Entity extends Position
 {
 
@@ -365,6 +367,10 @@ class Entity extends Position
 		foreach($this->getDrops() as $drop){
 			$this->server->api->entity->drop($this, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF), true);
 		}
+	}
+	
+	public function canSee(Entity $e){
+		return $this->level->rayTraceBlocks(new Vector($this->x, $this->y + $this->getEyeHeight(), $this->z), new Vector($e->x, $e->y + $e->getEyeHeight(), $e->z)) == null;
 	}
 	
 	/**

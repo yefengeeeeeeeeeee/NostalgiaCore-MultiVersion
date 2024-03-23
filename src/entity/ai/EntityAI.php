@@ -24,6 +24,12 @@ class EntityAI
 		$this->mobController = new MobController($entity);
 	}
 	
+	
+	public function canSee(Entity $entity){
+		//TODO caches
+		return $this->entity->canSee($entity);
+	}
+	
 	/**
 	 * Add a task for entity
 	 * @param TaskBase $task
