@@ -1879,7 +1879,7 @@ class Player{
 										 * powerMax is 1, powerMin is 0.1
 										 * args: xvel, yvel, zvel, (power+power)*1.5, 1.0
 										 */
-										$e->critical = ($power === 1);
+										$e->critical = ($power == 1);
 										$e->shoot($e->speedX, $e->speedY, $e->speedZ, ($power+$power) * 1.5, 1.0);
 										$this->server->api->entity->spawnToAll($e);
 									}

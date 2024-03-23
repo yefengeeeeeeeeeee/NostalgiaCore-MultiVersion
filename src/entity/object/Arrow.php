@@ -58,19 +58,7 @@ class Arrow extends Projectile{
 		//$this->update();
 		//TODO i guess? $ticksInGround = 0;
 	}
-	public function sendMoveUpdate()
-	{
-		$pk = new MoveEntityPacket_PosRot();
-		$pk->eid = $this->eid;
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		foreach($this->level->players as $p){ //sending packets directly makes movement less laggy
-			$p->directDataPacket(clone $pk);
-		}
-	}
+	
 	public function update($now){
 		$this->lastX = $this->x;
 		$this->lastY = $this->y;
@@ -115,20 +103,13 @@ class Arrow extends Projectile{
 			$this->lastPitch = $this->pitch = atan2($this->speedY, $v1) * 180 / M_PI;
 		}
 		
-		$v16 = $this->level->level->getBlockID($this->xTile, $this->yTile, $this->zTile);
-		if($v16 > 0){
-			//TODO this->inGround = true + checks
-		}
-		
 		if($this->shake > 0){
 			--$this->shake;
 		}
 		
 		if($this->inGround){
-			
-			$this->speedZ = $this->speedX = $this->speedY = 0;
-			
 			[$blockID, $blockMeta] = $this->level->level->getBlock($this->xTile, $this->yTile, $this->zTile);
+			$this->speedZ = $this->speedX = $this->speedY = 0;
 			
 			if($blockID == $this->inTile && $blockMeta == $this->inData){
 				++$this->groundTicks;
@@ -159,10 +140,54 @@ class Arrow extends Projectile{
 				$end = new Vector3($this->x + $this->speedX, $this->y + $this->speedY, $this->z + $this->speedZ);
 			}
 			
+			
+			$entities = $this->level->getEntitiesInAABB($this->boundingBox->addCoord($this->speedX, $this->speedY, $this->speedZ)->expand(1, 1, 1));
+			$bestDist = 0;
+			$bestEnt = null;
+			
+			foreach($entities as $eid => $ent){
+				if($eid != $this->eid && $ent->isPickable() && ($eid != $this->shooterEID || $this->airTicks >= 5)){
+					
+					$v12 = $ent->boundingBox->expand(0.3, 0.3, 0.3);
+					$v13 = $v12->calculateIntercept($start, $end);
+					
+					if($v13 != null){
+						$dist = $start->distance($v13->hitVector);
+						
+						if($dist < $bestDist || $bestDist == 0){
+							$bestEnt = $ent;
+						}
+					}
+				}
+			}
+			
+			if($bestEnt != null){
+				$v4 = MovingObjectPosition::fromEntity($bestEnt);
+			}
+			
 			//TODO entity collisions
 			if($v4 != null){
 				if($v4->entityHit != null){
 					//TODO entity hit
+					$v49 = sqrt($this->speedY*$this->speedY + $this->speedX*$this->speedX + $this->speedZ*$this->speedZ);
+					$damage = ceil($v49+$v49);
+					
+					if($this->criticial){
+						$damage += mt_rand(0, $damage / 2 + 1);
+					}
+					
+					
+					if($v4->entityHit->harm($damage, $this->eid)){
+						//vanilla seems to increase arrow count if $v4->entity is mob
+						$this->close();
+					}else{
+						$this->speedX *= -0.1;
+						$this->speedY *= -0.1;
+						$this->speedZ *= -0.1;
+						$this->yaw += 180;
+						$this->lastYaw += 180;
+						$this->airTicks = 0;
+					}
 				}else{
 					$this->xTile = $v4->blockX;
 					$this->yTile = $v4->blockY;

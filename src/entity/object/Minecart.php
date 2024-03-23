@@ -68,6 +68,10 @@ class Minecart extends Vehicle{
 		$this->yOffset = $this->height / 2;
 	}
 	
+	public function isPickable(){
+		return !$this->dead;
+	}
+	
 	public function getDrops(){
 		return [
 			[MINECART, 0, 1]

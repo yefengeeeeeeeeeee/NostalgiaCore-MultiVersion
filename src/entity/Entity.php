@@ -10,7 +10,6 @@ class Entity extends Position
 	public $counter = 0;
 	public $fallDistance = 0;
 	public static $updateOnTick, $allowedAI;
-	public $isCollidable;
 	public $canBeAttacked;
 	public $moveTime, $lookTime, $idleTime, $knockbackTime = 0;
 	public $needsUpdate = true;
@@ -167,6 +166,7 @@ class Entity extends Position
 				$this->hasGravity = true;
 				$this->canBeAttacked = true;
 				$this->fireResistance = 20;
+				
 				break;
 			case ENTITY_OBJECT:
 				$this->x = isset($this->data["TileX"]) ? $this->data["TileX"] : $this->x;
@@ -365,6 +365,14 @@ class Entity extends Position
 		foreach($this->getDrops() as $drop){
 			$this->server->api->entity->drop($this, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF), true);
 		}
+	}
+	
+	/**
+	 * Can entity be collided with or not
+	 * @return boolean
+	 */
+	public function isPickable(){
+		return $this->isPlayer() ? !$this->dead : false;
 	}
 	
 	public function handleLavaMovement(){ //TODO maybe try merging with water?

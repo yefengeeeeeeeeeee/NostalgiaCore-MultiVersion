@@ -630,7 +630,10 @@ class Level{
 		}
 		return $ents;
 	}
-	
+	/**
+	 * @param AxisAlignedBB $bb
+	 * @return Entity[]
+	 */
 	public function getEntitiesInAABB(AxisAlignedBB $bb){
 		$minChunkX = ((int)($bb->minX)) >> 4;
 		$minChunkZ = ((int)($bb->minZ)) >> 4;

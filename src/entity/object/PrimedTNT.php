@@ -16,6 +16,10 @@ class PrimedTNT extends Entity{
 		//$this->server->schedule(5, [$this, "updateFuse"], [], true);
 	}
 	
+	public function isPickable(){
+		return !$this->dead;
+	}
+	
 	public function getMetadata(){
 		$d = parent::getMetadata();
 		$d[16]["value"] = (int) $this->data["fuse"];

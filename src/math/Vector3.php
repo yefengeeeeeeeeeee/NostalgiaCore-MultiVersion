@@ -215,7 +215,7 @@ class Vector3{
 		}
 	}
 	public function getIntermediateWithXValue(Vector3 $v, $y){
-		return $this->clipZ($v, $y);
+		return $this->clipX($v, $y);
 	}
 	
 	/**

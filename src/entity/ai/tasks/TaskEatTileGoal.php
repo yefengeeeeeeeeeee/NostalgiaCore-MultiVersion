@@ -15,7 +15,12 @@ class TaskEatTileGoal extends TaskBase
 
 	public function onUpdate(EntityAI $ai)
 	{
-		if (--$this->selfCounter === 4)
+		if($ai->isStarted("TaskEatTileGoal")){
+			$this->reset();
+			return false;
+		}
+		
+		if (--$this->selfCounter == 4)
 		{
 			$id = $ai->entity->level->level->getBlockID($ai->entity->x, $ai->entity->y, $ai->entity->z);
 			$idb = $ai->entity->level->level->getBlockID($ai->entity->x, $ai->entity->y - 1, $ai->entity->z);
@@ -32,7 +37,7 @@ class TaskEatTileGoal extends TaskBase
 
 	public function canBeExecuted(EntityAI $ai)
 	{
-		if($ai->isStarted("TaskRandomWalk")) return false;
+		if($ai->isStarted("TaskRandomWalk") || $ai->isStarted("TaskEatTileGoal")) return false;
 		if(mt_rand(0, ($ai->entity instanceof Ageable && $ai->entity->isBaby()) ? 50 : 1000) == 0){
 			$idm = $ai->entity->level->level->getBlock($ai->entity->x, $ai->entity->y, $ai->entity->z);
 			$idb = $ai->entity->level->level->getBlockID($ai->entity->x, $ai->entity->y - 1, $ai->entity->z);
