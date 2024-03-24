@@ -396,8 +396,8 @@ class Entity extends Position
 		
 		if($this->isPlayer() && $this->player->spawned === true && $this->player->blocked !== true && !$this->dead){
 			$myBB = $this->boundingBox->grow(1, 0.5, 1);
-			foreach($this->server->api->entity->getRadius($this, 2, ENTITY_ITEM) as $item){
-				if(!$item->closed && $item->spawntime > 0 && $item->delayBeforePickup <= 0){
+			foreach($this->server->api->entity->getRadius($this, 2, false) as $item){
+				if($item->class === ENTITY_ITEM && !$item->closed && $item->spawntime > 0 && $item->delayBeforePickup <= 0){
 					if($item->boundingBox->intersectsWith($myBB)){ 
 						if((($this->player->gamemode & 0x01) === 1 || $this->player->hasSpace($item->type, $item->meta, $item->stack) === true) && $this->server->api->dhandle("player.pickup", array(
 							"eid" => $this->player->eid,
@@ -410,7 +410,11 @@ class Entity extends Position
 							$item->close();
 						}
 					}
-					
+				}else if($item->class == ENTITY_OBJECT && !$item->closed && $item->type == OBJECT_ARROW && $item->shotByPlayer && $item->inGround && $item->shake <= 0 && $item->boundingBox->intersectsWith($myBB)){
+					if(($this->player->gamemode & 0x01) == 1 || $this->player->hasSpace(ARROW, 0, 1)){
+						$this->player->addItem(ARROW, 0, 1);
+						$item->close();
+					}
 				}
 			}
 			unset($myBB);
@@ -1262,6 +1266,9 @@ class Entity extends Position
 				0 => $this->yaw,
 				1 => $this->pitch,
 			],
+			"speedX" => $this->speedX,
+			"speedY" => $this->speedY,
+			"speedZ" => $this->speedZ
 			
 		];
 		if($this->class === ENTITY_OBJECT){
@@ -1274,7 +1281,7 @@ class Entity extends Position
 		}
 		if($this->class === ENTITY_ITEM){
 			$data["Item"] = [
-				"id" => $this->type,
+				"id" => $this->itemID,
 				"Damage" => $this->meta,
 				"Count" => $this->stack,
 			];

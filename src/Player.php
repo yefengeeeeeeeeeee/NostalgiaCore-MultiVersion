@@ -1848,7 +1848,7 @@ class Player{
 								"z" => $this->entity->z,
 								"yaw" => $this->entity->yaw,
 								"pitch" => $this->entity->pitch,
-								"shooter" => $this->entity,
+								"shooter" => $this->entity->eid,
 								"shootX" => $shootX,
 								"shootY" => $shootY,
 								"shootZ" => $shootZ
@@ -1860,6 +1860,7 @@ class Player{
 								$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_SNOWBALL, $data);
 							}
 							
+							$this->removeItem($slotItem->getID(), $slotItem->meta, 1);
 							
 							$this->server->api->entity->spawnToAll($e);
 						}
@@ -1903,7 +1904,8 @@ class Player{
 											"y" => $this->entity->y + 1.6,
 											"z" => $this->entity->z,
 											"yaw" => $this->entity->yaw,
-											"pitch" => $this->entity->pitch
+											"pitch" => $this->entity->pitch,
+											"shooter" => $this->entity->eid,
 										];
 										$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_ARROW, $d);
 										$e->speedX = -sin(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);

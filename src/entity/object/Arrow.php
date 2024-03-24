@@ -5,8 +5,6 @@ class Arrow extends Entity{
 	const CLASS_TYPE = ENTITY_OBJECT;
 	
 	public $shooterEID = 0;
-	public $shotByEntity;
-	
 	public $xTile, $yTile, $zTile;
 	public $inTile, $inData;
 	public $shake;
@@ -14,18 +12,41 @@ class Arrow extends Entity{
 	public $airTicks = 0;
 	public $criticial = false;
 	public $groundTicks = 0;
+	public $shotByPlayer = false;
 	
-	function __construct(Level $level, $eid, $class, $type = 0, $data = [], $shooter = false){
+	function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		parent::__construct($level, $eid, $class, $type, $data);
 		$this->gravity = 0.05;
 		$this->setSize(0.5, 0.5);
 		$this->setName("Arrow");
-		$this->shooterEID = $shooter;
-		$this->shotByEntity = $shooter instanceof Entity;
+		$shooter = $data["shooter"] ?? false;
+		if($shooter !== false){
+			$this->shooterEID = $shooter;
+			$this->shotByPlayer = $level->entityList[$shooter]->isPlayer();
+		}
 		$this->airTicks = $this->groundTicks = 0;
+		$this->inTile = $data["inTile"] ?? $this->inTile;
+		$this->inData = $data["inData"] ?? $this->inData;
+		$this->inGround = $data["inGround"] ?? $this->inGround;
+		$this->xTile = $data["xTile"] ?? $this->xTile;
+		$this->yTile = $data["yTile"] ?? $this->yTile;
+		$this->zTile = $data["zTile"] ?? $this->zTile;
+		$this->shotByPlayer = $data["shotByPlayer"] ?? $this->shotByPlayer;
+		
 		//$this->server->schedule(1210, array($this, "update")); //Despawn
 	}
-	
+	public function createSaveData(){
+		$data = parent::createSaveData();
+		
+		$data["inTile"] = $this->inTile;
+		$data["inData"] = $this->inData;
+		$data["inGround"] = $this->inGround;
+		$data["xTile"] = $this->xTile;
+		$data["yTile"] = $this->yTile;
+		$data["zTile"] = $this->zTile;
+		$data["shotByPlayer"] = $this->shotByPlayer;
+		return $data;
+	}
 	public function handleUpdate(){
 		$pk = new MoveEntityPacket_PosRot;
 		$pk->eid = $this->eid;
@@ -203,9 +224,11 @@ class Arrow extends Entity{
 					$this->speedZ = $v4->hitVector->z - $this->z;
 					
 					$v21 = sqrt($this->speedX*$this->speedX + $this->speedY*$this->speedY + $this->speedZ*$this->speedZ);
-					$this->x -= $this->speedX / $v21 * 0.05;
-					$this->y -= $this->speedY / $v21 * 0.05;
-					$this->z -= $this->speedZ / $v21 * 0.05;
+					if($v21 != 0){
+						$this->x -= $this->speedX / $v21 * 0.05;
+						$this->y -= $this->speedY / $v21 * 0.05;
+						$this->z -= $this->speedZ / $v21 * 0.05;
+					}
 					
 					$this->inGround = true;
 					$this->shake = 7;

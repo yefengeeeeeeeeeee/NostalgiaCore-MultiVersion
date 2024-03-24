@@ -19,6 +19,13 @@ abstract class Projectile extends Entity{
 		$this->z -= cos($this->yaw / 180 * M_PI) * 0.16;
 		$this->boundingBox->setBounds($this->x - $this->radius, $this->y - $this->yOffset /*+ $this->ySize*/, $this->z - $this->radius, $this->x + $this->radius, $this->y - $this->yOffset + $this->height /*+ $this->ySize*/, $this->z + $this->radius);
 		$shooter = $data["shooter"] ?? false;
+		if($shooter !== false) $shooter = $this->level->entityList[$shooter] ?? false;
+		$this->inTile = $data["inTile"] ?? $this->inTile;
+		$this->inGround = $data["inGround"] ?? $this->inGround;
+		$this->xTile = $data["xTile"] ?? $this->xTile;
+		$this->yTile = $data["yTile"] ?? $this->yTile;
+		$this->zTile = $data["zTile"] ?? $this->zTile;
+		
 		if($shooter instanceof Entity){
 			$this->shooterEID = $shooter->eid;
 			if($shooter->isPlayer()){
@@ -180,7 +187,17 @@ abstract class Projectile extends Entity{
 	public function onHit(MovingObjectPosition $hitResult){
 		
 	}
-	
+	public function createSaveData(){
+		$data = parent::createSaveData();
+		
+		$data["inTile"] = $this->inTile;
+		$data["inGround"] = $this->inGround;
+		$data["xTile"] = $this->xTile;
+		$data["yTile"] = $this->yTile;
+		$data["zTile"] = $this->zTile;
+		
+		return $data;
+	}
 	public function spawn($player)
 	{
 		$pk = new AddEntityPacket();
