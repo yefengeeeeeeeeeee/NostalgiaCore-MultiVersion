@@ -1019,14 +1019,14 @@ class Player{
 	public function sendSettings($nametags = true){
 		/*
 		 bit mask | flag name
-		0x00000001 world_inmutable
-		0x00000010 -
-		0x00000100 -
-		0x00001000 - (autojump)
-		0x00010000 -
-		0x00100000 - (nametags_visible)
-		0x01000000 ?
-		0x10000000 ?
+		0b00000001 allowInteract
+		0b00000010 - enablePVP
+		0b00000100 - enablePVE
+		0b00001000 - field_3 (<?>autojump)
+		0b00010000 - field_0
+		0b00100000 - field_5 (<?>nametags_visible)
+		0b01000000 - unused
+		0b10000000 - unused
 		*/
 		$flags = 0;
 		if(($this->gamemode & 0x02) === 0x02){
@@ -1036,6 +1036,10 @@ class Player{
 		if($nametags !== false){
 			$flags |= 0x20; //Show Nametags
 		}
+		
+		$flags |= 0x2; //pvp
+		$flags |= 0x4; //pve
+		
 		$pk = new AdventureSettingsPacket;
 		$pk->flags = $flags;
 		$this->dataPacket($pk);
