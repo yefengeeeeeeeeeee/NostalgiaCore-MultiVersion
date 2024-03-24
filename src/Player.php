@@ -1752,7 +1752,7 @@ class Player{
 				}
 
 				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
-
+				
 				if(($this->spawned === false or $this->blocked === true) and $packet->face >= 0 and $packet->face <= 5){
 					$target = $this->level->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
@@ -1827,11 +1827,51 @@ class Player{
 					$pk->meta = $block->getMetadata();
 					$this->dataPacket($pk);
 					break;
-				}elseif($packet->face === 0xff and $this->server->handle("player.action", $data) !== false){
-					$this->entity->inAction = true;
-					$this->entity->inActionCounter = 0;
-					$this->startAction = microtime(true);
-					$this->entity->updateMetadata();
+				}elseif($packet->face === 0xff){
+					
+					$slotItem = $this->getHeldItem();
+					if($slotItem->getID() == SNOWBALL || $slotItem->getID() == EGG){ //TODO better way
+						$x = $packet->x * 0.000030518;
+						$y = $packet->y * 0.000030518;
+						$z = $packet->z * 0.000030518;
+						
+						$d = sqrt($x*$x + $y*$y + $z*$z);
+						
+						if($d >= 0.0001){
+							$shootX = $x / $d;
+							$shootY = $y / $d;
+							$shootZ = $z / $d;
+							
+							$data = [
+								"x" => $this->entity->x,
+								"y" => $this->entity->y + $this->entity->getEyeHeight(),
+								"z" => $this->entity->z,
+								"yaw" => $this->entity->yaw,
+								"pitch" => $this->entity->pitch,
+								"shooter" => $this->entity,
+								"shootX" => $shootX,
+								"shootY" => $shootY,
+								"shootZ" => $shootZ
+							];
+							
+							if($slotItem->getID() == EGG){
+								$e = $this->server->api->entity->add($this->entity->level, ENTITY_OBJECT, OBJECT_EGG, $data);
+							}else{
+								$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_SNOWBALL, $data);
+							}
+							
+							
+							$this->server->api->entity->spawnToAll($e);
+						}
+						
+					}else{
+						if($this->server->handle("player.action", $data) !== false){
+							$this->entity->inAction = true;
+							$this->entity->inActionCounter = 0;
+							$this->startAction = microtime(true);
+							$this->entity->updateMetadata();
+						}
+					}
 				}
 				break;
 			case ProtocolInfo::PLAYER_ACTION_PACKET:

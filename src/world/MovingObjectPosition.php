@@ -1,8 +1,8 @@
 <?php
 class MovingObjectPosition{
 
-	/** 0 = block, 1 = entity */
-	public $typeOfHit;
+	/** 0 = block, 1 = entity, 2 = none*/
+	public $typeOfHit = 2;
 
 	public $blockX;
 	public $blockY;

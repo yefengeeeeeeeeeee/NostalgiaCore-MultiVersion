@@ -5,8 +5,8 @@ class EntityRegistry{
 	
 	/*Register all entities*/
 	public static function registerEntities(){
-		console("[INFO] Registering entities...");
-		self::$entityList = new EntityList;
+		ConsoleAPI::info("Registering entities...");
+		self::$entityList = new EntityList();
 		self::registerEntity(Pig::class);
 		self::registerEntity(Chicken::class);
 		self::registerEntity(Sheep::class);
@@ -22,6 +22,8 @@ class EntityRegistry{
 		self::registerEntity(Minecart::class);
 		self::registerEntity(FallingSand::class);
 		self::registerEntity(ItemEntity::class);
+		self::registerEntity(ThrownEgg::class);
+		self::registerEntity(ThrownSnowball::class);
 	}
 	
 	/*Register an Entity*/

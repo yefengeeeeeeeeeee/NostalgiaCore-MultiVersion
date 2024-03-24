@@ -1,8 +1,8 @@
 <?php
 
-class Arrow extends Projectile{
+class Arrow extends Entity{
 	const TYPE = OBJECT_ARROW;
-	
+	const CLASS_TYPE = ENTITY_OBJECT;
 	
 	public $shooterEID = 0;
 	public $shotByEntity;
@@ -65,6 +65,9 @@ class Arrow extends Projectile{
 		$this->lastZ = $this->z;
 		$this->lastPitch = $this->pitch;
 		$this->lastYaw = $this->yaw;
+		$this->lastSpeedX = $this->speedX;
+		$this->lastSpeedY = $this->speedY;
+		$this->lastSpeedZ = $this->speedZ;
 		$this->needsUpdate = true;
 		$this->handleWaterMovement(); //TODO: maybe just call parent::update(); ?
 		if($this->fire > 0){

@@ -101,7 +101,7 @@ class Entity extends Position
 	public $inWeb;
 	public $inLava;
 	
-	function __construct(Level $level, $eid, $class, $type = 0, $data = array())
+	function __construct(Level $level, $eid, $class, $type = 0, $data = [])
 	{
 		$this->random = new Random();
 		$this->last = [&$this->lastX, &$this->lastY, &$this->lastZ, &$this->lastYaw, &$this->lastPitch, &$this->lastTime]; //pointers to variables
@@ -174,15 +174,7 @@ class Entity extends Position
 				$this->z = isset($this->data["TileZ"]) ? $this->data["TileZ"] : $this->z;
 				$this->setHealth(1, "generic");
 				$this->stepHeight = false;
-
-				$this->width = 1;
-				$this->height = 1;
-				if($this->type === OBJECT_SNOWBALL){
-					$this->server->schedule(1210, array(
-						$this,
-						"update"
-					));
-				}
+				$this->setSize(1, 1);
 				break;
 		}
 		$this->radius = $this->width / 2;
@@ -1421,19 +1413,15 @@ class Entity extends Position
 	public function setHealth($health, $cause = "generic", $force = false)
 	{
 		$health = (int) $health;
-		$harm = false;
-		if($health < $this->health){
-			$harm = true;
-			$dmg = $this->health - $health;
-			if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and (($this->player->gamemode & 0x01) === 0x00 or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
-				$this->dmgcounter[0] = microtime(true) + 0.5;
-				$this->dmgcounter[1] = $dmg;
-			} else{
-				return false; // Entity inmunity
-			}
-		} elseif($health === $this->health and ! $this->dead){
-			return false;
+		$harm = true;
+		$dmg = $this->health - $health;
+		if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and (($this->player->gamemode & 0x01) === 0x00 or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
+			$this->dmgcounter[0] = microtime(true) + 0.5;
+			$this->dmgcounter[1] = $dmg;
+		} else{
+			return false; // Entity inmunity
 		}
+		
 		if($this->server->api->dhandle("entity.health.change", array(
 			"entity" => $this,
 			"eid" => $this->eid,
