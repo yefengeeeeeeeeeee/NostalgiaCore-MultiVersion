@@ -1,7 +1,5 @@
 <?php
 
-use EntityAI;
-
 class TaskRangedAttack extends \TaskBase
 {
 	public $server;
@@ -43,6 +41,8 @@ class TaskRangedAttack extends \TaskBase
 		
 		if($dist > 100){
 			$ai->mobController->setMovingTarget($ai->entity->target->x, $ai->entity->target->y, $ai->entity->target->z, $this->speedMultiplier);
+		}else{
+			$ai->mobController->headYawIsYaw = true;
 		}
 		
 		$ai->mobController->setLookPosition($ai->entity->target->x, $ai->entity->target->y + 0.12, $ai->entity->target->z, 10, $ai->entity->getVerticalFaceSpeed());

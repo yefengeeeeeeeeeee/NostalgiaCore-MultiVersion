@@ -1318,10 +1318,6 @@ class Entity extends Position
 		$dmg = $this->applyArmor($dmg, $cause);
 		$ret = $this->setHealth(max(- 128, $this->getHealth() - ((int) $dmg)), $cause, $force);
 		
-		if($this->isPlayer() && $this->player->gamemode & 0x01 == 0x01){
-			return false;
-		}
-		
 		if ($ret != false && $this->hasKnockback && is_numeric($cause) && ($entity = $this->server->api->entity->get($cause)) != false) {
 			$d = $entity->x - $this->x;
 
@@ -1420,13 +1416,18 @@ class Entity extends Position
 	public function setHealth($health, $cause = "generic", $force = false)
 	{
 		$health = (int) $health;
-		$harm = true;
-		$dmg = $this->health - $health;
-		if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and (($this->player->gamemode & 0x01) === 0x00 or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
-			$this->dmgcounter[0] = microtime(true) + 0.5;
-			$this->dmgcounter[1] = $dmg;
-		} else{
-			return false; // Entity inmunity
+		$harm = false;
+		if($health < $this->health){
+			$harm = true;
+			$dmg = $this->health - $health;
+			if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and (($this->player->gamemode & 0x01) === 0x00 or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
+				$this->dmgcounter[0] = microtime(true) + 0.5;
+				$this->dmgcounter[1] = $dmg;
+			} else{
+				return false; // Entity inmunity
+			}
+		}elseif($health === $this->health and !$this->dead){
+			$harm = true;
 		}
 		
 		if($this->server->api->dhandle("entity.health.change", array(
