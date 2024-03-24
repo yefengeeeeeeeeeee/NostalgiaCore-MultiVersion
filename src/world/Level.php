@@ -82,7 +82,7 @@ class Level{
 		
 		return true;
 	}
-	/* TODO neccessary for projectiles
+	// TODO neccessary for projectiles
 	public function rayTraceBlocks(Vector3 $start, Vector3 $end){
 		
 		$par3 = false; //TODO move to params?
@@ -97,6 +97,7 @@ class Level{
 		
 		[$startID, $startMeta] = $this->level->getBlock($xStart, $yStart, $zStart);
 		$block = StaticBlock::getBlock($startID);
+
 		//$block::updateShape($this, $xStart, $yStart, $zStart); //TODO better way to do it
 		$aabb = $block::getAABB($this, $xStart, $yStart, $zStart);
 		if($startID > 0 && $aabb != null){ //TODO also block::canColideCheck
@@ -106,8 +107,7 @@ class Level{
 		
 		for($i = 0; $i <= 200; ++$i){
 			
-			if($xStart == $xEnd && $yStart == $yEnd && $zStart == $zEnd){ //also add checks for nan?
-				console("$start $end");
+			if(is_nan($start->x) || is_nan($start->y) || is_nan($start->z) || ($xStart == $xEnd && $yStart == $yEnd && $zStart == $zEnd)){ //also add checks for nan?
 				return null;
 			}
 			
@@ -131,11 +131,10 @@ class Level{
 			$v29 = $end->y - $start->y;
 			$v31 = $end->z - $start->z;
 			
-			if($v39) $v21 = ($v15 - $start->x) / $v27;
-			if($v40) $v23 = ($v17 - $start->y) / $v29;
-			if($v41) $v25 = ($v19 - $start->z) / $v31;
+			if($v39) $v21 = $v27 == 0 ? ($v15 - $start->x)*INF : ($v15 - $start->x) / $v27;
+			if($v40) $v23 = $v29 == 0 ? ($v17 - $start->y)*INF : ($v17 - $start->y) / $v29;
+			if($v41) $v25 = $v31 == 0 ? ($v19 - $start->z)*INF : ($v19 - $start->z) / $v31;
 			
-			$v33 = false;
 			if($v21 < $v23 && $v21 < $v25){
 				$v42 = $xEnd > $xStart ? 4 : 5;
 				
@@ -151,8 +150,8 @@ class Level{
 			}else{
 				$v42 = $zEnd > $zStart ? 2 : 3;
 				
-				$start->x += $v27 * $v23;
-				$start->y += $v29 * $v21;
+				$start->x += $v27 * $v25;
+				$start->y += $v29 * $v25;
 				$start->z = $v19;
 			}
 			
@@ -167,9 +166,9 @@ class Level{
 			
 			[$blockID, $blockMeta] = $this->level->getBlock($xStart, $yStart, $zStart);
 			$block = StaticBlock::getBlock($blockID);
-			
+
 			$aabb = $block::getAABB($this, $xStart, $yStart, $zStart);
-			if($startID > 0 && $aabb != null){ //TODO also block::canColideCheck
+			if($blockID > 0 && $aabb != null){ //TODO also block::canColideCheck
 				$v38 = $block::clip($this, $xStart, $yStart, $zStart, $start, $end);
 				if($v38 != null) return $v38;
 			}
@@ -177,8 +176,7 @@ class Level{
 		
 		return null;
 	}
-	 */
-	//TODO mayPlace
+	 
 	public function isLavaInBB($aabb){
 		$minX = floor($aabb->minX);
 		$maxX = floor($aabb->maxX + 1);
@@ -632,7 +630,10 @@ class Level{
 		}
 		return $ents;
 	}
-	
+	/**
+	 * @param AxisAlignedBB $bb
+	 * @return Entity[]
+	 */
 	public function getEntitiesInAABB(AxisAlignedBB $bb){
 		$minChunkX = ((int)($bb->minX)) >> 4;
 		$minChunkZ = ((int)($bb->minZ)) >> 4;

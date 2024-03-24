@@ -16,6 +16,10 @@ class FallingSand extends Entity{
 		$this->gravity = 0.04;
 	}
 	
+	public function isPickable(){
+		return !$this->dead;
+	}
+	
 	public function update($now){
 		if($this->closed) return;
 		

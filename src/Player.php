@@ -633,7 +633,6 @@ class Player{
 		foreach($this->hotbar as $slot){
 			$hotbar[] = $slot <= -1 ? -1 : $slot + 9;
 		}
-
 		$pk = new ContainerSetContentPacket;
 		$pk->windowid = 0;
 		$pk->slots = $this->inventory;
@@ -1753,7 +1752,7 @@ class Player{
 				}
 
 				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
-
+				
 				if(($this->spawned === false or $this->blocked === true) and $packet->face >= 0 and $packet->face <= 5){
 					$target = $this->level->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
@@ -1828,11 +1827,52 @@ class Player{
 					$pk->meta = $block->getMetadata();
 					$this->dataPacket($pk);
 					break;
-				}elseif($packet->face === 0xff and $this->server->handle("player.action", $data) !== false){
-					$this->entity->inAction = true;
-					$this->entity->inActionCounter = 0;
-					$this->startAction = microtime(true);
-					$this->entity->updateMetadata();
+				}elseif($packet->face === 0xff){
+					
+					$slotItem = $this->getHeldItem();
+					if($slotItem->getID() == SNOWBALL || $slotItem->getID() == EGG){ //TODO better way
+						$x = $packet->x * 0.000030518;
+						$y = $packet->y * 0.000030518;
+						$z = $packet->z * 0.000030518;
+						
+						$d = sqrt($x*$x + $y*$y + $z*$z);
+						
+						if($d >= 0.0001){
+							$shootX = $x / $d;
+							$shootY = $y / $d;
+							$shootZ = $z / $d;
+							
+							$data = [
+								"x" => $this->entity->x,
+								"y" => $this->entity->y + $this->entity->getEyeHeight(),
+								"z" => $this->entity->z,
+								"yaw" => $this->entity->yaw,
+								"pitch" => $this->entity->pitch,
+								"shooter" => $this->entity->eid,
+								"shootX" => $shootX,
+								"shootY" => $shootY,
+								"shootZ" => $shootZ
+							];
+							
+							if($slotItem->getID() == EGG){
+								$e = $this->server->api->entity->add($this->entity->level, ENTITY_OBJECT, OBJECT_EGG, $data);
+							}else{
+								$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_SNOWBALL, $data);
+							}
+							
+							$this->removeItem($slotItem->getID(), $slotItem->meta, 1);
+							
+							$this->server->api->entity->spawnToAll($e);
+						}
+						
+					}else{
+						if($this->server->handle("player.action", $data) !== false){
+							$this->entity->inAction = true;
+							$this->entity->inActionCounter = 0;
+							$this->startAction = microtime(true);
+							$this->entity->updateMetadata();
+						}
+					}
 				}
 				break;
 			case ProtocolInfo::PLAYER_ACTION_PACKET:
@@ -1845,44 +1885,57 @@ class Player{
 
 				switch($packet->action){
 					case 5: //Shot arrow
-						if($this->entity->inAction === true){
-							if($this->getSlot($this->slot)->getID() === BOW){
+						if($this->entity->inAction){
+							$arrowSlot = $this->hasItem(ARROW);
+							if($this->getSlot($this->slot)->getID() === BOW && (($this->gamemode & 0x01) == 0x1 || $arrowSlot !== false)){ //TODO check arrow count
 								if($this->startAction !== false){
-									$time = microtime(true) - $this->startAction;
-									$d = [
-										"x" => $this->entity->x,
-										"y" => $this->entity->y + 1.6,
-										"z" => $this->entity->z,
-										"yaw" => $this->entity->yaw,
-										"pitch" => $this->entity->pitch
-									];
-									$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_ARROW, $d);
-									$e->speedX = -sin(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
-									$e->speedZ = cos(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
-									$e->speedY = -sin(($e->pitch / 180) * M_PI);
-									$e->shooterEID = $this->entity->eid;
-									$e->shotByEntity = true;
-									/**
-									 * Max usage: 72000ticks
-									 * initalPower = 72000 - (72000 - usedCtr)
-									 * power = initialPower / 20'
-									 * power = (power*power+power*2)/3
-									 * powerMax is 1, powerMin is 0.1
-									 * args: xvel, yvel, zvel, (power+power)*1.5, 1.0
-									 */
-									
 									$initalPower = $this->entity->inActionCounter;
 									$power = $initalPower / 20;
 									$power = ($power * $power + $power * 2) / 3;
-									if($power > 1.0) $power = 1;
-									elseif($power < 0.1){
-										//CANCEL but i am too lazy
-										$power = 0.1;
+									if($power >= 0.1){
+										if($power > 1) $power = 1;
+										$this->server->dhandle("player.shoot", [
+											"player" => $this,
+											"power" => &$power,
+										]);
+										
+										$d = [
+											"x" => $this->entity->x,
+											"y" => $this->entity->y + 1.6,
+											"z" => $this->entity->z,
+											"yaw" => $this->entity->yaw,
+											"pitch" => $this->entity->pitch,
+											"shooter" => $this->entity->eid,
+										];
+										$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_ARROW, $d);
+										$e->speedX = -sin(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
+										$e->speedZ = cos(($e->yaw / 180) * M_PI) * cos(($e->pitch / 180) * M_PI);
+										$e->speedY = -sin(($e->pitch / 180) * M_PI);
+										$e->shooterEID = $this->entity->eid;
+										$e->shotByEntity = true;
+										/**
+										 * Max usage: 72000ticks
+										 * initalPower = 72000 - (72000 - usedCtr)
+										 * power = initialPower / 20'
+										 * power = (power*power+power*2)/3
+										 * powerMax is 1, powerMin is 0.1
+										 * args: xvel, yvel, zvel, (power+power)*1.5, 1.0
+										 */
+										$e->critical = ($power == 1);
+										$e->shoot($e->speedX, $e->speedY, $e->speedZ, ($power+$power) * 1.5, 1.0);
+										$this->server->api->entity->spawnToAll($e);
+										if(($this->gamemode & 0x01) == 0x0) {
+											$bow = $this->getSlot($this->slot);
+											if(++$bow->meta >= $bow->getMaxDurability()){
+												$this->inventory[$this->slot] = BlockAPI::getItem(AIR, 0, 0);
+											}
+											$this->removeItem(ARROW, 0, 1, false);
+											$this->sendInventory();
+										}
 									}
-									$e->critical = ($power === 1);
-									$e->shoot($e->speedX, $e->speedY, $e->speedZ, ($power+$power) * 1.5, 1.0);
-									$this->server->api->entity->spawnToAll($e);
 								}
+							}else{ //inv desynced, resend
+								$this->sendInventory();
 							}
 						}
 						$this->startAction = false;

@@ -220,14 +220,19 @@ class AxisAlignedBB{
 	public function isVectorInXY(Vector3 $vector){
 		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->y >= $this->minY and $vector->y <= $this->maxY;
 	}
-
+	
+	/**
+	 * @param Vector3 $pos1
+	 * @param Vector3 $pos2
+	 * @return NULL|MovingObjectPosition
+	 */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
-		$v1 = $pos1->getIntermediateWithXValue($pos2, $this->minX);
-		$v2 = $pos1->getIntermediateWithXValue($pos2, $this->maxX);
-		$v3 = $pos1->getIntermediateWithYValue($pos2, $this->minY);
-		$v4 = $pos1->getIntermediateWithYValue($pos2, $this->maxY);
-		$v5 = $pos1->getIntermediateWithZValue($pos2, $this->minZ);
-		$v6 = $pos1->getIntermediateWithZValue($pos2, $this->maxZ);
+		$v1 = $pos1->clipX($pos2, $this->minX);
+		$v2 = $pos1->clipX($pos2, $this->maxX);
+		$v3 = $pos1->clipY($pos2, $this->minY);
+		$v4 = $pos1->clipY($pos2, $this->maxY);
+		$v5 = $pos1->clipZ($pos2, $this->minZ);
+		$v6 = $pos1->clipZ($pos2, $this->maxZ);
 
 		if($v1 !== null and !$this->isVectorInYZ($v1)){
 			$v1 = null;

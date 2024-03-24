@@ -155,19 +155,63 @@ abstract class Block extends Position{
 	public $z = 0;
 	public $slipperiness;
 	
-	public static $minX = 0, $minY = 0, $minZ = 0, $maxX = 1, $maxY = 1, $maxZ = 1;
-	public static function setBlockBounds($minX, $minY, $minZ, $maxX, $maxY, $maxZ){ //TODO call for some specific blocks
-		static::$minX = $minX;
-		static::$minY = $minY;
-		static::$minZ = $minZ;
-		static::$maxX = $maxX;
-		static::$maxY = $maxY;
-		static::$maxZ = $maxZ;
-	}
 	public static function getAABB(Level $level, $x, $y, $z){
-		return new AxisAlignedBB(static::$minX + $x, static::$minY + $y, static::$minZ + $z, static::$maxX + $x, static::$maxY + $y, static::$maxZ + $z);
+		return StaticBlock::getAABB($level, $x, $y, $z);
 	}
 	
+	public static function containsX($id, $v){
+		return $v == null ? false : $v->y >= StaticBlock::$minYs[$id] && $v->y <= StaticBlock::$maxYs[$id] && $v->z >= StaticBlock::$minZs[$id] && $v->z <= StaticBlock::$maxZs[$id];
+	}
+	
+	public static function containsY($id, $v){
+		return $v == null ? false : $v->x >= StaticBlock::$minXs[$id] && $v->x <= StaticBlock::$maxXs[$id] && $v->z >= StaticBlock::$minZs[$id] && $v->z <= StaticBlock::$maxZs[$id];
+	}
+	
+	public static function containsZ($id, $v){
+		return $v == null ? false : $v->x >= StaticBlock::$minXs[$id] && $v->x <= StaticBlock::$maxXs[$id] && $v->y >= StaticBlock::$minYs[$id] && $v->y <= StaticBlock::$maxYs[$id];
+	}
+	
+	public static function clip(Level $level, $x, $y, $z, Vector3 $start, Vector3 $end){
+		//self::updateShape($level, $x, $y, $z); TODO update shape
+		$id = $level->level->getBlockID($x, $y, $z);
+		
+		$start = $start->subtract($x, $y, $z);
+		$end = $end->subtract($x, $y, $z);
+		
+		$v7 = $start->clipX($end, StaticBlock::$minXs[$id]);
+		$v8 = $start->clipX($end, StaticBlock::$maxXs[$id]);
+		$v9 = $start->clipY($end, StaticBlock::$minYs[$id]);
+		$v10 = $start->clipY($end, StaticBlock::$maxYs[$id]);
+		$v11 = $start->clipZ($end, StaticBlock::$minZs[$id]);
+		$v12 = $start->clipZ($end, StaticBlock::$maxZs[$id]);
+		
+		if(!self::containsX($id, $v7)) $v7 = null;
+		if(!self::containsX($id, $v8)) $v8 = null;
+		if(!self::containsY($id, $v9)) $v9 = null;
+		if(!self::containsY($id, $v10)) $v10 = null;
+		if(!self::containsZ($id, $v11)) $v11 = null;
+		if(!self::containsZ($id, $v12)) $v12 = null;
+		
+		$v13 = null;
+		if($v7 != null && ($v13 == null || $start->distanceSquared($v7) < $start->distanceSquared($v13))) $v13 = $v7;
+		if($v8 != null && ($v13 == null || $start->distanceSquared($v8) < $start->distanceSquared($v13))) $v13 = $v8;
+		if($v9 != null && ($v13 == null || $start->distanceSquared($v9) < $start->distanceSquared($v13))) $v13 = $v9;
+		if($v10 != null && ($v13 == null || $start->distanceSquared($v10) < $start->distanceSquared($v13))) $v13 = $v10;
+		if($v11 != null && ($v13 == null || $start->distanceSquared($v11) < $start->distanceSquared($v13))) $v13 = $v11;
+		if($v12 != null && ($v13 == null || $start->distanceSquared($v12) < $start->distanceSquared($v13))) $v13 = $v12;
+		
+		if($v13 == null) return null;
+		
+		$v14 = -1;
+		if($v13 == $v7) $v14 = 4;
+		if($v13 == $v8) $v14 = 5;
+		if($v13 == $v9) $v14 = 0;
+		if($v13 == $v10) $v14 = 1;
+		if($v13 == $v11) $v14 = 2;
+		if($v13 == $v12) $v14 = 3;
+		
+		return MovingObjectPosition::fromBlock($x, $y, $z, $v14, $v13->add($x, $y, $z));
+	}
 	
 	public static function addVelocityToEntity(Level $level, $x, $y, $z, Entity $entity, Vector3 $velocityVector){}
 	public static function onRandomTick(Level $level, $x, $y, $z){}

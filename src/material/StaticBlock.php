@@ -6,6 +6,7 @@ class StaticBlock
 {
 	const DEFAULT_SLIPPERINESS = 0.6;
 	const DEFAULT_HARDNESS = 0;
+	
 	private static $NULL_BOUNDS;
 	public static $isSolid = [];
 	public static $isTransparent = [];
@@ -19,6 +20,8 @@ class StaticBlock
 	public static $hardness = [];
 	public static $slipperiness = [];
 	public static $boundingBoxes = [];
+	public static $minXs = [], $minYs = [], $minZs = [], $maxXs = [], $maxYs = [], $maxZs = [];
+	
 	public static function init(){
 		self::$NULL_BOUNDS = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		foreach(Block::$class as $nonstaticname){
@@ -39,32 +42,35 @@ class StaticBlock
 			
 			
 			FireBlock::setFlammabilityAndCatchingChance($b->getID(), 0, 0);
+			self::setBlockBounds($b->getID(), 0, 0, 0, 1, 1, 1);
 		}
 		
-		Block::$class[BED_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.5625, 1);
+		self::setBlockBounds(BED_BLOCK, 0, 0, 0, 1, 0.5625, 1);
 		//Cake: has bounds based on world state
 		//Chest: has bounds based on world state
-		Block::$class[WHEAT_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.25, 1);
-		Block::$class[CARROT_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.25, 1);
-		Block::$class[POTATO_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.25, 1);
-		Block::$class[BEETROOT_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.25, 1); //i assume it extends class Crops
-		Block::$class[WHEAT_BLOCK]::setBlockBounds(0, 0, 0, 1, 0.25, 1);
-		Block::$class[DEAD_BUSH]::setBlockBounds(0.1, 0, 0.1, 0.9, 0.8, 0.9);
-		Block::$class[DOOR_BLOCK]::setBlockBounds(0, 0, 0, 1, 1, 1); //has bounds based on rotation
-		Block::$class[FARMLAND]::setBlockBounds(0, 0, 0, 1, 0.9375, 1);
+		self::setBlockBounds(WHEAT_BLOCK, 0, 0, 0, 1, 0.25, 1);
+		self::setBlockBounds(CARROT_BLOCK, 0, 0, 0, 1, 0.25, 1);
+		self::setBlockBounds(POTATO_BLOCK,0, 0, 0, 1, 0.25, 1);
+		self::setBlockBounds(BEETROOT_BLOCK, 0, 0, 0, 1, 0.25, 1); //i assume it extends class Crops
+		self::setBlockBounds(WHEAT_BLOCK, 0, 0, 0, 1, 0.25, 1);
+		self::setBlockBounds(DEAD_BUSH, 0.1, 0, 0.1, 0.9, 0.8, 0.9);
+		self::setBlockBounds(DOOR_BLOCK, 0, 0, 0, 1, 1, 1); //has bounds based on rotation
+		self::setBlockBounds(FARMLAND, 0, 0, 0, 1, 0.9375, 1);
 		//Fence: bounds on state
 		//Fence Gate: bounds on state
-		Block::$class[TALL_GRASS]::setBlockBounds(0.1, 0, 0.1, 0.9, 0.8, 0.9);
-		Block::$class[MELON_STEM]::setBlockBounds(0.5 - 0.125, 0, 0.5 - 0.125, 0.5 + 0.125, 0.25, 0.5 + 0.125);
-		Block::$class[PUMPKIN_STEM]::setBlockBounds(0.5 - 0.125, 0, 0.5 - 0.125, 0.5 + 0.125, 0.25, 0.5 + 0.125);
-		Block::$class[SAPLING]::setBlockBounds(0.1, 0, 0.1, 0.9, 0.8, 0.9);
-		Block::$class[BROWN_MUSHROOM]::setBlockBounds(0.3, 0, 0.3, 0.8, 0.4, 0.8);
-		Block::$class[SLAB]::setBlockBounds(0, 0, 0, 1, 0.5, 1);
+		self::setBlockBounds(TALL_GRASS, 0.1, 0, 0.1, 0.9, 0.8, 0.9);
+		self::setBlockBounds(MELON_STEM, 0.5 - 0.125, 0, 0.5 - 0.125, 0.5 + 0.125, 0.25, 0.5 + 0.125);
+		self::setBlockBounds(PUMPKIN_STEM, 0.5 - 0.125, 0, 0.5 - 0.125, 0.5 + 0.125, 0.25, 0.5 + 0.125);
+		self::setBlockBounds(SAPLING, 0.1, 0, 0.1, 0.9, 0.8, 0.9);
+		self::setBlockBounds(BROWN_MUSHROOM, 0.3, 0, 0.3, 0.8, 0.4, 0.8);
+		self::setBlockBounds(SLAB, 0, 0, 0, 1, 0.5, 1);
 		//Ladder: based on rotation
 		//Glass Pane: based on state
-		RailBaseBlock::setBlockBounds(0, 0, 0, 1, 0.125, 1);
-		Block::$class[SUGARCANE_BLOCK]::setBlockBounds(0.5 - 0.375, 0, 0.5 - 0.375, 0.5 + 0.375, 1, 0.5 + 0.375);
-		Block::$class[SNOW_LAYER]::setBlockBounds(0, 0, 0, 1, 0.125, 1);
+		self::setBlockBounds(RAIL, 0, 0, 0, 1, 0.125, 1);
+		self::setBlockBounds(POWERED_RAIL, 0, 0, 0, 1, 0.125, 1);
+		
+		self::setBlockBounds(SUGARCANE_BLOCK, 0.5 - 0.375, 0, 0.5 - 0.375, 0.5 + 0.375, 1, 0.5 + 0.375);
+		self::setBlockBounds(SNOW_LAYER, 0, 0, 0, 1, 0.125, 1);
 		//Stairs: based on different factors
 		//Stone wall: based on state
 		
@@ -90,6 +96,21 @@ class StaticBlock
 		FireBlock::setFlammabilityAndCatchingChance(COAL_BLOCK, 5, 5);
 		FireBlock::setFlammabilityAndCatchingChance(HAY_BALE, 60, 20);
 		FireBlock::setFlammabilityAndCatchingChance(SPONGE, 30, 60);
+	}
+	
+	public static function setBlockBounds($blockID, $minX, $minY, $minZ, $maxX, $maxY, $maxZ){
+		self::$maxXs[$blockID] = $maxX;
+		self::$maxYs[$blockID] = $maxY;
+		self::$maxZs[$blockID] = $maxZ;
+		
+		self::$minXs[$blockID] = $minX;
+		self::$minYs[$blockID] = $minY;
+		self::$minZs[$blockID] = $minZ;
+	}
+	
+	public static function getAABB(Level $level, $x, $y, $z){
+		$id = $level->level->getBlockID($x, $y, $z);
+		return new AxisAlignedBB(self::$minXs[$id] + $x, self::$minYs[$id] + $y, self::$minZs[$id] + $z, self::$maxXs[$id] + $x, self::$maxYs[$id] + $y, self::$maxZs[$id] + $z); //TODO get bb from self::$boundingBoxes ?
 	}
 	
 	public static function getBlock($id){

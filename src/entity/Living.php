@@ -30,6 +30,10 @@ abstract class Living extends Entity implements Pathfindable{
 		//if(self::$despawnMobs) $this->server->schedule(self::$despawnTimer, [$this, "close"]); //900*20
 	}
 	
+	public function isPickable(){
+		return !$this->dead;
+	}
+	
 	public function fall(){
 		$dmg = ceil($this->fallDistance - 3);
 		if($dmg > 0){

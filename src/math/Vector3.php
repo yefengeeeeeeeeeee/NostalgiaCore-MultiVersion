@@ -197,7 +197,7 @@ class Vector3{
 	 *
 	 * @return Vector3
 	 */
-	public function getIntermediateWithXValue(Vector3 $v, $x){
+	public function clipX(Vector3 $v, $x){
 		$xDiff = $v->x - $this->x;
 		$yDiff = $v->y - $this->y;
 		$zDiff = $v->z - $this->z;
@@ -214,6 +214,9 @@ class Vector3{
 			return new Vector3($this->x + $xDiff * $f, $this->y + $yDiff * $f, $this->z + $zDiff * $f);
 		}
 	}
+	public function getIntermediateWithXValue(Vector3 $v, $y){
+		return $this->clipX($v, $y);
+	}
 	
 	/**
 	 * Returns a new vector with y value equal to the second parameter, along the line between this vector and the
@@ -224,7 +227,7 @@ class Vector3{
 	 *
 	 * @return Vector3
 	 */
-	public function getIntermediateWithYValue(Vector3 $v, $y){
+	public function clipY(Vector3 $v, $y){
 		$xDiff = $v->x - $this->x;
 		$yDiff = $v->y - $this->y;
 		$zDiff = $v->z - $this->z;
@@ -242,6 +245,9 @@ class Vector3{
 		}
 	}
 	
+	public function getIntermediateWithYValue(Vector3 $v, $y){
+		return $this->clipY($v, $y);
+	}
 	/**
 	 * Returns a new vector with z value equal to the second parameter, along the line between this vector and the
 	 * passed in vector, or null if not possible.
@@ -251,7 +257,7 @@ class Vector3{
 	 *
 	 * @return Vector3
 	 */
-	public function getIntermediateWithZValue(Vector3 $v, $z){
+	public function clipZ(Vector3 $v, $z){
 		$xDiff = $v->x - $this->x;
 		$yDiff = $v->y - $this->y;
 		$zDiff = $v->z - $this->z;
@@ -267,5 +273,9 @@ class Vector3{
 		}else{
 			return new Vector3($this->x + $xDiff * $f, $this->y + $yDiff * $f, $this->z + $zDiff * $f);
 		}
+	}
+	
+	public function getIntermediateWithZValue(Vector3 $v, $y){
+		return $this->clipZ($v, $y);
 	}
 }

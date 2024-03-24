@@ -10,7 +10,6 @@ class Entity extends Position
 	public $counter = 0;
 	public $fallDistance = 0;
 	public static $updateOnTick, $allowedAI;
-	public $isCollidable;
 	public $canBeAttacked;
 	public $moveTime, $lookTime, $idleTime, $knockbackTime = 0;
 	public $needsUpdate = true;
@@ -102,7 +101,7 @@ class Entity extends Position
 	public $inWeb;
 	public $inLava;
 	
-	function __construct(Level $level, $eid, $class, $type = 0, $data = array())
+	function __construct(Level $level, $eid, $class, $type = 0, $data = [])
 	{
 		$this->random = new Random();
 		$this->last = [&$this->lastX, &$this->lastY, &$this->lastZ, &$this->lastYaw, &$this->lastPitch, &$this->lastTime]; //pointers to variables
@@ -167,6 +166,7 @@ class Entity extends Position
 				$this->hasGravity = true;
 				$this->canBeAttacked = true;
 				$this->fireResistance = 20;
+				
 				break;
 			case ENTITY_OBJECT:
 				$this->x = isset($this->data["TileX"]) ? $this->data["TileX"] : $this->x;
@@ -174,15 +174,7 @@ class Entity extends Position
 				$this->z = isset($this->data["TileZ"]) ? $this->data["TileZ"] : $this->z;
 				$this->setHealth(1, "generic");
 				$this->stepHeight = false;
-
-				$this->width = 1;
-				$this->height = 1;
-				if($this->type === OBJECT_SNOWBALL){
-					$this->server->schedule(1210, array(
-						$this,
-						"update"
-					));
-				}
+				$this->setSize(1, 1);
 				break;
 		}
 		$this->radius = $this->width / 2;
@@ -367,6 +359,18 @@ class Entity extends Position
 		}
 	}
 	
+	public function canSee(Entity $e){
+		return $this->level->rayTraceBlocks(new Vector3($this->x, $this->y + $this->getEyeHeight(), $this->z), new Vector3($e->x, $e->y + $e->getEyeHeight(), $e->z)) == null;
+	}
+	
+	/**
+	 * Can entity be collided with or not
+	 * @return boolean
+	 */
+	public function isPickable(){
+		return $this->isPlayer() ? !$this->dead : false;
+	}
+	
 	public function handleLavaMovement(){ //TODO maybe try merging with water?
 		$this->inLava = $this->level->isLavaInBB($this->boundingBox->expand(-0.1, -0.4, -0.1));
 		return $this->inLava;
@@ -392,8 +396,8 @@ class Entity extends Position
 		
 		if($this->isPlayer() && $this->player->spawned === true && $this->player->blocked !== true && !$this->dead){
 			$myBB = $this->boundingBox->grow(1, 0.5, 1);
-			foreach($this->server->api->entity->getRadius($this, 2, ENTITY_ITEM) as $item){
-				if(!$item->closed && $item->spawntime > 0 && $item->delayBeforePickup <= 0){
+			foreach($this->server->api->entity->getRadius($this, 2, false) as $item){
+				if($item->class === ENTITY_ITEM && !$item->closed && $item->spawntime > 0 && $item->delayBeforePickup <= 0){
 					if($item->boundingBox->intersectsWith($myBB)){ 
 						if((($this->player->gamemode & 0x01) === 1 || $this->player->hasSpace($item->type, $item->meta, $item->stack) === true) && $this->server->api->dhandle("player.pickup", array(
 							"eid" => $this->player->eid,
@@ -406,7 +410,11 @@ class Entity extends Position
 							$item->close();
 						}
 					}
-					
+				}else if($item->class == ENTITY_OBJECT && !$item->closed && $item->type == OBJECT_ARROW && $item->shotByPlayer && $item->inGround && $item->shake <= 0 && $item->boundingBox->intersectsWith($myBB)){
+					if(($this->player->gamemode & 0x01) == 1 || $this->player->hasSpace(ARROW, 0, 1)){
+						$this->player->addItem(ARROW, 0, 1);
+						$item->close();
+					}
 				}
 			}
 			unset($myBB);
@@ -1258,6 +1266,9 @@ class Entity extends Position
 				0 => $this->yaw,
 				1 => $this->pitch,
 			],
+			"speedX" => $this->speedX,
+			"speedY" => $this->speedY,
+			"speedZ" => $this->speedZ
 			
 		];
 		if($this->class === ENTITY_OBJECT){
@@ -1270,7 +1281,7 @@ class Entity extends Position
 		}
 		if($this->class === ENTITY_ITEM){
 			$data["Item"] = [
-				"id" => $this->type,
+				"id" => $this->itemID,
 				"Damage" => $this->meta,
 				"Count" => $this->stack,
 			];
@@ -1306,7 +1317,11 @@ class Entity extends Position
 		}
 		$dmg = $this->applyArmor($dmg, $cause);
 		$ret = $this->setHealth(max(- 128, $this->getHealth() - ((int) $dmg)), $cause, $force);
-
+		
+		if($this->isPlayer() && $this->player->gamemode & 0x01 == 0x01){
+			return false;
+		}
+		
 		if ($ret != false && $this->hasKnockback && is_numeric($cause) && ($entity = $this->server->api->entity->get($cause)) != false) {
 			$d = $entity->x - $this->x;
 
@@ -1405,19 +1420,15 @@ class Entity extends Position
 	public function setHealth($health, $cause = "generic", $force = false)
 	{
 		$health = (int) $health;
-		$harm = false;
-		if($health < $this->health){
-			$harm = true;
-			$dmg = $this->health - $health;
-			if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and (($this->player->gamemode & 0x01) === 0x00 or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
-				$this->dmgcounter[0] = microtime(true) + 0.5;
-				$this->dmgcounter[1] = $dmg;
-			} else{
-				return false; // Entity inmunity
-			}
-		} elseif($health === $this->health and ! $this->dead){
-			return false;
+		$harm = true;
+		$dmg = $this->health - $health;
+		if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and (($this->player->gamemode & 0x01) === 0x00 or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
+			$this->dmgcounter[0] = microtime(true) + 0.5;
+			$this->dmgcounter[1] = $dmg;
+		} else{
+			return false; // Entity inmunity
 		}
+		
 		if($this->server->api->dhandle("entity.health.change", array(
 			"entity" => $this,
 			"eid" => $this->eid,
