@@ -633,7 +633,6 @@ class Player{
 		foreach($this->hotbar as $slot){
 			$hotbar[] = $slot <= -1 ? -1 : $slot + 9;
 		}
-
 		$pk = new ContainerSetContentPacket;
 		$pk->windowid = 0;
 		$pk->slots = $this->inventory;
@@ -1846,7 +1845,8 @@ class Player{
 				switch($packet->action){
 					case 5: //Shot arrow
 						if($this->entity->inAction){
-							if($this->getSlot($this->slot)->getID() === BOW){ //TODO check arrow count
+							$arrowSlot = $this->hasItem(ARROW);
+							if($this->getSlot($this->slot)->getID() === BOW && (($this->gamemode & 0x01) == 0x1 || $arrowSlot !== false)){ //TODO check arrow count
 								if($this->startAction !== false){
 									$initalPower = $this->entity->inActionCounter;
 									$power = $initalPower / 20;
@@ -1882,8 +1882,18 @@ class Player{
 										$e->critical = ($power == 1);
 										$e->shoot($e->speedX, $e->speedY, $e->speedZ, ($power+$power) * 1.5, 1.0);
 										$this->server->api->entity->spawnToAll($e);
+										if(($this->gamemode & 0x01) == 0x0) {
+											$bow = $this->getSlot($this->slot);
+											if(++$bow->meta >= $bow->getMaxDurability()){
+												$this->inventory[$this->slot] = BlockAPI::getItem(AIR, 0, 0);
+											}
+											$this->removeItem(ARROW, 0, 1, false);
+											$this->sendInventory();
+										}
 									}
 								}
+							}else{ //inv desynced, resend
+								$this->sendInventory();
 							}
 						}
 						$this->startAction = false;

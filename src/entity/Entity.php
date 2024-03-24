@@ -1318,7 +1318,11 @@ class Entity extends Position
 		}
 		$dmg = $this->applyArmor($dmg, $cause);
 		$ret = $this->setHealth(max(- 128, $this->getHealth() - ((int) $dmg)), $cause, $force);
-
+		
+		if($this->isPlayer() && $this->player->gamemode & 0x01 == 0x01){
+			return false;
+		}
+		
 		if ($ret != false && $this->hasKnockback && is_numeric($cause) && ($entity = $this->server->api->entity->get($cause)) != false) {
 			$d = $entity->x - $this->x;
 
