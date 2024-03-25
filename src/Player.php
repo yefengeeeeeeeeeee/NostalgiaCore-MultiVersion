@@ -1398,6 +1398,13 @@ class Player{
 	}
 	public function entityTick(){
 		if($this->isSleeping) ++$this->sleepingTime;
+		
+		if($this->server->difficulty == 0 && $this->entity->counter % (20 * 15) == 0){
+			if($this->entity->health < 20 && $this->entity->health > 0){
+				$this->entity->setHealth(min(20, $this->entity->health + 1), "regeneration");
+			}
+		}
+		
 	}
 	public function handleDataPacket(RakNetDataPacket $packet){
 		if($this->connected === false){

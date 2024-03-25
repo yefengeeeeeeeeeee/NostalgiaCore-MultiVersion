@@ -9,7 +9,6 @@ class PlayerAPI{
 	}
 
 	public function init(){
-		$this->server->schedule(20 * 15, [$this, "handle"], 1, true, "server.regeneration");
 		$this->server->addHandler("player.death", [$this, "handle"], 1);
 		$this->registerCmd("list");
 		$this->registerCmd("kill", "<player>");
@@ -32,7 +31,6 @@ class PlayerAPI{
 		$this->server->api->console->cmdWhitelist("ping");
 		$this->server->api->console->cmdWhitelist("spawn");
 		$this->server->api->console->cmdWhitelist("loc");
-		//$this->server->preparedSQL->selectPlayersToHeal = $this->server->database->prepare("SELECT EID FROM entities WHERE class = " . ENTITY_PLAYER . " AND health < 20;");
 	}
 
 	public function registerCmd($cmd, $help = ""){
@@ -41,22 +39,6 @@ class PlayerAPI{
 
 	public function handle($data, $event){
 		switch($event){
-			case "server.regeneration":
-				if($this->server->difficulty === 0){
-					//$result = $this->server->preparedSQL->selectPlayersToHeal->execute();
-					if($result !== false){
-						while(($player = $result->fetchArray()) !== false){
-							if(($player = $this->server->api->entity->get($player["EID"])) !== false){
-								if($player->getHealth() <= 0){
-									continue;
-								}
-								$player->setHealth(min(20, $player->getHealth() + $data), "regeneration");
-							}
-						}
-						return true;
-					}
-				}
-				break;
 			case "player.death":
 				if(is_numeric($data["cause"])){
 					$e = $this->server->api->entity->get($data["cause"]);
