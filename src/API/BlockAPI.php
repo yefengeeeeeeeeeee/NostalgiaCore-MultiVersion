@@ -273,7 +273,7 @@ class BlockAPI{
 						$coords[$i] = round($coord, 0);
 					}
 					elseif(is_numeric($args[$i])){
-						if($args[$i] > 0 and $args[$i] < 255){
+						if($args[$i] >= 0 and $args[$i] <= ($i === 1 ? 127 : 255)){
 							$coords[$i] = $args[$i];
 						}
 					}
