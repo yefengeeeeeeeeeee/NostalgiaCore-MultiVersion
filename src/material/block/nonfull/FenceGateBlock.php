@@ -31,9 +31,23 @@ class FenceGateBlock extends TransparentBlock{
 		);
 	}
 	public function onActivate(Item $item, Player $player){
-		$this->meta ^= 0x04;
-		$this->level->setBlock($this, $this, true, false, true);
-		$players = ServerAPI::request()->api->player->getAll($this->level);
+
+		$meta = $this->meta;
+		if(($meta & 4) != 0){
+			$meta ^= 4;
+		}else{
+			$direction = ($player->entity->yaw * 4 / 360) + 0.5;
+			$blockDirection = (int)$direction;
+			if($direction < $blockDirection) --$blockDirection;
+			$blockDirection &= 3;
+			if(($meta & 3) == (($blockDirection + 2) & 3)){
+				$meta = $blockDirection;
+			}
+			$meta |= 4;
+		}
+
+		$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, $this->id, $meta);
+		$players = $this->level->players;
 		unset($players[$player->CID]);
 		$pk = new LevelEventPacket;
 		$pk->x = $this->x;
@@ -43,5 +57,5 @@ class FenceGateBlock extends TransparentBlock{
 		$pk->data = 0;
 		ServerAPI::request()->api->player->broadcastPacket($players, $pk);
 		return true;
-	}	
+	}
 }
