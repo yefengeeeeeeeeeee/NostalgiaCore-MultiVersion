@@ -58,7 +58,7 @@ class MobSpawner{
 			$type = mt_rand(10, 13);
 			$baby = false;
 			$grassOnly = true;
-		}elseif(self::$spawnMobs && ($phase == "night" || $phase == "sunset")){ //Monster, true night
+		}elseif(self::$spawnMobs && ($phase == "night" || $phase == "sunset") && $this->server->difficulty > 0){ //Monster, true night
 			$type = mt_rand(32, 35);
 			$grassOnly = false;
 			$baby = 2;

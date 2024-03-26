@@ -13,7 +13,6 @@ class PrimedTNT extends Entity{
 		$this->setSize(0.98, 0.98);
 		$this->yOffset = $this->height / 2;
 		$this->setHealth(10000000, "generic");
-		//$this->server->schedule(5, [$this, "updateFuse"], [], true);
 	}
 	
 	public function isPickable(){
@@ -65,20 +64,6 @@ class PrimedTNT extends Entity{
 		
 		$this->lastUpdate = $now;
 	}
-	
-	/*public function updateFuse(){
-		if($this->closed === true){
-			return false;
-		}
-		if($this->type === OBJECT_PRIMEDTNT){
-			$this->updateMetadata();
-			if(((microtime(true) - $this->spawntime) * 20) >= $this->data["fuse"]){
-				$this->close();
-				$explosion = new Explosion($this, $this->data["power"]);
-				$explosion->explode();
-			}
-		}
-	}*/
 	
 	public function spawn($player){
 		$pk = new AddEntityPacket;

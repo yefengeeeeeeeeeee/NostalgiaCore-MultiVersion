@@ -60,10 +60,32 @@ class Explosion{
 		$radius = 2 * $this->size;
 		$server = ServerAPI::request();
 		if(!Explosion::$enableExplosions){ /*Disable Explosions*/
-			foreach($server->api->entity->getRadius($this->source, $radius) as $entity){
-				$impact = (1 - $this->source->distance($entity) / $radius) * 0.5; //pla>
-				$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
-				$entity->harm($damage, "explosion");
+			foreach($server->api->entity->getRadius($this->source, $radius+1) as $entity){
+				$distance = $this->source->distance($entity);
+				$distByRad = $distance / $this->size;
+				if($distByRad <= 1 && $distance != 0){
+					$diffX = ($entity->x - $this->source->x) / $distance;
+					$diffY = ($entity->y + $entity->getEyeHeight() - $this->source->y) / $distance;
+					$diffZ = ($entity->z - $this->source->z) / $distance;
+					
+					$impact = (1 - $distByRad) * 0.5; //TODO calculate block density around the entity instead of 0.5
+					$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
+					if($damage > 0){
+						$entity->harm($damage, "explosion");
+						$entity->speedX = $diffX * $impact;
+						$entity->speedY = $diffY * $impact;
+						$entity->speedZ = $diffZ * $impact;
+						
+						if($entity->isPlayer()){
+							$pk = new SetEntityMotionPacket();
+							$pk->eid = 0; //XXX change
+							$pk->speedX = $entity->speedX;
+							$pk->speedY = $entity->speedY;
+							$pk->speedZ = $entity->speedZ;
+							$entity->player->dataPacket($pk);
+						}
+					}
+				}
 			}
 			$pk = new ExplodePacket; //sound fix
 			$pk->x = $this->source->x;
@@ -136,10 +158,21 @@ class Explosion{
 					
 				$impact = (1 - $distByRad) * 0.5; //TODO calculate block density around the entity instead of 0.5 
 				$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
-				$entity->harm($damage, "explosion");
-				$entity->speedX = $diffX * $impact; //TODO check is needed for player?
-				$entity->speedY = $diffY * $impact;
-				$entity->speedZ = $diffZ * $impact;
+				if($damage > 0){
+					$entity->harm($damage, "explosion");
+					$entity->speedX = $diffX * $impact;
+					$entity->speedY = $diffY * $impact;
+					$entity->speedZ = $diffZ * $impact;
+					
+					if($entity->isPlayer()){
+						$pk = new SetEntityMotionPacket();
+						$pk->eid = 0; //XXX change
+						$pk->speedX = $entity->speedX;
+						$pk->speedY = $entity->speedY;
+						$pk->speedZ = $entity->speedZ;
+						$entity->player->dataPacket($pk);
+					}
+				}
 			}
 		}
 		

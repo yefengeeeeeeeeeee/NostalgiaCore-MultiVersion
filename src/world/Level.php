@@ -494,8 +494,15 @@ class Level{
 		}
 		$this->totalMobsAmount = 0;
 		$post = [];
-		//console($this->getName());
+		
 		foreach($this->entityList as $k => $e){
+			if(!($e instanceof Entity)){
+				unset($this->entityList[$k]);
+				unset($this->server->entities[$k]);
+				//TODO try to remove from $entityListPositioned?
+				continue;
+			}
+			
 			$dd = CORRECT_ENTITY_CLASSES[$e->class] ?? false;
 			if($dd === false || ($dd !== true && !isset($dd[$e->type]))){
 				ConsoleAPI::warn("Entity $k has invalid entity! {$e->class} {$e->type}");
@@ -512,13 +519,6 @@ class Level{
 					unset($this->entityListPositioned[$index][$k]);
 				}
 				
-				continue;
-			}
-			
-			if(!($e instanceof Entity)){
-				unset($this->entityList[$k]);
-				unset($this->server->entities[$k]);
-				//TODO try to remove from $entityListPositioned?
 				continue;
 			}
 			$curChunkX = (int)$e->x >> 4;
