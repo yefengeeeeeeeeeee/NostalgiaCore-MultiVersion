@@ -12,6 +12,7 @@ class Entity extends Position
 	public static $updateOnTick, $allowedAI;
 	public $canBeAttacked;
 	public $moveTime, $lookTime, $idleTime, $knockbackTime = 0;
+	public $attackTimeout = 0;
 	public $needsUpdate = true;
 	public $speedModifer;
 	public $hasGravity;
@@ -393,6 +394,8 @@ class Entity extends Position
 		$hasUpdate = $this->class === ENTITY_MOB; // force true for mobs
 		
 		$tickDiff = ($time - $this->lastUpdate) / 0.05;
+		if($this->attackTimeout > 0) $this->attackTimeout -= $tickDiff;
+		if($this->attackTimeout < 0) $this->attackTimeout = 0;
 		
 		if($this->isPlayer() && $this->player->spawned === true && $this->player->blocked !== true && !$this->dead){
 			$myBB = $this->boundingBox->grow(1, 0.5, 1);
@@ -1312,11 +1315,12 @@ class Entity extends Position
 
 	public function harm($dmg, $cause = "generic", $force = false)
 	{
-		if (! $this->canBeAttacked) {
+		if (!$this->canBeAttacked) {
 			return false;
 		}
 		
 		if(is_numeric($cause) && ($entity = $this->server->api->entity->get($cause)) != false){
+			if($this->attackTimeout > 0) return false;
 			switch($this->server->difficulty){
 				//case 0: looks like mobs also have 0 attack dmg in peaceful mode
 				//	$dmg = 0;
@@ -1333,7 +1337,12 @@ class Entity extends Position
 		$dmg = $this->applyArmor($dmg, $cause);
 		$ret = $this->setHealth(max(- 128, $this->getHealth() - ((int) $dmg)), $cause, $force);
 		
+		if($ret && is_numeric($cause) && ($entity = $this->server->api->entity->get($cause)) != false){ //TODO simplify
+			$this->attackTimeout = 10;
+		}
+		
 		if ($ret != false && $this->hasKnockback && is_numeric($cause) && ($entity = $this->server->api->entity->get($cause)) != false) {
+			
 			$d = $entity->x - $this->x;
 
 			for ($d1 = $entity->z - $this->z; $d * $d + $d1 * $d1 < 0.0001; $d1 = (lcg_value() - lcg_value()) * 0.01) {
