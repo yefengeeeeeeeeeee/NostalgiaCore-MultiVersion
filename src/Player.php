@@ -974,7 +974,7 @@ class Player{
 			return false;
 		}
 
-		$inv =& $this->inventory;
+		$inv = &$this->inventory;
 		if($gm === VIEW){
 			$this->armor = [];
 			$this->sendArmor();
@@ -997,7 +997,8 @@ class Player{
 			foreach($this->inventory as $slot => $item){
 				$inv[$slot] = BlockAPI::getItem(AIR, 0, 0);
 			}
-			$this->blocked = true;
+			$this->lastCorrect = $this->entity->copy();
+			$this->blocked = true;	
 			$this->gamemode = $gm;
 			$this->sendChat("Your gamemode has been changed to " . $this->getGamemode() . ", you've to do a forced reconnect.\n");
 			$this->server->schedule(30, [$this, "close"], "gamemode change", false, true); //Forces a kick
@@ -1654,7 +1655,7 @@ class Player{
 				}
 				if(($this->entity instanceof Entity)){
 					if($this->blocked === true or $this->server->api->handle("player.move", $this->entity) === false){
-						if($this->lastCorrect instanceof Vector3){
+						if($this->lastCorrect instanceof Vector3 && !$this->entity->dead){
 							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 						}
 					}else{
@@ -1680,7 +1681,7 @@ class Player{
 					}
 					$speed = $this->entity->getSpeedMeasure();
 					if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 9 and ($this->gamemode & 0x01) === 0x00) or $speed > 20 or $this->entity->distance($newPos) > 7)) or $this->server->api->handle("player.move", $this->entity) === false){
-						if($this->lastCorrect instanceof Vector3){
+						if($this->lastCorrect instanceof Vector3 && !$this->entity->dead){
 							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 						}
 					}else{
