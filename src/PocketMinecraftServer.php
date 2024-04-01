@@ -48,7 +48,7 @@ class PocketMinecraftServer{
 		$this->handlers = [];
 		$this->invisible = false;
 		$this->levelData = false;
-		$this->difficulty = 1;
+		$this->difficulty = 2;
 		$this->tiles = [];
 		$this->entities = [];
 		$this->custom = [];

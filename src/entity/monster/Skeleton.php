@@ -16,7 +16,7 @@ class Skeleton extends Monster{
 	}
 	
 	public function getAttackDamage(){
-		return 0; //TODO special attack
+		return 0;
 	}
 	
 	public function updateBurning(){

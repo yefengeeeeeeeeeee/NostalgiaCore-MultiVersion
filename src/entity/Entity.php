@@ -1315,6 +1315,21 @@ class Entity extends Position
 		if (! $this->canBeAttacked) {
 			return false;
 		}
+		
+		if(is_numeric($cause) && ($entity = $this->server->api->entity->get($cause)) != false){
+			switch($this->server->difficulty){
+				//case 0: looks like mobs also have 0 attack dmg in peaceful mode
+				//	$dmg = 0;
+				//	break;
+				case 1:
+					$dmg = (int)($dmg / 3) + 1;
+					break;
+				case 3:
+					$dmg = 3 * (int)($dmg / 2);
+					break;
+			}
+		}
+		
 		$dmg = $this->applyArmor($dmg, $cause);
 		$ret = $this->setHealth(max(- 128, $this->getHealth() - ((int) $dmg)), $cause, $force);
 		

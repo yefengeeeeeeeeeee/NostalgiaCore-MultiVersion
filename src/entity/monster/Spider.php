@@ -14,6 +14,9 @@ class Spider extends Monster{
 		$this->ai->addTask(new TaskAttackPlayer(1.0, 16)); //TODO fix range?
 	}
 	
+	public function getAttackDamage(){
+		return 2;
+	}
 	
 	public function attackEntity($entity, $distance){
 		if($distance > 2.0 && $distance < 6.0){

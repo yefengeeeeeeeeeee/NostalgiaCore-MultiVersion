@@ -126,7 +126,7 @@ class ServerAPI{
 			"gamemode" => SURVIVAL,
 			"hardcore" => false,
 			"pvp" => true,
-			"difficulty" => 1,
+			"difficulty" => 2,
 			"generator-settings" => "",
 			"level-name" => "world",
 			"level-seed" => "",
