@@ -48,6 +48,7 @@ class StaticBlock
 		self::setBlockBounds(BED_BLOCK, 0, 0, 0, 1, 0.5625, 1);
 		//Cake: has bounds based on world state
 		//Chest: has bounds based on world state
+		self::setBlockBounds(CHEST, 0.025, 0, 0.025, 0.975, 0.95, 0.975);
 		self::setBlockBounds(WHEAT_BLOCK, 0, 0, 0, 1, 0.25, 1);
 		self::setBlockBounds(CARROT_BLOCK, 0, 0, 0, 1, 0.25, 1);
 		self::setBlockBounds(POTATO_BLOCK,0, 0, 0, 1, 0.25, 1);

@@ -7,6 +7,10 @@ class ChestBlock extends TransparentBlock{
 		$this->isFullBlock = false;
 		$this->hardness = 15;
 	}
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		return [new AxisAlignedBB($x + 0.025, $y, $z + 0.025, $x + 0.975, $y + 0.95, $z + 0.975)];
+	}
+	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$server = ServerAPI::request();
 		$faces = array(
