@@ -553,6 +553,18 @@ class Level{
 					unset($this->entityListPositioned[$index][$e->eid]);
 					$this->entityListPositioned[$newIndex][$e->eid] = $e->eid; //set to e->eid to avoid possible memory leaks
 				}
+				
+				if($e->searchForClosestPlayers){
+					$e->handlePrePlayerSearcher();
+					
+					foreach($this->players as $player){
+						$dist = ($e->x - $player->entity->x)*($e->x - $player->entity->x) + ($e->y - $player->entity->y) + ($e->z - $player->entity->z);
+						$e->handlePlayerSearcher($player, $dist);
+					}
+				}
+				
+				
+				
 			}elseif(isset($this->entityListPositioned["$curChunkX $curChunkZ"])){
 				unset($this->entityListPositioned["$curChunkX $curChunkZ"][$k]);
 			}

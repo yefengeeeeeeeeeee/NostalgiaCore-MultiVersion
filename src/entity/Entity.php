@@ -7,6 +7,8 @@ class Entity extends Position
 	const CLASS_TYPE = - 1;
 	const MIN_POSSIBLE_SPEED = 1/8000; //anything below will send 0 to player
 	
+	public $searchForClosestPlayers = false;
+	
 	public $counter = 0;
 	public $fallDistance = 0;
 	public static $updateOnTick, $allowedAI;
@@ -186,7 +188,9 @@ class Entity extends Position
 			$this->outOfWorld();
 		}
 	}
-	
+	public function handlePrePlayerSearcher(){
+		
+	}
 	public function isType(){
 		return in_array($this->type, func_get_args());
 	}
@@ -713,6 +717,10 @@ class Entity extends Position
 	
 	public function isInVoid(){
 		return $this->y < -1.6;
+	}
+	
+	public function handlePlayerSearcher(Player $player, $dist){
+		
 	}
 	
 	public function update($now){

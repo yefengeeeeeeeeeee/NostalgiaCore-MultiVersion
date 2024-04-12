@@ -11,33 +11,8 @@ class TaskLookAtPlayer extends TaskBase{
 		return !$ai->entity->inPanic && lcg_value() < 0.02 && !$ai->entity->isMovingHorizontally() && !$ai->isStarted("TaskMate") && !$ai->isStarted("TaskLookAround") && !$ai->isStarted("TaskTempt")  && !$ai->isStarted("TaskPanic") && !$ai->entity->hasPath();
 	}
 
-	protected function findTarget($e, $r){
-		$svd = null;
-		$svdDist = -1;
-		foreach($e->level->players as $p){
-			$p = $p->entity;
-			if(Utils::distance_noroot($e, $p) > $r*$r){
-				continue;
-			}
-			if($svdDist === -1){
-				$svdDist = Utils::distance_noroot($e, $p);
-				$svd = $p;
-				continue;
-			}
-			if($svd != null && $svdDist === 0){
-				$svd = $p;
-			}
-			if(($cd = Utils::distance_noroot($e, $p)) < $svdDist){
-				$svdDist = $cd;
-				$svd = $p;
-			}
-		}
-		
-		if($svd == null){
-			return null;
-		}
-		
-		return $svd;
+	protected function findTarget(Creature $e, $r){
+		return $e->closestPlayerDist > $r*$r ? null : $e->level->entityList[$e->closestPlayerEID];
 	}
 
 	public function onStart(EntityAI $ai){

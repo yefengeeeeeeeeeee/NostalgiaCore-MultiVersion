@@ -4,7 +4,7 @@ class TaskRangedAttack extends \TaskBase
 {
 	public $server;
 	public $attackCounter = 0;
-	public $ticksNoSeen = 0;
+	public $seenTicks = 0;
 	public function __construct($speed, $range){
 		$this->speedMultiplier = $speed;
 		$this->rangeSquared = $range*$range;
@@ -31,15 +31,16 @@ class TaskRangedAttack extends \TaskBase
 			return false;
 		}
 		--$this->attackCounter;
-		//if(!$ai->canSee($ai->entity->target)){ useless without pathfinder =<
-		//	++$this->ticksNoSeen;
-		//}else{
-		//	$this->ticksNoSeen = 0;
-		//}
+		if($ai->canSee($ai->entity->target)){
+			++$this->seenTicks;
+		}else{
+			$this->seenTicks = 0;
+		}
+		
 		
 		$dist = $ai->entity->distanceSquared($ai->entity->target);
 		
-		if($dist > 100){
+		if($dist > 100 || $this->seenTicks < 20){
 			$ai->mobController->setMovingTarget($ai->entity->target->x, $ai->entity->target->y, $ai->entity->target->z, $this->speedMultiplier);
 		}else{
 			$ai->mobController->headYawIsYaw = true;
@@ -47,7 +48,7 @@ class TaskRangedAttack extends \TaskBase
 		
 		$ai->mobController->setLookPosition($ai->entity->target->x, $ai->entity->target->y + 0.12, $ai->entity->target->z, 10, $ai->entity->getVerticalFaceSpeed());
 		
-		if($this->attackCounter <= 0){
+		if($this->attackCounter <= 0 && $this->seenTicks > 0){
 			$this->rangedAttack($ai->entity, $ai->entity->target);
 			$this->attackCounter = 60;
 		}
@@ -112,23 +113,8 @@ class TaskRangedAttack extends \TaskBase
 				return true;
 			}
 		}
-		$bestTargetDistance = INF;
-		$closestTarget = null;
-		foreach($e->level->players as $p){
-			if($p->spawned){
-				$pt = $p->entity;
-				$xDiff = $pt->x - $e->x;
-				$yDiff = $pt->y - $e->y;
-				$zDiff = $pt->z - $e->z;
-				$d = ($xDiff*$xDiff + $yDiff*$yDiff + $zDiff*$zDiff);
-				if($d <= $this->rangeSquared){
-					if($bestTargetDistance >= $d){
-						$closestTarget = $pt;
-						$bestTargetDistance = $d;
-					}
-				}
-			}
-		}
+		
+		$closestTarget = $e->closestPlayerDist <= $this->rangeSquared ? $e->level->entityList[$e->closestPlayerEID] : null;
 		
 		if($closestTarget != null){
 			$e->target = $closestTarget; //TODO dont save entity object ?

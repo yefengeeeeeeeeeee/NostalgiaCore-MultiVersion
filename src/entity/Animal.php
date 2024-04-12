@@ -5,8 +5,12 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 	public $parent;
 	public $inLove; //do NOT add it into metadata, it doesnt send it to player
 	public $age;
-	
 	public $loveTimeout;
+	
+	
+	
+	public $closestPlayerThatCanFeedEID = false;
+	public $closestPlayerThatCanFeedDist = INF;
 	
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		parent::__construct($level, $eid, $class, $type, $data);
@@ -14,10 +18,28 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 		if(isset($this->data["IsBaby"]) && $this->data["IsBaby"] && $this->getAge() >= 0){
 			$this->setAge(-24000);
 		}
+		$this->searchForClosestPlayers = true;
+	}
+	
+	public function handlePrePlayerSearcher(){
+		parent::handlePrePlayerSearcher();
 		
-		//$this->ai->addTask(new TaskTempt());
-		//$this->ai->addTask(new TaskPanic());
-		//$this->ai->addTask(new TaskMate());
+		if($this->closestPlayerThatCanFeedEID !== false && !isset($this->level->entityList[$this->closestPlayerThatCanFeedEID])){
+			$this->closestPlayerThatCanFeedEID = false;
+			$this->closestPlayerThatCanFeedDist = INF;
+		}
+		
+	}
+	
+	public function handlePlayerSearcher(Player $player, $dist){
+		parent::handlePlayerSearcher($player, $dist);
+		
+		if($this->closestPlayerThatCanFeedDist >= $dist){
+			if($player->spawned && $this->isFood($player->getHeldItem()->id)){
+				$this->closestPlayerThatCanFeedDist = $dist;
+				$this->closestPlayerThatCanFeedEID = $player->entity->eid;
+			}
+		}
 	}
 	
 	public function harm($dmg, $cause = "generic", $force = false){

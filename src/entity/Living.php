@@ -27,6 +27,7 @@ abstract class Living extends Entity implements Pathfindable{
 		$this->canBeAttacked = true;
 		$this->hasGravity = true;
 		$this->hasKnockback = true;
+		
 		//if(self::$despawnMobs) $this->server->schedule(self::$despawnTimer, [$this, "close"]); //900*20
 	}
 	
@@ -39,6 +40,10 @@ abstract class Living extends Entity implements Pathfindable{
 		if($dmg > 0){
 			$this->harm($dmg, "fall");
 		}
+	}
+	
+	public function handlePlayerSearcher(Player $player, $dist){
+		
 	}
 	
 	public function getAIMoveSpeed(){
