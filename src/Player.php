@@ -2174,6 +2174,11 @@ class Player{
 							$this->sendChat("Your message contains illegal characters");
 							break;
 						}
+						
+						//if($message == "pf"){
+						//	Living::$pathfind = !Living::$pathfind;
+						//}
+						
 						if($this->server->api->handle("player.chat", $data) !== false){
 							$this->server->send2Discord("<" . $this->username . "> " . $message);
 							if(isset($data["message"])){

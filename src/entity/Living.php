@@ -21,7 +21,7 @@ abstract class Living extends Entity implements Pathfindable{
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 		$this->target = false;
 		$this->ai = new EntityAI($this);
-		$this->pathFinder = new TileNavigator(new MCBlockedProvider(), new MCDiagonalProvider(), new ManhattanHeuristic3D());
+		$this->pathFinder = new TileNavigator(new MCBlockedProvider(), new MCDiagonalProvider(), new Pythagoras3D());
 		$this->pathFollower = new PathFollower($this);
 		parent::__construct($level, $eid, $class, $type, $data);
 		$this->canBeAttacked = true;
@@ -113,16 +113,50 @@ abstract class Living extends Entity implements Pathfindable{
 		parent::update($now);
 	}
 	
+	public $pathEIDS = [];
+	private static $lastPathEID = 10000000;
+	public static $pathfind = true;
 	public function updateEntityMovement(){
 		if(!$this->dead && Entity::$allowedAI && $this->idleTime <= 0) {
 			$this->ai->updateTasks();
 		}
-		//if($this->onGround){
-		//	if(!$this->hasPath() && $this->pathFinder instanceof ITileNavigator){
-		//		$this->path = $this->pathFinder->navigate(new PathTileXYZ($this->x, $this->y, $this->z, $this->level), new PathTileXYZ($this->x + mt_rand(-10, 10), $this->y + mt_rand(-1, 1), $this->z + mt_rand(-10, 10), $this->level), 10);
-		//	}
-		//	$this->pathFollower->followPath();
-		//}
+		/*if($this->onGround){
+			if(!$this->hasPath() && $this->pathFinder instanceof ITileNavigator){
+				$me = new PathTileXYZ($this->x, $this->y, $this->z, $this->level);
+				//$target = new PathTileXYZ($this->x + mt_rand(-10, 10), $this->y + mt_rand(-1, 1), $this->z + mt_rand(-10, 10), $this->level);
+				
+				if(count($this->level->players) > 0){
+					$pl = array_values($this->level->players)[0];
+					$target = new PathTileXYZ($pl->entity->x, $pl->entity->y, $pl->entity->z, $this->level);
+				}
+				if(self::$pathfind){
+					$this->path = $this->pathFinder->navigate($me, $target, 10);
+				}
+				
+				
+				if($this->path){
+					console("Found path to $target from $me of length ".count($this->path));
+					
+					foreach($this->path as $node){
+						$eid = self::$lastPathEID++;
+						$this->pathEIDS[] = $eid;
+						
+						$pk = new AddItemEntityPacket();
+						$pk->eid = $eid;
+						$pk->item = BlockAPI::getItem(GOLD_BLOCK, 0, 1);
+						$pk->x = $node->x + 0.5;
+						$pk->y = $node->y;
+						$pk->z = $node->z + 0.5;
+						$pk->yaw = $pk->pitch = 0;
+						$pk->roll = 0;
+						foreach($this->level->players as $player){
+							$player->dataPacket($pk);
+						}
+					}
+				}
+			}
+			$this->pathFollower->followPath();
+		}*/
 		
 		
 		//not exactly here

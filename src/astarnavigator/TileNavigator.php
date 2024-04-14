@@ -26,8 +26,9 @@ class TileNavigator implements ITileNavigator
 	
 	public function navigate(PathTile $from, PathTile $to, $maxDist)
 	{
-		$open = [0 => $from];
+		$open = new SplPriorityQueue();
 		//$open->insert(, 0);
+		$open->insert($from, 0);
 		$path = [];
 		$gScore = [];
 		$gScore[(string) $from] = 0;
@@ -37,9 +38,10 @@ class TileNavigator implements ITileNavigator
 		}
 		$visited = [];
 		$maxDist*=$maxDist; //no square root
-		while(count($open) > 0)
+		while(!$open->isEmpty())
 		{
-			$current = array_pop($open);
+			$current = $open->top();
+			$open->next();
 			if ($current == $to){
 				return $this->reconstructPath($path, $current);
 			}
@@ -58,7 +60,9 @@ class TileNavigator implements ITileNavigator
 				$tentativeG = $gScore[(string) $current] + $distbetweenCost;
 				if (!isset($has[(string)$neighbor]))
 				{
-					$open[-$tentativeG] = $neighbor;
+					//if(isset($open[-$tentativeG])) console("overwriting $tentativeG");
+					//$open[-$tentativeG] = $neighbor;
+					$open->insert($neighbor, -$tentativeG);
 					$has[(string)$neighbor] = true;
 				}
 				elseif ($tentativeG >= $gScore[(string) $neighbor])
