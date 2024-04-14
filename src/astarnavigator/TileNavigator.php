@@ -63,6 +63,9 @@ class TileNavigator
 		}
 		$visited = [];
 		$maxDist*=$maxDist; //no square root
+		$closestToTarget = null;
+		$closestToTargetDist = INF;
+		
 		while(!$open->isEmpty())
 		{
 			$current = $open->top();
@@ -99,6 +102,12 @@ class TileNavigator
 				}
 				$visited[$neighbor] = true;
 				
+				$diffX = ($toX - ($neighbor >> 16 & 0xff));
+				$diffY = ($toY - ($neighbor & 0xff));
+				$diffZ = ($toZ - ($neighbor >> 8 & 0xff));
+				$targetDist = $diffX*$diffX + $diffY*$diffY + $diffZ*$diffZ;
+				
+				
 				$diffX = ($currentX - ($neighbor >> 16 & 0xff));
 				$diffY = ($currentY - ($neighbor & 0xff));
 				$diffZ = ($currentZ - ($neighbor >> 8 & 0xff));
@@ -109,6 +118,7 @@ class TileNavigator
 				{
 					//if(isset($open[-$tentativeG])) console("overwriting $tentativeG");
 					//$open[-$tentativeG] = $neighbor;
+					
 					$open->insert($neighbor, -$tentativeG);
 					$has[$neighbor] = true;
 				}
@@ -118,10 +128,21 @@ class TileNavigator
 				}
 				if(!isset($gScore[$neighbor]) || $distbetweenCost < $gScore[$neighbor]){
 					$path[$neighbor] = $current;
+					
+					if($targetDist < $closestToTargetDist){
+						console("found new best to target: $neighbor($closestToTargetDist -> $targetDist)");
+						
+						$closestToTarget = $neighbor;
+						$closestToTargetDist = $targetDist;						
+					}
 				}
 				
 				$gScore[$neighbor] = $tentativeG;
 			}
+		}
+		
+		if($closestToTarget != null){
+			return  $this->reconstructPath($path, $closestToTarget);
 		}
 		
 		return null;
