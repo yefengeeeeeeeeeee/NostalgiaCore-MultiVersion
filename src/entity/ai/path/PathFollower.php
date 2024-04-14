@@ -18,9 +18,11 @@ class PathFollower{
 		if($this->entity->currentNode == null){
 			$this->entity->currentNode = $this->entity->path[$this->entity->currentIndex];
 		}
-		
-		$this->entity->ai->mobController->setMovingTarget($this->entity->currentNode->x + 0.5, $this->entity->currentNode->y, $this->entity->currentNode->z + 0.5, 1.0);
-		if($this->entity->boundingBox->isXYZInsideNS($this->entity->currentNode->x + 0.5, $this->entity->currentNode->y, $this->entity->currentNode->z + 0.5)){
+		$moveX = ($this->entity->currentNode >> 16 & 0xff) + 0.5;
+		$moveY = $this->entity->currentNode & 0xff;
+		$moveZ = ($this->entity->currentNode >> 8 & 0xff) + 0.5;
+		$this->entity->ai->mobController->setMovingTarget($moveX + 0.5, $moveY, $moveZ + 0.5, 1.0);
+		if($this->entity->boundingBox->isXYZInsideNS($moveX + 0.5, $moveY, $moveZ + 0.5)){
 			++$this->entity->currentIndex;
 			console("next");
 			$this->entity->currentNode = null;
