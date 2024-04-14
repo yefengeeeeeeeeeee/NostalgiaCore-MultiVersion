@@ -6,12 +6,16 @@ class TileNavigator
 		[0, 0, 1],
 		[0, 0, -1],
 		[1, 0, 0],
-		[-1, 0, 0]
+		[-1, 0, 0],
 	];
 	
 	public static $pathfinderAccessed = 0;
-
-	public function __construct(){
+	public $entity;
+	public $avoidFallDamage = true;
+	public $tall = false;
+	public function __construct(Living $entity){
+		$this->entity = $entity;
+		$this->tall = $entity->height > 1;
 	}
 	
 	public function reconstructPath($path, $current){
@@ -40,7 +44,16 @@ class TileNavigator
 		$blockY = $loc & 0xf;
 		
 		$id = $level->fastGetBlockID($chunkX, $chunkY, $chunkZ, $blockX, $blockY, $blockZ, $index);
-		return StaticBlock::getIsSolid($id);
+		$b = StaticBlock::getIsSolid($id);
+		if($this->tall){
+			$loc += 1;
+			$chunkY = $loc >> 4 & 0xf;
+			$blockY = $loc & 0xf;
+			$id = $level->fastGetBlockID($chunkX, $chunkY, $chunkZ, $blockX, $blockY, $blockZ, $index);
+			return $b || StaticBlock::getIsSolid($id);
+		}
+		
+		return $b;
 	}
 	
 	
@@ -76,6 +89,7 @@ class TileNavigator
 			if ($current == $to){
 				return $this->reconstructPath($path, $current);
 			}
+			
 			$points = [];
 			foreach(self::OFFSETS as $offset){
 				$newX = $offset[0] + $currentX;
@@ -85,6 +99,34 @@ class TileNavigator
 				$new = $newX << 16 | $newZ << 8 | $newY;
 				
 				if(!$this->isLocBlocked($pmfLevel, $new)){
+					if($newY > 0 && !$this->isLocBlocked($pmfLevel, $new - 1)){
+						if(!$this->avoidFallDamage){
+							$new -= 1;
+							$newY -= 1;
+						}else{
+							if($this->isLocBlocked($pmfLevel, $new - 2)){
+								$new -= 1;
+								$newY -= 1;
+							}else if($this->isLocBlocked($pmfLevel, $new - 3)){
+								$new -= 2;
+								$newY -= 2;
+							}else if($this->isLocBlocked($pmfLevel, $new - 4)){
+								$new -= 3;
+								$newY -= 3;
+							}else{
+								continue;	
+							}
+						}
+					}
+					$dist = ($fromX - $newX)*($fromX - $newX) + ($fromY - $newY)*($fromY - $newY) + ($fromZ - $newZ)*($fromZ - $newZ);
+					if($dist < -$maxDist || $dist > $maxDist){
+						continue;
+					}
+					
+					$points[] = $new;
+				}else if(!$this->isLocBlocked($pmfLevel, $current+1) && !$this->isLocBlocked($pmfLevel, $new+1)){
+					$new += 1;
+					$newY += 1;
 					
 					$dist = ($fromX - $newX)*($fromX - $newX) + ($fromY - $newY)*($fromY - $newY) + ($fromZ - $newZ)*($fromZ - $newZ);
 					if($dist < -$maxDist || $dist > $maxDist){
@@ -115,7 +157,7 @@ class TileNavigator
 				$distbetweenCost = $diffX*$diffX + $diffY*$diffY + $diffZ*$diffZ;
 				$tentativeG = $gScore[$current] + $distbetweenCost;
 				if (!isset($has[$neighbor]))
-				{
+				{ 
 					//if(isset($open[-$tentativeG])) console("overwriting $tentativeG");
 					//$open[-$tentativeG] = $neighbor;
 					

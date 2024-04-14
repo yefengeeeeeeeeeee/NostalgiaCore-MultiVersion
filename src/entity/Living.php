@@ -3,6 +3,9 @@
 abstract class Living extends Entity implements Pathfindable{
 	
 	public static $despawnMobs, $despawnTimer, $entityPushing = false;
+	
+	public static $pathfinderTest = false;
+	
 	public $moveStrafing, $moveForward;
 	/**
 	 * @var Entity $target
@@ -21,7 +24,7 @@ abstract class Living extends Entity implements Pathfindable{
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 		$this->target = false;
 		$this->ai = new EntityAI($this);
-		$this->pathFinder = new TileNavigator();
+		$this->pathFinder = new TileNavigator($this);
 		$this->pathFollower = new PathFollower($this);
 		parent::__construct($level, $eid, $class, $type, $data);
 		$this->canBeAttacked = true;
@@ -71,6 +74,7 @@ abstract class Living extends Entity implements Pathfindable{
 		unset($this->ai->mobController->entity);
 		unset($this->ai);
 		unset($this->parent);
+		unset($this->pathFinder->entity);
 	}
 	
 	public function canBeShot(){
@@ -117,10 +121,10 @@ abstract class Living extends Entity implements Pathfindable{
 	private static $lastPathEID = 10000000;
 	public static $pathfind = true;
 	public function updateEntityMovement(){
-		if(!$this->dead && Entity::$allowedAI && $this->idleTime <= 0) {
+		if(!$this->dead && Entity::$allowedAI && $this->idleTime <= 0 && !self::$pathfinderTest) {
 			$this->ai->updateTasks();
 		}
-		/*if($this->onGround){
+		if(self::$pathfinderTest){
 			if(!$this->hasPath()){
 				//$target = new PathTileXYZ($this->x + mt_rand(-10, 10), $this->y + mt_rand(-1, 1), $this->z + mt_rand(-10, 10), $this->level);
 				$pl = null;
@@ -128,7 +132,7 @@ abstract class Living extends Entity implements Pathfindable{
 					$pl = array_values($this->level->players)[0];
 					//$target = new PathTileXYZ($pl->entity->x, $pl->entity->y, $pl->entity->z, $this->level);
 				}
-				if($pl != null && self::$pathfind){
+				if(self::$pathfind){
 					$this->path = $this->pathFinder->navigate($this->level, (int)$this->x, (int)$this->y, (int)$this->z, (int)$pl->entity->x, (int)$pl->entity->y, (int)$pl->entity->z, 10);
 				}
 				
@@ -155,7 +159,7 @@ abstract class Living extends Entity implements Pathfindable{
 				}
 			}
 			$this->pathFollower->followPath();
-		}*/
+		}
 		
 		
 		//not exactly here
