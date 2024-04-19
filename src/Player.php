@@ -1244,19 +1244,31 @@ class Player{
 			}
 		}
 		if($e->x != $e->lastX || $e->y != $e->lastY || $e->z != $e->lastZ || $e->yaw != $e->lastYaw || $e->pitch != $e->lastPitch){
-			$move = new MoveEntityPacket_PosRot();
-			$move->eid = $e->eid;
-			$move->x = $e->x;
-			$move->y = $e->y;
-			$move->z = $e->z;
-			$move->yaw = $e->yaw;
-			$move->pitch = $e->pitch;
-			$move->encode();
+			if($e->headYaw != $e->lastHeadYaw){
+				$move = new MovePlayerPacket();
+				$move->eid = $e->eid;
+				$move->x = $e->x;
+				$move->y = $e->y;
+				$move->z = $e->z;
+				$move->yaw = $e->yaw;
+				$move->pitch = $e->pitch;
+				$move->bodyYaw = $e->headYaw;
+				$move->encode();
+			}else{
+				$move = new MoveEntityPacket_PosRot();
+				$move->eid = $e->eid;
+				$move->x = $e->x;
+				$move->y = $e->y;
+				$move->z = $e->z;
+				$move->yaw = $e->yaw;
+				$move->pitch = $e->pitch;
+				$move->encode();
+			}
+			
 			$len += strlen($move->buffer) + 1;
 			++$packets;
 			$moveSent = true;
-		}
-		if($e->headYaw != $e->lastHeadYaw){
+		}else if($e->headYaw != $e->lastHeadYaw){
 			$headyaw = new RotateHeadPacket();
 			$headyaw->eid = $e->eid;
 			$headyaw->yaw = $e->headYaw;
