@@ -14,7 +14,7 @@ class TNTBlock extends SolidBlock{
 			}
 			$data = array(
 				"x" => $this->x + 0.5,
-				"y" => $this->y + 0.5,
+				"y" => $this->y,
 				"z" => $this->z + 0.5,
 				"power" => 3,
 				"fuse" => 20 * 4, //4 seconds

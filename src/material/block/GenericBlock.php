@@ -58,7 +58,7 @@ class GenericBlock extends Block{
 			if($down->getID() === AIR or ($down instanceof LiquidBlock)){
 				$data = array(
 					"x" => $this->x + 0.5,
-					"y" => $this->y + 0.5,
+					"y" => $this->y,
 					"z" => $this->z + 0.5,
 					"Tile" => $this->id,
 				);

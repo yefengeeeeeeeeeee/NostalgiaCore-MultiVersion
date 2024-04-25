@@ -1248,7 +1248,7 @@ class Player{
 				$move = new MovePlayerPacket();
 				$move->eid = $e->eid;
 				$move->x = $e->x;
-				$move->y = $e->y;
+				$move->y = $e->y + $e->yOffset;
 				$move->z = $e->z;
 				$move->yaw = $e->yaw;
 				$move->pitch = $e->pitch;
@@ -1258,7 +1258,7 @@ class Player{
 				$move = new MoveEntityPacket_PosRot();
 				$move->eid = $e->eid;
 				$move->x = $e->x;
-				$move->y = $e->y;
+				$move->y = $e->y + $e->yOffset;
 				$move->z = $e->z;
 				$move->yaw = $e->yaw;
 				$move->pitch = $e->pitch;
