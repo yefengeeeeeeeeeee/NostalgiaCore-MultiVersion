@@ -1,8 +1,8 @@
 <?php
 
 class ConsoleAPI{
-
-	private $loop, $server, $event, $help, $cmds, $alias;
+	private static $loop; //why no Thread::kill in pthreads3
+	private $server, $event, $help, $cmds, $alias;
 	public $last;
 	function __construct(){
 		$this->help = [];
@@ -15,7 +15,7 @@ class ConsoleAPI{
 	public function init(){
 		$this->server->schedule(2, [$this, "handle"], [], true);
 		if(!defined("NO_THREADS")){
-			$this->loop = new ConsoleLoop();
+			self::$loop = new ConsoleLoop();
 		}
 		$this->register("help", "[page|command name]", [$this, "defaultCommands"]);
 		$this->register("status", "", [$this, "defaultCommands"]);
@@ -51,8 +51,8 @@ class ConsoleAPI{
 	function __destruct(){
 		$this->server->deleteEvent($this->event);
 		if(!defined("NO_THREADS")){
-			$this->loop->stop();
-			$this->loop->notify();
+			self::$loop->stop();
+			self::$loop->notify();
 			//@fclose($this->loop->fp);
 			usleep(50000);
 			//$this->loop->join();
@@ -68,10 +68,10 @@ class ConsoleAPI{
 		if(defined("NO_THREADS")){
 			return;
 		}
-		$line = $this->loop->line;
+		$line = self::$loop->line;
 		if($line !== false){
 			$line = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", trim($line));
-			$this->loop->line = false;
+			self::$loop->line = false;
 			$output = $this->run($line, "console");
 			if($output != ""){
 				$mes = explode("\n", trim($output));
@@ -80,7 +80,7 @@ class ConsoleAPI{
 				}
 			}
 		}else{
-			$this->loop->notify();
+			self::$loop->notify();
 		}
 	}
 
@@ -218,7 +218,7 @@ class ConsoleAPI{
 				}
 				return "TPS: " . $info["tps"] . ", Memory usage: " . $info["memory_usage"] . " (Peak " . $info["memory_peak_usage"] . ")";
 			case "stop":
-				$this->loop->stop = true;
+				self::$loop->stop = true;
 				$output .= "Stopping the server\n";
 				$this->server->close();
 				break;
