@@ -947,7 +947,7 @@ class Entity extends Position
 			$slot = $e->player->getHeldItem();
 			$damage = $slot->getDamageAgainstOf($this);
 			$this->harm($damage, $e->eid);
-			if($slot->isTool() and ($this->player->gamemode & 0x01) === 0){
+			if($slot->isTool() && (!$this->isPlayer() || ($this->player->gamemode & 0x01) === 0)){
 				if($slot->useOn($this) and $slot->getMetadata() >= $slot->getMaxDurability()){
 					$e->player->removeItem($slot->getID(), $slot->getMetadata(), 1, true);
 				}
