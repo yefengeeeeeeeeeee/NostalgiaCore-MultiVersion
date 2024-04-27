@@ -1230,6 +1230,7 @@ class Player{
 		$motionSent = false;
 		$moveSent = false;
 		$headSent = false;
+		
 		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
 			if(!($e->speedY < 0 && $e->onGround) || $e->speedX != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
 				$motion = new SetEntityMotionPacket();
@@ -2653,7 +2654,7 @@ class Player{
 	}
 
 	public function damageArmorPart($slot, $part){
-		$part->useOn($this->entity, true); //PocketMine is forced to do it =<. Even if PocketMine doesnt want, he have to damage your armor.
+		$part->useOn($this->entity, true);
 		if($part->getMetadata() >= $part->getMaxDurability()){
 			$this->setArmor($slot, BlockAPI::getItem(AIR, 0, 0), false);
 			return;

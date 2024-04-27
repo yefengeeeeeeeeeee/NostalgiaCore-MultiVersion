@@ -945,10 +945,10 @@ class Entity extends Position
 
 		if($action === InteractPacket::ACTION_ATTACK && $e->isPlayer()){
 			$slot = $e->player->getHeldItem();
-			$damage = $slot->getDamageAgainstOf($e);
+			$damage = $slot->getDamageAgainstOf($this);
 			$this->harm($damage, $e->eid);
-			if($slot->isTool() === true and ($e->player->gamemode & 0x01) === 0){
-				if($slot->useOn($e) and $slot->getMetadata() >= $slot->getMaxDurability()){
+			if($slot->isTool() and ($this->player->gamemode & 0x01) === 0){
+				if($slot->useOn($this) and $slot->getMetadata() >= $slot->getMaxDurability()){
 					$e->player->removeItem($slot->getID(), $slot->getMetadata(), 1, true);
 				}
 			}
