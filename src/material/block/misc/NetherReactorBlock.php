@@ -50,10 +50,7 @@ class NetherReactorBlock extends SolidBlock{
 	
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 1){
-			return array(
-				[DIAMOND, 0, 3],
-				[IRON_INGOT, 0, 6],
-			);
+			return [[NETHER_REACTOR, 0, 1]];
 		}
 	}
 	
