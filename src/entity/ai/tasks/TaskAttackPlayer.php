@@ -70,7 +70,7 @@ class TaskAttackPlayer extends TaskBase
 			}
 		}
 		
-		$closestTarget = $e->closestPlayerDist <= $this->rangeSquared ? ($e->level->entityList[$e->closestPlayerEID] ?? null) : null;
+		$closestTarget = $e->closestPlayerDist <= $this->rangeSquared ? $e->level->entityList[$e->closestPlayerEID] : null;
 		
 		if($closestTarget != null){
 			$e->target = $closestTarget; //TODO dont save entity object ?

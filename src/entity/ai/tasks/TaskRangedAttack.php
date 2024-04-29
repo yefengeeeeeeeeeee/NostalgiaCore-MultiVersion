@@ -113,8 +113,8 @@ class TaskRangedAttack extends \TaskBase
 				return true;
 			}
 		}
-		//TODO fix closestPlayerEID being not in entityList
-		$closestTarget = $e->closestPlayerDist <= $this->rangeSquared ? ($e->level->entityList[$e->closestPlayerEID] ?? null) : null;
+
+		$closestTarget = $e->closestPlayerDist <= $this->rangeSquared ? $e->level->entityList[$e->closestPlayerEID] : null;
 		
 		if($closestTarget != null){
 			$e->target = $closestTarget; //TODO dont save entity object ?

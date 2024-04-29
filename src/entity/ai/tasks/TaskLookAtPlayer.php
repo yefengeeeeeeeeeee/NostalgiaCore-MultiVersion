@@ -12,7 +12,7 @@ class TaskLookAtPlayer extends TaskBase{
 	}
 
 	protected function findTarget(Creature $e, $r){
-		return $e->closestPlayerDist > $r*$r ? null : ($e->level->entityList[$e->closestPlayerEID] ?? null);
+		return $e->closestPlayerDist > $r*$r ? null : $e->level->entityList[$e->closestPlayerEID];
 	}
 
 	public function onStart(EntityAI $ai){

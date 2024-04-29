@@ -16,6 +16,11 @@ abstract class Creature extends Living{
 		$this->searchForClosestPlayers = true;
 	}
 	
+	public function update($now){
+	    $this->handlePrePlayerSearcher();
+	    return parent::update($now);
+	}
+	
 	public function handlePrePlayerSearcher(){
 		parent::handlePrePlayerSearcher();
 		if($this->closestPlayerEID !== false && !isset($this->level->entityList[$this->closestPlayerEID])){

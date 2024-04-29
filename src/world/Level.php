@@ -670,8 +670,9 @@ class Level{
 	}
 	
 	public function addBlockToSendQueue($x, $y, $z, $id, $meta){
-		if(!$this->forceDisableBlockQueue)
+		if(!$this->forceDisableBlockQueue){
 			$this->queuedBlockUpdates["$x $y $z"] = [$x, $y, $z, $id, $meta];
+		}
 	}
 	
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){
