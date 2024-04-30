@@ -1230,7 +1230,10 @@ class Player{
 		$motionSent = false;
 		$moveSent = false;
 		$headSent = false;
-		
+		$svdYSpeed = $e->speedY;
+		if($e->modifySpeedY){
+		    $e->speedY = $e->modifedSpeedY;
+		}
 		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
 			if(!($e->speedY < 0 && $e->onGround) || $e->speedX != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
 				$motion = new SetEntityMotionPacket();
@@ -1244,6 +1247,11 @@ class Player{
 				$motionSent = true;
 			}
 		}
+		if($e->modifySpeedY){
+		  $e->speedY = $svdYSpeed;
+		  $e->modifySpeedY = false;
+		}
+		
 		if($e->x != $e->lastX || $e->y != $e->lastY || $e->z != $e->lastZ || $e->yaw != $e->lastYaw || $e->pitch != $e->lastPitch){
 			if($e->headYaw != $e->lastHeadYaw){
 				$move = new MovePlayerPacket();

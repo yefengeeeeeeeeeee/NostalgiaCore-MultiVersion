@@ -8,7 +8,8 @@ class Entity extends Position
 	const MIN_POSSIBLE_SPEED = 1/8000; //anything below will send 0 to player
 	
 	public $searchForClosestPlayers = false;
-	
+	public $modifySpeedY = false;
+	public $modifedSpeedY = 0.0;
 	public $counter = 0;
 	public $fallDistance = 0;
 	public static $updateOnTick, $allowedAI;
@@ -631,18 +632,15 @@ class Entity extends Position
 			}
 			$this->boundingBox->offset(0, 0, $dz);
 			
-			$dy = -$this->stepHeight;
-			foreach($aaBBs as $bb){
-				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
-			}
-			$this->boundingBox->offset(0, $dy, 0);
-			
 			if ($cx*$cx + $cz*$cz >= $dx*$dx + $dz*$dz)
 			{
 				$dx = $cx;
 				$dy = $cy;
 				$dz = $cz;
 				$this->boundingBox->setBB($aabb1);
+			}else{
+			    $this->modifySpeedY = true;
+			    $this->modifedSpeedY = 0.5;
 			}
 		}
 		
