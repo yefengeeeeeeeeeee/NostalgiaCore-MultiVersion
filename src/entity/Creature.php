@@ -17,8 +17,8 @@ abstract class Creature extends Living{
 	}
 	
 	public function update($now){
-	    $this->handlePrePlayerSearcher();
-	    return parent::update($now);
+		$this->handlePrePlayerSearcher();
+		return parent::update($now);
 	}
 	
 	public function handlePrePlayerSearcher(){
