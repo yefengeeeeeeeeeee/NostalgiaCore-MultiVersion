@@ -639,8 +639,8 @@ class Entity extends Position
 				$dz = $cz;
 				$this->boundingBox->setBB($aabb1);
 			}else{
-			    $this->modifySpeedY = true;
-			    $this->modifedSpeedY = 0.5;
+				$this->modifySpeedY = true;
+				$this->modifedSpeedY = 0.5;
 			}
 		}
 		

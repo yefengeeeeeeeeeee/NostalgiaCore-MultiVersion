@@ -10,6 +10,9 @@ class CactusBlock extends TransparentBlock{
 	public static function onEntityCollidedWithBlock(Level $level, $x, $y, $z, Entity $entity){
 		$entity->harm(1, "cactus");
 	}
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		return [new AxisAlignedBB($x + 0.0625, $y, $z + 0.0625, $x - 0.0625, $y - 0.0625, $z - 0.0625)];
+	}
 	
 	public static function onRandomTick(Level $level, $x, $y, $z){
 		//$b = $level->level->getBlock($x, $y - 1, $z);

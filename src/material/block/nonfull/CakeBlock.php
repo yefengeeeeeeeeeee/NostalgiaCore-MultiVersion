@@ -9,6 +9,11 @@ class CakeBlock extends TransparentBlock{
 		$this->hardness = 2.5;
 	}
 	
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		$data = $level->level->getBlockDamage($x, $y, $z);
+		return [new AxisAlignedBB($x + (2*$data + 1) * 0.0625, $y, $z + 0.0625, $x + 0.9375, $y + 0.5, $z + 0.9375)];
+	}
+	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() !== AIR){
