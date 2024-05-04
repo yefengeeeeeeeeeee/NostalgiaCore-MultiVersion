@@ -70,6 +70,9 @@ class StaticBlock
 		self::setBlockBounds(RAIL, 0, 0, 0, 1, 0.125, 1);
 		self::setBlockBounds(POWERED_RAIL, 0, 0, 0, 1, 0.125, 1);
 		
+		self::setBlockBounds(DANDELION, 0.3, 0.0, 0.3, 0.7, 0.6, 0.7); //extends Bush
+		self::setBlockBounds(ROSE, 0.3, 0.0, 0.3, 0.7, 0.6, 0.7); //extends Bush
+		
 		self::setBlockBounds(SUGARCANE_BLOCK, 0.5 - 0.375, 0, 0.5 - 0.375, 0.5 + 0.375, 1, 0.5 + 0.375);
 		self::setBlockBounds(SNOW_LAYER, 0, 0, 0, 1, 0.125, 1);
 		//Stairs: based on different factors

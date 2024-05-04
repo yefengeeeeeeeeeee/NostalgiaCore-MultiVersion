@@ -5,9 +5,15 @@ class TorchBlock extends FlowableBlock implements LightingBlock{
 		parent::__construct(TORCH, $meta, "Torch");
 		$this->hardness = 0;
 	}
+	
 	public function getMaxLightValue(){
 		return 15;
 	}
+	
+	public static function getAABB(Level $level, $x, $y, $z){
+		return null;
+	}
+	
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			$side = $this->getMetadata();

@@ -12,7 +12,9 @@ class SugarcaneBlock extends FlowableBlock{
 			[SUGARCANE, 0, 1],
 		];
 	}
-	
+	public static function getAABB(Level $level, $x, $y, $z){
+		return null;
+	}
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			if($this->level->level->getBlockID($this->x, $this->y - 1, $this->z) != SUGARCANE_BLOCK){

@@ -19,7 +19,9 @@ class SaplingBlock extends FlowableBlock{
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 0;
 	}
-	
+	public static function getAABB(Level $level, $x, $y, $z){
+		return null;
+	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){

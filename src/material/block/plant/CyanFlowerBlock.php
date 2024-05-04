@@ -6,7 +6,11 @@ class CyanFlowerBlock extends FlowableBlock{
 		$this->isActivable = true;
 		$this->hardness = 0;
 	}
-
+	
+	public static function getAABB(Level $level, $x, $y, $z){
+		return null;
+	}
+	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			$down = $this->getSide(0);
 			if($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 60){

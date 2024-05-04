@@ -17,10 +17,32 @@ class WoodSlabBlock extends TransparentBlock{
 		}		
 		$this->hardness = 15;
 	}
-	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
-		if(($level->level->getBlockDamage($x, $y, $z) & 0x08) == 0x08) return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 1, $z + 1)];
-		return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 0.5, $z + 1)];
+	
+	public static function updateShape(Level $level, $x, $y, $z){
+		
+		[$id, $meta] = $level->level->getBlock($x, $y, $z);
+		
+		if($meta & 0x08 == 0x08){
+			StaticBlock::setBlockBounds($id, 0, 0, 0, 1, 1, 1);
+		}else{
+			$bottom = (($meta ^ 8) >> 3) & 1;
+			if($bottom) StaticBlock::setBlockBounds($id, 0, 0, 0, 1, 0.5, 1);
+			else StaticBlock::setBlockBounds($id, 0, 0.5, 0, 1, 1, 1);
+		}
 	}
+	
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		self::updateShape($level, $x, $y, $z);
+		$id = $level->level->getBlockID($x, $y, $z);
+		
+		return [
+			new AxisAlignedBB(
+				$x + StaticBlock::$minXs[$id], $y + StaticBlock::$minYs[$id], $z + StaticBlock::$minZs[$id],
+				$x + StaticBlock::$maxXs[$id], $y + StaticBlock::$maxYs[$id], $z + StaticBlock::$maxZs[$id]
+				)
+		];
+	}
+	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			$this->meta &= 0x07;
 			if($face === 0){

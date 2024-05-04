@@ -707,7 +707,7 @@ class Player{
 					$pk->rider = $data["rider"];
 				}
 				$pk->riding = $data["riding"];
-				$pk->type = 0; //TODO;
+				$pk->type = 0;
 				$this->dataPacket($pk);
 				break;
 			case "tile.update":
@@ -1920,7 +1920,7 @@ class Player{
 					case 5: //Shot arrow
 						if($this->entity->inAction){
 							$arrowSlot = $this->hasItem(ARROW);
-							if($this->getSlot($this->slot)->getID() === BOW && (($this->gamemode & 0x01) == 0x1 || $arrowSlot !== false)){ //TODO check arrow count
+							if($this->getSlot($this->slot)->getID() === BOW && (($this->gamemode & 0x01) == 0x1 || $arrowSlot !== false)){
 								if($this->startAction !== false){
 									$initalPower = $this->entity->inActionCounter;
 									$power = $initalPower / 20;

@@ -8,7 +8,9 @@ class SignPostBlock extends TransparentBlock{
 		4 => 4,
 		5 => 5,
 	];
-	
+	public static function getAABB(Level $level, $x, $y, $z){
+		return null;
+	}
 	public function __construct($meta = 0){
 		parent::__construct(SIGN_POST, $meta, "Sign Post");
 		$this->isSolid = false;

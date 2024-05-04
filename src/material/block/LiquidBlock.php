@@ -15,7 +15,9 @@ class LiquidBlock extends TransparentBlock{
 		$this->isFullBlock = true;
 		$this->hardness = 500;
 	}
-	
+	public static function getAABB(Level $level, $x, $y, $z){
+		return null;
+	}
 	public static function getPercentAir($meta){
 		if($meta >= 8) $meta = 0;
 		$f = ($meta + 1) / 9;

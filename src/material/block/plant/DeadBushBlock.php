@@ -6,7 +6,11 @@ class DeadBushBlock extends FlowableBlock{
 		//$this->isReplaceable = true;
 		$this->hardness = 0;
 	}
-
+	
+	public static function getAABB(Level $level, $x, $y, $z){
+		return null;
+	}
+	
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method

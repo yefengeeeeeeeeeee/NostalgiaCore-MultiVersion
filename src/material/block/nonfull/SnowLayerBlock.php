@@ -8,7 +8,9 @@ class SnowLayerBlock extends FlowableBlock{
 		$this->isFullBlock = false;
 		$this->hardness = 0.5;
 	}
-	
+	public static function getAABB(Level $level, $x, $y, $z){
+		return null;
+	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down instanceof SolidBlock){

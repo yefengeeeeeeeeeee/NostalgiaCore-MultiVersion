@@ -171,8 +171,12 @@ abstract class Block extends Position{
 		return $v == null ? false : $v->x >= StaticBlock::$minXs[$id] && $v->x <= StaticBlock::$maxXs[$id] && $v->y >= StaticBlock::$minYs[$id] && $v->y <= StaticBlock::$maxYs[$id];
 	}
 	
+	public static function updateShape(Level $level, $x, $y, $z){
+		
+	}
+	
 	public static function clip(Level $level, $x, $y, $z, Vector3 $start, Vector3 $end){
-		//self::updateShape($level, $x, $y, $z); TODO update shape
+		static::updateShape($level, $x, $y, $z);
 		$id = $level->level->getBlockID($x, $y, $z);
 		
 		$start = $start->subtract($x, $y, $z);

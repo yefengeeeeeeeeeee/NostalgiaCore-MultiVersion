@@ -7,6 +7,11 @@ class CobwebBlock extends FlowableBlock{
 		$this->isFullBlock = false;
 		$this->hardness = 25;
 	}
+	
+	public static function getAABB(Level $level, $x, $y, $z){
+		return null;
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		if ($item->isSword()){
 			return [

@@ -7,6 +7,11 @@ abstract class RailBaseBlock extends FlowableBlock //TODO move some methods here
 		$id = $l->level->getBlockID($x, $y, $z);
 		return $id === POWERED_RAIL || $id === RAIL;
 	}
+	
+	public static function getAABB(Level $level, $x, $y, $z){
+		return null;
+	}
+	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() !== AIR and $down instanceof SolidBlock){

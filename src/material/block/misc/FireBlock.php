@@ -12,7 +12,9 @@ class FireBlock extends FlowableBlock implements LightingBlock{
 		$this->isFullBlock = true;
 		$this->hardness = 0;
 	}
-	
+	public static function getAABB(Level $level, $x, $y, $z){
+		return null;
+	}
 	public static function setFlammabilityAndCatchingChance($blockID, $flammability, $v){
 		self::$flammability[$blockID] = $flammability;
 		self::$fireCatchingChance[$blockID] = $v;
