@@ -6,7 +6,37 @@ class GlassPaneBlock extends TransparentBlock{
 		$this->isFullBlock = false;
 		$this->isSolid = false;
 	}
-	
+	public static function updateShape(Level $level, $x, $y, $z){
+		$id = $level->level->getBlockID($x, $y, $z);
+		
+		$minX = 0.4375;
+		$maxX = 0.5625;
+		$minZ = 0.4375;
+		$maxZ = 0.5625;
+		
+		$var9 = self::canConnectTo($level->level->getBlockID($x, $y, $z - 1));
+		$var10 = self::canConnectTo($level->level->getBlockID($x, $y, $z + 1));
+		$var11 = self::canConnectTo($level->level->getBlockID($x - 1, $y, $z));
+		$var12 = self::canConnectTo($level->level->getBlockID($x + 1, $y, $z));
+		
+		if((!$var11 || !$var12) && ($var11 || $var12 || $var9 || $var10)){
+			if($var11 && !$var12) $minX = 0;
+			else if(!$var11 && $var12) $maxX = 1;
+		}else{
+			$minX = 0;
+			$maxX = 1;
+		}
+		
+		if((!$var9 || !$var10) && ($var11 || $var12 || $var9 || $var10)){
+			if($var9 && !$var10) $minZ = 0;
+			else if(!$var9 && $var10) $maxZ = 1;
+		}else{
+			$minZ = 0;
+			$maxZ = 1;
+		}
+		
+		StaticBlock::setBlockBounds($id, $minX, 0, $minZ, $maxX, 1, $maxZ);
+	}
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		$var8 = self::canConnectTo($level->level->getBlockID($x, $y, $z - 1));
 		$var9 = self::canConnectTo($level->level->getBlockID($x, $y, $z + 1));

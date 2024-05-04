@@ -65,8 +65,6 @@ class StaticBlock
 		self::setBlockBounds(SAPLING, 0.1, 0, 0.1, 0.9, 0.8, 0.9);
 		self::setBlockBounds(BROWN_MUSHROOM, 0.3, 0, 0.3, 0.8, 0.4, 0.8);
 		self::setBlockBounds(SLAB, 0, 0, 0, 1, 0.5, 1);
-		//Ladder: based on rotation
-		//Glass Pane: based on state
 		self::setBlockBounds(RAIL, 0, 0, 0, 1, 0.125, 1);
 		self::setBlockBounds(POWERED_RAIL, 0, 0, 0, 1, 0.125, 1);
 		

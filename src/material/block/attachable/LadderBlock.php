@@ -8,7 +8,27 @@ class LadderBlock extends TransparentBlock{
 		5 => 4,
 		4 => 5,
 	];
-	
+	public static function getAABB(Level $level, $x, $y, $z){
+		[$id, $meta] = $level->level->getBlock($x, $y, $z);
+		
+		switch($meta){
+			case 2:
+				StaticBlock::setBlockBounds($id, 0.0, 0.0, 0.875, 1.0, 1.0, 1.0);
+				break;
+			case 3:
+				StaticBlock::setBlockBounds($id, 0, 0.0, 0.0, 1.0, 1.0, 0.125);
+				break;
+			case 4:
+				StaticBlock::setBlockBounds($id, 0.875, 0.0, 0.0, 1.0, 1.0, 1.0);
+				break;
+			case 5:
+				StaticBlock::setBlockBounds($id, 0, 0.0, 0.0, 0.125, 1.0, 1.0);
+				break;
+				
+		}
+		
+		return parent::getAABB($level, $x, $y, $z);
+	}
 	public function __construct($meta = 0){
 		parent::__construct(LADDER, $meta, "Ladder");
 		$this->isSolid = false;
