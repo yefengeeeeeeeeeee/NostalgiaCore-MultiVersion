@@ -1038,8 +1038,8 @@ class Player{
 			$flags |= 0x20; //Show Nametags
 		}
 		
-		$flags |= 0x2; //pvp
-		$flags |= 0x4; //pve
+		//$flags |= 0x2; //pvp
+		//$flags |= 0x4; //pve
 		
 		$pk = new AdventureSettingsPacket;
 		$pk->flags = $flags;
