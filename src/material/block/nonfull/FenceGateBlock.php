@@ -2,7 +2,25 @@
 
 class FenceGateBlock extends TransparentBlock{
 	
-	//TODO public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity)
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		$aabb = static::getAABB($level, $x, $y, $z);
+		if($aabb == null) return [];
+		return [$aabb];
+	}
+	
+	public static function getAABB(Level $level, $x, $y, $z){
+		$data = $level->level->getBlockDamage($x, $y, $z);
+		
+		if($data & 4){
+			return null;
+		}
+		
+		if($data != 2 && $data != 0){
+			return new AxisAlignedBB($x + 0.375, $y, $z, $x + 0.625, $y + 1.5, $z + 1.0);
+		}else{
+			return new AxisAlignedBB($x, $y, $z + 0.375, $x + 1, $y + 1.5, $z + 0.625);
+		}
+	}
 	
 	public function __construct($meta = 0){
 		parent::__construct(FENCE_GATE, $meta, "Fence Gate");
@@ -31,7 +49,7 @@ class FenceGateBlock extends TransparentBlock{
 		);
 	}
 	public function onActivate(Item $item, Player $player){
-
+		
 		$meta = $this->meta;
 		if(($meta & 4) != 0){
 			$meta ^= 4;
@@ -45,7 +63,7 @@ class FenceGateBlock extends TransparentBlock{
 			}
 			$meta |= 4;
 		}
-
+		
 		$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, $this->id, $meta);
 		$players = $this->level->players;
 		unset($players[$player->CID]);
