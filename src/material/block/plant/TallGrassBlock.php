@@ -24,6 +24,10 @@ class TallGrassBlock extends FlowableBlock{
 		return false;
 	}
 	
+	public static function getAABB(Level $level, $x, $y, $z){
+		return null;
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		$drops = array();
 		if($item->isShears()) $drops[] = array($this->id, $this->meta & 0x03, 1);

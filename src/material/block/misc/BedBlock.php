@@ -20,7 +20,11 @@ class BedBlock extends TransparentBlock{
 		$this->isFullBlock = false;
 		$this->hardness = 1;
 	}
-	//TODO collision box
+	
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		return [static::getAABB($level, $x, $y, $z)];
+	}
+
 	public static function findStandUpPosition(Level $level, $x, $y, $z){
 		$blockMeta = $level->level->getBlockDamage($x, $y, $z);
 		$direction = $blockMeta & 0x3;

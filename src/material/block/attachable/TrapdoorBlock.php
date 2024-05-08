@@ -17,6 +17,45 @@ class TrapdoorBlock extends TransparentBlock{
 		return $id === SLAB || $id === GLOWSTONE || $id === SLAB || $id === WOOD_SLAB || (!$target->isTransparent || $target instanceof StairBlock);
 	}
 	
+	public static function isOpen($meta){
+		return ($meta >> 2) & 1;
+	}
+	
+	public static function getAABB(Level $level, $x, $y, $z){
+		static::updateShape($level, $x, $y, $z);
+		return StaticBlock::getAABB($level, $x, $y, $z);
+	}
+	
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		return [static::getAABB($level, $x, $y, $z)];
+	}
+	
+	public static function updateShape(Level $level, $x, $y, $z){
+		[$id, $meta] = $level->level->getBlock($x, $y, $z);
+		
+		StaticBlock::setBlockBounds($id, 0.0, 0.0, 0.0, 1.0, 0.1875, 1.0);
+		
+		if(static::isOpen($meta)){
+			$facing = $meta & 3;
+			switch($facing){
+				case 0:
+					StaticBlock::setBlockBounds($id, 0.0, 0.0, 0.8125, 1.0, 1.0, 1.0);
+					break;
+				case 1:
+					StaticBlock::setBlockBounds($id, 0.0, 0.0, 0.0, 1.0, 1.0, 0.1875);
+					break;
+				case 2:
+					StaticBlock::setBlockBounds($id, 0.8125, 0.0, 0.0, 1.0, 1.0, 1.0);
+					break;
+				case 3:
+					StaticBlock::setBlockBounds($id, 0.0, 0.0, 0.0, 0.1875, 1.0, 1.0);
+					break;
+				default:
+					ConsoleAPI::error("wat");
+			}
+		}
+	}
+	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			if(($this->canAttachTo($target)) and $face !== 0 and $face !== 1){
 				$faces = array(
