@@ -10,10 +10,48 @@ class DoorBlock extends TransparentBlock{
 		parent::__construct($id, $meta, $name);
 		$this->isSolid = false;
 	}
-
+	public static function updateShape(Level $level, $x, $y, $z){
+		$id = $level->level->getBlockID($x, $y, $z);
+		StaticBlock::setBlockBounds($id, 0.0, 0.0, 0.0, 1.0, 2.0, 1.0);
+		$fullMeta = self::getCompositeData($level, $x, $y, $z);
+		switch($fullMeta & 3){
+			case 0:
+				if(($fullMeta & 4) != 0){
+					if(($fullMeta & 16) == 0) StaticBlock::setBlockBounds($id, 0, 0, 0, 1, 1, 0.1875);
+					else StaticBlock::setBlockBounds($id, 0, 0, 1 - 0.1875, 1, 1, 1);
+				}else{
+					StaticBlock::setBlockBounds($id, 0, 0, 0, 0.1875, 1, 1);
+				}
+				break;
+			case 1:
+				if(($fullMeta & 4) != 0){
+					if(($fullMeta & 16) == 0) StaticBlock::setBlockBounds($id, 1 - 0.1875, 0, 0, 1, 1, 1);
+					else StaticBlock::setBlockBounds($id, 0, 0, 0, 0.1875, 1, 1);
+				}else{
+					StaticBlock::setBlockBounds($id, 0, 0, 0, 1, 1, 0.1875);
+				}
+				break;
+			case 2:
+				if(($fullMeta & 4) != 0){
+					if(($fullMeta & 16) == 0) StaticBlock::setBlockBounds($id, 0, 0, 1 - 0.1875, 1, 1, 1);
+					else StaticBlock::setBlockBounds($id, 0, 0, 0, 1, 1, 0.1875);
+				}else{
+					StaticBlock::setBlockBounds($id, 1 - 0.1875, 0, 0, 1, 1, 1);
+				}
+				break;
+			case 3:
+				if(($fullMeta & 4) != 0){
+					if(($fullMeta & 16) == 0) StaticBlock::setBlockBounds($id, 0, 0, 0, 0.1875, 1, 1);
+					else StaticBlock::setBlockBounds($id, 1 - 0.1875, 0, 0, 1, 1, 1);
+				}else{
+					StaticBlock::setBlockBounds($id, 0, 0, 1 - 0.1875, 1, 1, 1);
+				}
+				break;
+		}
+	}
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		$aabb = new AxisAlignedBB(0, 0, 0, 1, 2, 1);
-		$fullMeta = self::getFullBlockMetadata($level, $x, $y, $z);
+		$fullMeta = self::getCompositeData($level, $x, $y, $z);
 		switch($fullMeta & 3){
 			case 0:
 				if(($fullMeta & 4) != 0){
@@ -53,7 +91,7 @@ class DoorBlock extends TransparentBlock{
 		return [$aabb->offset($x, $y, $z)];
 	}
 	
-	public static function getFullBlockMetadata(Level $level, $x, $y, $z){
+	public static function getCompositeData(Level $level, $x, $y, $z){
 		$myMeta = $level->level->getBlockDamage($x, $y, $z);
 		
 		if(($myMeta & 8) != 0){
