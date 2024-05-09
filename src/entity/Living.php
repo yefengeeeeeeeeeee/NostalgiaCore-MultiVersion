@@ -80,6 +80,11 @@ abstract class Living extends Entity implements Pathfindable{
 	public function canBeShot(){
 		return true;
 	}
+	
+	public function isPushable(){
+		return !$this->dead;
+	}
+	
 	public function collideHandler(){
 		$bb = $this->boundingBox->expand(0.2, 0, 0.2);
 		$minChunkX = ((int)($bb->minX)) >> 4;
@@ -92,8 +97,8 @@ abstract class Living extends Entity implements Pathfindable{
 			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
 				$ind = "$chunkX $chunkZ";
 				foreach($this->level->entityListPositioned[$ind] ?? [] as $entid){
-					if($this->level->entityList[$entid] instanceof Entity){
-						if($bb->intersectsWith($this->level->entityList[$entid]->boundingBox)){
+					if(($this->level->entityList[$entid] ?? null) instanceof Entity){
+						if($this->level->entityList[$entid]->isPushable() && $bb->intersectsWith($this->level->entityList[$entid]->boundingBox)){
 							$this->level->entityList[$entid]->applyCollision($this);
 						}
 					}

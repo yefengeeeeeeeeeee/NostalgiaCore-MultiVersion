@@ -219,6 +219,10 @@ class Entity extends Position
 		$this->speedZ += $vZ;
 	}
 	
+	public function isPushable(){
+		return false;
+	}
+	
 	public function applyCollision(Entity $collided){
 		if(!($this->isPlayer() && $collided->isPlayer()) && $this->eid != $collided->eid){
 			$diffX = $collided->x - $this->x;

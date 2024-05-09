@@ -78,6 +78,10 @@ class Minecart extends Vehicle{
 		];
 	}
 	
+	public function isPushable(){
+		return false; //TODO replace with true
+	}
+	
 	public function spawn($player){
 		$pk = new AddEntityPacket;
 		$pk->eid = $this->eid;
