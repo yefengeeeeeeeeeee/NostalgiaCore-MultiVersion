@@ -35,6 +35,82 @@ class StairBlock extends TransparentBlock{
 		}
 	}
 	
+	const DEAD_SAPCES = [
+		[2, 6],
+		[3, 7],
+		[2, 3],
+		[6, 7],
+		[0, 4],
+		[1, 5],
+		[0, 1],
+		[4, 5]
+	];
+	
+	public static function updateShape(Level $level, $x, $y, $z){
+		if(self::$complexState){
+			$id = $level->level->getBlockID($x, $y, $z);
+			$cid = self::$complexStateID;
+			StaticBlock::setBlockBounds($id, 
+				0.5 * ($cid % 2),
+				0.5 * ((int)($cid / 2) % 2),
+				0.5 * ((int)($cid / 4) % 2),
+				0.5 + 0.5 * ($cid % 2),
+				0.5 + 0.5 * ((int)($cid / 2) % 2),
+				0.5 + 0.5 * ((int)($cid / 4) % 2)
+			);
+		}else{
+			StaticBlock::setBlockBounds($level->level->getBlockID($x, $y, $z), 0, 0, 0, 1, 1, 1);
+		}
+	}
+	
+	static $complexState = false;
+	static $complexStateID = 0;
+	public static function clip(Level $level, $x, $y, $z, Vector3 $start, Vector3 $end){
+		$v7 = [];
+		
+		$v8 = $level->level->getBlockDamage($x, $y, $z);
+		$v9 = $v8 & 3;
+		$v10 = ($v8 & 4) == 4;
+		$v11 = self::DEAD_SAPCES[$v9 + ($v10 ? 4 : 0)];
+		self::$complexState = true;
+		
+		for($v12 = 0; $v12 < 8; ++$v12){
+			self::$complexStateID = $v12;
+			
+			for($v15 = 0; $v15 < /*count($v11}*/ 2; ++$v15){
+				$v16 = $v11[$v15];
+				if($v16 == $v12){
+					; //wat
+				}
+			}
+			
+			$v7[$v12] = parent::clip($level, $x, $y, $z, $start, $end);
+		}
+		
+		for($v14 = 0; $v14 < /*count($v11}*/ 2; ++$v14){
+			$v15 = $v11[$v14];
+			$v7[$v15] = null;
+		}
+		
+		$v24 = 0;
+		$v22 = null;
+		
+		for($v17 = 0; $v17 < count($v7); ++$v17){
+			$v18 = $v7[$v17];
+			
+			if($v18 != null){
+				$v19 = $v18->hitVector->distanceSquared($end);
+				
+				if($v19 > $v24){
+					$v22 = $v18;
+					$v24 = $v19;
+				}
+			}
+		}
+		
+		return $v22;
+	}
+	
 	public static function setStepShape(Level $level, $x, $y, $z){
 		$blockMeta = $level->level->getBlockDamage($x, $y, $z);
 		$metaAnd3 = $blockMeta & 3;
