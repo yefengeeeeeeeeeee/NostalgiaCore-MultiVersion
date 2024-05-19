@@ -1475,6 +1475,15 @@ class Entity extends Position
 				$pk = new EntityEventPacket;
 				$pk->eid = $this->eid;
 				$pk->event = EntityEventPacket::ENTITY_DAMAGE;
+				foreach($this->level->players as $p){
+					if(($p->entity instanceof Entity) && $p->entity->eid == $this->eid){
+						$pk2 = clone $pk;
+						$pk2->eid = 0;
+						$p->dataPacket($pk2);
+					}else{
+						$p->dataPacket(clone $pk);
+					}
+				}
 				$this->server->api->player->broadcastPacket($this->level->players, $pk);
 			}
 			if($this->player instanceof Player){
