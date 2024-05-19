@@ -1484,7 +1484,6 @@ class Entity extends Position
 						$p->dataPacket(clone $pk);
 					}
 				}
-				$this->server->api->player->broadcastPacket($this->level->players, $pk);
 			}
 			if($this->player instanceof Player){
 				$pk = new SetHealthPacket();
