@@ -52,21 +52,21 @@ class GenericBlock extends Block{
 	 *
 	 * @return boolean
 	 */
-	public function onUpdate($type){
-		if($this->hasPhysics === true and $type === BLOCK_UPDATE_NORMAL){
-			$down = $this->getSide(0);
-			if($down->getID() === AIR or ($down instanceof LiquidBlock)){
+	public static function onUpdate(Level $level, $x, $y, $z, $type){ 
+		[$id, $meta] = $level->level->getBlock($x, $y, $z);
+		if(StaticBlock::getHasPhysics($id) and $type === BLOCK_UPDATE_NORMAL){ //TODO move from here to different class
+			$down = $level->level->getBlockID($x, $y - 1, $z);
+			if($down == AIR || StaticBlock::getIsLiquid($down)){
 				$data = array(
-					"x" => $this->x + 0.5,
-					"y" => $this->y,
-					"z" => $this->z + 0.5,
-					"Tile" => $this->id,
+					"x" => $x + 0.5,
+					"y" => $y,
+					"z" => $z + 0.5,
+					"Tile" => $id,
 				);
 				$server = ServerAPI::request();
-				$this->level->setBlock($this, new AirBlock(), false, false, true);
-				$e = $server->api->entity->add($this->level, ENTITY_FALLING, FALLING_SAND, $data);
+				$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
+				$e = $server->api->entity->add($level, ENTITY_FALLING, FALLING_SAND, $data);
 				$server->api->entity->spawnToAll($e);
-				$server->api->block->blockUpdateAround(clone $this, BLOCK_UPDATE_NORMAL, 1);
 			}
 			return false;
 		}

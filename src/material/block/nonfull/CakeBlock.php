@@ -29,10 +29,10 @@ class CakeBlock extends TransparentBlock{
 		return false;
 	}
 	
-	public function onUpdate($type){
+	public static function onUpdate(Level $level, $x, $y, $z, $type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
-				$this->level->setBlock($this, new AirBlock(), true, false, true);
+			if($level->level->getBlockID($x, $y - 1, $z) == AIR){ //Replace with common break method
+				$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}

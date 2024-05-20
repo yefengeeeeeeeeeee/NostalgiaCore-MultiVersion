@@ -219,6 +219,7 @@ abstract class Block extends Position{
 	
 	public static function addVelocityToEntity(Level $level, $x, $y, $z, Entity $entity, Vector3 $velocityVector){}
 	public static function onRandomTick(Level $level, $x, $y, $z){}
+	public static function onUpdate(Level $level, $x, $y, $z, $type){}
 	public static function fallOn(Level $level, $x, $y, $z, Entity $entity, $fallDistance){}
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		return [static::getAABB($level, $x, $y, $z)];
@@ -298,8 +299,6 @@ abstract class Block extends Position{
 	abstract function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
 	
 	abstract function onActivate(Item $item, Player $player);
-	
-	abstract function onUpdate($type);
 }
 
 /***REM_START***/

@@ -8,10 +8,9 @@ class GlowingRedstoneOreBlock extends SolidBlock implements LightingBlock{
 	public static function onRandomTick(Level $level, $x, $y, $z){
 		$level->setBlock(new Position($x, $y, $z, $level), BlockAPI::get(REDSTONE_ORE, $level->level->getBlockDamage($x, $y, $z)), false, false, true);
 	}
-	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_SCHEDULED){
-			$this->level->setBlock($this, BlockAPI::get(REDSTONE_ORE, $this->meta), false, false, true);			
-			return BLOCK_UPDATE_WEAK;
+	public static function onUpdate(Level $level, $x, $y, $z, $type){ 
+		if($type === BLOCK_UPDATE_SCHEDULED){ //TODO replace with BLOCK_UPDATE_NORMAL
+			$level->fastSetBlockUpdate($x, $y, $z, REDSTONE_ORE, 0);
 		}
 		return false;
 	}

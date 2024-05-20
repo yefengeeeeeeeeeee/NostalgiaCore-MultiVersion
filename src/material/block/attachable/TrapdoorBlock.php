@@ -74,22 +74,20 @@ class TrapdoorBlock extends TransparentBlock{
 			array($this->id, 0, 1),
 		);
 	}
-	public function onUpdate($type){
+	public static function onUpdate(Level $level, $x, $y, $z, $type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			$faces = array( //meta => side
-					0 => 3,
-					4 => 3, //activated
-					1 => 2,
-					5 => 2, //activated
-					2 => 5,
-					6 => 5, //activated
-					3 => 4,
-					7 => 4, //activated
-			);
-			$side = $faces[$this->meta];
-			if($this->getSide($side) instanceof AirBlock){ //Replace with common break method
-				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id, 0, 1));
-				$this->level->setBlock($this, new AirBlock(), true, false, true);
+			
+			$attach = match($level->level->getBlockDamage($x, $y, $z)){
+				0, 4 => $level->level->getBlockID($x, $y, $z + 1),
+				1, 5 => $level->level->getBlockID($x, $y, $z - 1),
+				2, 6 => $level->level->getBlockID($x + 1, $y, $z),
+				3, 7 => $level->level->getBlockID($x - 1, $y, $z),
+				default => 0
+			};
+			
+			if($attach == AIR){ //Replace with common break method
+				ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem(TRAPDOOR, 0, 1));
+				$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}

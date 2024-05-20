@@ -36,29 +36,40 @@ class FireBlock extends FlowableBlock implements LightingBlock{
 	public function getMaxLightValue(){
 		return 15;
 	}
-	public function onUpdate($type){
+	public static function onUpdate(Level $level, $x, $y, $z, $type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			for($s = 0; $s <= 5; ++$s){
-				$side = $this->getSide($s);
-				if($side->getID() !== AIR and !($side instanceof LiquidBlock)){
-					return false;
-				}
-			}
-			$this->level->setBlock($this, new AirBlock(), true, false, true);
+			
+			$b = $level->level->getBlockID($x, $y - 1, $z);
+			if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
+			$b = $level->level->getBlockID($x, $y - 1, $z);
+			if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
+			
+			$b = $level->level->getBlockID($x - 1, $y, $z);
+			if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
+			$b = $level->level->getBlockID($x + 1, $y, $z);
+			if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
+			
+			$b = $level->level->getBlockID($x, $y, $z - 1);
+			if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
+			$b = $level->level->getBlockID($x, $y, $z + 1);
+			if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
+			
+			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 			return BLOCK_UPDATE_NORMAL;
-		}else if($type === BLOCK_UPDATE_SCHEDULED){
-			$idBelow = $this->level->level->getBlockID($this->x, $this->y - 1, $this->z);
+		}else if($type === BLOCK_UPDATE_SCHEDULED){ //TODO get rid of it
+			$idBelow = $level->level->getBlockID($x, $y - 1, $z);
+			[$id, $meta] = $level->level->getBlock($x, $y, $z);
 			$alwaysBurn = $idBelow == NETHERRACK;
 			
-			if($this->meta < 15){
-				$newMeta = $this->meta + 1; //TODO better formula
+			if($meta < 15){
+				$newMeta = $meta + 1; //TODO better formula
 				if($newMeta > 15) $newMeta = 15;
-				$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, $this->id, $newMeta);
+				$level->fastSetBlockUpdate($x, $y, $z, $id, $newMeta);
 			}
-			if($this->meta == 15){
-				if(!$alwaysBurn && !self::canBurn($this->level, $this->x, $this->y - 1, $this->z) && mt_rand(0, 4) == 0){
+			if($meta == 15){
+				if(!$alwaysBurn && !self::canBurn($level, $x, $y - 1, $z) && mt_rand(0, 4) == 0){
 					REMOVE_FIRE:
-					$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, 0, 0);
+					$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 					return false;
 				}
 			}
@@ -66,11 +77,11 @@ class FireBlock extends FlowableBlock implements LightingBlock{
 				
 			if(mt_rand(0, 249) < $chance){
 				//TODO ignite tnt
-				$this->level->fastSetBlockUpdate($this->x, $this->y - 1, $this->z, 0, 0, true);
+				$level->fastSetBlockUpdate($x, $y - 1, $z, 0, 0, true);
 				goto REMOVE_FIRE;
 			}
 			
-			$this->level->scheduleBlockUpdate($this, 30, BLOCK_UPDATE_SCHEDULED); //TODO looks like it also adds mt_rand(0, 9) to it
+			$level->scheduleBlockUpdate(new Position($x, $y, $z, $level), 30, BLOCK_UPDATE_SCHEDULED); //TODO looks like it also adds mt_rand(0, 9) to it
 		}
 		return false;
 	}

@@ -41,11 +41,11 @@ class PotatoBlock extends FlowableBlock{
 		return false;
 	}
 
-	public function onUpdate($type){
+	public static function onUpdate(Level $level, $x, $y, $z, $type){ 
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getID() != 60){
-				ServerAPI::request()->api->entity->drop(new Position($this->x + 0.5, $this->y, $this->z + 0.5, $this->level), BlockAPI::getItem(POTATO, 0, 1));
-				$this->level->setBlock($this, new AirBlock(), false, false, true);
+			if($level->level->getBlockID($x, $y - 1, $z) != FARMLAND){
+				ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(POTATO, 0, 1));
+				$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}

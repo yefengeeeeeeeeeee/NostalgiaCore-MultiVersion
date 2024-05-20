@@ -527,17 +527,11 @@ class BlockAPI{
 	}
 
 	public function blockUpdate(Position $pos, $type = BLOCK_UPDATE_NORMAL){
-		if(!($pos instanceof Block)){
-			$block = $pos->level->getBlock($pos);
-		}else{
-			$pos = new Position($pos->x, $pos->y, $pos->z, $pos->level);
-			$block = $pos->level->getBlock($pos);
-		}
+		$block = StaticBlock::getBlock($pos->level->level->getBlockID($pos->x, $pos->y, $pos->z));
 		if($block === false){
 			return false;
 		}
-
-		$level = $block->onUpdate($type);
+		$level = $block::onUpdate($pos->level, $pos->x, $pos->y, $pos->z, $type);
 		if($level === BLOCK_UPDATE_NORMAL){
 			$this->blockUpdateAround($block, $level);
 		}

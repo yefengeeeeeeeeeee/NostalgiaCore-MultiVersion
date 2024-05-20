@@ -58,10 +58,10 @@ class FarmlandBlock extends TransparentBlock{
 		}
 	}
 	
-	public function onUpdate($type){
+	public static function onUpdate(Level $level, $x, $y, $z, $type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if(!$this->getSide(1)->isTransparent){
-				$this->level->setBlock($this, BlockAPI::get(DIRT, 0), true, false, true);
+			if(!StaticBlock::getIsTransparent($level->level->getBlockID($x, $y + 1, $z))){
+				$level->fastSetBlockUpdate($x, $y, $z, DIRT, 0, true);
 				return $type;
 			}
 		}

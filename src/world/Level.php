@@ -465,11 +465,15 @@ class Level{
 		}
 	}
 	
-	public function fastSetBlockUpdate($x, $y, $z, $id, $meta, $updateBlocksAround = false){
+	public function fastSetBlockUpdate($x, $y, $z, $id, $meta, $updateBlocksAround = false, $tiles = false){
 		$this->level->setBlock($x, $y, $z, $id, $meta);
 		$this->addBlockToSendQueue($x, $y, $z, $id, $meta);
 		if($updateBlocksAround){
 			$this->server->api->block->blockUpdateAround(new Position($x, $y, $z, $this), BLOCK_UPDATE_NORMAL, 1);
+		}
+		
+		if($tiles && ($t = $this->server->api->tile->getXYZ($this, $x, $y, $z)) != false){ //TODO rewrite
+			$t->close();
 		}
 	}
 	

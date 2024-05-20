@@ -10,7 +10,13 @@ class TileAPI{
 		$this->tiles = [];
 		$this->server = ServerAPI::request();
 	}
-
+	public function getXYZ(Level $level, $x, $y, $z){
+		$tile = $this->server->query("SELECT * FROM tiles WHERE level = '{$level->getName()}' AND x = $z AND y = $y AND z = $z;", true);
+		if($tile !== false and $tile !== true and ($tile = $this->getByID($tile["ID"])) !== false){
+			return $tile;
+		}
+		return false;
+	}
 	public function get(Position $pos){
 		$tile = $this->server->query("SELECT * FROM tiles WHERE level = '" . $pos->level->getName() . "' AND x = {$pos->x} AND y = {$pos->y} AND z = {$pos->z};", true);
 		if($tile !== false and $tile !== true and ($tile = $this->getByID($tile["ID"])) !== false){

@@ -60,9 +60,10 @@ class WaterBlock extends LiquidBlock{
 		return null;
 	}
 	
-	public function onUpdate($type){
-		//return false;
-		$newId = $this->id;
+	public static function onUpdate(Level $level, $x, $y, $z, $type){
+		//TODO rewrite
+		return false;
+		/*$newId = $this->id;
 		$level = $this->meta & 0x07;
 		
 		if($type !== BLOCK_UPDATE_NORMAL){
@@ -117,6 +118,6 @@ class WaterBlock extends LiquidBlock{
 			ServerAPI::request()->api->block->blockUpdateAround($this, BLOCK_UPDATE_NORMAL, 5);
 			$this->level->setBlock($this, new AirBlock(), false, false, true);
 		}
-		return false;
+		return false;*/
 	}
 }

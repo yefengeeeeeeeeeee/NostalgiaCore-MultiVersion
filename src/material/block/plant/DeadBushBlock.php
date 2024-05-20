@@ -11,10 +11,10 @@ class DeadBushBlock extends FlowableBlock{
 		return null;
 	}
 	
-	public function onUpdate($type){
+	public static function onUpdate(Level $level, $x, $y, $z, $type){ 
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
-				$this->level->setBlock($this, new AirBlock(), false, false, true);
+			if(StaticBlock::getIsTransparent($level->level->getBlockID($x, $y - 1, $z))){ //Replace with common break method
+				$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}
@@ -30,13 +30,13 @@ class DeadBushBlock extends FlowableBlock{
 		return false;
 	}
 	
-		public function getDrops(Item $item, Player $player){
-			if($item->isShears()){
-				return [
-					[DEAD_BUSH, 0, 1],
-				];
-			}
-			
-			return [];
+	public function getDrops(Item $item, Player $player){
+		if($item->isShears()){
+			return [
+				[DEAD_BUSH, 0, 1],
+			];
 		}
+			
+		return [];
+	}
 }
