@@ -1,9 +1,13 @@
 <?php
 
-class StillLavaBlock extends LiquidBlock{
+class StillLavaBlock extends LiquidBlockStatic{
 	public function __construct($meta = 0){
 		parent::__construct(STILL_LAVA, $meta, "Still Lava");
 		$this->hardness = 500;
+	}
+	
+	public static function getTickDelay(){
+		return 30;
 	}
 	
 }
