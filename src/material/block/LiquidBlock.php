@@ -15,6 +15,16 @@ class LiquidBlock extends TransparentBlock{
 		$this->isFullBlock = true;
 		$this->hardness = 500;
 	}
+	public static $blockID = 0;
+	
+	public static function getDepth(Level $level, $x, $y, $z){
+		[$id, $meta] = $level->level->getBlock($x, $y, $z);
+		
+		if($id == static::$blockID) return $meta;
+		return -1;
+		
+	}
+	
 	public static function getAABB(Level $level, $x, $y, $z){
 		return null;
 	}

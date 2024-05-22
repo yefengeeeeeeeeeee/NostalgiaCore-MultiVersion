@@ -4,7 +4,7 @@ class LiquidBlockStatic extends LiquidBlock{
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		parent::__construct($id, $meta, $name);
 	}
-	
+	public static $blockID = 0;
 	//TODO: tick: try spread fire if lava
 	
 	public static function setDynamic(Level $level, $x, $y, $z){
