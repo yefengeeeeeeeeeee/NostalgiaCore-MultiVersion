@@ -36,7 +36,7 @@ class SugarcaneBlock extends FlowableBlock{
 		return false;
 	}
 
-	public static function onUpdate(Level $level, $x, $y, $z, $type){ 
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		$down = $level->level->getBlockID($x, $y - 1, $z);
 		if($down == GRASS or $down == DIRT or $down == SAND){
 			$b0 = $level->level->getBlockID($x, $y - 1, $z - 1);
@@ -46,15 +46,12 @@ class SugarcaneBlock extends FlowableBlock{
 			if($b0 != WATER && $b0 != STILL_WATER && $b1 != WATER && $b1 != STILL_WATER && $b2 != WATER && $b2 != STILL_WATER && $b3 != WATER && $b3 != STILL_WATER){
 				$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 				ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem(SUGARCANE));
-				return true;
 			}
 		}
 		if(StaticBlock::getIsTransparent($down) && $down != SUGARCANE_BLOCK){ //Replace with common break method
 			ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(SUGARCANE));
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
-			return BLOCK_UPDATE_NORMAL;
 		}
-		return false;
 	}
 	public static function onRandomTick(Level $level, $x, $y, $z){
 		$aboveID = $level->level->getBlockID($x, $y + 1, $z);

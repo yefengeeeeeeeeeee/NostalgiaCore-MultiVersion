@@ -154,6 +154,9 @@ abstract class Block extends Position{
 	public $y = 0;
 	public $z = 0;
 	public $slipperiness;
+	public static function interact(Level $level, $x, $y, $z, Player $player){}
+	
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){}
 	
 	public static function getAABB(Level $level, $x, $y, $z){
 		return StaticBlock::getAABB($level, $x, $y, $z);

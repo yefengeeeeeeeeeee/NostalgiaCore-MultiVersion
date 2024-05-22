@@ -42,7 +42,7 @@ class IceBlock extends TransparentBlock{
 			}	
 		}
 	}
-	public static function onUpdate(Level $level, $x, $y, $z, $type){ /*Taken from https://github.com/PocketMine/PocketMine-MP/issues/3249*/
+	//public static function onUpdate(Level $level, $x, $y, $z, $type){ /*Taken from https://github.com/PocketMine/PocketMine-MP/issues/3249*/
 		/*if($type === BLOCK_UPDATE_RANDOM){
 			$light = $this->scanForNearbyLightSources(3,3,3);
 			if(LightUtils::getLightValueFromNearbySource($light,$this) > 12){
@@ -52,7 +52,7 @@ class IceBlock extends TransparentBlock{
 			return BLOCK_UPDATE_RANDOM;
 		}
 		return false;*/ //TODO ice melting(after light?)
-	}
+	//}
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;

@@ -64,13 +64,12 @@ class LeavesBlock extends TransparentBlock{
 			}
 		}
 	}
-	public static function onUpdate(Level $level, $x, $y, $z, $type){
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		[$id, $meta] = $level->level->getBlock($x, $y, $z);
 		if(($meta & 0b00001100) === 0){
 			$meta |= 0x08;
 			$level->fastSetBlockUpdate($x, $y, $z, $id, $meta); //TODO maybe use $level->level->setBlock directly, the client doesnt need to know thism info.
 		}
-		return false;
 	}
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

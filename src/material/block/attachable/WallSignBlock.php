@@ -10,8 +10,7 @@ class WallSignBlock extends SignPostBlock{
 		$this->isSolid = false;
 	}
 	
-	public static function onUpdate(Level $level, $x, $y, $z, $type){
-		
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		$attached = match($level->level->getBlockDamage($x, $y, $z)){
 			2 => $level->level->getBlockID($x, $y, $z + 1),
 			3 => $level->level->getBlockID($x, $y, $z - 1),
@@ -19,12 +18,10 @@ class WallSignBlock extends SignPostBlock{
 			5 => $level->level->getBlockID($x - 1, $y, $z),
 			default => WALL_SIGN
 		};
-		
+			
 		if(!StaticBlock::getIsSolid($attached) && $attached != SIGN_POST && $attached != WALL_SIGN){
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true, true);
 			(ServerAPI::request())->api->entity->drop(new Position($x + 0.5, $y + 0.5, $z + 0.5, $level), BlockAPI::getItem(SIGN, 0, 1));
 		}
-		
-		return false;
 	}
 }

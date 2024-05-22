@@ -29,14 +29,10 @@ class CakeBlock extends TransparentBlock{
 		return false;
 	}
 	
-	public static function onUpdate(Level $level, $x, $y, $z, $type){
-		if($type === BLOCK_UPDATE_NORMAL){
-			if($level->level->getBlockID($x, $y - 1, $z) == AIR){ //Replace with common break method
-				$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
-				return BLOCK_UPDATE_NORMAL;
-			}
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		if($level->level->getBlockID($x, $y - 1, $z) == AIR){ //Replace with common break method
+			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 		}
-		return false;
 	}
 	
 	public function getDrops(Item $item, Player $player){

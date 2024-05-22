@@ -6,12 +6,8 @@ class RedstoneOreBlock extends SolidBlock{
 		$this->hardness = 15;
 	}
 	
-	public static function onUpdate(Level $level, $x, $y, $z, $type){
-		if($type === BLOCK_UPDATE_NORMAL || $type === BLOCK_UPDATE_TOUCH){ //TODO remove BLOCK_UPDATE_TOUCH
-			$level->fastSetBlockUpdate($x, $y, $z, GLOWING_REDSTONE_ORE, 0); 
-			$level->scheduleBlockUpdate(new Position($x, $y, $z, $level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
-		}
-		return false;
+	public static function interact(Level $level, $x, $y, $z, Player $player){
+		$level->fastSetBlockUpdate($x, $y, $z, GLOWING_REDSTONE_ORE, 0);
 	}
 
 	public function getDrops(Item $item, Player $player){

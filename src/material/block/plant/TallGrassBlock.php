@@ -13,13 +13,11 @@ class TallGrassBlock extends FlowableBlock{
 		$this->hardness = 0;
 	}
 
-	public static function onUpdate(Level $level, $x, $y, $z, $type){
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		if(StaticBlock::getIsTransparent($level->level->getBlockID($x, $y - 1, $z))){ //Replace with common break method
 			if(Utils::chance(15)) ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(WHEAT_SEEDS));
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
-			return BLOCK_UPDATE_NORMAL;
 		}
-		return false;
 	}
 	
 	public static function getAABB(Level $level, $x, $y, $z){

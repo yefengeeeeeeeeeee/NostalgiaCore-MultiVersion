@@ -43,15 +43,11 @@ class MelonStemBlock extends FlowableBlock{
 			}
 		}
 	}
-	public static function onUpdate(Level $level, $x, $y, $z, $type){ 
-		if($type === BLOCK_UPDATE_NORMAL){
-			if($level->level->getBlockID($x, $y - 1, $z) != FARMLAND){
-				ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(MELON_SEEDS, 0, mt_rand(0, 2)));
-				$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
-				return BLOCK_UPDATE_NORMAL;
-			}
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		if($level->level->getBlockID($x, $y - 1, $z) != FARMLAND){
+			ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(MELON_SEEDS, 0, mt_rand(0, 2)));
+			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
-		return false;
 	}
 	
 	public function onActivate(Item $item, Player $player){

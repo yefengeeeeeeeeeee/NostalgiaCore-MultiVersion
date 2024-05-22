@@ -11,14 +11,10 @@ class DeadBushBlock extends FlowableBlock{
 		return null;
 	}
 	
-	public static function onUpdate(Level $level, $x, $y, $z, $type){ 
-		if($type === BLOCK_UPDATE_NORMAL){
-			if(StaticBlock::getIsTransparent($level->level->getBlockID($x, $y - 1, $z))){ //Replace with common break method
-				$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
-				return BLOCK_UPDATE_NORMAL;
-			}
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		if(StaticBlock::getIsTransparent($level->level->getBlockID($x, $y - 1, $z))){ //Replace with common break method
+			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
-		return false;
 	}
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

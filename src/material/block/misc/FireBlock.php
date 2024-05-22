@@ -36,27 +36,28 @@ class FireBlock extends FlowableBlock implements LightingBlock{
 	public function getMaxLightValue(){
 		return 15;
 	}
+	
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		$b = $level->level->getBlockID($x, $y - 1, $z);
+		if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
+		$b = $level->level->getBlockID($x, $y - 1, $z);
+		if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
+		
+		$b = $level->level->getBlockID($x - 1, $y, $z);
+		if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
+		$b = $level->level->getBlockID($x + 1, $y, $z);
+		if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
+		
+		$b = $level->level->getBlockID($x, $y, $z - 1);
+		if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
+		$b = $level->level->getBlockID($x, $y, $z + 1);
+		if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
+		
+		$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
+	}
+	
 	public static function onUpdate(Level $level, $x, $y, $z, $type){
-		if($type === BLOCK_UPDATE_NORMAL){
-			
-			$b = $level->level->getBlockID($x, $y - 1, $z);
-			if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
-			$b = $level->level->getBlockID($x, $y - 1, $z);
-			if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
-			
-			$b = $level->level->getBlockID($x - 1, $y, $z);
-			if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
-			$b = $level->level->getBlockID($x + 1, $y, $z);
-			if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
-			
-			$b = $level->level->getBlockID($x, $y, $z - 1);
-			if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
-			$b = $level->level->getBlockID($x, $y, $z + 1);
-			if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
-			
-			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
-			return BLOCK_UPDATE_NORMAL;
-		}else if($type === BLOCK_UPDATE_SCHEDULED){ //TODO get rid of it
+		if($type === BLOCK_UPDATE_SCHEDULED){
 			$idBelow = $level->level->getBlockID($x, $y - 1, $z);
 			[$id, $meta] = $level->level->getBlock($x, $y, $z);
 			$alwaysBurn = $idBelow == NETHERRACK;
@@ -83,7 +84,6 @@ class FireBlock extends FlowableBlock implements LightingBlock{
 			
 			$level->scheduleBlockUpdate(new Position($x, $y, $z, $level), 30, BLOCK_UPDATE_SCHEDULED); //TODO looks like it also adds mt_rand(0, 9) to it
 		}
-		return false;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		parent::place($item, $player, $block, $target, $face, $fx, $fy, $fz);

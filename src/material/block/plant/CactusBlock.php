@@ -25,8 +25,7 @@ class CactusBlock extends TransparentBlock{
 				for($yy = 1; $yy < 3; ++$yy){
 					$bID = $level->level->getBlockID($x, $y + $yy, $z);
 					if($bID === AIR){
-						$level->fastSetBlockUpdate($x, $y + $yy, $z, CACTUS, 0);
-						CactusBlock::onUpdate($level, $x, $y + $yy, $z, BLOCK_UPDATE_NORMAL); //TODO rewrite ticking
+						$level->fastSetBlockUpdate($x, $y + $yy, $z, CACTUS, 0, true);
 						break;
 					}
 				}
@@ -39,20 +38,16 @@ class CactusBlock extends TransparentBlock{
 		}
 	}
 	
-	public static function onUpdate(Level $level, $x, $y, $z, $type){
-		if($type === BLOCK_UPDATE_NORMAL){
-			$down = $level->level->getBlockID($x, $y, $z);
-			$b0 = $level->level->getBlockID($x, $y, $z - 1);
-			$b1 = $level->level->getBlockID($x, $y, $z + 1);
-			$b2 = $level->level->getBlockID($x - 1, $y, $z);
-			$b3 = $level->level->getBlockID($x + 1, $y, $z);
-			if(!StaticBlock::getIsFlowable($b0) || !StaticBlock::getIsFlowable($b1) || !StaticBlock::getIsFlowable($b2) || !StaticBlock::getIsFlowable($b3) || ($down !== SAND and $down !== CACTUS)){ //Replace with common break method
-				$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
-				ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(CACTUS));
-				return BLOCK_UPDATE_NORMAL;
-			}
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		$down = $level->level->getBlockID($x, $y, $z);
+		$b0 = $level->level->getBlockID($x, $y, $z - 1);
+		$b1 = $level->level->getBlockID($x, $y, $z + 1);
+		$b2 = $level->level->getBlockID($x - 1, $y, $z);
+		$b3 = $level->level->getBlockID($x + 1, $y, $z);
+		if(!StaticBlock::getIsFlowable($b0) || !StaticBlock::getIsFlowable($b1) || !StaticBlock::getIsFlowable($b2) || !StaticBlock::getIsFlowable($b3) || ($down !== SAND and $down !== CACTUS)){ //Replace with common break method
+			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
+			ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(CACTUS));
 		}
-		return false;
 	}
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

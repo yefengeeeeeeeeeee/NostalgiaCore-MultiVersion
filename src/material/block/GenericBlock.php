@@ -52,14 +52,14 @@ class GenericBlock extends Block{
 	 *
 	 * @return boolean
 	 */
-	public static function onUpdate(Level $level, $x, $y, $z, $type){ 
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		[$id, $meta] = $level->level->getBlock($x, $y, $z);
-		if(StaticBlock::getHasPhysics($id) and $type === BLOCK_UPDATE_NORMAL){ //TODO move from here to different class
+		if(StaticBlock::getHasPhysics($id)){ //TODO move from here to different class
 			$down = $level->level->getBlockID($x, $y - 1, $z);
 			if($down == AIR || StaticBlock::getIsLiquid($down)){
 				$data = array(
 					"x" => $x + 0.5,
-					"y" => $y,
+					"y" => $y - 0.5,
 					"z" => $z + 0.5,
 					"Tile" => $id,
 				);
@@ -68,9 +68,7 @@ class GenericBlock extends Block{
 				$e = $server->api->entity->add($level, ENTITY_FALLING, FALLING_SAND, $data);
 				$server->api->entity->spawnToAll($e);
 			}
-			return false;
 		}
-		return false;
 	}
 
 	/**

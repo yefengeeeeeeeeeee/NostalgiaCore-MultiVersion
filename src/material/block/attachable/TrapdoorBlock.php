@@ -74,24 +74,21 @@ class TrapdoorBlock extends TransparentBlock{
 			array($this->id, 0, 1),
 		);
 	}
-	public static function onUpdate(Level $level, $x, $y, $z, $type){
-		if($type === BLOCK_UPDATE_NORMAL){
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		$attach = match($level->level->getBlockDamage($x, $y, $z)){
+			0, 4 => $level->level->getBlockID($x, $y, $z + 1),
+			1, 5 => $level->level->getBlockID($x, $y, $z - 1),
+			2, 6 => $level->level->getBlockID($x + 1, $y, $z),
+			3, 7 => $level->level->getBlockID($x - 1, $y, $z),
+			default => 0
+		};
 			
-			$attach = match($level->level->getBlockDamage($x, $y, $z)){
-				0, 4 => $level->level->getBlockID($x, $y, $z + 1),
-				1, 5 => $level->level->getBlockID($x, $y, $z - 1),
-				2, 6 => $level->level->getBlockID($x + 1, $y, $z),
-				3, 7 => $level->level->getBlockID($x - 1, $y, $z),
-				default => 0
-			};
-			
-			if($attach == AIR){ //Replace with common break method
-				ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem(TRAPDOOR, 0, 1));
-				$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
-				return BLOCK_UPDATE_NORMAL;
-			}
+		if($attach == AIR){ //Replace with common break method
+			ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem(TRAPDOOR, 0, 1));
+			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 		}
 	}
+	
 	public function onActivate(Item $item, Player $player){
 		$this->meta ^= 0x04;
 		$this->level->setBlock($this, $this, true, false, true);

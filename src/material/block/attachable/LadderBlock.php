@@ -40,7 +40,7 @@ class LadderBlock extends TransparentBlock{
 		return false;
 	}
 
-	public static function onUpdate(Level $level, $x, $y, $z, $type){
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		$side = $level->level->getBlockDamage($x, $y, $z);
 		
 		$attached = match($side){
@@ -54,9 +54,7 @@ class LadderBlock extends TransparentBlock{
 		if($attached == AIR){ //Replace with common break method
 			ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem(LADDER, 0, 1));
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
-			return BLOCK_UPDATE_NORMAL;
 		}
-		return false;
 	}
 
 	public function getDrops(Item $item, Player $player){

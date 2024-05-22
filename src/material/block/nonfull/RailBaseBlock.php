@@ -26,33 +26,23 @@ abstract class RailBaseBlock extends FlowableBlock //TODO move some methods here
 	
 	public function updateState(){}
 	
-	public static function onUpdate(Level $level, $x, $y, $z, $type){
-		if($type === BLOCK_UPDATE_NORMAL){
-			[$id, $meta] = $level->level->getBlock($x, $y, $z);
-			if($id === POWERED_RAIL){
-				$meta &= 7;
-			}
-			if(
-				($level->level->getBlockID($x, $y - 1, $z) === 0) || 
-				(($meta == 2) && $level->level->getBlockID($x + 1, $y, $z) === 0) ||
-				(($meta == 3) && $level->level->getBlockID($x - 1, $y, $z) === 0) ||
-				(($meta == 4) && $level->level->getBlockID($x, $y, $z - 1) === 0) ||
-				(($meta == 5) && $level->level->getBlockID($x, $y, $z + 1) === 0)
-			){
-				$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
-				ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem($id, $meta, 1));
-			}else{
-				//TODO fix me pls $this->updateState();
-			}
-			
-			
-			//if($this->getSide(0)->getID() === AIR){//Replace with common break method
-			//	ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id, $this->meta, 1));
-			//	$this->level->setBlock($this, new AirBlock(), true, false, true);
-			//}
-			
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		[$id, $meta] = $level->level->getBlock($x, $y, $z);
+		if($id === POWERED_RAIL){
+			$meta &= 7;
 		}
-		
+		if(
+			($level->level->getBlockID($x, $y - 1, $z) === 0) || 
+			(($meta == 2) && $level->level->getBlockID($x + 1, $y, $z) === 0) ||
+			(($meta == 3) && $level->level->getBlockID($x - 1, $y, $z) === 0) ||
+			(($meta == 4) && $level->level->getBlockID($x, $y, $z - 1) === 0) ||
+			(($meta == 5) && $level->level->getBlockID($x, $y, $z + 1) === 0)
+		){
+			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
+			ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem($id, $meta, 1));
+		}else{
+			//TODO fix me pls $this->updateState();			
+		}
 	}
 }
 

@@ -14,24 +14,20 @@ class TorchBlock extends FlowableBlock implements LightingBlock{
 		return null;
 	}
 	
-	public static function onUpdate(Level $level, $x, $y, $z, $type){
-		if($type === BLOCK_UPDATE_NORMAL){
-			$side = $level->level->getBlockDamage($x, $y, $z);
-			$attach = match($side){
-				1 => $level->level->getBlockID($x - 1, $y, $z),
-				2 => $level->level->getBlockID($x + 1, $y, $z),
-				3 => $level->level->getBlockID($x, $y, $z - 1),
-				4 => $level->level->getBlockID($x, $y, $z + 1),
-				default => $level->level->getBlockID($x, $y  - 1, $z)
-			};
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		$side = $level->level->getBlockDamage($x, $y, $z);
+		$attach = match($side){
+			1 => $level->level->getBlockID($x - 1, $y, $z),
+			2 => $level->level->getBlockID($x + 1, $y, $z),
+			3 => $level->level->getBlockID($x, $y, $z - 1),
+			4 => $level->level->getBlockID($x, $y, $z + 1),
+			default => $level->level->getBlockID($x, $y  - 1, $z)
+		};
 			
-			if(StaticBlock::getIsTransparent($attach) && !($side === 0 && $attach === FENCE)){ //Replace with common break method
-				ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem(TORCH, 0, 1));
-				$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
-				return BLOCK_UPDATE_NORMAL;
-			}
+		if(StaticBlock::getIsTransparent($attach) && !($side === 0 && $attach === FENCE)){ //Replace with common break method
+			ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem(TORCH, 0, 1));
+			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
-		return false;
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

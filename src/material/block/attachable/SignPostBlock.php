@@ -33,14 +33,12 @@ class SignPostBlock extends TransparentBlock{
 		return false;
 	}
 	
-	public static function onUpdate(Level $level, $x, $y, $z, $type){ //TODO remove $type
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		if($level->level->getBlockID($x, $y - 1, $z) === AIR){ //Replace with common break method
 			ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem(SIGN, 0, 1));
 			//$this->level->setBlock($this, new AirBlock(), true, true, true);
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true, true);
-			return BLOCK_UPDATE_NORMAL;
 		}
-		return false;
 	}
 	
 	public function onBreak(Item $item, Player $player){
