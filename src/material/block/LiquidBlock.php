@@ -18,9 +18,11 @@ class LiquidBlock extends TransparentBlock{
 	public static $blockID = 0;
 	public static function getDepth(Level $level, $x, $y, $z){
 		[$id, $meta] = $level->level->getBlock($x, $y, $z);
-		
-		if($id == static::$blockID) return $meta;
-		return -1;	
+		return match(static::$blockID){
+			WATER, STILL_WATER => $id == WATER || $id == STILL_WATER ? $meta : -1,
+			LAVA, STILL_LAVA => $id == LAVA || $id == STILL_LAVA ? $meta : -1,
+			default=> -1
+		};
 	}
 	
 	public static function onPlace(Level $level, $x, $y, $z){
