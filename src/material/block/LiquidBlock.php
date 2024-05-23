@@ -24,7 +24,9 @@ class LiquidBlock extends TransparentBlock{
 		return -1;
 		
 	}
-	
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		static::updateLiquid($level, $x, $y, $z);
+	}
 	public static function getAABB(Level $level, $x, $y, $z){
 		return null;
 	}
@@ -40,7 +42,7 @@ class LiquidBlock extends TransparentBlock{
 	
 	public static function updateLiquid(Level $level, $x, $y, $z){
 		[$id, $meta] = $level->level->getBlock($x, $y, $z);
-		if($id != LAVA && $id != STILL_LAVA) continue;
+		if($id != LAVA && $id != STILL_LAVA) return;
 		
 		$zNeg = $level->level->getBlockID($x, $y, $z - 1);
 		$zPos = $level->level->getBlockID($x, $y, $z + 1);

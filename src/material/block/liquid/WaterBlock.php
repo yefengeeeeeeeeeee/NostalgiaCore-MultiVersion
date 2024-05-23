@@ -1,4 +1,5 @@
 <?php
+require_once("LiquidBlockDynamic.php"); //TODO class loader?
 
 class WaterBlock extends LiquidBlockDynamic{
 	public function __construct($meta = 0){
@@ -14,9 +15,5 @@ class WaterBlock extends LiquidBlockDynamic{
 	
 	public static function getTickDelay(){
 		return 5;
-	}
-	
-	public static function onUpdate(Level $level, $x, $y, $z, $type){
-
 	}
 }

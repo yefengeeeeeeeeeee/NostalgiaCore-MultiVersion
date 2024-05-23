@@ -3,6 +3,8 @@
 
 /***REM_START***/
 require_once("WaterBlock.php"); //TODO class loader?
+require_once("LiquidBlockStatic.php"); //TODO class loader?
+
 /***REM_END***/
 
 class StillWaterBlock extends LiquidBlockStatic{

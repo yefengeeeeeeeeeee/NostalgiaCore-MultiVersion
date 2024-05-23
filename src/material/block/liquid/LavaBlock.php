@@ -1,4 +1,5 @@
 <?php
+require_once("LiquidBlockDynamic.php"); //TODO class loader?
 
 class LavaBlock extends LiquidBlockDynamic implements LightingBlock{
 	public function __construct($meta = 0){

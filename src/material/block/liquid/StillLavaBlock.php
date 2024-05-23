@@ -1,4 +1,5 @@
 <?php
+require_once("LiquidBlockStatic.php"); //TODO class loader?
 
 class StillLavaBlock extends LiquidBlockStatic{
 	public function __construct($meta = 0){
