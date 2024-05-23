@@ -219,7 +219,7 @@ abstract class Block extends Position{
 		
 		return MovingObjectPosition::fromBlock($x, $y, $z, $v14, $v13->add($x, $y, $z));
 	}
-	
+	public static function onPlace(Level $level, $x, $y, $z){}
 	public static function addVelocityToEntity(Level $level, $x, $y, $z, Entity $entity, Vector3 $velocityVector){}
 	public static function onRandomTick(Level $level, $x, $y, $z){}
 	public static function onUpdate(Level $level, $x, $y, $z, $type){}

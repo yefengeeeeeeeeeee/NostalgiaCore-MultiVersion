@@ -500,13 +500,8 @@ class PMFLevel extends PMF{
 				++$this->chunkChange[$index][$Y];
 			}
 			$this->chunkChange[$index][-1] = true;
-			if($old_b instanceof LiquidBlock){
-				$pos = new Position($x, $y, $z, $this->level);
-				for($side = 0; $side <= 5; ++$side){
-					$b = $pos->getSide($side);
-					ServerAPI::request()->api->block->scheduleBlockUpdate($b, ($b instanceof LavaBlock ? 40: 10), BLOCK_UPDATE_NORMAL);
-				}
-			}
+			
+			if($block > 0) StaticBlock::getBlock($block)::onPlace($this->level, $x, $y, $z);
 			return true;
 		}
 		return false;

@@ -468,24 +468,18 @@ class Level{
 	
 	public function updateNeighborsAt($x, $y, $z, $oldID){
 		$block = $this->level->getBlockID($x - 1, $y, $z);
-		ConsoleAPI::debug(StaticBlock::getBlock($block));
 		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x - 1, $y, $z, $x, $y, $z, $oldID);
 		$block = $this->level->getBlockID($x + 1, $y, $z);
-		ConsoleAPI::debug(StaticBlock::getBlock($block));
 		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x + 1, $y, $z, $x, $y, $z, $oldID);
 		
 		$block = $this->level->getBlockID($x, $y - 1, $z);
-		ConsoleAPI::debug(StaticBlock::getBlock($block));
 		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x, $y - 1, $z, $x, $y, $z, $oldID);
 		$block = $this->level->getBlockID($x, $y + 1, $z);
-		ConsoleAPI::debug(StaticBlock::getBlock($block));
 		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x, $y + 1, $z, $x, $y, $z, $oldID);
 		
 		$block = $this->level->getBlockID($x, $y, $z - 1);
-		ConsoleAPI::debug(StaticBlock::getBlock($block));
 		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x, $y, $z - 1, $x, $y, $z, $oldID);
 		$block = $this->level->getBlockID($x, $y, $z + 1);
-		ConsoleAPI::debug(StaticBlock::getBlock($block));
 		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x, $y, $z + 1, $x, $y, $z, $oldID);
 	}
 	

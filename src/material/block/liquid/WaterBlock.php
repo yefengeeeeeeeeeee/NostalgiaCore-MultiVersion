@@ -2,6 +2,9 @@
 require_once("LiquidBlockDynamic.php"); //TODO class loader?
 
 class WaterBlock extends LiquidBlockDynamic{
+	
+	public static $blockID = WATER;
+	
 	public function __construct($meta = 0){
 		parent::__construct(WATER, $meta, "Water");
 		$this->hardness = 500;

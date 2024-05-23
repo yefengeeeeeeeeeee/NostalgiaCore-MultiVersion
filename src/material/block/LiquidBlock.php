@@ -16,14 +16,17 @@ class LiquidBlock extends TransparentBlock{
 		$this->hardness = 500;
 	}
 	public static $blockID = 0;
-	
 	public static function getDepth(Level $level, $x, $y, $z){
 		[$id, $meta] = $level->level->getBlock($x, $y, $z);
 		
 		if($id == static::$blockID) return $meta;
-		return -1;
-		
+		return -1;	
 	}
+	
+	public static function onPlace(Level $level, $x, $y, $z){
+		static::updateLiquid($level, $x, $y, $z);
+	}
+	
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		static::updateLiquid($level, $x, $y, $z);
 	}

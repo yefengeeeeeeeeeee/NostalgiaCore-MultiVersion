@@ -10,24 +10,18 @@ class LiquidBlockDynamic extends LiquidBlock{
 	public static $spread = [0, 0, 0,  0];
 	
 	public static function getHighest(Level $level, $x, $y, $z, $highest){
-		$depth = self::getDepth($level, $x, $y, $z);
+		$depth = static::getDepth($level, $x, $y, $z);
+		if($depth < 0) return $highest;
+		if($depth == 0) ++static::$f_d8;
+		if($depth >= 8) $depth = 0;
 		
-		if($depth >= 0){
-			if($depth > 7) $depth = 0;
-		}else{
-			++self::$f_d8;
-		}
-		
-		if($highest < 0) return $depth;
-		else if($highest >= $depth) return $depth;
-		
-		return $highest;
+		return $highest >= 0 && $depth >= $highest ? $highest : $depth;
 	}
 	
 	public static function setStatic(Level $level, $x, $y, $z){
 		$meta = $level->level->getBlockDamage($x, $y, $z);
 		
-		$level->fastSetBlockUpdate($x, $y, $z, self::$blockID + 1, $meta);
+		$level->fastSetBlockUpdate($x, $y, $z, static::$blockID + 1, $meta);
 	}
 	
 	public static function isWaterBlocking(Level $level, $x, $y, $z){
@@ -53,7 +47,6 @@ class LiquidBlockDynamic extends LiquidBlock{
 	}
 	
 	public static function getSpread(Level $level, $x, $y, $z){
-		//TODO get rid of gotos
 		for($i = 0; $i < 4; ++$i){
 			static::$spread[$i] = 1000;
 			$xs = $x;
@@ -78,11 +71,7 @@ class LiquidBlockDynamic extends LiquidBlock{
 			if(static::isWaterBlocking($level, $xs, $ys, $zs)) continue;
 			[$id, $meta] = $level->level->getBlock($xs, $ys, $zs);
 			
-			if(
-				(((static::$blockID == WATER || static::$blockID == STILL_WATER) && ($id == WATER || $id == STILL_WATER)) || 
-					((static::$blockID == LAVA || static::$blockID == STILL_LAVA) && ($id == LAVA || $id == STILL_LAVA))) &&
-				$meta == 0
-			){
+			if(((static::$blockID == WATER && ($id == WATER || $id == STILL_WATER)) || (static::$blockID == LAVA && ($id == LAVA || $id == STILL_LAVA))) && $meta == 0){
 				continue;
 			}
 			
@@ -147,18 +136,24 @@ class LiquidBlockDynamic extends LiquidBlock{
 			$id = $level->level->getBlockID($x, $y, $z);
 			
 			if($id > 0){
-				if(($id == LAVA || $id == STILL_LAVA) && (self::$id == LAVA || self::$id == STILL_LAVA)); //fizz
+				if(($id == LAVA || $id == STILL_LAVA) && (static::$blockID == LAVA || static::$blockID == STILL_LAVA)); //fizz
 				else{
 					//TODO spawnResources
 				}
 			}
 			
-			$level->fastSetBlockUpdate($x, $y, $z, self::$blockID, $meta, true);
+			$level->fastSetBlockUpdate($x, $y, $z, static::$blockID, $meta, true);
 		}
 	}
 	
+	public static function onPlace(Level $level, $x, $y, $z){
+		static::updateLiquid($level, $x, $y, $z);
+		$id = $level->level->getBlockID($x, $y, $z);
+		if($id == static::$blockID) ServerAPI::request()->api->block->scheduleBlockUpdateXYZ($level, $x, $y, $z, BLOCK_UPDATE_SCHEDULED, static::getTickDelay());
+	}
+	
 	public static function onUpdate(Level $level, $x, $y, $z, $type){
-		static::$blockID = $id = $level->level->getBlockID($x, $y, $z);
+		$id = $level->level->getBlockID($x, $y, $z);
 		$depth = static::getDepth($level, $x, $y, $z);
 		if($id == LAVA || $id == STILL_LAVA){
 			$spreadAdder = 2; //XXX nether has 1
@@ -169,7 +164,7 @@ class LiquidBlockDynamic extends LiquidBlock{
 		
 		$tickDelay = static::getTickDelay();
 		if($depth > 0){
-			self::$f_d8 = 0;
+			static::$f_d8 = 0;
 			$highest = static::getHighest($level, $x - 1, $y, $z, -100);
 			$highest = static::getHighest($level, $x + 1, $y, $z, $highest);
 			
@@ -187,15 +182,16 @@ class LiquidBlockDynamic extends LiquidBlock{
 				else $v16 = $dpth + 8;
 			}
 			
-			if(static::$f_d8 && (static::$blockID == WATER || static::$blockID == STILL_WATER)){
+			if(static::$f_d8 && (static::$blockID == WATER)){
 				//XXX Level::isSolidBlockingTile
-				[$id, $meta] = $level->level->getBlock($x, $y, $z);
-				if(StaticBlock::getIsFlowable($id) || ($id == WATER || $id == STILL_WATER) && $meta != 0){
-					$v16 = 0;
+				$idb = $level->level->getBlockID($x, $y - 1, $z);
+				$metab = $level->level->getBlockDamage($x, $y, $z);
+				if(StaticBlock::getIsFlowable($idb) || (($idb == WATER || $idb == STILL_WATER) && $metab != 0)){
+					//$v16 = 0;
 				}
 			}
 			
-			if((static::$blockID == LAVA || static::$blockID == STILL_LAVA) && $depth <= 7){
+			if(static::$blockID == LAVA && $depth <= 7){
 				if($v16 > 7) goto LABEL_32; //TODO remove gotos
 				
 				if($v16 > $depth){
@@ -209,6 +205,7 @@ class LiquidBlockDynamic extends LiquidBlock{
 						goto LABEL_35;
 					}
 					LABEL_32:
+					ConsoleAPI::debug("v16 is $v16");
 					$level->fastSetBlockUpdateMeta($x, $y, $z, $v16, false);
 					ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($x, $y, $z, $level), $tickDelay); //TODO get rid of new Position
 					$level->updateNeighborsAt($x, $y, $z, static::$blockID);
