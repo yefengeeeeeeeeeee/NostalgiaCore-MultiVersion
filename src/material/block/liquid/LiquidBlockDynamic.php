@@ -70,7 +70,6 @@ class LiquidBlockDynamic extends LiquidBlock{
 			
 			if(static::isWaterBlocking($level, $xs, $ys, $zs)) continue;
 			[$id, $meta] = $level->level->getBlock($xs, $ys, $zs);
-			
 			if(((static::$blockID == WATER && ($id == WATER || $id == STILL_WATER)) || (static::$blockID == LAVA && ($id == LAVA || $id == STILL_LAVA))) && $meta == 0){
 				continue;
 			}
@@ -78,8 +77,10 @@ class LiquidBlockDynamic extends LiquidBlock{
 			if(!static::isWaterBlocking($level, $xs, $ys - 1, $zs)) static::$spread[$i] = 0;
 			else static::$spread[$i] = static::getSlopeDistance($level, $xs, $ys, $zs, 1, $i);
 		}
-		
-		$i1 = max(static::$spread);
+		$i1 = static::$spread[0];
+		for($k1 = 1; $k1 < 4; ++$k1){
+			if(static::$spread[$k1] < $i1) $i1 = static::$spread[$k1];
+		}
 		$ba = [];
 		for($i = 0; $i < 4; ++$i) $ba[$i] = ($i1 == static::$spread[$i]);
 		return $ba;
@@ -164,7 +165,6 @@ class LiquidBlockDynamic extends LiquidBlock{
 			$highest = static::getHighest($level, $x + 1, $y, $z, $highest);
 			$highest = static::getHighest($level, $x, $y, $z - 1, $highest);
 			$highest = static::getHighest($level, $x, $y, $z + 1, $highest);
-			ConsoleAPI::debug("h".$highest);
 			$j1 = $highest + $flowAdd;
 			if($j1 >= 8 || $highest < 0) $j1 = -1;
 			$l1 = static::getDepth($level, $x, $y + 1, $z);
@@ -204,10 +204,10 @@ class LiquidBlockDynamic extends LiquidBlock{
 			$k1 = $depth >= 8 ? 1 : ($depth + $flowAdd);
 			if($k1 >= 8) return;
 			//TODO flags are broken, no flags makes too much of the liquid
-			/*if($flags[0])*/ static::trySpreadTo($level, $x - 1, $y, $z, $k1);
-			/*if($flags[1])*/ static::trySpreadTo($level, $x + 1, $y, $z, $k1);
-			/*if($flags[2])*/ static::trySpreadTo($level, $x, $y, $z - 1, $k1);
-			/*if($flags[3])*/ static::trySpreadTo($level, $x, $y, $z + 1, $k1);
+			if($flags[0]) static::trySpreadTo($level, $x - 1, $y, $z, $k1);
+			if($flags[1]) static::trySpreadTo($level, $x + 1, $y, $z, $k1);
+			if($flags[2]) static::trySpreadTo($level, $x, $y, $z - 1, $k1);
+			if($flags[3]) static::trySpreadTo($level, $x, $y, $z + 1, $k1);
 		}
 	}
 }

@@ -21,7 +21,6 @@ class LiquidBlockStatic extends LiquidBlock{
 		$oldID = $level->level->getBlockID($x, $y, $z);
 		static::updateLiquid($level, $x, $y, $z);
 		$newID = $level->level->getBlockID($x, $y, $z);
-		ConsoleAPI::debug($oldID.":".$newID);
 		if($oldID == $newID){
 			static::setDynamic($level, $x, $y, $z);
 		}

@@ -569,18 +569,15 @@ class BlockAPI{
 	}
 	public function scheduleBlockUpdateXYZ(Level $level, $x, $y, $z, $type = BLOCK_UPDATE_SCHEDULED, $delay = false){
 		$type = (int) $type;
-		ConsoleAPI::debug($delay);
 		if($delay < 0){
 			return false;
 		}
 		
 		$index = $x . "." . $y . "." . $z . "." . $level->getName() . "." . $type;
 		$delay = microtime(true) + $delay * 0.05;
-		ConsoleAPI::debug($index);
 		if(!isset($this->scheduledUpdates[$index])){
 			$this->scheduledUpdates[$index] = new Position($x, $y, $z, $level); //TODO dont create a position
 			$this->server->query("INSERT INTO blockUpdates (x, y, z, level, type, delay) VALUES ($x, $y, $z, '{$level->getName()}', $type, $delay);");
-			ConsoleAPI::debug("added block update $x $y $z $type");
 			return true;
 		}
 		return false;

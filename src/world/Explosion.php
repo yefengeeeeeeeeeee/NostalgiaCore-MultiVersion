@@ -41,7 +41,6 @@ class Explosion{
 				$index = ($vBlock->x << 16) + ($vBlock->z << 8) + $vBlock->y;
 				
 				if(StaticBlock::getIsLiquid($blockID) && !isset($visited[$index])){
-					ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($vBlock->x, $vBlock->y, $vBlock->z, $this->level), 5, BLOCK_UPDATE_NORMAL);
 					$visited[$index] = true;
 				}
 				
@@ -202,7 +201,7 @@ class Explosion{
 					}
 				}
 			}
-			$this->level->fastSetBlockUpdate($x, $y, $z, 0, 0);
+			$this->level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 			$send[] = $xyz;
 		}
 		$pk = new ExplodePacket;
