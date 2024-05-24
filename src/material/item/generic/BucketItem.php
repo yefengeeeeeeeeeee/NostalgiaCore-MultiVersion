@@ -16,10 +16,14 @@ class BucketItem extends Item{
 	
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($this->meta === AIR){
-			if($block instanceof LiquidBlock){
+			if($target instanceof LiquidBlock && $target->getMetadata() == 0){
 				$level->setBlock($target, new AirBlock(), true, false, true);
 				if(($player->gamemode & 0x01) === 0){
-					$this->meta = ($target instanceof WaterBlock) ? WATER : LAVA;
+					$this->meta = match($target->getID()){
+						WATER, STILL_WATER => WATER,
+						LAVA, STILL_LAVA => LAVA,
+						default => 0
+					};
 				}
 				return true;
 			}
