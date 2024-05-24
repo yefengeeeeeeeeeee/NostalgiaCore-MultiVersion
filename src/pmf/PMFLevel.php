@@ -369,7 +369,14 @@ class PMFLevel extends PMF{
 		$aX = $x & 0xf;
 		$aZ = $z & 0xf;
 		$aY = $y & 0xf;
-		$this->chunks[$index][$Y][(int) ($aY + ($aX << 5) + ($aZ << 9))] = chr($block);
+		$bind = (int) ($aY + ($aX << 5) + ($aZ << 9));
+		if($this->chunks[$index][$Y][$bind] == chr($block)){
+			return false; //no changes done
+		}else{
+			$this->chunks[$index][$Y][$bind] = chr($block);
+			if($block > 0) StaticBlock::getBlock($block)::onPlace($this->level, $x, $y, $z);
+		}
+		
 		if(!isset($this->chunkChange[$index][$Y])){
 			$this->chunkChange[$index][$Y] = 1;
 		}else{

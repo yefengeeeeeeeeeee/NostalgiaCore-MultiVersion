@@ -27,7 +27,7 @@ class Explosion{
 		$this->nullPlayer = new PlayerNull();
 	}
 	
-	public function sub_expl(&$visited, $i, $mRays, $j, $k){
+	public function sub_expl($i, $mRays, $j, $k){
 		$vector = new Vector3($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1); //($i / $mRays) * 2 - 1
 		$vector = $vector->normalize()->multiply($this->stepLen);
 		$pointer = clone $this->source;
@@ -39,11 +39,6 @@ class Explosion{
 			$blockMeta = $BIDM[1];
 			if($blockID > 0){
 				$index = ($vBlock->x << 16) + ($vBlock->z << 8) + $vBlock->y;
-				
-				if(StaticBlock::getIsLiquid($blockID) && !isset($visited[$index])){
-					$visited[$index] = true;
-				}
-				
 				$blastForce -= (StaticBlock::getHardness($blockID) / 5 + 0.3) * $this->stepLen;
 				if($blastForce > 0){
 					if(!isset($this->affectedBlocks[$index])){
@@ -102,45 +97,45 @@ class Explosion{
 		]) === false){
 			return false;
 		}
-		$visited = [];
+		
 		$mRays = $this->rays - 1;
 		$i = 0;
 		for($j = 0; $j <= $mRays; ++$j){
 			for($k = 0; $k <= $mRays; ++$k){
-				$this->sub_expl($visited, $i, $mRays, $j, $k); //i wish there was #define or inline
+				$this->sub_expl($i, $mRays, $j, $k); //i wish there was #define or inline
 			}
 		}
 		$i = $mRays;
 		for($j = 0; $j <= $mRays; ++$j){
 			for($k = 0; $k <= $mRays; ++$k){
-				$this->sub_expl($visited, $i, $mRays, $j, $k);
+				$this->sub_expl($i, $mRays, $j, $k);
 			}
 		}
 		
 		$j = 0;
 		for($i = 1; $i < $mRays; ++$i){
 			for($k = 0; $k <= $mRays; ++$k){
-				$this->sub_expl($visited, $i, $mRays, $j, $k);
+				$this->sub_expl($i, $mRays, $j, $k);
 			}
 		}
 		
 		$j = $mRays;
 		for($i = 1; $i < $mRays; ++$i){
 			for($k = 0; $k <= $mRays; ++$k){
-				$this->sub_expl($visited, $i, $mRays, $j, $k);
+				$this->sub_expl($i, $mRays, $j, $k);
 			}
 		}
 		
 		$k = 0;
 		for($i = 1; $i < $mRays; ++$i){
 			for($j = 1; $j < $mRays; ++$j){
-				$this->sub_expl($visited, $i, $mRays, $j, $k);
+				$this->sub_expl($i, $mRays, $j, $k);
 			}
 		}
 		$k = $mRays;
 		for($i = 1; $i < $mRays; ++$i){
 			for($j = 1; $j < $mRays; ++$j){
-				$this->sub_expl($visited, $i, $mRays, $j, $k);
+				$this->sub_expl($i, $mRays, $j, $k);
 			}
 		}
 		//if($i == 0 or $i == $mRays or $j == 0 or $j == $mRays or $k == 0 or $k == $mRays){

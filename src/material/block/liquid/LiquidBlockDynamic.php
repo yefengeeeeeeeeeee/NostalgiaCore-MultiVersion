@@ -203,7 +203,7 @@ class LiquidBlockDynamic extends LiquidBlock{
 			$flags = static::getSpread($level, $x, $y, $z);
 			$k1 = $depth >= 8 ? 1 : ($depth + $flowAdd);
 			if($k1 >= 8) return;
-			//TODO flags are broken, no flags makes too much of the liquid
+
 			if($flags[0]) static::trySpreadTo($level, $x - 1, $y, $z, $k1);
 			if($flags[1]) static::trySpreadTo($level, $x + 1, $y, $z, $k1);
 			if($flags[2]) static::trySpreadTo($level, $x, $y, $z - 1, $k1);
