@@ -30,6 +30,10 @@ class FireBlock extends FlowableBlock implements LightingBlock{
 		}
 	}
 	
+	public static function onPlace(Level $level, $x, $y, $z){
+		ServerAPI::request()->api->block->scheduleBlockUpdateXYZ($level, $x, $y, $z, BLOCK_UPDATE_SCHEDULED, 30);
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		return array();
 	}
@@ -39,21 +43,7 @@ class FireBlock extends FlowableBlock implements LightingBlock{
 	
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		$b = $level->level->getBlockID($x, $y - 1, $z);
-		if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
-		$b = $level->level->getBlockID($x, $y - 1, $z);
-		if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
-		
-		$b = $level->level->getBlockID($x - 1, $y, $z);
-		if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
-		$b = $level->level->getBlockID($x + 1, $y, $z);
-		if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
-		
-		$b = $level->level->getBlockID($x, $y, $z - 1);
-		if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
-		$b = $level->level->getBlockID($x, $y, $z + 1);
-		if($b != AIR && StaticBlock::getIsLiquid($b)) return false;
-		
-		$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
+		if(!StaticBlock::getIsSolid($b)) $level->fastSetBlockUpdate($x, $y, $z, 0, 0, true); //TODO more vanilla later?
 	}
 	
 	public static function onUpdate(Level $level, $x, $y, $z, $type){
@@ -82,7 +72,7 @@ class FireBlock extends FlowableBlock implements LightingBlock{
 				goto REMOVE_FIRE;
 			}
 			
-			$level->scheduleBlockUpdate(new Position($x, $y, $z, $level), 30, BLOCK_UPDATE_SCHEDULED); //TODO looks like it also adds mt_rand(0, 9) to it
+			ServerAPI::request()->api->block->scheduleBlockUpdateXYZ($level, $x, $y, $z, BLOCK_UPDATE_SCHEDULED, 30); //TODO looks like it also adds mt_rand(0, 9) to it
 		}
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
