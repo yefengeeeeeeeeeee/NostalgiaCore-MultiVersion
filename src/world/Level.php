@@ -459,18 +459,42 @@ class Level{
 	}
 	public function fastSetBlockUpdateMeta($x, $y, $z, $meta, $updateBlock = false){
 		$this->level->setBlockDamage($x, $y, $z, $meta);
-		$this->addBlockToSendQueue($x, $y, $z, $this->level->getBlockID($x, $y, $z), $meta);
+		$id = $this->level->getBlockID($x, $y, $z);
+		$this->addBlockToSendQueue($x, $y, $z, $id, $meta);
 		if($updateBlock){
-			$this->server->api->block->blockUpdateAround(new Position($x, $y, $z, $this), BLOCK_UPDATE_NORMAL, 1);
+			$this->updateNeighborsAt($x, $y, $z, $id);
 		}
 	}
 	
-	public function fastSetBlockUpdate($x, $y, $z, $id, $meta, $updateBlocksAround = false){
+	public function updateNeighborsAt($x, $y, $z, $oldID){
+		$block = $this->level->getBlockID($x - 1, $y, $z);
+		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x - 1, $y, $z, $x, $y, $z, $oldID);
+		$block = $this->level->getBlockID($x + 1, $y, $z);
+		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x + 1, $y, $z, $x, $y, $z, $oldID);
+		
+		$block = $this->level->getBlockID($x, $y - 1, $z);
+		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x, $y - 1, $z, $x, $y, $z, $oldID);
+		$block = $this->level->getBlockID($x, $y + 1, $z);
+		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x, $y + 1, $z, $x, $y, $z, $oldID);
+		
+		$block = $this->level->getBlockID($x, $y, $z - 1);
+		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x, $y, $z - 1, $x, $y, $z, $oldID);
+		$block = $this->level->getBlockID($x, $y, $z + 1);
+		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x, $y, $z + 1, $x, $y, $z, $oldID);
+	}
+	
+	public function fastSetBlockUpdate($x, $y, $z, $id, $meta, $updateBlocksAround = false, $tiles = false){
+		$oldID = $this->level->getBlockID($x, $y, $z);
+		
 		$this->level->setBlock($x, $y, $z, $id, $meta);
-		$this->addBlockToSendQueue($x, $y, $z, $id, $meta);
-		if($updateBlocksAround){
-			$this->server->api->block->blockUpdateAround(new Position($x, $y, $z, $this), BLOCK_UPDATE_NORMAL, 1);
+		
+		if($tiles && ($t = $this->server->api->tile->getXYZ($this, $x, $y, $z)) != false){ //TODO rewrite
+			$t->close();
 		}
+		if($updateBlocksAround){
+			self::updateNeighborsAt($x, $y, $z, $oldID);
+		}
+		$this->addBlockToSendQueue($x, $y, $z, $id, $meta);
 	}
 	
 	public function onTick(PocketMinecraftServer $server, $currentTime){
@@ -679,6 +703,7 @@ class Level{
 		if(!isset($this->level) or (($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
 			return false;
 		}
+		$oldID = $this->level->getBlockID($pos->x, $pos->y, $pos->z);
 		$ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata());
 		if($ret === true){ 
 			if(!($pos instanceof Position)){
@@ -696,15 +721,17 @@ class Level{
 				$this->changedBlocks[$i][] = [$block->x, $block->y, $block->z, $block->id, $block->getMetadata()];
 				++$this->changedCount[$i];
 			}
-
-			if($update === true){
-				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL, 1);
-			}
+			
 			if($tiles === true){
 				if(($t = $this->server->api->tile->get($pos)) !== false){
 					$t->close();
 				}
 			}
+			
+			if($update === true){
+				$this->updateNeighborsAt($pos->x, $pos->y, $pos->z, $oldID);
+			}
+			
 		}
 		return $ret;
 	}

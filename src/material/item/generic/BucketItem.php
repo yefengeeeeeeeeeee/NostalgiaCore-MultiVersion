@@ -16,7 +16,7 @@ class BucketItem extends Item{
 	
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($this->meta === AIR){
-			if($target instanceof LiquidBlock){
+			if($block instanceof LiquidBlock){
 				$level->setBlock($target, new AirBlock(), true, false, true);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = ($target instanceof WaterBlock) ? WATER : LAVA;
@@ -24,11 +24,9 @@ class BucketItem extends Item{
 				return true;
 			}
 		}elseif($this->meta === WATER){
-			//Support Make Non-Support Water to Support Water
-			if($block->getID() === AIR || ( $block instanceof WaterBlock && ($block->getMetadata() & 0x07) != 0x00 ) || ($block instanceof LavaBlock)){
+			if($block->getID() === AIR || $block instanceof LiquidBlock){
 				$water = new WaterBlock();
 				$level->setBlock($block, $water, true, false, true);
-				ServerAPI::request()->api->block->scheduleBlockUpdate($block, 5, BLOCK_UPDATE_NORMAL);
 				//$water->place($this, $player, $block, $target, $face, $fx, $fy, $fz);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = 0;
@@ -36,17 +34,10 @@ class BucketItem extends Item{
 				return true;
 			}
 		}elseif($this->meta === LAVA){
-			if($block->getID() === AIR || ($block instanceof LavaBlock && ($block->getMetadata() & 0x6) != 0)){
+			if($block->getID() === AIR || $block instanceof LiquidBlock){
 				$lava = new LavaBlock();
 				$level->setBlock($block, $lava, true, false, true);
-				ServerAPI::request()->api->block->scheduleBlockUpdate($block, 40, BLOCK_UPDATE_NORMAL);
 				//$lava->place(clone $this, $player, $block, $target, $face, $fx, $fy, $fz);
-				if(($player->gamemode & 0x01) === 0){
-					$this->meta = 0;
-				}
-				return true;
-			}elseif($block instanceof WaterBlock){
-				$level->setBlock($block, new ObsidianBlock(), true, false, true);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = 0;
 				}

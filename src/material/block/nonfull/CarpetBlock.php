@@ -35,16 +35,11 @@ class CarpetBlock extends FlowableBlock{
 		}
 		return false;
 	}
-	
-	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
-				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id, $this->meta, 1));
-				$this->level->setBlock($this, new AirBlock(), true, false, true);
-				return BLOCK_UPDATE_NORMAL;
-			}
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		if($level->level->getBlockID($x, $y - 1, $z) == AIR){ //Replace with common break method
+			[$id, $meta] = $level->level->getBlock($x, $y, $z);
+			ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem($id, $meta));
+			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 		}
-		return false;
 	}
-	
 }

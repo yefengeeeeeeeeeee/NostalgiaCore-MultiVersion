@@ -41,15 +41,11 @@ class CarrotBlock extends FlowableBlock{
 			}
 		}
 	}
-	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getID() != 60){
-				ServerAPI::request()->api->entity->drop(new Position($this->x + 0.5, $this->y, $this->z + 0.5, $this->level), BlockAPI::getItem(CARROT, 0, 1));
-				$this->level->setBlock($this, new AirBlock(), false, false, true);
-				return BLOCK_UPDATE_NORMAL;
-			}
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		if($level->level->getBlockID($x, $y - 1, $z) != FARMLAND){
+			ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(CARROT, 0, 1));
+			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
-		return false;
 	}
 	
 	public function getDrops(Item $item, Player $player){

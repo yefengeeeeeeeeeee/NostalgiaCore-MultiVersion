@@ -154,6 +154,9 @@ abstract class Block extends Position{
 	public $y = 0;
 	public $z = 0;
 	public $slipperiness;
+	public static function interact(Level $level, $x, $y, $z, Player $player){}
+	
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){}
 	
 	public static function getAABB(Level $level, $x, $y, $z){
 		return StaticBlock::getAABB($level, $x, $y, $z);
@@ -216,9 +219,10 @@ abstract class Block extends Position{
 		
 		return MovingObjectPosition::fromBlock($x, $y, $z, $v14, $v13->add($x, $y, $z));
 	}
-	
+	public static function onPlace(Level $level, $x, $y, $z){}
 	public static function addVelocityToEntity(Level $level, $x, $y, $z, Entity $entity, Vector3 $velocityVector){}
 	public static function onRandomTick(Level $level, $x, $y, $z){}
+	public static function onUpdate(Level $level, $x, $y, $z, $type){}
 	public static function fallOn(Level $level, $x, $y, $z, Entity $entity, $fallDistance){}
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		return [static::getAABB($level, $x, $y, $z)];
@@ -298,8 +302,6 @@ abstract class Block extends Position{
 	abstract function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
 	
 	abstract function onActivate(Item $item, Player $player);
-	
-	abstract function onUpdate($type);
 }
 
 /***REM_START***/

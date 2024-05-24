@@ -457,7 +457,8 @@ class BlockAPI{
 				return $this->cancelAction($block, $player);
 			}
 		}
-		$this->blockUpdate($target, BLOCK_UPDATE_TOUCH);
+		
+		StaticBlock::getBlock($target->getID())::interact($target->level, $target->x, $target->y, $target->z, $player);
 
 		if($target->isActivable === true){
 			if($this->server->api->dhandle("player.block.activate", ["player" => $player, "block" => $block, "target" => $target, "item" => $item]) !== false and $target->onActivate($item, $player) === true){
@@ -527,24 +528,29 @@ class BlockAPI{
 	}
 
 	public function blockUpdate(Position $pos, $type = BLOCK_UPDATE_NORMAL){
-		if(!($pos instanceof Block)){
-			$block = $pos->level->getBlock($pos);
-		}else{
-			$pos = new Position($pos->x, $pos->y, $pos->z, $pos->level);
-			$block = $pos->level->getBlock($pos);
-		}
+		$block = StaticBlock::getBlock($pos->level->level->getBlockID($pos->x, $pos->y, $pos->z));
 		if($block === false){
 			return false;
 		}
-
-		$level = $block->onUpdate($type);
-		if($level === BLOCK_UPDATE_NORMAL){
-			$this->blockUpdateAround($block, $level);
-		}
+		$level = $block::onUpdate($pos->level, $pos->x, $pos->y, $pos->z, $type);
 		
 		return $level;
 	}
+	
+
+	
 	public function blockUpdateAround(Position $pos, $type = BLOCK_UPDATE_NORMAL, $delay = false){
+		
+		if($type == BLOCK_UPDATE_NORMAL){
+			try{
+				throw new Exception("Deprecated: tried updating $pos using BLOCK_UPDATE_NORMAL.");
+			}catch(Exception $e){
+				ConsoleAPI::error($e->getMessage());
+				ConsoleAPI::error($e->getTraceAsString());
+			}
+			return;
+		}
+		
 		if($delay !== false){
 			$this->scheduleBlockUpdate($pos->getSide(0), $delay, $type);
 			$this->scheduleBlockUpdate($pos->getSide(1), $delay, $type);
@@ -560,6 +566,21 @@ class BlockAPI{
 			$this->blockUpdate($pos->getSide(4), $type);
 			$this->blockUpdate($pos->getSide(5), $type);
 		}
+	}
+	public function scheduleBlockUpdateXYZ(Level $level, $x, $y, $z, $type = BLOCK_UPDATE_SCHEDULED, $delay = false){
+		$type = (int) $type;
+		if($delay < 0){
+			return false;
+		}
+		
+		$index = $x . "." . $y . "." . $z . "." . $level->getName() . "." . $type;
+		$delay = microtime(true) + $delay * 0.05;
+		if(!isset($this->scheduledUpdates[$index])){
+			$this->scheduledUpdates[$index] = new Position($x, $y, $z, $level); //TODO dont create a position
+			$this->server->query("INSERT INTO blockUpdates (x, y, z, level, type, delay) VALUES ($x, $y, $z, '{$level->getName()}', $type, $delay);");
+			return true;
+		}
+		return false;
 	}
 	
 	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){

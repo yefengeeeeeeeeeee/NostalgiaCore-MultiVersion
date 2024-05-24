@@ -15,6 +15,23 @@ class LiquidBlock extends TransparentBlock{
 		$this->isFullBlock = true;
 		$this->hardness = 500;
 	}
+	public static $blockID = 0;
+	public static function getDepth(Level $level, $x, $y, $z){
+		[$id, $meta] = $level->level->getBlock($x, $y, $z);
+		return match(static::$blockID){
+			WATER, STILL_WATER => $id == WATER || $id == STILL_WATER ? $meta : -1,
+			LAVA, STILL_LAVA => $id == LAVA || $id == STILL_LAVA ? $meta : -1,
+			default=> -1
+		};
+	}
+	
+	public static function onPlace(Level $level, $x, $y, $z){
+		static::updateLiquid($level, $x, $y, $z);
+	}
+	
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		static::updateLiquid($level, $x, $y, $z);
+	}
 	public static function getAABB(Level $level, $x, $y, $z){
 		return null;
 	}
@@ -23,6 +40,39 @@ class LiquidBlock extends TransparentBlock{
 		$f = ($meta + 1) / 9;
 		return $f;
 	}
+	
+	public static function getTickDelay(){
+		throw new RuntimeException("If you see this, something bad happened");
+	}
+	
+	public static function updateLiquid(Level $level, $x, $y, $z){
+		[$id, $meta] = $level->level->getBlock($x, $y, $z);
+		if($id != LAVA && $id != STILL_LAVA) return;
+		
+		$zNeg = $level->level->getBlockID($x, $y, $z - 1);
+		$zPos = $level->level->getBlockID($x, $y, $z + 1);
+		$xNeg = $level->level->getBlockID($x - 1, $y, $z);
+		$xPos = $level->level->getBlockID($x + 1, $y, $z);
+		$yPos = $level->level->getBlockID($x, $y + 1, $z);
+		
+		if(
+				$zNeg == WATER || $zNeg == STILL_WATER
+			|| 	$zPos == WATER || $zPos == STILL_WATER
+			||	$xNeg == WATER || $xNeg == STILL_WATER
+			||	$xPos == WATER || $xPos == STILL_WATER
+			||	$yPos == WATER || $yPos == STILL_WATER
+		) {
+			if($meta){
+				//if($meta > 4) -> fizz & ret
+				$replacement = COBBLESTONE;
+			}else{
+				$replacement = OBSIDIAN;
+			}
+			
+			$level->fastSetBlockUpdate($x, $y, $z, $replacement, true);
+		}
+	}
+	
 	
 	public function getDrops(Item $item, Player $player){
 		return array();

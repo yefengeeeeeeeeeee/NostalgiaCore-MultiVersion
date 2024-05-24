@@ -369,7 +369,14 @@ class PMFLevel extends PMF{
 		$aX = $x & 0xf;
 		$aZ = $z & 0xf;
 		$aY = $y & 0xf;
-		$this->chunks[$index][$Y][(int) ($aY + ($aX << 5) + ($aZ << 9))] = chr($block);
+		$bind = (int) ($aY + ($aX << 5) + ($aZ << 9));
+		if($this->chunks[$index][$Y][$bind] == chr($block)){
+			return false; //no changes done
+		}else{
+			$this->chunks[$index][$Y][$bind] = chr($block);
+			if($block > 0) StaticBlock::getBlock($block)::onPlace($this->level, $x, $y, $z);
+		}
+		
 		if(!isset($this->chunkChange[$index][$Y])){
 			$this->chunkChange[$index][$Y] = 1;
 		}else{
@@ -500,13 +507,8 @@ class PMFLevel extends PMF{
 				++$this->chunkChange[$index][$Y];
 			}
 			$this->chunkChange[$index][-1] = true;
-			if($old_b instanceof LiquidBlock){
-				$pos = new Position($x, $y, $z, $this->level);
-				for($side = 0; $side <= 5; ++$side){
-					$b = $pos->getSide($side);
-					ServerAPI::request()->api->block->scheduleBlockUpdate($b, ($b instanceof LavaBlock ? 40: 10), BLOCK_UPDATE_NORMAL);
-				}
-			}
+			
+			if($block > 0) StaticBlock::getBlock($block)::onPlace($this->level, $x, $y, $z);
 			return true;
 		}
 		return false;

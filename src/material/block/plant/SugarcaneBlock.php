@@ -36,29 +36,22 @@ class SugarcaneBlock extends FlowableBlock{
 		return false;
 	}
 
-	public function onUpdate($type){
-		
-		$down = $this->getSide(0);
-		if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === SAND){
-			$block0 = $down->getSide(2);
-			$block1 = $down->getSide(3);
-			$block2 = $down->getSide(4);
-			$block3 = $down->getSide(5);
-			if(!($block0 instanceof WaterBlock) and !($block1 instanceof WaterBlock) and !($block2 instanceof WaterBlock) and !($block3 instanceof WaterBlock)){
-				$this->level->setBlock($this, new AirBlock(), true, false, true);
-				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(SUGARCANE));
-				return true;
+	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
+		$down = $level->level->getBlockID($x, $y - 1, $z);
+		if($down == GRASS or $down == DIRT or $down == SAND){
+			$b0 = $level->level->getBlockID($x, $y - 1, $z - 1);
+			$b1 = $level->level->getBlockID($x, $y - 1, $z + 1);
+			$b2 = $level->level->getBlockID($x - 1, $y - 1, $z);
+			$b3 = $level->level->getBlockID($x + 1, $y - 1, $z);
+			if($b0 != WATER && $b0 != STILL_WATER && $b1 != WATER && $b1 != STILL_WATER && $b2 != WATER && $b2 != STILL_WATER && $b3 != WATER && $b3 != STILL_WATER){
+				$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
+				ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem(SUGARCANE));
 			}
 		}
-		if($type === BLOCK_UPDATE_NORMAL){
-			$down = $this->getSide(0);
-			if($down->isTransparent === true and $down->getID() !== SUGARCANE_BLOCK){ //Replace with common break method
-				ServerAPI::request()->api->entity->drop(new Position($this->x+0.5, $this->y, $this->z+0.5, $this->level), BlockAPI::getItem(SUGARCANE));
-				$this->level->setBlock($this, new AirBlock(), false, false, true);
-				return BLOCK_UPDATE_NORMAL;
-			}
+		if(StaticBlock::getIsTransparent($down) && $down != SUGARCANE_BLOCK){ //Replace with common break method
+			ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(SUGARCANE));
+			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 		}
-		return false;
 	}
 	public static function onRandomTick(Level $level, $x, $y, $z){
 		$aboveID = $level->level->getBlockID($x, $y + 1, $z);
