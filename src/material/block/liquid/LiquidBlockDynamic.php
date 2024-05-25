@@ -177,10 +177,10 @@ class LiquidBlockDynamic extends LiquidBlock{
 				}
 			}
 			
-			if(static::$blockID == LAVA && $depth < 8 && $j1 < 8 && $j1 > $depth && mt_rand(0, 4) != 0){
-				$j1 = $depth;
-				$flag = false;
-			}
+			//if(static::$blockID == LAVA && $depth < 8 && $j1 < 8 && $j1 > $depth && mt_rand(0, 4) != 0){ TODO fix later
+			//	$j1 = $depth;
+			//	$flag = false;
+			//}
 			
 			if($j1 != $depth){
 				$depth = $j1;

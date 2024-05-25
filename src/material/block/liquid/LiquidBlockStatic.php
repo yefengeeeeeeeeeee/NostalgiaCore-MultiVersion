@@ -8,13 +8,9 @@ class LiquidBlockStatic extends LiquidBlock{
 	//TODO: tick: try spread fire if lava
 	
 	public static function setDynamic(Level $level, $x, $y, $z){
-		//TODO set dynamic
 		[$id, $meta] = $level->level->getBlock($x, $y, $z);
 		$dynamicID = $id - 1; //very unsafe
-		$level->fastSetBlockUpdate($x, $y, $z, $dynamicID, $meta);
-		$delay = static::getTickDelay();
-		ServerAPI::request()->api->block->scheduleBlockUpdateXYZ($level, $x, $y, $z, BLOCK_UPDATE_SCHEDULED, $delay);
-		
+		$level->fastSetBlockUpdate($x, $y, $z, $dynamicID, $meta);		
 	}
 	
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){

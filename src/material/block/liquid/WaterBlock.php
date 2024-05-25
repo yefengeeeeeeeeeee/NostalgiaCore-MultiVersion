@@ -12,7 +12,6 @@ class WaterBlock extends LiquidBlockDynamic{
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$ret = $this->level->setBlock($this, $this, true, false, true);
-		//TODO place ServerAPI::request()->api->block->scheduleBlockUpdate(clone $this, 5, BLOCK_UPDATE_NORMAL);
 		return $ret;
 	}
 	
