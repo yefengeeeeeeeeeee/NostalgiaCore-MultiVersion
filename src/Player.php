@@ -2683,7 +2683,7 @@ class Player{
 }
 
 class PlayerNull extends Player{
-
+	public static $INSTANCE;
 	public function __construct(){
 
 	}

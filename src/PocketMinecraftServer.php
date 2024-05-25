@@ -34,6 +34,7 @@ class PocketMinecraftServer{
 		}*/
 		console("[INFO] Starting Minecraft PE server on " . ($this->serverip === "0.0.0.0" ? "*" : $this->serverip) . ":" . $this->port);
 		EntityRegistry::registerEntities();
+		PlayerNull::$INSTANCE = new PlayerNull();
 		Feature::init();
 		Biome::init();
 		StaticBlock::init();

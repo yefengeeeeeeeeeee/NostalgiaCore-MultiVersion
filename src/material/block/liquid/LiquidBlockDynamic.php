@@ -134,12 +134,17 @@ class LiquidBlockDynamic extends LiquidBlock{
 	
 	public static function trySpreadTo(Level $level, $x, $y, $z, $meta){
 		if(static::canSpreadTo($level, $x, $y, $z)){
-			$id = $level->level->getBlockID($x, $y, $z);
+			[$id, $meta2] = $level->level->getBlock($x, $y, $z);
 			
 			if($id > 0){
 				if(($id == LAVA || $id == STILL_LAVA) && (static::$blockID == LAVA || static::$blockID == STILL_LAVA)); //fizz
 				else{
-					//TODO spawnResources
+					//TODO better way to spawn resources
+					$drop = BlockAPI::get($id, $meta2, 1)->getDrops(BlockAPI::getItem(0, 0, 0), PlayerNull::$INSTANCE);
+					$pos = new Position($x, $y, $z, $level);
+					foreach($drop as $item){
+						ServerAPI::request()->api->entity->drop($pos, BlockAPI::getItem($item[0], $item[1], $item[2]));
+					}
 				}
 			}
 			
