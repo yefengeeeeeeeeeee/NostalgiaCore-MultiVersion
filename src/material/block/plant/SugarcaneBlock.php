@@ -75,13 +75,17 @@ class SugarcaneBlock extends FlowableBlock{
 				$this->level->setBlock($block, new SugarcaneBlock(), true, false, true);
 				return true;
 			}elseif($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === SAND){
-				$block0 = $down->getSide(2);
-				$block1 = $down->getSide(3);
-				$block2 = $down->getSide(4);
-				$block3 = $down->getSide(5);
-				if(($block0 instanceof WaterBlock) or ($block1 instanceof WaterBlock) or ($block2 instanceof WaterBlock) or ($block3 instanceof WaterBlock)){
-					$this->level->setBlock($block, new SugarcaneBlock(), true, false, true);
-					$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
+				$level = $this->level;
+				$x = $this->x;
+				$y = $this->y;
+				$z = $this->z;
+				
+				$b0 = $level->level->getBlockID($x, $y - 1, $z - 1);
+				$b1 = $level->level->getBlockID($x, $y - 1, $z + 1);
+				$b2 = $level->level->getBlockID($x - 1, $y - 1, $z);
+				$b3 = $level->level->getBlockID($x + 1, $y - 1, $z);
+				if($b0 == WATER || $b0 == STILL_WATER || $b1 == WATER || $b1 == STILL_WATER || $b2 == WATER || $b2 == STILL_WATER || $b3 == WATER || $b3 == STILL_WATER){
+					$level->fastSetBlockUpdate($block->x, $block->y, $block->z, SUGARCANE_BLOCK, 0, true);
 					return true;
 				}
 			}

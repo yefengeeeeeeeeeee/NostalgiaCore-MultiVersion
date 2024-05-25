@@ -194,12 +194,11 @@ class PocketMinecraftServer{
 			console("[WARNING] Can't keep up! Is the server overloaded?");
 		}
 	}
-
+	private static $_tmp;
 	/**
 	 * @param string $reason
 	 */
 	public function close($reason = "server stop"){
-		usleep(2);
 		$this->onShutdown();
 		if($this->stop !== true){
 			if(is_int($reason)){
@@ -208,13 +207,12 @@ class PocketMinecraftServer{
 			if(($this->api instanceof ServerAPI) === true){
 				if(($this->api->chat instanceof ChatAPI) === true){
 					$this->api->chat->send(false, "Stopping server...");
-					new StopMessageThread($this, "[INFO] Stopping server..."); //broadcast didnt want to send message to discord for some reason
+					self::$_tmp = new StopMessageThread($this, "[INFO] Stopping server..."); //broadcast didnt want to send message to discord for some reason
 				}
 			}
 			$this->stop = true;
 			$this->trigger("server.close", $reason);
 			$this->interface->close();
-
 			if(!defined("NO_THREADS")){
 				$this->asyncThread->synchronized(function ($t){
 					$t->stop = true;

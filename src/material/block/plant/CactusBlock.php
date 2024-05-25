@@ -39,7 +39,7 @@ class CactusBlock extends TransparentBlock{
 	}
 	
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
-		$down = $level->level->getBlockID($x, $y, $z);
+		$down = $level->level->getBlockID($x, $y - 1, $z);
 		$b0 = $level->level->getBlockID($x, $y, $z - 1);
 		$b1 = $level->level->getBlockID($x, $y, $z + 1);
 		$b2 = $level->level->getBlockID($x - 1, $y, $z);
