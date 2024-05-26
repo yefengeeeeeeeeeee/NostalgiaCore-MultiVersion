@@ -170,6 +170,11 @@ class ItemEntity extends Entity{
 			return 0;
 		}
 	}
+	
+	public function handleWaterMovement(){
+		return $this->level->handleMaterialAcceleration($this->boundingBox, 0, $this);
+	}
+	
 	public function updateEntityMovement(){
 		//TODO custom update( method
 		$this->speedY -= 0.04;

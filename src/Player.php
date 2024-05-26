@@ -202,8 +202,13 @@ class Player{
 							$this->dataPacket($pk);
 							
 						}else{
-							$pk = new RemoveEntityPacket;
+							$pk = new MoveEntityPacket_PosRot();
 							$pk->eid = $e->eid;
+							$pk->x = -256;
+							$pk->y = 128;
+							$pk->z = -256;
+							$pk->yaw = 0;
+							$pk->pitch = 0;
 							$this->dataPacket($pk);
 						}
 					}
@@ -219,8 +224,22 @@ class Player{
 				$this->level->players[$this->CID] = $this;
 				$this->chunksLoaded = [];
 				$this->server->api->entity->spawnToAll($this->entity);
-				$this->server->api->entity->spawnAll($this);
-
+				//$this->server->api->entity->spawnAll($this);
+				foreach($this->level->entityList as $e){
+					if($e->eid !== $this->entity->eid){
+						if(!$e->isPlayer()){
+							$pk = new MoveEntityPacket_PosRot();
+							$pk->eid = $e->eid;
+							$pk->x = $e->x;
+							$pk->y = $e->y;
+							$pk->z = $e->z;
+							$pk->yaw = $e->yaw;
+							$pk->pitch = $e->pitch;
+							$this->dataPacket($pk);
+						}
+					}
+				}
+							
 				$pk = new SetTimePacket;
 				$pk->time = $this->level->getTime();
 				$this->dataPacket($pk);

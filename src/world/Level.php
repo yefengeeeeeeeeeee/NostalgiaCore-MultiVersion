@@ -210,7 +210,6 @@ class Level{
 		
 		$appliedVelocity = false;
 		$velocityVec = new Vector3(0, 0, 0);
-		
 		for($x = $minX; $x < $maxX; ++$x){
 			for($y = $minY; $y < $maxY; ++$y){
 				for($z = $minZ; $z < $maxZ; ++$z){
@@ -221,6 +220,7 @@ class Level{
 							$appliedVelocity = true;
 							Block::$class[$block]::addVelocityToEntity($this, $x, $y, $z, $entity, $velocityVec);
 						}
+						
 					}
 				}
 			}
