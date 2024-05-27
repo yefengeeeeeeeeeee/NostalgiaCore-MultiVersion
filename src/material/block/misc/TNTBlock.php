@@ -19,7 +19,7 @@ class TNTBlock extends SolidBlock{
 				"power" => 3,
 				"fuse" => 20 * 4, //4 seconds
 			);
-			$this->level->setBlock($this, new AirBlock(), false, false, true);
+			$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, 0, 0, true);
 			$e = ServerAPI::request()->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
 			ServerAPI::request()->api->entity->spawnToAll($e);
 			return true;

@@ -294,7 +294,6 @@ class PlayerAPI{
 		}
 		$player = $this->get($target);
 		if(($player instanceof Player) and ($player->entity instanceof Entity)){
-			$target = $player->username;
 			$origin = $this->get($name);
 			if($origin instanceof Player){
 				$name = $origin->username;
