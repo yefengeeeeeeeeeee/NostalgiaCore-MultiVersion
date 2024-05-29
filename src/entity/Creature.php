@@ -44,10 +44,10 @@ abstract class Creature extends Living{
 	}
 	
 	public function getSpeedModifer(){
-		return 0.7; //$this->speedModifer; //should be 0.7?
+		return 0.7;
 	}
 	public function getArmorValue(){
-		return 2;
+		return 0;
 	}
 	public function spawn($player){
 		if(!($player instanceof Player)){
