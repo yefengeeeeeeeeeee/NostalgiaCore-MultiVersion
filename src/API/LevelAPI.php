@@ -40,11 +40,15 @@ class LevelAPI{
 			console("[ERROR] Could not load level \"" . $name . "\"");
 			return false;
 		}
-		for($X = 0; $X < 16; ++$X){
-			for($Z = 0; $Z < 16; ++$Z){
-				$level->loadChunk($X, $Z);
+		
+		if(PocketMinecraftServer::$KEEP_CHUNKS_LOADED){
+			for($X = 0; $X < 16; ++$X){
+				for($Z = 0; $Z < 16; ++$Z){
+					$level->loadChunk($X, $Z);
+				}
 			}
 		}
+		
 		
 		$entities = new Config($path . "entities.yml", CONFIG_YAML);
 		if(file_exists($path . "tileEntities.yml")){

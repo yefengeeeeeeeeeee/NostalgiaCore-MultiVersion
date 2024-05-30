@@ -17,7 +17,7 @@ class FarmlandBlock extends TransparentBlock{
 	}
 	
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
-		return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 0.9375, $z + 1)];
+		return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 1, $z + 1)];
 	}
 	
 	public static function fallOn(Level $level, $x, $y, $z, Entity $entity, $fallDistance){

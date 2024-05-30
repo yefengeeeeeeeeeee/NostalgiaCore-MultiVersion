@@ -11,7 +11,7 @@ class PocketMinecraftServer{
 	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $memoryStats, $async = [], $asyncID = 0;
 	
 	public $doTick, $levelData, $tiles, $entities, $schedule, $scheduleCnt, $whitelist, $spawn, $difficulty, $stop, $asyncThread;
-	public static $FORCE_20_TPS = false;
+	public static $FORCE_20_TPS = false, $KEEP_CHUNKS_LOADED = true;
 	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverip = "0.0.0.0"){
 		$this->port = (int) $port;
 		$this->doTick = true;
@@ -90,13 +90,15 @@ class PocketMinecraftServer{
 			"16x16x16_chunk_sending" => false,
 			"experimental-mob-ai" => false,	
 			"force-20-tps" => false,
-			"enable-mob-pushing" => Living::$entityPushing
+			"enable-mob-pushing" => Living::$entityPushing,
+			"keep-chunks-loaded" => self::$KEEP_CHUNKS_LOADED
 		]);
 		Player::$smallChunks = $this->extraprops->get("16x16x16_chunk_sending");
 		Living::$despawnMobs = $this->extraprops->get("despawn-mobs");
 		Living::$despawnTimer = $this->extraprops->get("mob-despawn-ticks");
 		Living::$entityPushing = $this->extraprops->get("enable-mob-pushing");
 		self::$FORCE_20_TPS = $this->extraprops->get("force-20-tps");
+		self::$KEEP_CHUNKS_LOADED = $this->extraprops->get("keep-chunks-loaded");
 		PocketMinecraftServer::$SAVE_PLAYER_DATA = $this->extraprops->get("save-player-data");
 		MobController::$ADVANCED = $this->extraprops->get("experimental-mob-ai");
 		Explosion::$enableExplosions = $this->extraprops->get("enable-explosions");

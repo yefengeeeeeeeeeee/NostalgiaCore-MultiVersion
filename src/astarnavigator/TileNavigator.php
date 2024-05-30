@@ -184,7 +184,7 @@ class TileNavigator
 		}
 		
 		if($closestToTarget != null){
-			return  $this->reconstructPath($path, $closestToTarget);
+			return $this->reconstructPath($path, $closestToTarget);
 		}
 		
 		return null;
