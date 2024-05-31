@@ -29,12 +29,12 @@ class LiquidBlockDynamic extends LiquidBlock{
 		
 		if($id == AIR) return false;
 		
-		if($id == DOOR_BLOCK || $id == SIGN || $id == LADDER || $id == SUGARCANE_BLOCK) return true;
+		if($id == DOOR_BLOCK || $id == SIGN_POST || $id == WALL_SIGN || $id == LADDER || $id == SUGARCANE_BLOCK) return true;
 		
 		if($id == CARPET || $id == SNOW_LAYER || $id == RAIL || $id == POWERED_RAIL) return false; //TODO Tile::getThickness() > 0
 		
 		//TODO materials
-		//if(!StaticBlock::getIsFlowable($id)) return 1;
+		if(!StaticBlock::getIsFlowable($id)) return true;
 		return StaticBlock::getIsSolid($id);
 	}
 	
