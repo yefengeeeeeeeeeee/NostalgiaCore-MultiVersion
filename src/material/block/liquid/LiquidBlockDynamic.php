@@ -34,7 +34,7 @@ class LiquidBlockDynamic extends LiquidBlock{
 		if($id == CARPET || $id == SNOW_LAYER || $id == RAIL || $id == POWERED_RAIL) return false; //TODO Tile::getThickness() > 0
 		
 		//TODO materials
-		if(!StaticBlock::getIsFlowable($id)) return true;
+		//if(!StaticBlock::getIsFlowable($id)) return true;
 		return StaticBlock::getIsSolid($id);
 	}
 	

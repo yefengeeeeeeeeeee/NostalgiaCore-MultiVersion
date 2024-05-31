@@ -24,6 +24,10 @@ class Painting extends Entity{
 		return true;
 	}
 	
+	public function survives(){
+		
+	}
+	
 	public function createSaveData(){
 		$data = parent::createSaveData();
 		
