@@ -488,8 +488,8 @@ class Level{
 		
 		$this->level->setBlock($x, $y, $z, $id, $meta);
 		
-		if($tiles && ($t = $this->server->api->tile->getXYZ($this, $x, $y, $z)) != false){ //TODO rewrite
-			$t->close();
+		if($tiles){ //TODO rewrite
+			$this->server->api->tile->invalidateAll($this, $x, $y, $z);
 		}
 		if($updateBlocksAround){
 			self::updateNeighborsAt($x, $y, $z, $oldID);
@@ -723,9 +723,7 @@ class Level{
 			}
 			
 			if($tiles === true){
-				if(($t = $this->server->api->tile->get($pos)) !== false){
-					$t->close();
-				}
+				$this->server->api->tile->invalidateAll($this, $pos->x, $pos->y, $pos->z);
 			}
 			
 			if($update === true){
