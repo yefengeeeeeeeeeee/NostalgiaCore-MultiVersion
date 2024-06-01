@@ -510,9 +510,9 @@ class Player{
 			}
 		}
 		$minX = ($X << 4);
-		$maxX = (($X << 4) + 16);
+		$maxX = (($X << 4) + 15);
 		$minZ = ($Z << 4);
-		$maxZ = (($Z << 4) + 16);
+		$maxZ = (($Z << 4) + 15);
 		
 		$pk = new ChunkDataPacket;
 		$pk->chunkX = $X;
@@ -551,7 +551,11 @@ class Player{
 		}
 
 		if(is_array($this->lastChunk)){
-			$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '" . $this->level->getName() . "' AND x >= " . ($this->lastChunk[0] - 1) . " AND x < " . ($this->lastChunk[0] + 17) . " AND z >= " . ($this->lastChunk[1] - 1) . " AND z < " . ($this->lastChunk[1] + 17) . ";");
+			$minX = $this->lastChunk[0];
+			$maxX = $this->lastChunk[0] + 15;
+			$minZ = $this->lastChunk[1];
+			$maxZ = $this->lastChunk[1] + 15;
+			$tiles = $this->server->query("SELECT ID, x, y, z FROM tiles WHERE level = '{$this->level->getName()}' AND x >= $minX AND x <= $maxX AND z >= $minZ AND z <= $maxZ;");
 			$this->lastChunk = false;
 			if($tiles !== false and $tiles !== true){
 				while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
@@ -1725,7 +1729,7 @@ class Player{
 							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 						}
 					}else{
-						$this->entity->setPosition($newPos, $packet->yaw, $packet->pitch);
+						$this->entity->setPosition($newPos, $packet->yaw, $packet->pitch, $packet->bodyYaw);
 					}
 					$this->entity->updateAABB();
 				}
@@ -2095,6 +2099,21 @@ class Player{
 				$this->craftingItems = [];
 				$this->toCraft = [];
 				$this->teleport($this->spawnPosition, false, false, true, false);
+				
+				$pk = new MovePlayerPacket();
+				$pk->eid = $this->entity->eid;
+				$pk->x = $this->entity->x;
+				$pk->y = $this->entity->y;
+				$pk->z = $this->entity->z;
+				$pk->yaw = $this->entity->yaw;
+				$pk->pitch = $this->entity->pitch;
+				$pk->bodyYaw = $this->entity->headYaw;
+				foreach($this->entity->level->players as $player){
+					if($player->entity->eid != $this->entity->eid){
+						$player->dataPacket(clone $pk);
+					}
+				}
+				
 				if($this->entity instanceof Entity){
 					$this->entity->fire = 0;
 					$this->entity->air = $this->entity->maxAir;

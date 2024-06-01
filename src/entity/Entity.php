@@ -941,7 +941,7 @@ class Entity extends Position
 	
 	public function interactWith(Entity $e, $action)
 	{
-		if($this->class === ENTITY_PLAYER and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($e->player->gamemode & 0x01) === 0x01)){
+		if($this->isPlayer() and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($this->player->gamemode & 0x01) === 0x01)){
 			return false;
 		}
 
@@ -1186,7 +1186,7 @@ class Entity extends Position
 		$this->updateAABB();
 	}
 	
-	public function setPosition(Vector3 $pos, $yaw = false, $pitch = false)
+	public function setPosition(Vector3 $pos, $yaw = false, $pitch = false, $headYaw = false)
 	{
 		$this->x = $pos->x;
 		$this->y = $pos->y;
@@ -1197,6 +1197,8 @@ class Entity extends Position
 		if($pitch !== false){
 			$this->pitch = $pitch;
 		}
+		
+		if($headYaw !== false) $this->headYaw = $headYaw;
 	}
 	public function inBlockNonVector($x, $y, $z, $radius = 0.8)
 	{
