@@ -1,7 +1,6 @@
 <?php
 
 class Vector3{
-
 	public $x, $y, $z;
 
 	public function __construct($x = 0, $y = 0, $z = 0){

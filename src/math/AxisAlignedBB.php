@@ -1,6 +1,5 @@
 <?php
 class AxisAlignedBB{
-
 	public $minX;
 	public $minY;
 	public $minZ;

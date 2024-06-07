@@ -28,17 +28,30 @@ class Explosion{
 	}
 	
 	public function sub_expl($i, $mRays, $j, $k){
-		$vector = new Vector3($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1); //($i / $mRays) * 2 - 1
-		$vector = $vector->normalize()->multiply($this->stepLen);
-		$pointer = clone $this->source;
+		$vx = $i / $mRays * 2 - 1;
+		$vy = $j / $mRays * 2 - 1;
+		$vz = $k / $mRays * 2 - 1;
+		$vlen = sqrt($vx*$vx + $vy*$vy + $vz*$vz);
+		if($vlen != 0){
+			$vx = $vx / $vlen * $this->stepLen;
+			$vy = $vy / $vlen * $this->stepLen;
+			$vz = $vz / $vlen * $this->stepLen;
+		}else{
+			$vx = $vy = $vz = 0;
+		}
 		
+		$px = $this->source->x;
+		$py = $this->source->y;
+		$pz = $this->source->z;
 		for($blastForce = $this->size * (mt_rand(700, 1300) / 1000); $blastForce > 0; $blastForce -= $this->stepLen * 0.75){
-			$vBlock = $pointer->floor();
-			$BIDM = $this->level->level->getBlock($vBlock->x, $vBlock->y, $vBlock->z);
+			$bx = floor($px);
+			$by = floor($py);
+			$bz = floor($pz);
+			$BIDM = $this->level->level->getBlock($bx, $by, $bz);
 			$blockID = $BIDM[0];
 			$blockMeta = $BIDM[1];
 			if($blockID > 0){
-				$index = ($vBlock->x << 16) + ($vBlock->z << 8) + $vBlock->y;
+				$index = ($bx << 16) + ($bz << 8) + $by;
 				$blastForce -= (StaticBlock::getHardness($blockID) / 5 + 0.3) * $this->stepLen;
 				if($blastForce > 0){
 					if(!isset($this->affectedBlocks[$index])){
@@ -46,7 +59,9 @@ class Explosion{
 					}
 				}
 			}
-			$pointer = $pointer->add($vector);
+			$px += $vx;
+			$py += $vy;
+			$pz += $vz;
 		}
 	}
 	
