@@ -257,6 +257,7 @@ class Level{
 					$bid = $this->level->getBlockID($x, $y, $z);
 					if($bid > 0){
 						$blockBounds = Block::$class[$bid]::getCollisionBoundingBoxes($this, $x, $y, $z, $e); //StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
+						
 						foreach($blockBounds as $blockBound){
 							if($aABB->intersectsWith($blockBound)) $aABBs[] = $blockBound;
 						}
