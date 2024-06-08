@@ -1194,8 +1194,9 @@ class Player{
 			foreach($this->resendQueue as $count => $data){
 				unset($this->resendQueue[$count]);
 				$this->packetStats[1]++;
-				$this->lag[] = microtime(true) - $data->sendtime;
-				$data->sendtime = microtime(true);
+				$this->lag[] = $time - $data->sendtime;
+				$data->sendtime = $time;
+
 				$cnt = $this->send($data);
 				if(isset($this->chunkCount[$count])){
 					unset($this->chunkCount[$count]);
@@ -2649,13 +2650,14 @@ class Player{
 
 	public function handlePacket(RakNetPacket $packet){
 		if($this->connected === true){
-			$this->timeout = microtime(true) + 20;
+			$time = microtime(true);
+			$this->timeout = $time + 20;
 			switch($packet->pid()){
 				case RakNetInfo::NACK:
 					foreach($packet->packets as $count){
 						if(isset($this->recoveryQueue[$count])){
 							$this->resendQueue[$count] =& $this->recoveryQueue[$count];
-							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]->sendtime;
+							$this->lag[] = $time - $this->recoveryQueue[$count]->sendtime;
 							unset($this->recoveryQueue[$count]);
 						}
 						++$this->packetStats[1];
@@ -2665,7 +2667,7 @@ class Player{
 				case RakNetInfo::ACK:
 					foreach($packet->packets as $count){
 						if(isset($this->recoveryQueue[$count])){
-							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]->sendtime;
+							$this->lag[] = $time - $this->recoveryQueue[$count]->sendtime;
 							unset($this->recoveryQueue[$count]);
 							unset($this->resendQueue[$count]);
 						}

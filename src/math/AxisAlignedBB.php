@@ -6,7 +6,7 @@ class AxisAlignedBB{
 	public $maxX;
 	public $maxY;
 	public $maxZ;
-
+	
 	public function __construct($minX, $minY, $minZ, $maxX, $maxY, $maxZ){
 		$this->minX = $minX;
 		$this->minY = $minY;

@@ -1081,7 +1081,7 @@ class Entity extends Position
 				$pk->itemID = 0;
 				$pk->itemAuxValue = 0;
 				$pk->metadata = $this->getMetadata();
-				$player->dataPacket($pk);
+				$player->directDataPacket($pk, 2, true);
 
 				$pk = new SetEntityMotionPacket();
 				$pk->eid = $this->eid;
