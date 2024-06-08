@@ -724,14 +724,15 @@ class Player{
 		switch($event){
 			case "entity.link":
 				$pk = new SetEntityLinkPacket();
-				if($data["rider"] === $this->eid){
-					$pk->rider = 0;
-				}else{
-					$pk->rider = $data["rider"];
-				}
-				$pk->riding = $data["riding"];
+				$pk->rider = $data["rider"] == $this->entity->eid ? 0 : $data["rider"];
+				$pk->riding = $data["riding"] == $this->entity->eid ? 0 : $data["riding"];
 				$pk->type = 0;
+				if($data["type"] == $this->entity->eid){
+					console("dont send to {$this}");
+					break;
+				}
 				$this->dataPacket($pk);
+				console("nya");
 				break;
 			case "tile.update":
 				if($data->level === $this->level){
@@ -2466,25 +2467,29 @@ class Player{
 				}
 				break;
 			case ProtocolInfo::PLAYER_INPUT_PACKET:
-				if(strlen(bin2hex($packet->buffer)) === 24 && $this->entity->linkedEntity instanceof Entity){
-					$this->entity->linkedEntity->linkEntity($this->entity->linkedEntity, SetEntityLinkPacket::TYPE_RIDE);
-					$this->entity->linkedEntity->linkedEntity = false;
-					$this->entity->linkedEntity = false;
+				if(strlen(bin2hex($packet->buffer)) === 24 && $this->entity->linkedEntity != 0){
+					$this->entity->stopRiding();
 				}
-				if($this->entity->linkedEntity instanceof Entity){
+				if($this->entity->linkedEntity != 0){ //TODO better riding
+					$e = $this->entity->level->entityList[$this->entity->linkedEntity] ?? false;
+					if($e === false) {
+						ConsoleAPI::warn("Player is riding on entity that doesnt exist in world! ({$this->iusername}, {$this->entity->linkedEntity})");
+						$this->entity->stopRiding();
+						break;
+					}
 					$pk = new SetEntityMotionPacket;
-					$pk->eid = $this->entity->linkedEntity->eid;
-					$pk->speedX = ($this->entity->x - $this->entity->linkedEntity->x)*1.2;
-					$pk->speedY = ($this->entity->y - $this->entity->linkedEntity->y)*1.2;
-					$pk->speedZ = ($this->entity->z - $this->entity->linkedEntity->z)*1.2;
+					$pk->eid = $e->eid;
+					$pk->speedX = ($this->entity->x - $e->x)*1.2;
+					$pk->speedY = ($this->entity->y - $e->y)*1.2;
+					$pk->speedZ = ($this->entity->z - $e->z)*1.2;
 					foreach($this->level->players as $p){
 						if($p->entity->eid != $this->entity->eid){
 							$p->dataPacket(clone $pk);
 						}
 					}
 					
-					$this->entity->linkedEntity->setPosition($this->entity);
-					$this->entity->linkedEntity->sendMoveUpdate();
+					$e->setPosition($this->entity);
+					$e->sendMoveUpdate();
 					//$this->entity->linkedEntity->moveFlying($packet->moveStrafe, $packet->moveForward, 1);
 				}
 				

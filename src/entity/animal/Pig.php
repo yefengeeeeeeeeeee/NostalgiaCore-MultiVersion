@@ -35,7 +35,7 @@ class Pig extends Animal implements Rideable{
 	}
 	
 	public function canRide($e){
-		return $this->isSaddled() && !($this->linkedEntity instanceof Entity);
+		return $this->isSaddled() && $this->linkedEntity == 0 && $e->linkedEntity == 0;
 	}
 
 	public function interactWith(Entity $e, $action)
@@ -43,17 +43,10 @@ class Pig extends Animal implements Rideable{
 		if($e->isPlayer() && $action === InteractPacket::ACTION_HOLD){
 			$slot = $e->player->getHeldItem();
 			if($this->canRide($e)){
-				$this->linkedEntity = $e;
-				$e->isRiding = true;
-				$this->linkEntity($e, SetEntityLinkPacket::TYPE_RIDE);
+				$e->setRiding($this);
 				return true;
 			}
-			if($e->isRiding && $this->linkedEntity instanceof Entity && $this->linkedEntity->eid === $e->eid){
-				$this->linkEntity($e, SetEntityLinkPacket::TYPE_REMOVE);
-				$e->isRiding = false;
-				$this->linkedEntity = 0;
-				return true;
-			}
+			
 			if($slot->getID() === SADDLE){
 				if(!$this->isSaddled()){
 					$e->player->removeItem($slot->getID(), 0, 1);

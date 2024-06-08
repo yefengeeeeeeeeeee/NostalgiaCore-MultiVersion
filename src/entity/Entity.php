@@ -481,13 +481,6 @@ class Entity extends Position
 			$hasUpdate = true;
 		}
 		
-		$startX = floor($this->boundingBox->minX);
-		$startY = floor($this->boundingBox->minY);
-		$startZ = floor($this->boundingBox->minZ);
-		$endX = ceil($this->boundingBox->maxX);
-		$endY = ceil($this->boundingBox->maxY);
-		$endZ = ceil($this->boundingBox->maxZ);
-		
 		if(!($this instanceof Painting) && !($this->isPlayer() && $this->player->isSleeping !== false)){ //TODO better way to fix	
 			$x = floor($this->x);
 			$y = floor($this->y + $this->getEyeHeight());
@@ -1394,12 +1387,38 @@ class Entity extends Position
 	{
 		return $this->setHealth(min(20, $this->getHealth() + ((int) $health)), $cause);
 	}
-
-	public function linkEntity(Entity $e, $type)
+	
+	public function stopRiding(){
+		if(isset($this->level->entityList[$this->linkedEntity])){
+			$e = $this->level->entityList[$this->linkedEntity];
+			if(!$e->dead && !$e->closed){
+				$e->setRiding($e, $this->eid); //why mojang
+				$this->linkedEntity = 0;
+				$e->linkedEntity = 0;
+			}
+		}else{
+			$this->linkedEntity = 0;
+		}
+	}
+	
+	public function setRiding(Entity $e, $type = 0)
 	{
-		$this->linkedEntity = $e;
-		$e->linkedEntity = $this;
-		$this->server->api->dhandle("entity.link", ["rider" => $e->eid, "riding" => $this->eid, "type" => 0]);
+		if(!isset($this->level->entityList[$e->eid])){
+			ConsoleAPI::warn("Tried linking $this with $e that doesnt exist in the world!");
+			return;
+		}
+		console("unlink $this $e");
+		if($this->linkedEntity == $e->eid || $e->eid == $this->eid){
+			$this->linkedEntity = 0;
+			$e->linkedEntity = 0;
+			$this->server->api->dhandle("entity.link", ["rider" => $this->eid, "riding" => $e->eid, "type" => $type]);
+		}else{
+			$this->linkedEntity = $e->eid;
+			$e->linkedEntity = $this->eid;
+			$this->server->api->dhandle("entity.link", ["rider" => $this->eid, "riding" => $e->eid, "type" => 0]);
+		}
+		
+		
 	}
 
 	public function isPlayer()
