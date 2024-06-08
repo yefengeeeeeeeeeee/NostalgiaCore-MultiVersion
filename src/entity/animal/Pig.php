@@ -10,15 +10,14 @@ class Pig extends Animal implements Rideable{
 		$this->setName("Pig");
 		$this->setSpeed(0.25);
 		
-		$this->ai->addTask(new TaskRandomWalk(1.0));
-		$this->ai->addTask(new TaskLookAtPlayer(6));
-		$this->ai->addTask(new TaskPanic(1.5));
-		$this->ai->addTask(new TaskLookAround());
+		//$this->ai->addTask(new TaskRandomWalk(1.0));
+		//$this->ai->addTask(new TaskLookAtPlayer(6));
+		//$this->ai->addTask(new TaskPanic(1.5));
+		//$this->ai->addTask(new TaskLookAround());
 		$this->ai->addTask(new TaskSwimming());
-		$this->ai->addTask(new TaskTempt(1.0));
-		$this->ai->addTask(new TaskMate(1.0));
-		$this->ai->addTask(new TaskFollowParent(1.1));
-		
+		//$this->ai->addTask(new TaskTempt(1.0));
+		//$this->ai->addTask(new TaskMate(1.0));
+		//$this->ai->addTask(new TaskFollowParent(1.1));
 	}
 	/**
 	 * @return boolean
@@ -37,7 +36,21 @@ class Pig extends Animal implements Rideable{
 	public function canRide($e){
 		return $this->isSaddled() && $this->linkedEntity == 0 && $e->linkedEntity == 0;
 	}
-
+	
+	public function updateEntityMovement(){
+		if($this->linkedEntity != 0){
+			$e = $this->level->entityList[$this->linkedEntity] ?? false;
+			if($e instanceof Entity){
+				$this->setAIMoveSpeed($this->getSpeed());
+				$this->moveStrafing = $e->player->moveStrafe;
+				$this->moveForward = $e->player->moveForward;
+				$this->yaw = $e->headYaw;
+			}
+		}
+		
+		parent::updateEntityMovement();
+	}
+	
 	public function interactWith(Entity $e, $action)
 	{
 		if($e->isPlayer() && $action === InteractPacket::ACTION_HOLD){

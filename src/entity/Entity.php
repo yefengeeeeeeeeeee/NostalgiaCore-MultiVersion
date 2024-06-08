@@ -69,7 +69,8 @@ class Entity extends Position
 	public $level;
 	public $isRiding = false;
 	public $lastUpdate;
-	public $linkedEntity = null;
+	public $linkedEntity = 0;
+	public $isRider = false;
 	public $check = true;
 	public $width = 1;
 	public $height = 1;
@@ -1104,6 +1105,12 @@ class Entity extends Position
 				$pk->did = -$this->data["Tile"];
 				$player->dataPacket($pk);
 		}
+		
+		if($this->linkedEntity != 0 && $this->isRider){
+			console("send $player");
+			$player->eventHandler(["rider" => $this->eid, "riding" => $this->linkedEntity, "type" => 0], "entity.link"); //TODO fix it
+		}
+		
 	}
 	
 	public function counterUpdate(){
@@ -1276,7 +1283,7 @@ class Entity extends Position
 			],
 			"speedX" => $this->speedX,
 			"speedY" => $this->speedY,
-			"speedZ" => $this->speedZ
+			"speedZ" => $this->speedZ,
 			
 		];
 		if($this->class === ENTITY_OBJECT){
@@ -1392,9 +1399,11 @@ class Entity extends Position
 		if(isset($this->level->entityList[$this->linkedEntity])){
 			$e = $this->level->entityList[$this->linkedEntity];
 			if(!$e->dead && !$e->closed){
-				$e->setRiding($e, $this->eid); //why mojang
 				$this->linkedEntity = 0;
 				$e->linkedEntity = 0;
+				$this->server->api->dhandle("entity.link", ["rider" => $this->eid, "riding" => -1, "type" => 1]);
+				$this->server->api->dhandle("entity.link", ["rider" => $this->linkedEntity, "riding" => -1, "type" => 1]);
+				$this->isRider = false;
 			}
 		}else{
 			$this->linkedEntity = 0;
@@ -1407,7 +1416,7 @@ class Entity extends Position
 			ConsoleAPI::warn("Tried linking $this with $e that doesnt exist in the world!");
 			return;
 		}
-		console("unlink $this $e");
+		
 		if($this->linkedEntity == $e->eid || $e->eid == $this->eid){
 			$this->linkedEntity = 0;
 			$e->linkedEntity = 0;
@@ -1415,6 +1424,7 @@ class Entity extends Position
 		}else{
 			$this->linkedEntity = $e->eid;
 			$e->linkedEntity = $this->eid;
+			$this->isRider = true;
 			$this->server->api->dhandle("entity.link", ["rider" => $this->eid, "riding" => $e->eid, "type" => 0]);
 		}
 		

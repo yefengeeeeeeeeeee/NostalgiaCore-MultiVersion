@@ -77,6 +77,15 @@ class Player{
 	public $blockUpdateQueueLength = 0;
 	
 	/**
+	 * Sent by a client while it is linked to some entity.
+	 * @var float $moveStrafe
+	 * @var float $moveForward
+	 * @var boolean $isJumping
+	 * @var boolean $isSneaking
+	 */
+	public $moveStrafe, $moveForward, $isJumping, $isSneaking;
+	
+	/**
 	 * @param integer $clientID
 	 * @param string $ip
 	 * @param integer $port
@@ -727,12 +736,7 @@ class Player{
 				$pk->rider = $data["rider"] == $this->entity->eid ? 0 : $data["rider"];
 				$pk->riding = $data["riding"] == $this->entity->eid ? 0 : $data["riding"];
 				$pk->type = 0;
-				if($data["type"] == $this->entity->eid){
-					console("dont send to {$this}");
-					break;
-				}
 				$this->dataPacket($pk);
-				console("nya");
 				break;
 			case "tile.update":
 				if($data->level === $this->level){
@@ -2467,8 +2471,15 @@ class Player{
 				}
 				break;
 			case ProtocolInfo::PLAYER_INPUT_PACKET:
+				
+				$this->moveStrafe = $packet->moveStrafe;
+				$this->moveForward = $packet->moveForward;
+				$this->isJumping = $packet->isJumping;
+				$this->isSneaking = $packet->isSneaking;
+				
 				if(strlen(bin2hex($packet->buffer)) === 24 && $this->entity->linkedEntity != 0){
 					$this->entity->stopRiding();
+					break;
 				}
 				if($this->entity->linkedEntity != 0){ //TODO better riding
 					$e = $this->entity->level->entityList[$this->entity->linkedEntity] ?? false;
@@ -2477,7 +2488,7 @@ class Player{
 						$this->entity->stopRiding();
 						break;
 					}
-					$pk = new SetEntityMotionPacket;
+					/*$pk = new SetEntityMotionPacket;
 					$pk->eid = $e->eid;
 					$pk->speedX = ($this->entity->x - $e->x)*1.2;
 					$pk->speedY = ($this->entity->y - $e->y)*1.2;
@@ -2487,10 +2498,8 @@ class Player{
 							$p->dataPacket(clone $pk);
 						}
 					}
-					
-					$e->setPosition($this->entity);
-					$e->sendMoveUpdate();
-					//$this->entity->linkedEntity->moveFlying($packet->moveStrafe, $packet->moveForward, 1);
+					console("{$e} {$this->entity}");
+					//$this->entity->linkedEntity->moveFlying($packet->moveStrafe, $packet->moveForward, 1);*/
 				}
 				
 				break;

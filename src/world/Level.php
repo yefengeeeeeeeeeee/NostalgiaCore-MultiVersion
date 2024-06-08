@@ -295,6 +295,7 @@ class Level{
 
 		if($extra !== false){
 			$entities = [];
+			
 			foreach($this->entityList as $entity){
 				if($entity instanceof Entity){
 					$entities[] = $entity->createSaveData();

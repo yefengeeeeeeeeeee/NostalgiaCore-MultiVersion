@@ -19,6 +19,7 @@ class TileNavigator
 	}
 	
 	public function reconstructPath($path, $current){
+		console("path built");
 		$totalPath = [$current];
 		while (isset($path[(string)$current]))
 		{
@@ -172,7 +173,7 @@ class TileNavigator
 					$path[$neighbor] = $current;
 					
 					if($targetDist < $closestToTargetDist){
-						console("found new best to target: $neighbor($closestToTargetDist -> $targetDist)");
+						//console("found new best to target: $neighbor($closestToTargetDist -> $targetDist)");
 						
 						$closestToTarget = $neighbor;
 						$closestToTargetDist = $targetDist;						

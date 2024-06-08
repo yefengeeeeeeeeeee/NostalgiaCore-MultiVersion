@@ -78,6 +78,27 @@ class Minecart extends Vehicle{
 		];
 	}
 	
+	public function update($now){
+		if($this->closed === true){
+			return false;
+		}
+		
+		
+	}
+	
+	public function close()
+	{
+		parent::close();
+		if($this->linkedEntity != 0){
+			$ent = $this->level->entityList[$this->linkedEntity] ?? false;
+			if($ent instanceof Entity){
+				$ent->stopRiding();
+			}else{
+				ConsoleAPI::warn("$this is being ridden by invalid entity {$this->linkedEntity}");
+			}
+		}
+	}
+	
 	public function isPushable(){
 		return false; //TODO replace with true
 	}

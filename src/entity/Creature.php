@@ -73,6 +73,10 @@ abstract class Creature extends Living{
 		$pk->speedY = $this->speedY;
 		$pk->speedZ = $this->speedZ;
 		$player->dataPacket($pk);
+		
+		if($this->linkedEntity != 0 && $this->isRider){
+			$player->eventHandler(["rider" => $this->eid, "riding" => $this->linkedEntity, "type" => 0], "entity.link");
+		}
 	}
 	
 }
