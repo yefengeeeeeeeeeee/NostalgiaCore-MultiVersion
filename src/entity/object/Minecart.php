@@ -54,7 +54,7 @@ class Minecart extends Vehicle{
 	
 	private $minecartX = 0, $minecartY = 0, $minecartZ = 0;
 	private $turnProgress = 0;
-	
+	public $isInReverse = false;
 	
 	function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		parent::__construct($level, $eid, $class, $type, $data);
@@ -64,7 +64,8 @@ class Minecart extends Vehicle{
 		$this->z = isset($this->data["TileZ"]) ? $this->data["TileZ"]:$this->z;
 		$this->setHealth(1, "generic"); //orig: 3
 		$this->setSize(0.98, 0.7);
-		//$this->yOffset = $this->height / 2;
+		$this->yOffset = $this->height / 2;
+		$this->stepHeight = 0;
 	}
 	
 	public function isPickable(){
@@ -76,7 +77,9 @@ class Minecart extends Vehicle{
 			[MINECART, 0, 1]
 		];
 	}
-	
+	public function moveAlongTrack($x, $y, $z, $maxSpeed, $boost, $id, $meta){
+		
+	}
 	public function comeOffTrack($topSpeed){
 		if($this->speedX < -$topSpeed) $this->speedX = -$topSpeed;
 		else if($this->speedX > $topSpeed) $this->speedX = $topSpeed;
@@ -85,7 +88,6 @@ class Minecart extends Vehicle{
 		else if($this->speedZ > $topSpeed) $this->speedZ = $topSpeed;
 		
 		if($this->onGround){
-			console("speedX");
 			$this->speedX *= 0.5;
 			$this->speedY *= 0.5;
 			$this->speedZ *= 0.5;
@@ -101,7 +103,6 @@ class Minecart extends Vehicle{
 		
 	}
 	public function applyCollision(Entity $collided){
-		console("nya");
 		$diffX = $collided->x - $this->x;
 		$diffZ = $collided->z - $this->z;
 		$dist = $diffX*$diffX + $diffZ*$diffZ;
@@ -128,20 +129,54 @@ class Minecart extends Vehicle{
 		if($this->closed === true){
 			return false;
 		}
-		console($this->boundingBox);
 		$this->updateLast();
-		$this->updatePosition();
+		//$this->updatePosition();
 		
 		$this->speedY -= 0.04;
 		//TODO port stuff
 		
+		$blockX = floor($this->x);
+		$blockY = floor($this->y);
+		$blockZ = floor($this->z);
+		
+		if(RailBaseBlock::isRailBlock($this->level, $blockX, $blockY - 1, $blockZ)){
+			--$blockY;
+		}
+		
+		[$id, $meta] = $this->level->level->getBlock($blockX, $blockY, $blockZ);
+		if(RailBaseBlock::isRailID($id)){
+			 //$this->moveAlongTrack($blockX, $blockY, $blockZ, 0.4, 0.0078125, $id, $meta);
+			 //activatorRail is a cake
+		}else{
+			//$this->comeOffTrack(0.4);
+		}
 		$this->comeOffTrack(0.4);
+		$this->doBlocksCollision();
+		
+		$this->pitch = 0;
+		$diffX = $this->lastX - $this->x;
+		$diffZ = $this->lastZ - $this->z;
+		
+		if($diffX*$diffX + $diffZ*$diffZ > 0.001){
+			$this->yaw = atan2($diffZ, $diffX) * 180 / M_PI;
+			
+			if($this->isInReverse) $this->yaw += 180;
+		}
+		
+		$yw = fmod($this->yaw - $this->lastYaw, 360);
+		if($yw >= 180) $yw -= 360;
+		if($yw < 180) $yw += 360;
+		
+		if($yw < -170 || $yw >= 170){
+			$this->isInReverse = !$this->isInReverse;
+			$this->yaw = $this->yaw + 180;
+		}
 		
 		$bb = $this->boundingBox->expand(0.2, 0, 0.2);
-		$minChunkX = ((int)($bb->minX)) >> 4;
-		$minChunkZ = ((int)($bb->minZ)) >> 4;
-		$maxChunkX = ((int)($bb->minX)) >> 4;
-		$maxChunkZ = ((int)($bb->minZ)) >> 4;
+		$minChunkX = ((int)($bb->minX - 2)) >> 4;
+		$minChunkZ = ((int)($bb->minZ - 2)) >> 4;
+		$maxChunkX = ((int)($bb->minX + 2)) >> 4;
+		$maxChunkZ = ((int)($bb->minZ + 2)) >> 4;
 		
 		//TODO also index by chunkY?
 		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
@@ -150,27 +185,17 @@ class Minecart extends Vehicle{
 				foreach($this->level->entityListPositioned[$ind] ?? [] as $entid){
 					$e = ($this->level->entityList[$entid] ?? null);
 					if($e instanceof Entity && $e->eid != $this->eid && $e->eid != $this->linkedEntity){
-						if($e->isPushable() && $this->boundingBox->intersectsWith($e->boundingBox)){
+						if($e->isPushable() && $e->boundingBox->intersectsWith($bb)){
 							if($e->isPlayer()){
 								$this->applyCollision($e, true);
 							}else{
 								$e->applyCollision($this);
-								console("colliding with $e");
 							}
 							
 						}
 					}
 				}
 			}
-		}
-		
-		$motion = new SetEntityMotionPacket();
-		$motion->eid = $e->eid;
-		$motion->speedX = $e->speedX;
-		$motion->speedY = $e->speedY;
-		$motion->speedZ = $e->speedZ;
-		foreach($this->level->players as $p){
-			$p->directDataPacket(clone $motion);
 		}
 	}
 	
@@ -196,7 +221,7 @@ class Minecart extends Vehicle{
 		$pk->eid = $this->eid;
 		$pk->type = $this->type;
 		$pk->x = $this->x;
-		$pk->y = $this->y;
+		$pk->y = $this->y; //+ $this->yOffset;
 		$pk->z = $this->z;
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
@@ -213,7 +238,6 @@ class Minecart extends Vehicle{
 	public function interactWith(Entity $e, $action){
 		console($action);
 		if($action === InteractPacket::ACTION_HOLD && $e->isPlayer() && $this->canRide($e)){
-			console("set ride");
 			$e->setRiding($this);
 			return true;
 		}

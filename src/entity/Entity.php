@@ -1107,7 +1107,6 @@ class Entity extends Position
 		}
 		
 		if($this->linkedEntity != 0 && $this->isRider){
-			console("send $player");
 			$player->eventHandler(["rider" => $this->eid, "riding" => $this->linkedEntity, "type" => 0], "entity.link"); //TODO fix it
 		}
 		
