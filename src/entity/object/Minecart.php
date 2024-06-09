@@ -63,9 +63,8 @@ class Minecart extends Vehicle{
 		$this->y = isset($this->data["TileY"]) ? $this->data["TileY"]:$this->y;
 		$this->z = isset($this->data["TileZ"]) ? $this->data["TileZ"]:$this->z;
 		$this->setHealth(1, "generic"); //orig: 3
-		$this->width = 0.98;
-		$this->height = 0.7;
-		$this->yOffset = $this->height / 2;
+		$this->setSize(0.98, 0.7);
+		//$this->yOffset = $this->height / 2;
 	}
 	
 	public function isPickable(){
@@ -78,12 +77,101 @@ class Minecart extends Vehicle{
 		];
 	}
 	
+	public function comeOffTrack($topSpeed){
+		if($this->speedX < -$topSpeed) $this->speedX = -$topSpeed;
+		else if($this->speedX > $topSpeed) $this->speedX = $topSpeed;
+		
+		if($this->speedZ < -$topSpeed) $this->speedZ = -$topSpeed;
+		else if($this->speedZ > $topSpeed) $this->speedZ = $topSpeed;
+		
+		if($this->onGround){
+			console("speedX");
+			$this->speedX *= 0.5;
+			$this->speedY *= 0.5;
+			$this->speedZ *= 0.5;
+		}
+		
+		$this->move($this->speedX, $this->speedY, $this->speedZ);
+		
+		if(!$this->onGround){
+			$this->speedX *= 0.95;
+			$this->speedY *= 0.95;
+			$this->speedZ *= 0.95;
+		}
+		
+	}
+	public function applyCollision(Entity $collided){
+		console("nya");
+		$diffX = $collided->x - $this->x;
+		$diffZ = $collided->z - $this->z;
+		$dist = $diffX*$diffX + $diffZ*$diffZ;
+		if($dist >= 0.0001){
+			$sqrtMax = sqrt($dist);
+			$diffX /= $sqrtMax;
+			$diffZ /= $sqrtMax;
+			
+			$col = (($v = 1 / $sqrtMax) > 1 ? 1 : $v);
+			$diffX *= $col;
+			$diffZ *= $col;
+			$diffX *= 0.1;
+			$diffZ *= 0.1;
+			
+			$diffX *= 0.5;
+			$diffZ *= 0.5;
+			
+			$this->addVelocity(-$diffX, 0, -$diffZ);
+			$collided->addVelocity($diffX / 4, 0, $diffZ / 4);
+		}
+		//parent::applyCollision($collided);
+	}
 	public function update($now){
 		if($this->closed === true){
 			return false;
 		}
+		console($this->boundingBox);
+		$this->updateLast();
+		$this->updatePosition();
 		
+		$this->speedY -= 0.04;
+		//TODO port stuff
 		
+		$this->comeOffTrack(0.4);
+		
+		$bb = $this->boundingBox->expand(0.2, 0, 0.2);
+		$minChunkX = ((int)($bb->minX)) >> 4;
+		$minChunkZ = ((int)($bb->minZ)) >> 4;
+		$maxChunkX = ((int)($bb->minX)) >> 4;
+		$maxChunkZ = ((int)($bb->minZ)) >> 4;
+		
+		//TODO also index by chunkY?
+		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
+			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
+				$ind = "$chunkX $chunkZ";
+				foreach($this->level->entityListPositioned[$ind] ?? [] as $entid){
+					$e = ($this->level->entityList[$entid] ?? null);
+					if($e instanceof Entity && $e->eid != $this->eid && $e->eid != $this->linkedEntity){
+						if($e->isPushable() && $this->boundingBox->intersectsWith($e->boundingBox)){
+							if($e->isPlayer()){
+								$this->applyCollision($e, true);
+							}else{
+								$e->applyCollision($this);
+								console("colliding with $e");
+							}
+							
+						}
+					}
+				}
+			}
+		}
+		
+		$motion = new SetEntityMotionPacket();
+		$motion->eid = $e->eid;
+		$motion->speedX = $e->speedX;
+		$motion->speedY = $e->speedY;
+		$motion->speedZ = $e->speedZ;
+		foreach($this->level->players as $p){
+			$p->directDataPacket(clone $motion);
+		}
 	}
 	
 	public function close()

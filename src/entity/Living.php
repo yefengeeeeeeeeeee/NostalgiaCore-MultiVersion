@@ -99,7 +99,7 @@ abstract class Living extends Entity implements Pathfindable{
 				foreach($this->level->entityListPositioned[$ind] ?? [] as $entid){
 					if(($this->level->entityList[$entid] ?? null) instanceof Entity){
 						if($this->level->entityList[$entid]->isPushable() && $bb->intersectsWith($this->level->entityList[$entid]->boundingBox)){
-							$this->level->entityList[$entid]->applyCollision($this);
+							$this->level->entityList[$entid]->applyCollision($this, true);
 						}
 					}
 				}
@@ -188,9 +188,9 @@ abstract class Living extends Entity implements Pathfindable{
 		}
 		
 		
-		//$this->ai->mobController->movementTick();
-		//$this->ai->mobController->rotateTick();
-		//$this->ai->mobController->jumpTick();
+		$this->ai->mobController->movementTick();
+		$this->ai->mobController->rotateTick();
+		$this->ai->mobController->jumpTick();
 		
 		if(abs($this->speedX) < self::MIN_POSSIBLE_SPEED) $this->speedX = 0;
 		if(abs($this->speedZ) < self::MIN_POSSIBLE_SPEED) $this->speedZ = 0;

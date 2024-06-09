@@ -221,7 +221,7 @@ class Entity extends Position
 	}
 	
 	public function isPushable(){
-		return false;
+		return $this->isPlayer();
 	}
 	
 	public function applyCollision(Entity $collided){

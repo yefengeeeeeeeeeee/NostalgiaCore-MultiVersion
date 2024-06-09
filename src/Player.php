@@ -1263,8 +1263,8 @@ class Player{
 		if($e->modifySpeedY){
 			$e->speedY = $e->modifedSpeedY;
 		}
-		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
-			if(!($e->speedY < 0 && $e->onGround) || $e->speedX != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
+		//if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
+		//	if(!($e->speedY < 0 && $e->onGround) || $e->speedX != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
 				$motion = new SetEntityMotionPacket();
 				$motion->eid = $e->eid;
 				$motion->speedX = $e->speedX;
@@ -1274,8 +1274,8 @@ class Player{
 				$len += 1 + strlen($motion->buffer);
 				++$packets;
 				$motionSent = true;
-			}
-		}
+		//	}
+		//}
 		if($e->modifySpeedY){
 			$e->speedY = $svdYSpeed;
 			$e->modifySpeedY = false;
@@ -1316,7 +1316,7 @@ class Player{
 			$headSent = true;
 		}
 		if($packets <= 0) return;
-		//console("Update {$e}: $packets, mot: $motionSent, mov: $moveSent, hed: $headSent");
+		console("Update {$e}: $packets, mot: $motionSent, mov: $moveSent, hed: $headSent");
 		$MTU = $this->MTU - 24;
 		if(($this->entityMovementQueueLength + $len) >= $MTU){
 			$this->sendEntityMovementUpdateQueue();
