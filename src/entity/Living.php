@@ -6,7 +6,7 @@ abstract class Living extends Entity implements Pathfindable{
 	
 	public static $pathfinderTest = false;
 	
-	public $moveStrafing, $moveForward;
+	
 	/**
 	 * @var Entity $target
 	 * @var EntityAI $ai

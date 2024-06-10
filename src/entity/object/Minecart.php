@@ -122,7 +122,7 @@ class Minecart extends Vehicle{
 			
 			if($v29 < 0) ++$y;
 			if($v29 > 0) $y += 0.5;
-			
+			console("$x $y $z");
 			return [$x, $y, $z];
 		}
 		
@@ -168,27 +168,18 @@ class Minecart extends Vehicle{
 		$this->speedZ = ($speedTotal * $matZDiff) / $matDiffTotal;
 		
 		if($this->linkedEntity != 0 && !$this->isRider){
-			//TODO additional riding physics
-			/*
-			 * if ( rider->vtable->_ZNK6Entity5isMobEv(rider) )
-        {
-            v65 = this->base.super.rider;
-            if ( v65[10].base.prevZ > 0.0 )
-            {
-                v32 = (float)((float)(v65->base.yaw * 3.1416) / 180.0) * 10430.0;
-                v33 = this->base.super.motionX;
-                v34 = Mth::_sin[(unsigned __int16)(int)v32];
-                v35 = (int)(float)(v32 + 16384.0);
-                v36 = this->base.super.motionZ;
-                if ( (float)((float)(v36 * v36) + (float)(v33 * v33)) < 0.01 )
-                {
-                    v37 = v36 + (float)(Mth::_sin[v35] * 0.1);
-                    this->base.super.motionX = v33 - (float)(v34 * 0.1);
-                    this->base.super.motionZ = v37;
-                }
-            }
-        }
-			 */
+			$rider = $this->level->entityList[$this->linkedEntity] ?? false;
+			if($rider instanceof Entity && ($rider->isPlayer() || $rider->class == ENTITY_MOB)){
+				if($rider->moveForward > 0){
+					$v32 = sin($this->yaw * M_PI / 180);
+					$v33 = cos($this->yaw * M_PI / 180);
+					
+					if($this->speedZ*$this->speedZ + $this->speedX*$this->speedX < 0.01){
+						$this->speedX -= $v32*0.1;
+						$this->speedZ += $v33*0.1;
+					}
+				}
+			}
 		}
 		
 		$v38 = ($x + 0.5) + ($mat[0][0] * 0.5);
@@ -238,36 +229,24 @@ class Minecart extends Vehicle{
 		}
 		
 		$this->applyNaturalSlowdown();
+		$vec2 = $this->getPos($this->x, $this->y, $this->z);
+		if($vec2 !== false && $vec !== false){
+			$yDiff = ($vec[1] - $vec2[1]) * 0.05;
+			$totalSpeed = sqrt($this->speedZ*$this->speedZ + $this->speedX*$this->speedX);
+			
+			if($totalSpeed > 0){
+				$this->speedX = ($this->speedX / $totalSpeed) * ($totalSpeed + $yDiff);
+				$this->speedZ = ($this->speedZ / $totalSpeed) * ($totalSpeed + $yDiff);	
+			}
+			$this->setPos($this->x, $vec2[1], $this->z);
+		}
 		
-		//TODO more
-		/*
-		 * v57 = this->base.super.posZ;
-    memset(&result, 0, sizeof(result));
-    if ( Minecart::getPos(this, &result, this->base.super.posX, this->base.super.posY, v57) && v71 )
-    {
-        v66 = (float)(posVec1.yCoord - result.yCoord) * 0.05;
-        v67 = Mth::sqrt(
-                  (float)(this->base.super.motionZ * this->base.super.motionZ)
-                + (float)(this->base.super.motionX * this->base.super.motionX));
-        if ( v67 > 0.0 )
-        {
-            this->base.super.motionX = (float)(this->base.super.motionX / v67) * (float)(v67 + v66);
-            this->base.super.motionZ = (float)(this->base.super.motionZ / v67) * (float)(v67 + v66);
-        }
-        this->vtable->_ZN6Entity6setPosEfff((Entity *)this, this->base.super.posX, result.yCoord, this->base.super.posZ);
-    }
-    v58 = Mth::floor(this->base.super.posX);
-    v59 = Mth::floor(this->base.super.posZ);
-    if ( v58 != x || v59 != z )
-    {
-        v60 = v59 - z;
-        v61 = Mth::sqrt(
-                  (float)(this->base.super.motionZ * this->base.super.motionZ)
-                + (float)(this->base.super.motionX * this->base.super.motionX));
-        this->base.super.motionX = v61 * (float)(v58 - x);
-        this->base.super.motionZ = v61 * (float)v60;
-    }
-		 */
+		/*if($this->x != $x || $this->z != $z){ this breaks everything
+			$totalSpeed = sqrt($this->speedZ*$this->speedZ + $this->speedX*$this->speedX);
+			$this->speedX = ($this->x - $x) * $totalSpeed;
+			$this->speedZ = ($this->z - $z) * $totalSpeed;
+			console(($this->x - $x).":".($this->z - $z).":".$totalSpeed);
+		}*/
 		
 		if($id == POWERED_RAIL){
 			$totalSpeed = sqrt($this->speedZ*$this->speedZ + $this->speedX*$this->speedX);
@@ -296,7 +275,7 @@ class Minecart extends Vehicle{
 					if(!StaticBlock::getIsSolid($this->level->level->getBlockID($x, $y, $z + 1))){
 						return;
 					}
-					$v64 -= 0.02;
+					$v64 = -0.02;
 				}
 				$this->speedZ = $v64;
 			}

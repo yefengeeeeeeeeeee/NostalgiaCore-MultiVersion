@@ -106,6 +106,8 @@ class Entity extends Position
 	public $inWeb;
 	public $inLava;
 	
+	public $moveStrafing, $moveForward;
+	
 	function __construct(Level $level, $eid, $class, $type = 0, $data = [])
 	{
 		$this->random = new Random();

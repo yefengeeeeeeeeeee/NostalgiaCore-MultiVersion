@@ -78,12 +78,10 @@ class Player{
 	
 	/**
 	 * Sent by a client while it is linked to some entity.
-	 * @var float $moveStrafe
-	 * @var float $moveForward
 	 * @var boolean $isJumping
 	 * @var boolean $isSneaking
 	 */
-	public $moveStrafe, $moveForward, $isJumping, $isSneaking;
+	public $isJumping, $isSneaking;
 	
 	/**
 	 * @param integer $clientID
@@ -1263,8 +1261,8 @@ class Player{
 		if($e->modifySpeedY){
 			$e->speedY = $e->modifedSpeedY;
 		}
-		//if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
-		//	if(!($e->speedY < 0 && $e->onGround) || $e->speedX != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
+		if($e->speedX != 0 || $e->speedY != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
+			if(!($e->speedY < 0 && $e->onGround) || $e->speedX != 0 || $e->speedZ != 0 || $e->speedY != $e->lastSpeedY || $e->speedX != $e->lastSpeedX || $e->speedZ != $e->lastSpeedZ){
 				$motion = new SetEntityMotionPacket();
 				$motion->eid = $e->eid;
 				$motion->speedX = $e->speedX;
@@ -1274,8 +1272,8 @@ class Player{
 				$len += 1 + strlen($motion->buffer);
 				++$packets;
 				$motionSent = true;
-		//	}
-		//}
+			}
+		}
 		if($e->modifySpeedY){
 			$e->speedY = $svdYSpeed;
 			$e->modifySpeedY = false;
@@ -1316,7 +1314,7 @@ class Player{
 			$headSent = true;
 		}
 		if($packets <= 0) return;
-		console("Update {$e}: $packets, mot: $motionSent, mov: $moveSent, hed: $headSent");
+		//console("Update {$e}: $packets, mot: $motionSent, mov: $moveSent, hed: $headSent");
 		$MTU = $this->MTU - 24;
 		if(($this->entityMovementQueueLength + $len) >= $MTU){
 			$this->sendEntityMovementUpdateQueue();
@@ -2471,11 +2469,10 @@ class Player{
 				}
 				break;
 			case ProtocolInfo::PLAYER_INPUT_PACKET:
-				
-				$this->moveStrafe = $packet->moveStrafe;
-				$this->moveForward = $packet->moveForward;
 				$this->isJumping = $packet->isJumping;
 				$this->isSneaking = $packet->isSneaking;
+				$this->entity->moveForward = $packet->moveForward;
+				$this->entity->moveStrafing = $packet->moveStrafe;
 				
 				if(strlen(bin2hex($packet->buffer)) === 24 && $this->entity->linkedEntity != 0){
 					$this->entity->stopRiding();
