@@ -77,9 +77,242 @@ class Minecart extends Vehicle{
 			[MINECART, 0, 1]
 		];
 	}
+	
+	public function getPos($x, $y, $z){
+		$blockX = floor($x);
+		$blockY = floor($y);
+		$blockZ = floor($z);
+		
+		if(RailBaseBlock::isRailBlock($this->level, $blockX, $blockY - 1, $blockZ)) --$blockY;
+		
+		[$id, $meta] = $this->level->level->getBlock($blockX, $blockY, $blockZ);
+		if(RailBaseBlock::isRailID($id)){
+			
+			if($id == POWERED_RAIL) $meta &= 7;
+			
+			$mat = self::$matrix[$meta];
+			$v13 = 0;
+			$v15 = $blockX + 0.5 + $mat[0][0] * 0.5;
+			$v17 = $blockY + 0.5 + $mat[0][1] * 0.5;
+			$v19 = $blockZ + 0.5 + $mat[0][2] * 0.5;
+			
+			$v21 = $blockX + 0.5 + $mat[1][0] * 0.5;
+			$v23 = $blockY + 0.5 + $mat[1][1] * 0.5;
+			$v25 = $blockZ + 0.5 + $mat[1][2] * 0.5;
+			
+			$v27 = $v21 - $v15;
+			$v29 = ($v23 - $v17) * 2;
+			$v31 = $v25 - $v19;
+			
+			if($v27 == 0){
+				$x = $blockX + 0.5;
+				$v13 = $z - $blockZ;
+			}else if($v31 == 0){
+				$z = $blockZ + 0.5;
+				$v13 = $x - $blockX;
+			}else{
+				$v33 = $x - $v15;
+				$v35 = $z - $v19;
+				$v13 = ($v33*$v27 + $v35*$v31) * 2;
+			}
+			
+			$x = $v15 + $v27 * $v13;
+			$y = $v17 + $v29 * $v13;
+			$z = $v19 + $v31 * $v13;
+			
+			if($v29 < 0) ++$y;
+			if($v29 > 0) $y += 0.5;
+			
+			return [$x, $y, $z];
+		}
+		
+		return false;
+	}
+	
 	public function moveAlongTrack($x, $y, $z, $maxSpeed, $boost, $id, $meta){
+		$this->fallDistance = 0;
+		$vec = $this->getPos($this->x, $this->y, $this->z);
+		$this->y = $y;
+		
+		if($id == POWERED_RAIL) $meta &= 7;
+		
+		if($meta >= 2 && $meta <= 5) $this->y = $y + 1;
+		
+		switch($meta){
+			case 2:
+				$this->speedX -= $boost;
+				break;
+			case 3:
+				$this->speedX += $boost;
+				break;
+			case 4:
+				$this->speedZ += $boost;
+				break;
+			case 5:
+				$this->speedZ -= $boost;
+				break;
+		}
+		
+		$mat = self::$matrix[$meta];
+		$matXDiff = $mat[1][0] - $mat[0][0];
+		$matZDiff = $mat[1][2] - $mat[0][2];
+		$matDiffTotal = sqrt($matXDiff*$matXDiff + $matZDiff*$matZDiff);
+		
+		if(($this->speedZ * $matZDiff + $this->speedX * $matXDiff) < 0){
+			$matXDiff = -$matXDiff;
+			$matZDiff = -$matZDiff;
+		}
+		$speedTotal = sqrt($this->speedZ*$this->speedZ + $this->speedX*$this->speedX);
+		if($speedTotal > 2) $speedTotal = 2;
+		$this->speedX = ($speedTotal * $matXDiff) / $matDiffTotal;
+		$this->speedZ = ($speedTotal * $matZDiff) / $matDiffTotal;
+		
+		if($this->linkedEntity != 0 && !$this->isRider){
+			//TODO additional riding physics
+			/*
+			 * if ( rider->vtable->_ZNK6Entity5isMobEv(rider) )
+        {
+            v65 = this->base.super.rider;
+            if ( v65[10].base.prevZ > 0.0 )
+            {
+                v32 = (float)((float)(v65->base.yaw * 3.1416) / 180.0) * 10430.0;
+                v33 = this->base.super.motionX;
+                v34 = Mth::_sin[(unsigned __int16)(int)v32];
+                v35 = (int)(float)(v32 + 16384.0);
+                v36 = this->base.super.motionZ;
+                if ( (float)((float)(v36 * v36) + (float)(v33 * v33)) < 0.01 )
+                {
+                    v37 = v36 + (float)(Mth::_sin[v35] * 0.1);
+                    this->base.super.motionX = v33 - (float)(v34 * 0.1);
+                    this->base.super.motionZ = v37;
+                }
+            }
+        }
+			 */
+		}
+		
+		$v38 = ($x + 0.5) + ($mat[0][0] * 0.5);
+		$v39 = ($z + 0.5) + ($mat[0][2] * 0.5);
+		$v40 = (($x + 0.5) + ($mat[1][0] * 0.5)) - $v38;
+		$v41 = (($z + 0.5) + ($mat[1][2] * 0.5)) - $v39;
+		
+		if($v40 == 0){
+			$v42 = $this->z - $z;
+		}else if($v41 == 0){
+			$v42 = $this->x - $x;
+		}else{
+			$v44 = (($this->z - $v39) * $v41) + (($this->x - $v38) * $v40);
+			$v42 = $v44 + $v44;
+		}
+		
+		$this->x = $v38 + ($v40 * $v42);
+		$this->z = $v39 + ($v41 * $v42);
+		
+		$this->setPos($this->x, $this->y + $this->yOffset + 0.00001, $this->z);
+		$dx = $this->speedX;
+		$dz = $this->speedZ;
+		if($this->linkedEntity != 0 && !$this->isRider){
+			$dx *= 0.75;
+			$dz *= 0.75;
+		}
+		
+		if($dx < -$maxSpeed) $dx = -$maxSpeed;
+		else if($dx > $maxSpeed) $dx = $maxSpeed;
+		
+		if($dz < -$maxSpeed) $dz = -$maxSpeed;
+		else if($dz > $maxSpeed) $dz = $maxSpeed;
+		
+		$this->move($dx, 0, $dz);
+		
+		if($mat[0][1]){
+			if((floor($this->x) - $x) == $mat[0][0] && (floor($this->z) - $z) == $mat[0][2]){
+				$this->setPos($this->x, $mat[0][1] + $this->y, $this->z);
+			}else if($mat[1][1]){
+				goto mat_1_1;
+			}
+		}else if($mat[1][1]){
+			mat_1_1:
+			if((floor($this->x) - $x) == $mat[1][0] && (floor($this->z) - $z) == $mat[1][2]){
+				$this->setPos($this->x, $mat[1][1] + $this->y, $this->z);
+			}
+		}
+		
+		$this->applyNaturalSlowdown();
+		
+		//TODO more
+		/*
+		 * v57 = this->base.super.posZ;
+    memset(&result, 0, sizeof(result));
+    if ( Minecart::getPos(this, &result, this->base.super.posX, this->base.super.posY, v57) && v71 )
+    {
+        v66 = (float)(posVec1.yCoord - result.yCoord) * 0.05;
+        v67 = Mth::sqrt(
+                  (float)(this->base.super.motionZ * this->base.super.motionZ)
+                + (float)(this->base.super.motionX * this->base.super.motionX));
+        if ( v67 > 0.0 )
+        {
+            this->base.super.motionX = (float)(this->base.super.motionX / v67) * (float)(v67 + v66);
+            this->base.super.motionZ = (float)(this->base.super.motionZ / v67) * (float)(v67 + v66);
+        }
+        this->vtable->_ZN6Entity6setPosEfff((Entity *)this, this->base.super.posX, result.yCoord, this->base.super.posZ);
+    }
+    v58 = Mth::floor(this->base.super.posX);
+    v59 = Mth::floor(this->base.super.posZ);
+    if ( v58 != x || v59 != z )
+    {
+        v60 = v59 - z;
+        v61 = Mth::sqrt(
+                  (float)(this->base.super.motionZ * this->base.super.motionZ)
+                + (float)(this->base.super.motionX * this->base.super.motionX));
+        this->base.super.motionX = v61 * (float)(v58 - x);
+        this->base.super.motionZ = v61 * (float)v60;
+    }
+		 */
+		
+		if($id == POWERED_RAIL){
+			$totalSpeed = sqrt($this->speedZ*$this->speedZ + $this->speedX*$this->speedX);
+			if($totalSpeed > 0.01){
+				$this->speedX += (($this->speedX / $totalSpeed) * 0.06);
+				$this->speedZ += (($this->speedZ / $totalSpeed) * 0.06);
+				return;
+			}
+			
+			if($meta == 1){
+				//TODO Level::isSolidBlockingTile
+				if(StaticBlock::getIsSolid($this->level->level->getBlockID($x - 1, $y, $z))){
+					$v63 = 0.02;
+				}else{
+					if(!StaticBlock::getIsSolid($this->level->level->getBlockID($x + 1, $y, $z))){
+						return;
+					}
+					$v63 = -0.02;
+				}
+				$this->speedX = $v63;
+			}else if($meta == 0){
+				//TODO Level::isSolidBlockingTile
+				if(StaticBlock::getIsSolid($this->level->level->getBlockID($x, $y, $z - 1))){
+					return;
+				}else{
+					if(!StaticBlock::getIsSolid($this->level->level->getBlockID($x, $y, $z + 1))){
+						return;
+					}
+					$v64 -= 0.02;
+				}
+				$this->speedZ = $v64;
+			}
+		}
 		
 	}
+	
+	
+	public function applyNaturalSlowdown(){
+		$mult = $this->linkedEntity != 0 && !$this->isRider ? 0.997 : 0.96;
+		
+		$this->speedX *= $mult;
+		$this->speedY = 0;
+		$this->speedZ *= $mult;
+	}
+	
 	public function comeOffTrack($topSpeed){
 		if($this->speedX < -$topSpeed) $this->speedX = -$topSpeed;
 		else if($this->speedX > $topSpeed) $this->speedX = $topSpeed;
@@ -145,12 +378,12 @@ class Minecart extends Vehicle{
 		
 		[$id, $meta] = $this->level->level->getBlock($blockX, $blockY, $blockZ);
 		if(RailBaseBlock::isRailID($id)){
-			 //$this->moveAlongTrack($blockX, $blockY, $blockZ, 0.4, 0.0078125, $id, $meta);
+			 $this->moveAlongTrack($blockX, $blockY, $blockZ, 0.4, 0.0078125, $id, $meta);
 			 //activatorRail is a cake
 		}else{
-			//$this->comeOffTrack(0.4);
+			$this->comeOffTrack(0.4);
 		}
-		$this->comeOffTrack(0.4);
+
 		$this->doBlocksCollision();
 		
 		$this->pitch = 0;

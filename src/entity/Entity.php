@@ -1409,6 +1409,20 @@ class Entity extends Position
 		}
 	}
 	
+	public function setPos($x, $y, $z){
+		$this->x = $x;
+		$this->y = $y;
+		$this->z = $z;
+		
+		$this->boundingBox->minX = $x - $this->radius;
+		$this->boundingBox->minY = ($y - $this->yOffset); //TODO what is this + $this->ySize;
+		$this->boundingBox->minZ = $z - $this->radius;
+		
+		$this->boundingBox->maxX = $x + $this->radius;
+		$this->boundingBox->maxY = $this->boundingBox->minY + $this->height;
+		$this->boundingBox->maxZ = $z + $this->radius;
+	}
+	
 	public function setRiding(Entity $e, $type = 0)
 	{
 		if(!isset($this->level->entityList[$e->eid])){
