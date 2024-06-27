@@ -8,6 +8,10 @@ abstract class RailBaseBlock extends FlowableBlock //TODO move some methods here
 		return $id === POWERED_RAIL || $id === RAIL;
 	}
 	
+	public static function isRailID($id){
+		return $id == POWERED_RAIL || $id == RAIL;
+	}
+	
 	public static function getAABB(Level $level, $x, $y, $z){
 		return null;
 	}

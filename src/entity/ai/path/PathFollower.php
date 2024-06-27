@@ -24,7 +24,7 @@ class PathFollower{
 		$this->entity->ai->mobController->setMovingTarget($moveX, $moveY, $moveZ, 1.0);
 		if($this->entity->boundingBox->isXYZInsideNS($moveX, $moveY, $moveZ)){
 			++$this->entity->currentIndex;
-			console("next");
+			//console("next");
 			$this->entity->currentNode = null;
 		}
 		
@@ -35,13 +35,13 @@ class PathFollower{
 			$this->entity->path = null;
 			$this->entity->currentIndex = 0;
 			
-			foreach($this->entity->pathEIDS as $eid){
+			/*foreach($this->entity->pathEIDS as $eid){
 				$pk = new RemoveEntityPacket();
 				$pk->eid = $eid;
 				foreach($this->entity->level->players as $player){
 					$player->dataPacket($pk);
 				}
-			}
+			}*/
 			
 		}
 	}

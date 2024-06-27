@@ -6,7 +6,7 @@ abstract class Living extends Entity implements Pathfindable{
 	
 	public static $pathfinderTest = false;
 	
-	public $moveStrafing, $moveForward;
+	
 	/**
 	 * @var Entity $target
 	 * @var EntityAI $ai
@@ -99,7 +99,7 @@ abstract class Living extends Entity implements Pathfindable{
 				foreach($this->level->entityListPositioned[$ind] ?? [] as $entid){
 					if(($this->level->entityList[$entid] ?? null) instanceof Entity){
 						if($this->level->entityList[$entid]->isPushable() && $bb->intersectsWith($this->level->entityList[$entid]->boundingBox)){
-							$this->level->entityList[$entid]->applyCollision($this);
+							$this->level->entityList[$entid]->applyCollision($this, true);
 						}
 					}
 				}
@@ -134,15 +134,21 @@ abstract class Living extends Entity implements Pathfindable{
 				//$target = new PathTileXYZ($this->x + mt_rand(-10, 10), $this->y + mt_rand(-1, 1), $this->z + mt_rand(-10, 10), $this->level);
 				$pl = null;
 				if(count($this->level->players) > 0){
-					$pl = array_values($this->level->players)[0];
+					//$pl = array_values($this->level->players)[0];
 					//$target = new PathTileXYZ($pl->entity->x, $pl->entity->y, $pl->entity->z, $this->level);
 				}
 				if(self::$pathfind){
-					$this->path = $this->pathFinder->navigate($this->level, (int)$this->x, (int)$this->y, (int)$this->z, (int)$pl->entity->x, (int)$pl->entity->y, (int)$pl->entity->z, 10);
+					$this->path = $this->pathFinder->navigate(
+						$this->level, 
+						(int)$this->x, (int)$this->y, (int)$this->z, 
+						//(int)$pl->entity->x, (int)$pl->entity->y, (int)$pl->entity->z, 
+						(int)$this->x + mt_rand(-16, 16), (int)$this->y, (int)$this->z + mt_rand(-16, 16),
+						16
+					);
 				}
 				
 				
-				if($this->path){
+				/*if($this->path){
 					console("Found path of length ".count($this->path));
 					
 					foreach($this->path as $node){
@@ -161,7 +167,7 @@ abstract class Living extends Entity implements Pathfindable{
 							$player->dataPacket($pk);
 						}
 					}
-				}
+				}*/
 			}
 			$this->pathFollower->followPath();
 		}
@@ -189,7 +195,6 @@ abstract class Living extends Entity implements Pathfindable{
 		if(abs($this->speedX) < self::MIN_POSSIBLE_SPEED) $this->speedX = 0;
 		if(abs($this->speedZ) < self::MIN_POSSIBLE_SPEED) $this->speedZ = 0;
 		if(abs($this->speedY) < self::MIN_POSSIBLE_SPEED) $this->speedY = 0;
-		
 		$this->moveStrafing *= 0.98;
 		$this->moveForward *= 0.98;
 		$savedLandFactor = $this->landMovementFactor;

@@ -18,7 +18,6 @@ class Pig extends Animal implements Rideable{
 		$this->ai->addTask(new TaskTempt(1.0));
 		$this->ai->addTask(new TaskMate(1.0));
 		$this->ai->addTask(new TaskFollowParent(1.1));
-		
 	}
 	/**
 	 * @return boolean
@@ -35,25 +34,32 @@ class Pig extends Animal implements Rideable{
 	}
 	
 	public function canRide($e){
-		return $this->isSaddled() && !($this->linkedEntity instanceof Entity);
+		return $this->isSaddled() && $this->linkedEntity == 0 && $e->linkedEntity == 0;
 	}
-
+	
+	public function updateEntityMovement(){
+		/*if($this->linkedEntity != 0){
+			$e = $this->level->entityList[$this->linkedEntity] ?? false;
+			if($e instanceof Entity){
+				$this->setAIMoveSpeed($this->getSpeed());
+				$this->moveStrafing = $e->player->moveStrafe;
+				$this->moveForward = $e->player->moveForward;
+				$this->yaw = $e->headYaw;
+			}
+		}*/
+		
+		parent::updateEntityMovement();
+	}
+	
 	public function interactWith(Entity $e, $action)
 	{
 		if($e->isPlayer() && $action === InteractPacket::ACTION_HOLD){
 			$slot = $e->player->getHeldItem();
 			if($this->canRide($e)){
-				$this->linkedEntity = $e;
-				$e->isRiding = true;
-				$this->linkEntity($e, SetEntityLinkPacket::TYPE_RIDE);
+				$e->setRiding($this);
 				return true;
 			}
-			if($e->isRiding && $this->linkedEntity instanceof Entity && $this->linkedEntity->eid === $e->eid){
-				$this->linkEntity($e, SetEntityLinkPacket::TYPE_REMOVE);
-				$e->isRiding = false;
-				$this->linkedEntity = 0;
-				return true;
-			}
+			
 			if($slot->getID() === SADDLE){
 				if(!$this->isSaddled()){
 					$e->player->removeItem($slot->getID(), 0, 1);

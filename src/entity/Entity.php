@@ -69,7 +69,8 @@ class Entity extends Position
 	public $level;
 	public $isRiding = false;
 	public $lastUpdate;
-	public $linkedEntity = null;
+	public $linkedEntity = 0;
+	public $isRider = false;
 	public $check = true;
 	public $width = 1;
 	public $height = 1;
@@ -104,6 +105,8 @@ class Entity extends Position
 	
 	public $inWeb;
 	public $inLava;
+	
+	public $moveStrafing, $moveForward;
 	
 	function __construct(Level $level, $eid, $class, $type = 0, $data = [])
 	{
@@ -220,7 +223,7 @@ class Entity extends Position
 	}
 	
 	public function isPushable(){
-		return false;
+		return $this->isPlayer();
 	}
 	
 	public function applyCollision(Entity $collided){
@@ -480,13 +483,6 @@ class Entity extends Position
 			$this->outOfWorld();
 			$hasUpdate = true;
 		}
-		
-		$startX = floor($this->boundingBox->minX);
-		$startY = floor($this->boundingBox->minY);
-		$startZ = floor($this->boundingBox->minZ);
-		$endX = ceil($this->boundingBox->maxX);
-		$endY = ceil($this->boundingBox->maxY);
-		$endZ = ceil($this->boundingBox->maxZ);
 		
 		if(!($this instanceof Painting) && !($this->isPlayer() && $this->player->isSleeping !== false)){ //TODO better way to fix	
 			$x = floor($this->x);
@@ -1111,6 +1107,11 @@ class Entity extends Position
 				$pk->did = -$this->data["Tile"];
 				$player->dataPacket($pk);
 		}
+		
+		if($this->linkedEntity != 0 && $this->isRider){
+			$player->eventHandler(["rider" => $this->eid, "riding" => $this->linkedEntity, "type" => 0], "entity.link"); //TODO fix it
+		}
+		
 	}
 	
 	public function counterUpdate(){
@@ -1283,7 +1284,7 @@ class Entity extends Position
 			],
 			"speedX" => $this->speedX,
 			"speedY" => $this->speedY,
-			"speedZ" => $this->speedZ
+			"speedZ" => $this->speedZ,
 			
 		];
 		if($this->class === ENTITY_OBJECT){
@@ -1394,12 +1395,55 @@ class Entity extends Position
 	{
 		return $this->setHealth(min(20, $this->getHealth() + ((int) $health)), $cause);
 	}
-
-	public function linkEntity(Entity $e, $type)
+	
+	public function stopRiding(){
+		if(isset($this->level->entityList[$this->linkedEntity])){
+			$e = $this->level->entityList[$this->linkedEntity];
+			if(!$e->dead && !$e->closed){
+				$this->linkedEntity = 0;
+				$e->linkedEntity = 0;
+				$this->server->api->dhandle("entity.link", ["rider" => $this->eid, "riding" => -1, "type" => 1]);
+				$this->server->api->dhandle("entity.link", ["rider" => $this->linkedEntity, "riding" => -1, "type" => 1]);
+				$this->isRider = false;
+			}
+		}else{
+			$this->linkedEntity = 0;
+		}
+	}
+	
+	public function setPos($x, $y, $z){
+		$this->x = $x;
+		$this->y = $y;
+		$this->z = $z;
+		
+		$this->boundingBox->minX = $x - $this->radius;
+		$this->boundingBox->minY = ($y - $this->yOffset); //TODO what is this + $this->ySize;
+		$this->boundingBox->minZ = $z - $this->radius;
+		
+		$this->boundingBox->maxX = $x + $this->radius;
+		$this->boundingBox->maxY = $this->boundingBox->minY + $this->height;
+		$this->boundingBox->maxZ = $z + $this->radius;
+	}
+	
+	public function setRiding(Entity $e, $type = 0)
 	{
-		$this->linkedEntity = $e;
-		$e->linkedEntity = $this;
-		$this->server->api->dhandle("entity.link", ["rider" => $e->eid, "riding" => $this->eid, "type" => 0]);
+		if(!isset($this->level->entityList[$e->eid])){
+			ConsoleAPI::warn("Tried linking $this with $e that doesnt exist in the world!");
+			return;
+		}
+		
+		if($this->linkedEntity == $e->eid || $e->eid == $this->eid){
+			$this->linkedEntity = 0;
+			$e->linkedEntity = 0;
+			$this->server->api->dhandle("entity.link", ["rider" => $this->eid, "riding" => $e->eid, "type" => $type]);
+		}else{
+			$this->linkedEntity = $e->eid;
+			$e->linkedEntity = $this->eid;
+			$this->isRider = true;
+			$this->server->api->dhandle("entity.link", ["rider" => $this->eid, "riding" => $e->eid, "type" => 0]);
+		}
+		
+		
 	}
 
 	public function isPlayer()
