@@ -122,7 +122,6 @@ class Minecart extends Vehicle{
 			
 			if($v29 < 0) ++$y;
 			if($v29 > 0) $y += 0.5;
-			console("$x $y $z");
 			return [$x, $y, $z];
 		}
 		
@@ -241,12 +240,11 @@ class Minecart extends Vehicle{
 			$this->setPos($this->x, $vec2[1], $this->z);
 		}
 		
-		/*if($this->x != $x || $this->z != $z){ this breaks everything
+		if(floor($this->x) != $x || floor($this->z) != $z){ //this breaks everything
 			$totalSpeed = sqrt($this->speedZ*$this->speedZ + $this->speedX*$this->speedX);
-			$this->speedX = ($this->x - $x) * $totalSpeed;
-			$this->speedZ = ($this->z - $z) * $totalSpeed;
-			console(($this->x - $x).":".($this->z - $z).":".$totalSpeed);
-		}*/
+			$this->speedX = (floor($this->x) - $x) * $totalSpeed;
+			$this->speedZ = (floor($this->z) - $z) * $totalSpeed;
+		}
 		
 		if($id == POWERED_RAIL){
 			$totalSpeed = sqrt($this->speedZ*$this->speedZ + $this->speedX*$this->speedX);
@@ -448,7 +446,6 @@ class Minecart extends Vehicle{
 	}
 	
 	public function interactWith(Entity $e, $action){
-		console($action);
 		if($action === InteractPacket::ACTION_HOLD && $e->isPlayer() && $this->canRide($e)){
 			$e->setRiding($this);
 			return true;
