@@ -77,7 +77,7 @@ class Arrow extends Entity{
 		$this->pitch = (atan2($d1, $f3) * 180) / M_PI;
 		$this->updatePosition();
 		//$this->update();
-		//TODO i guess? $ticksInGround = 0;
+		$this->groundTicks = 0;
 	}
 	
 	public function update($now){

@@ -106,13 +106,7 @@ class MobController
 				$v10 = (atan2($diffZ, $diffX) * 180 / M_PI) - 90;
 				$this->entity->yaw = self::limitAngle($this->entity->yaw, $v10, 30);
 				$this->entity->setAIMoveSpeed($this->speedMultiplier * $this->entity->getSpeed() * $this->entity->getSpeedModifer());
-				//TODO 0.8.1 doesnt seem to make 2 multiplications here
-				/*
-				 * v15 = this->controlledEntity;
-			      speedMultiplier = this->speedMultiplier;
-			      v17 = v15->vtable->_virt_getBaseSpeed(v15);
-			      Mob::setSpeed(v15, speedMultiplier * v17);
-				 */
+				
 				if($diffY > 0 && $diffX*$diffX + $diffZ*$diffZ < 1) $this->setJumping(true);
 			}
 		}
@@ -127,7 +121,7 @@ class MobController
 	public function updateHeadYaw(){
 		$diffX = $this->entity->x - $this->entity->lastX;
 		$diffZ = $this->entity->z - $this->entity->lastZ;
-		if(($diffX*$diffX + $diffZ*$diffZ) > 2.500000277905201E-7){ //TODO convert notation
+		if(($diffX*$diffX + $diffZ*$diffZ) > 0.00000025){
 			$this->entity->renderYawOffset = $this->entity->yaw;
 			$this->entity->headYaw = self::limitAngle2($this->entity->renderYawOffset, $this->entity->headYaw, 75);
 			$this->headYaw = $this->entity->headYaw;

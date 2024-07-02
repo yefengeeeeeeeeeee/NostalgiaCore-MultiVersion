@@ -311,4 +311,28 @@ class Item{
 		return false;
 	}
 	
+	public static function getFoodHeal($id){
+		return match($id){
+			APPLE => 4,
+			MUSHROOM_STEW => 10,
+			BEETROOT_SOUP => 10,
+			BREAD => 5,
+			RAW_PORKCHOP => 3,
+			COOKED_PORKCHOP => 8,
+			BEEF => 3,
+			STEAK => 8,
+			COOKED_CHICKEN => 6,
+			RAW_CHICKEN => 2,
+			MELON_SLICE => 2,
+			GOLDEN_APPLE => 10,
+			PUMPKIN_PIE => 8,
+			CARROT => 4,
+			POTATO => 1,
+			BAKED_POTATO => 6,
+			BEETROOT => 1,
+			
+			default => 0
+		};
+	}
+	
 }

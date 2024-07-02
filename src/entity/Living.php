@@ -15,8 +15,8 @@ abstract class Living extends Entity implements Pathfindable{
 	public $pathFinder, $path = null, $currentIndex = 0, $currentNode, $pathFollower;
 	public $ticksExisted = 0;
 	
-	public $landMovementFactor = 0.1; //TODO may not be constant
-	public $jumpMovementFactor = 0.02; //TODO may not be constant
+	public $landMovementFactor = 0.1;
+	public $jumpMovementFactor = 0.02;
 	public $aiMoveSpeed;
 	
 	public $renderYawOffset = 0.0; //used by head rotation, TODO better name

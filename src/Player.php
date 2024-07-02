@@ -2146,33 +2146,15 @@ class Player{
 				}
 				switch($packet->event){
 					case 9: //Eating
-						$items = [ //TODO rewrite
-							APPLE => 4,
-							MUSHROOM_STEW => 10,
-							BEETROOT_SOUP => 10,
-							BREAD => 5,
-							RAW_PORKCHOP => 3,
-							COOKED_PORKCHOP => 8,
-							BEEF => 3,
-							STEAK => 8,
-							COOKED_CHICKEN => 6,
-							RAW_CHICKEN => 2,
-							MELON_SLICE => 2,
-							GOLDEN_APPLE => 10,
-							PUMPKIN_PIE => 8,
-							CARROT => 4,
-							POTATO => 1,
-							BAKED_POTATO => 6,
-							BEETROOT => 1
-						];
 						$slot = $this->getSlot($this->slot);
-						if($this->entity->getHealth() < 20 and isset($items[$slot->getID()])){
+						$foodHeal = Item::getFoodHeal($slot->getID());
+						if($this->entity->getHealth() < 20 && $foodHeal != 0){
 							$pk = new EntityEventPacket;
 							$pk->eid = 0;
 							$pk->event = 9;
 							$this->dataPacket($pk);
 
-							$this->entity->heal($items[$slot->getID()], "eating");
+							$this->entity->heal($foodHeal, "eating");
 							--$slot->count;
 							if($slot->count <= 0){
 								$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0), false);

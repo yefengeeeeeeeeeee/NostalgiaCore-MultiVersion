@@ -11,7 +11,7 @@ class PigZombie extends Monster{ //TODO extends zombie
 		$this->ai->addTask(new TaskLookAround());
 		$this->ai->addTask(new TaskRandomWalk(1.0));
 		$this->ai->addTask(new TaskSwimming());
-		$this->ai->addTask(new TaskAttackPlayer(1.0, 16)); //TODO fix range?
+		$this->ai->addTask(new TaskAttackPlayer(1.0, 16));
 	}
 	public function getAttackDamage(){
 		return 5;
