@@ -80,26 +80,37 @@ class MobSpawner{
 				continue;
 			}
 			
-			$y = $this->getSafeY($x, $z, $grassOnly, $type >= 32 && $type <= 36 && $type != 35);
-			if(!$y || $y < 0){
-				continue;
-			}
-			$data = $this->genPosData($x, $y + 0.5, $z);
-			if($baby != 2) $data["IsBaby"] = $baby;
+			$cnt = mt_rand(1, 3);
 			
-			$e = $this->server->api->entity->add($this->level, 2, $type, $data);
-			
-			if($e instanceof Entity){
-				$this->server->api->entity->spawnToAll($e);
-				//ConsoleAPI::debug("$type spawned at $x, $y, $z");
+			for($i = 0; $i < $cnt; ++$i){
+				
+				$xMob = $x + mt_rand(-3, 3);
+				$zMob = $z + mt_rand(-3, 3);
+				
+				
+				$y = $this->getSafeY($xMob, $zMob, $grassOnly, $type >= 32 && $type <= 36 && $type != 35);
+				if(!$y || $y < 0){
+					continue;
+				}
+				
+				$data = $this->genPosData($xMob, $y + 0.5, $zMob);
+				if($baby != 2) $data["IsBaby"] = $baby;
+				
+				$e = $this->server->api->entity->add($this->level, 2, $type, $data);
+				
+				if($e instanceof Entity){
+					$this->server->api->entity->spawnToAll($e);
+					ConsoleAPI::debug("$type spawned at $xMob, $y, $zMob");
+				}
+				if(!isset($this->playerAffectedEIDS[$player->entity->eid])){
+					$this->playerAffectedEIDS[$player->entity->eid] = [$e->eid => true];
+				}else{
+					$this->playerAffectedEIDS[$player->entity->eid][$e->eid] = true;
+				}
+				
+				$this->entityAffectedPlayers[$e->eid] = $player->entity->eid;
+				
 			}
-			if(!isset($this->playerAffectedEIDS[$player->entity->eid])){
-				$this->playerAffectedEIDS[$player->entity->eid] = [$e->eid => true];
-			}else{
-				$this->playerAffectedEIDS[$player->entity->eid][$e->eid] = true;
-			}
-			
-			$this->entityAffectedPlayers[$e->eid] = $player->entity->eid;
 		}
 		
 		

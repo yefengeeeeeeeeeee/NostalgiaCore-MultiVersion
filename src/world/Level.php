@@ -598,7 +598,7 @@ class Level{
 		
 		$this->checkSleep();
 		
-		if($server->ticks % 10 === 0){
+		if($server->ticks % 100 === 0){
 			$this->mobSpawner->handle();
 		}
 		
