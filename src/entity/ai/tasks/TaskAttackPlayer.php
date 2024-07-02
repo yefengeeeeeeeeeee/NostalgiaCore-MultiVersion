@@ -30,7 +30,9 @@ class TaskAttackPlayer extends TaskBase
 		
 		--$this->attackCounter;
 		$v1 = $ai->entity->width * $ai->entity->width * 4;
-		
+		if($ai->entity instanceof Creeper){
+			$v1 = 9;
+		}
 		$e = $ai->entity;
 		$t = $e->target;
 		$xDiff = ($t->x - $e->x);

@@ -58,7 +58,7 @@ class Creeper extends Monster{
 	}
 	
 	public function attackEntity($entity, $distance){
-		if(Utils::distance_noroot($entity, $this) <= 49 && !$this->isIgnited()){
+		if(Utils::distance_noroot($entity, $this) <= 49 && !$this->isIgnited() && $this->ai->canSee($entity)){
 			$this->ignite();
 			return true;
 		}
