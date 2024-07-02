@@ -69,6 +69,7 @@ class Player{
 	private $chunkCount = [];
 	private $received = [];
 	
+	public $slotCount = 7;
 	
 	public $entityMovementQueue;
 	public $entityMovementQueueLength = 0;
@@ -1617,6 +1618,13 @@ class Player{
 					$this->slot = -1;//0
 					$this->hotbar = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
 				}
+				
+				if($this->data->exists("slot-count")){
+					$this->slotCount = $this->data->get("slot-count");
+				}else{
+					$this->data->set("slot-count", $this->slotCount);
+				}
+				
 				$this->entity = $this->server->api->entity->add($this->level, ENTITY_PLAYER, 0, ["player" => $this]);
 				$this->eid = $this->entity->eid;
 				$this->server->query("UPDATE players SET EID = " . $this->eid . " WHERE CID = " . $this->CID . ";");
@@ -1786,7 +1794,16 @@ class Player{
 				if($this->server->handle("player.equipment.change", $data) !== false){
 					$this->slot = $packet->slot;
 					if(($this->gamemode & 0x01) === SURVIVAL){
-						if(!in_array($this->slot, $this->hotbar)){
+						
+						$has = false;
+						for($i = 0; $i < $this->slotCount; ++$i){
+							if($this->slot == $this->hotbar[$i]){
+								$has = true;
+								break;
+							}
+						}
+						
+						if(!$has){
 							array_pop($this->hotbar);
 							array_unshift($this->hotbar, $this->slot);
 						}

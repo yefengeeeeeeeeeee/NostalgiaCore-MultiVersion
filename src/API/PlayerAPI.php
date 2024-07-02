@@ -18,7 +18,8 @@ class PlayerAPI{
 		$this->registerCmd("spawn");
 		$this->registerCmd("ping");
 		$this->registerCmd("loc");
-
+		$this->registerCmd("hotbar", "<slotcount>");
+		
 		$this->server->api->console->alias("lag", "ping");
 		$this->server->api->console->alias("gm", "gamemode");
 		$this->server->api->console->alias("who", "list");
@@ -31,6 +32,7 @@ class PlayerAPI{
 		$this->server->api->console->cmdWhitelist("ping");
 		$this->server->api->console->cmdWhitelist("spawn");
 		$this->server->api->console->cmdWhitelist("loc");
+		$this->server->api->console->cmdWhitelist("hotbar");
 	}
 
 	public function registerCmd($cmd, $help = ""){
@@ -119,6 +121,21 @@ class PlayerAPI{
 
 				$target->setSpawn($spawn);
 				return "Spawnpoint set correctly!\n";
+			case "hotbar":
+				if(!($issuer instanceof Player)) return "Please run this command in-game.";
+				if(count($args) < 1) return "Slots in hotbar on server: {$issuer->slotCount}";
+				
+				$scrw = $args[0];
+				if(is_numeric($scrw)){
+					$sc = (int)$scrw;
+					if($sc < 5 || $sc > 9) return "Slot count must be between 5 and 9.";
+					
+					$issuer->slotCount = $sc;
+					$issuer->sendInventory();
+					return "Changed slot count to $sc";
+				}else{
+					return "Usage: /$cmd <slotcount>";
+				}
 			case "spawn":
 				if(!($issuer instanceof Player)){
 					return "Please run this command in-game.";
@@ -375,6 +392,7 @@ class PlayerAPI{
 			"lastIP" => "",
 			"lastID" => 0,
 			"achievements" => [],
+			"slot-count" => 7
 		];
 
 		if(!file_exists(DATA_PATH . "players/" . $iname . ".yml")){
