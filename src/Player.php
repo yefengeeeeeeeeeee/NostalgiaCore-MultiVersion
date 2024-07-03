@@ -897,34 +897,32 @@ class Player{
 	 * @return boolean
 	 */
 	public function addItem($type, $damage, $count, $send = true){
-		while($count > 0){
-			$add = 0;
-			foreach($this->inventory as $s => $item){
-				if($item->getID() === AIR){
-					$add = min($item->getMaxStackSize(), $count);
-					$this->inventory[$s] = BlockAPI::getItem($type, $damage, $add);
-					if($send === true){
-						$this->sendInventorySlot($s);
-					}
-					break;
-				}elseif($item->getID() === $type and $item->getMetadata() === $damage){
-					$add = min($item->getMaxStackSize() - $item->count, $count);
-					if($add <= 0){
-						continue;
-					}
-					$item->count += $add;
-					if($send === true){
-						$this->sendInventorySlot($s);
-					}
-					break;
+		
+		foreach($this->inventory as $s => $item){ //force check the inventory for non-full stacks of this item first
+			if($item->getID() === $type and $item->getMetadata() === $damage){
+				$add = min($item->getMaxStackSize() - $item->count, $count);
+				if($add <= 0){
+					continue;
 				}
+				$item->count += $add;
+				if($send) $this->sendInventorySlot($s);
+				
+				$count -= $add;
+				if($count <= 0) return true;
 			}
-			if($add <= 0){
-				return false;
-			}
-			$count -= $add;
 		}
-		return true;
+		
+		foreach($this->inventory as $s => $item){
+			if($item->getID() === AIR){
+				$add = min($item->getMaxStackSize(), $count);
+				$this->inventory[$s] = BlockAPI::getItem($type, $damage, $add);
+				if($send) $this->sendInventorySlot($s);
+				$count -= $add;
+				if($count <= 0) return true;
+			}
+		}
+		if($count <= 0) return true;
+		return false;
 	}
 
 	/**

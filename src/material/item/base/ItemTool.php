@@ -12,7 +12,10 @@ abstract class ItemTool extends Item
 		return true;
 	}
 	public function useOn($object, $force = false){
-		if(($object instanceof Entity) and !$this->isSword()){
+		
+		if($this->isSword() && !($object instanceof Entity)){
+			$this->meta += 2;
+		}else if(($object instanceof Entity) && !$this->isSword()){
 			$this->meta += 2;
 		}else{
 			$this->meta++;

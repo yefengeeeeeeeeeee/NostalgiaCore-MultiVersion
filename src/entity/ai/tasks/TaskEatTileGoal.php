@@ -15,11 +15,11 @@ class TaskEatTileGoal extends TaskBase
 
 	public function onUpdate(EntityAI $ai)
 	{
-		if($ai->isStarted("TaskEatTileGoal")){
+		if($ai->isStarted("TaskPanic")){
 			$this->reset();
 			return false;
-		}
-		
+		}		
+
 		if (--$this->selfCounter == 4)
 		{
 			$id = $ai->entity->level->level->getBlockID($ai->entity->x, $ai->entity->y, $ai->entity->z);

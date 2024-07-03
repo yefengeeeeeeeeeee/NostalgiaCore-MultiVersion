@@ -8,10 +8,10 @@ class Spider extends Monster{
 		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 8, "generic");
 		$this->setName("Spider");
 		$this->setSpeed(0.3);
-		$this->ai->addTask(new TaskRandomWalk(1.0));
+		$this->ai->addTask(new TaskRandomWalk(1.2));
 		$this->ai->addTask(new TaskLookAround());
 		$this->ai->addTask(new TaskSwimming());
-		$this->ai->addTask(new TaskAttackPlayer(1.0, 16)); 
+		$this->ai->addTask(new TaskAttackPlayer(1.2, 16)); 
 	}
 	
 	public function getAttackDamage(){
