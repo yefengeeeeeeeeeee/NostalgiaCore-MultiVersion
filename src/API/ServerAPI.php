@@ -136,11 +136,13 @@ class ServerAPI{
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
 			"auto-save" => true,
 			"enable-mob-ai" => true,
+			"abort-reading-after-N-packets" => PocketMinecraftServer::$PACKET_READING_LIMIT
 		]);
 
 		$this->parseProperties();
 		MobSpawner::$MOB_LIMIT = $this->getProperty("mobs-amount", 50);
 		Entity::$allowedAI = $this->getProperty("enable-mob-ai", true);
+		PocketMinecraftServer::$PACKET_READING_LIMIT = $this->getProperty("abort-reading-after-N-packets", PocketMinecraftServer::$PACKET_READING_LIMIT);
 		//Load advanced properties
 		define("DEBUG", $this->getProperty("debug", 1));
 		define("ADVANCED_CACHE", false);

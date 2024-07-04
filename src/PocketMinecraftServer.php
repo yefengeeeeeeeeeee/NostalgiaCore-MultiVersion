@@ -11,7 +11,7 @@ class PocketMinecraftServer{
 	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $memoryStats, $async = [], $asyncID = 0;
 	
 	public $doTick, $levelData, $tiles, $entities, $schedule, $scheduleCnt, $whitelist, $spawn, $difficulty, $stop, $asyncThread;
-	public static $FORCE_20_TPS = false, $KEEP_CHUNKS_LOADED = true;
+	public static $FORCE_20_TPS = false, $KEEP_CHUNKS_LOADED = true, $PACKET_READING_LIMIT = 100;
 	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverip = "0.0.0.0"){
 		$this->port = (int) $port;
 		$this->doTick = true;
@@ -473,19 +473,34 @@ class PocketMinecraftServer{
 	public function process()
 	{
 		$lastLoop = 0;
-		
 		if(self::$FORCE_20_TPS){
 			while($this->stop === false){
-				$packet = $this->interface->readPacket();
-				if($packet instanceof Packet) $this->packetHandler($packet);
+				$packetcnt = 0;
+				while($packet = $this->interface->readPacket()){
+					if($packet instanceof Packet) {
+						$this->packetHandler($packet);
+						if(++$packetcnt > self::$PACKET_READING_LIMIT){
+							ConsoleAPI::warn("Reading more than ".self::$PACKET_READING_LIMIT." packets per tick! Forcing ticking!");
+							break;
+						}
+					}
+				}
+				
 				$this->tick();
 			}
 		}else{
 			while($this->stop === false){
+				$packetcnt = 0;
+				startReadingAgain:
 				$packet = $this->interface->readPacket();
 				if($packet instanceof Packet){
 					$this->packetHandler($packet);
 					$lastLoop = 0;
+					if(++$packetcnt > self::$PACKET_READING_LIMIT){
+						ConsoleAPI::warn("Reading more than ".self::$PACKET_READING_LIMIT." packets per tick! Forcing ticking!");
+					}else{
+						goto startReadingAgain;
+					}
 				} elseif($this->tick() > 0){
 					$lastLoop = 0;
 				} else{
