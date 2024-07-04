@@ -410,11 +410,11 @@ class Level{
 				foreach($this->changedBlocks as $i => $blocks){
 					foreach($blocks as $b){
 						$pk = new UpdateBlockPacket;
-						$pk->x = $b[0];
-						$pk->y = $b[1];
-						$pk->z = $b[2];
-						$pk->block = $b[3];
-						$pk->meta = $b[4];
+						$pk->x = ($b >> 32) & 0xff;
+						$pk->y = ($b >> 24) & 0xff;
+						$pk->z = ($b >> 16) & 0xff;
+						$pk->block =($b >> 8) & 0xff;
+						$pk->meta = $b & 0xff;
 						$this->server->api->player->broadcastPacket($this->players, $pk);
 					}
 					unset($this->changedBlocks[$i]);
@@ -453,7 +453,7 @@ class Level{
 					$this->changedBlocks[$i] = [];
 					$this->changedCount[$i] = 0;
 				}
-				$this->changedBlocks[$i][] = [$block->x, $block->y, $block->z, $block->id, $block->getMetadata()];
+				$this->changedBlocks[$i][] = ($block->x & 0xff) << 32 | ($block->y & 0xff) << 24 | ($block->z & 0xff) << 16 | ($block->getID() & 0xff) << 8 | ($block->meta & 0xff);
 				++$this->changedCount[$i];
 			}
 		}
@@ -720,7 +720,7 @@ class Level{
 					$this->changedBlocks[$i] = [];
 					$this->changedCount[$i] = 0;
 				}
-				$this->changedBlocks[$i][] = [$block->x, $block->y, $block->z, $block->id, $block->getMetadata()];
+				$this->changedBlocks[$i][] = ($block->x & 0xff) << 32 | ($block->y & 0xff) << 24 | ($block->z & 0xff) << 16 | ($block->getID() & 0xff) << 8 | ($block->meta & 0xff);
 				++$this->changedCount[$i];
 			}
 			
