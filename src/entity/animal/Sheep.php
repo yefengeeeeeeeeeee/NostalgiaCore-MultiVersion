@@ -74,11 +74,13 @@ class Sheep extends Animal{
 		if($e->isPlayer() && $action === InteractPacket::ACTION_HOLD){
 			$slot = $e->player->getHeldItem();
 			if($slot->getID() === SHEARS){
-				if(!$this->isSheared()){
+				if(!$this->isSheared() && !$this->isBaby()){
 					if($e->player->gamemode != 1) $slot->useOn($this);
 					$this->setSheared(1);
-					$this->server->api->entity->drop($this, BlockAPI::getItem(WOOL, $this->getColor(), mt_rand(1, 3)));
-					//$this->server->schedule(20, [$this, "eatGrass"]);
+					$speedX = (lcg_value() * 0.2 - 0.1) + (lcg_value() - lcg_value()) * 0.1;
+					$speedZ = (lcg_value() * 0.2 - 0.1) + (lcg_value() - lcg_value()) * 0.1;
+					$speedY =  0.2 + (lcg_value()) * 0.05;
+					$this->server->api->entity->dropRawPos($this->level, $this->x, $this->y + 1, $this->z, BlockAPI::getItem(WOOL, $this->getColor(), mt_rand(1, 3)), $speedX, $speedY, $speedZ);
 					if($slot->getMetadata() >= $slot->getMaxDurability()){
 						$e->player->removeItem($slot->getID(), $slot->getMetadata(), $slot->count, true);
 					}else{
