@@ -555,7 +555,7 @@ class Entity extends Position
 					$id = $this->level->level->getBlockID($x, $y, $z);
 					
 					if($id > 0){
-						Block::$class[$id]::onEntityCollidedWithBlock($this->level, $x, $y, $z, $this);
+						StaticBlock::$prealloc[$id]::onEntityCollidedWithBlock($this->level, $x, $y, $z, $this);
 					}
 				}
 			}

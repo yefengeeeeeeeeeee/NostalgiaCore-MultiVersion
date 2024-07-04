@@ -8,6 +8,7 @@ class StaticBlock
 	const DEFAULT_HARDNESS = 0;
 	
 	private static $NULL_BOUNDS;
+	public static $prealloc = [];
 	public static $isSolid = [];
 	public static $isTransparent = [];
 	public static $isFlowable = [];
@@ -39,7 +40,7 @@ class StaticBlock
 			self::$slipperiness[$b->getID()] = $b->slipperiness;
 			self::$boundingBoxes[$b->getID()] = $b->boundingBox;
 			self::$hardness[$b->getID()] = $b->getHardness();
-			
+			self::$prealloc[$b->getID()] = $b;
 			
 			FireBlock::setFlammabilityAndCatchingChance($b->getID(), 0, 0);
 			self::setBlockBounds($b->getID(), 0, 0, 0, 1, 1, 1);
@@ -116,7 +117,7 @@ class StaticBlock
 	}
 	
 	public static function getBlock($id){
-		return Block::$class[$id] ?? Block::$class[0];
+		return self::$prealloc[$id] ?? self::$prealloc[0]; //accessing preallocated instances is faster Block::$class[$id] ?? Block::$class[0];
 	}
 	
 	public static function getHardness($id){

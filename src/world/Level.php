@@ -218,7 +218,7 @@ class Level{
 						$v16 = ($y + 1) - LiquidBlock::getPercentAir($meta);
 						if($maxY >= $v16){
 							$appliedVelocity = true;
-							Block::$class[$block]::addVelocityToEntity($this, $x, $y, $z, $entity, $velocityVec);
+							StaticBlock::$prealloc[$block]::addVelocityToEntity($this, $x, $y, $z, $entity, $velocityVec);
 						}
 						
 					}
@@ -256,7 +256,7 @@ class Level{
 				for($y = $y0 - 1; $y < $y1; ++$y) {
 					$bid = $this->level->getBlockID($x, $y, $z);
 					if($bid > 0){
-						$blockBounds = Block::$class[$bid]::getCollisionBoundingBoxes($this, $x, $y, $z, $e); //StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
+						$blockBounds = StaticBlock::$prealloc[$bid]::getCollisionBoundingBoxes($this, $x, $y, $z, $e); //StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
 						
 						foreach($blockBounds as $blockBound){
 							if($aABB->intersectsWith($blockBound)) $aABBs[] = $blockBound;
@@ -512,7 +512,7 @@ class Level{
 					$y = ($xyz >> 16) & 0x7f;
 					$id = $this->level->fastGetBlockID($cX, $y >> 4, $cZ, $x, $y & 0xf, $z, $index);
 					if(isset(self::$randomUpdateBlocks[$id])){
-						$cl = Block::$class[$id];
+						$cl = StaticBlock::$prealloc[$id];
 						$cl::onRandomTick($this, ($cX << 4) + $x, $y, $z + ($cZ << 4));
 					}
 				}
