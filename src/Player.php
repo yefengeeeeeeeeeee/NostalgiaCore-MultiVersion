@@ -1791,7 +1791,7 @@ class Player{
 
 				if($this->server->handle("player.equipment.change", $data) !== false){
 					$this->slot = $packet->slot;
-					if(($this->gamemode & 0x01) === SURVIVAL){
+					if(($this->gamemode & 0x01) === SURVIVAL && count($this->hotbar) >= $this->slotCount){
 						
 						$has = false;
 						for($i = 0; $i < $this->slotCount; ++$i){
