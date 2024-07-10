@@ -1,6 +1,7 @@
 <?php
 
 class SugarcaneBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(SUGARCANE_BLOCK, $meta, "Sugarcane");
 		$this->isActivable = true;

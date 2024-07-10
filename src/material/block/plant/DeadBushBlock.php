@@ -1,6 +1,7 @@
 <?php
 
 class DeadBushBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(DEAD_BUSH, 0, "Dead Bush");
 		//$this->isReplaceable = true;

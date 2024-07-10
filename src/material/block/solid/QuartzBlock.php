@@ -1,6 +1,7 @@
 <?php
 
 class QuartzBlock extends SolidBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(QUARTZ_BLOCK, $meta, "Quartz Block");
 		$names = array(

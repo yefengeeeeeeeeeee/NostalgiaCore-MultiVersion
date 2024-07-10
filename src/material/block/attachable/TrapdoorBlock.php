@@ -1,6 +1,7 @@
 <?php
 
 class TrapdoorBlock extends TransparentBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(TRAPDOOR, $meta, "Trapdoor");
 		$this->isActivable = true;
@@ -23,7 +24,7 @@ class TrapdoorBlock extends TransparentBlock{
 	
 	public static function getAABB(Level $level, $x, $y, $z){
 		static::updateShape($level, $x, $y, $z);
-		return StaticBlock::getAABB($level, $x, $y, $z);
+		return StaticBlock::getAABB(static::$blockID, $x, $y, $z);
 	}
 	
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){

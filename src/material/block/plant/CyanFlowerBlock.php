@@ -1,6 +1,7 @@
 <?php
 
 class CyanFlowerBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(CYAN_FLOWER, 0, "Cyan Flower");
 		$this->isActivable = true;

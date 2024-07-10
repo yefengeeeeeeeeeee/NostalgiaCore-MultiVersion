@@ -1,6 +1,7 @@
 <?php
 
 class StoneWallBlock extends TransparentBlock{
+	public static $blockID;
 	//TODO collision box
 	public function __construct($meta = 0){
 		parent::__construct(STONE_WALL, $meta & 0x01, $meta === 1 ? "Mossy Cobblestone Wall" : "Cobblestone Wall");

@@ -1,6 +1,7 @@
 <?php
 
 class CactusBlock extends TransparentBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(CACTUS, $meta, "Cactus");
 		$this->isFullBlock = false;

@@ -1,6 +1,7 @@
 <?php
 
 class PotatoBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(POTATO_BLOCK, $meta, "Potato Block");
 		$this->isActivable = true;

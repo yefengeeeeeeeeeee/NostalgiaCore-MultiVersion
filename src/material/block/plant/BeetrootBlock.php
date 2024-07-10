@@ -1,6 +1,7 @@
 <?php
 
 class BeetrootBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(BEETROOT_BLOCK, $meta, "Beetroot Block");
 		$this->isActivable = true;

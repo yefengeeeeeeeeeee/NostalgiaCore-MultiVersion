@@ -1,6 +1,7 @@
 <?php
 
 class GravelBlock extends FallableBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(GRAVEL, 0, "Gravel");
 		$this->hardness = 3;

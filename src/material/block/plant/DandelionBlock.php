@@ -1,6 +1,7 @@
 <?php
 
 class DandelionBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(DANDELION, 0, "Dandelion");
 		$this->isActivable = true;

@@ -1,7 +1,7 @@
 <?php
 
 class LitPumpkinBlock extends SolidBlock implements LightingBlock{
-	
+	public static $blockID;
 	protected static $faces = [
 		0 => 1,
 		1 => 2,

@@ -1,6 +1,7 @@
 <?php
 
 class LadderBlock extends TransparentBlock{
+	public static $blockID;
 	public static function getAABB(Level $level, $x, $y, $z){
 		[$id, $meta] = $level->level->getBlock($x, $y, $z);
 		

@@ -159,7 +159,7 @@ abstract class Block extends Position{
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){}
 	
 	public static function getAABB(Level $level, $x, $y, $z){
-		return StaticBlock::getAABB($level, $x, $y, $z);
+		return StaticBlock::getAABB(static::$blockID, $x, $y, $z);
 	}
 	
 	public static function containsX($id, $v){

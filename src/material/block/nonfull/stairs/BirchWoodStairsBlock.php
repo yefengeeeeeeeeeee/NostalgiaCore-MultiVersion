@@ -1,6 +1,7 @@
 <?php
 
 class BirchWoodStairsBlock extends StairBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(BIRCH_WOOD_STAIRS, $meta, "Birch Wood Stairs");
 	}

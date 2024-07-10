@@ -1,6 +1,7 @@
 <?php
 
 class GlowstoneBlock extends TransparentBlock implements LightingBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(GLOWSTONE_BLOCK, 0, "Glowstone");
 		$this->hardness = 1.5;

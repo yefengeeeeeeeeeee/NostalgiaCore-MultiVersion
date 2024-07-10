@@ -1,6 +1,7 @@
 <?php
 
 class FarmlandBlock extends TransparentBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(FARMLAND, $meta, "Farmland");
 		$this->hardness = 3;

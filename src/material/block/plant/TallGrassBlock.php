@@ -1,6 +1,7 @@
 <?php
 
 class TallGrassBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct($meta = 1){
 		parent::__construct(TALL_GRASS, $meta, "Tall Grass");
 		$this->isReplaceable = true;

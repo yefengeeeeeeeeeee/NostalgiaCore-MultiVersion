@@ -1,6 +1,7 @@
 <?php
 
 class PumpkinBlock extends SolidBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(PUMPKIN, $meta, "Pumpkin");
 		$this->hardness = 5;

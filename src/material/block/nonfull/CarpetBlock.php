@@ -1,6 +1,7 @@
 <?php
 
 class CarpetBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(CARPET, $meta, "Carpet");
 		$names = array(

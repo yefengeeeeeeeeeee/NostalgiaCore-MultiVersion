@@ -1,6 +1,7 @@
 <?php
 
 class WheatBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(WHEAT_BLOCK, $meta, "Wheat Block");
 		$this->isActivable = true;

@@ -1,6 +1,7 @@
 <?php
 
 class PumpkinStemBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(PUMPKIN_STEM, $meta, "Pumpkin Stem");
 		$this->isActivable = true;

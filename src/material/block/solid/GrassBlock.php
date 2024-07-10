@@ -1,6 +1,7 @@
 <?php
 
 class GrassBlock extends SolidBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(GRASS, 0, "Grass");
 		$this->isActivable = true;

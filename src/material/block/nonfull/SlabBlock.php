@@ -1,7 +1,7 @@
 <?php
 
 class SlabBlock extends TransparentBlock{
-	
+	public static $blockID;
 	public static $NAMES = [
 		0 => "Stone",
 		1 => "Sandstone",

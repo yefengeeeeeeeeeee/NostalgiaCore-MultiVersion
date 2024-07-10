@@ -1,6 +1,7 @@
 <?php
 
 class BurningFurnaceBlock extends SolidBlock implements LightingBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(BURNING_FURNACE, $meta, "Burning Furnace");
 		$this->isActivable = true;

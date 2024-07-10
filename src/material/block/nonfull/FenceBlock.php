@@ -1,7 +1,7 @@
 <?php
 
 class FenceBlock extends TransparentBlock{
-	
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(FENCE, 0, "Fence");
 		$this->isFullBlock = false;

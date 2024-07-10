@@ -1,6 +1,7 @@
 <?php
 
 class TNTBlock extends SolidBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(TNT, 0, "TNT");
 		$this->hardness = 0;

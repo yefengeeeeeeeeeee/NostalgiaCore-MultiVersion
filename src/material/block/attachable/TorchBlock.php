@@ -1,6 +1,7 @@
 <?php
 
 class TorchBlock extends FlowableBlock implements LightingBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(TORCH, $meta, "Torch");
 		$this->hardness = 0;

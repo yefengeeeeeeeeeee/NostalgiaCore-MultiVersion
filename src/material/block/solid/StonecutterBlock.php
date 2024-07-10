@@ -1,6 +1,7 @@
 <?php
 
 class StonecutterBlock extends SolidBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(STONECUTTER, $meta, "Stonecutter");
 		$this->isActivable = true;

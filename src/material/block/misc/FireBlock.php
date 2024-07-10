@@ -1,7 +1,7 @@
 <?php
 
 class FireBlock extends FlowableBlock implements LightingBlock{
-	
+	public static $blockID;
 	public static $flammability = [];
 	public static $fireCatchingChance = [];
 	

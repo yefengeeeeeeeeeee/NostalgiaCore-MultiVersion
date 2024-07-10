@@ -1,6 +1,7 @@
 <?php
 
 class RedMushroomBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(RED_MUSHROOM, 0, "Red Mushroom");
 		$this->hardness = 0;

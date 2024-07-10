@@ -1,7 +1,7 @@
 <?php
 
 class SignPostBlock extends TransparentBlock{
-	
+	public static $blockID;
 	public static $faces = [
 		2 => 2,
 		3 => 3,

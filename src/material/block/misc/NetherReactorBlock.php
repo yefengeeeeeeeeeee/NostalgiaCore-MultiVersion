@@ -1,6 +1,7 @@
 <?php
 
 class NetherReactorBlock extends SolidBlock{
+	public static $blockID;
 	public static $enableReactor = true;
 	public function __construct($meta = 0){
 		parent::__construct(NETHER_REACTOR, $meta, "Nether Reactor");

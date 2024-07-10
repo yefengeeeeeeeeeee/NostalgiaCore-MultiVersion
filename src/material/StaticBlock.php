@@ -41,7 +41,7 @@ class StaticBlock
 			self::$boundingBoxes[$b->getID()] = $b->boundingBox;
 			self::$hardness[$b->getID()] = $b->getHardness();
 			self::$prealloc[$b->getID()] = $b;
-			
+			$b::$blockID = $b->getID();
 			FireBlock::setFlammabilityAndCatchingChance($b->getID(), 0, 0);
 			self::setBlockBounds($b->getID(), 0, 0, 0, 1, 1, 1);
 		}
@@ -111,8 +111,7 @@ class StaticBlock
 		self::$minZs[$blockID] = $minZ;
 	}
 	
-	public static function getAABB(Level $level, $x, $y, $z){
-		$id = $level->level->getBlockID($x, $y, $z);
+	public static function getAABB($id, $x, $y, $z){
 		return new AxisAlignedBB(self::$minXs[$id] + $x, self::$minYs[$id] + $y, self::$minZs[$id] + $z, self::$maxXs[$id] + $x, self::$maxYs[$id] + $y, self::$maxZs[$id] + $z); //TODO get bb from self::$boundingBoxes ?
 	}
 	

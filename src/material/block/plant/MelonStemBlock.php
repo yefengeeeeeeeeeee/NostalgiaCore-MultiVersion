@@ -1,6 +1,7 @@
 <?php
 
 class MelonStemBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(MELON_STEM, $meta, "Melon Stem");
 		$this->isActivable = true;

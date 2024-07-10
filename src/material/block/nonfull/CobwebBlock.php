@@ -1,6 +1,7 @@
 <?php
 
 class CobwebBlock extends FlowableBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(COBWEB, 0, "Cobweb");		
 		$this->isSolid = true;

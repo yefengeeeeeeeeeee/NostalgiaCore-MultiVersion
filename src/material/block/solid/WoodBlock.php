@@ -1,6 +1,7 @@
 <?php
 
 class WoodBlock extends SolidBlock{
+	public static $blockID;
 	const OAK = 0;
 	const SPRUCE = 1;
 	const BIRCH = 2;

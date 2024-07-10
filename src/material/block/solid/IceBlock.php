@@ -1,6 +1,7 @@
 <?php
 
 class IceBlock extends TransparentBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(ICE, 0, "Ice");
 		$this->hardness = 2.5;

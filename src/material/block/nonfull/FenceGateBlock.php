@@ -1,7 +1,7 @@
 <?php
 
 class FenceGateBlock extends TransparentBlock{
-	
+	public static $blockID;
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		$aabb = static::getAABB($level, $x, $y, $z);
 		if($aabb == null) return [];

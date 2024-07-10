@@ -1,6 +1,7 @@
 <?php
 
 class IronOreBlock extends SolidBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(IRON_ORE, 0, "Iron Ore");
 		$this->hardness = 15;

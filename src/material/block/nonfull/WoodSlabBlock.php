@@ -1,6 +1,7 @@
 <?php
 //TODO make it extend SlabBlock
 class WoodSlabBlock extends TransparentBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(WOOD_SLAB, $meta, "Wooden Slab");
 		$names = array(

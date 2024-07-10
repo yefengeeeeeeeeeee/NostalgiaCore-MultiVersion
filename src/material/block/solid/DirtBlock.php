@@ -1,6 +1,7 @@
 <?php
 
 class DirtBlock extends SolidBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(DIRT, 0, "Dirt");
 		$this->isActivable = true;

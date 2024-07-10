@@ -1,6 +1,7 @@
 <?php
 require_once("RailBaseBlock.php");
 class RailBlock extends RailBaseBlock{
+	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(RAIL, $meta, "Rail");
 		$this->hardness = 0.7;

@@ -1,6 +1,7 @@
 <?php
 
 class GlassPaneBlock extends TransparentBlock{
+	public static $blockID;
 	public function __construct(){
 		parent::__construct(GLASS_PANE, 0, "Glass Pane");
 		$this->isFullBlock = false;

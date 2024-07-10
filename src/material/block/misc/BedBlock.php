@@ -1,7 +1,7 @@
 <?php
 
 class BedBlock extends TransparentBlock{
-	
+	public static $blockID;
 	public static $faces = [
 		0 => 3,
 		1 => 4,
