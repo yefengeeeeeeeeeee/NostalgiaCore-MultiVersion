@@ -13,6 +13,7 @@ class Entity extends Position
 	public $counter = 0;
 	public $fallDistance = 0;
 	public static $updateOnTick, $allowedAI;
+	public static $allowFly = true;
 	public $canBeAttacked;
 	public $moveTime, $lookTime, $idleTime, $knockbackTime = 0;
 	public $attackTimeout = 0;
@@ -105,6 +106,7 @@ class Entity extends Position
 	
 	public $inWeb;
 	public $inLava;
+	public $notOnGroundTicks = 0;
 	
 	public $moveStrafing, $moveForward;
 	
@@ -769,14 +771,29 @@ class Entity extends Position
 				$fireMaxY = floor($contractedCollisionBB->maxY + 1);
 				$fireMaxZ = floor($contractedCollisionBB->maxZ + 1);
 				
+				$bbbottom = $this->boundingBox->addCoord(0, -0.05, 0);
+				$bbbottom->minX = round($this->x, 3) - $this->radius;
+				$bbbottom->maxX = round($this->x, 3) + $this->radius;
+				$bbbottom->minZ = round($this->z, 3) - $this->radius;
+				$bbbottom->maxZ = round($this->z, 3) + $this->radius;
+				
 				$handleFire = false;
 				$handleCactus = false;
-				
 				for($x = floor($this->boundingBox->minX); $x < ceil($this->boundingBox->maxX); ++$x){
 					for($z = floor($this->boundingBox->minZ); $z < ceil($this->boundingBox->maxZ); ++$z){
 						for($y = floor($this->boundingBox->minY - 1); $y < ceil($this->boundingBox->maxY); ++$y){
+							$intersects = 0;
+							$id = $this->level->level->getBlockID($x, $y, $z);
+							$bounds = StaticBlock::$prealloc[$id]::getCollisionBoundingBoxes($this->level, $x, $y, $z, $this);
+							foreach($bounds as $bb){
+								if($bbbottom->intersectsWith($bb)){
+									++$intersects;
+								}
+							}
+							
+							intersects:
 							if($y <= floor($this->boundingBox->minY) && !$this->onGround){
-								$this->onGround = StaticBlock::getIsSolid($this->level->level->getBlockID($x, $y, $z));
+								if($intersects > 0) $this->onGround = count($bounds) > 0;
 							}else{
 								$block = $this->level->level->getBlock($x, $y, $z);
 								$id = $block[0];
@@ -793,6 +810,21 @@ class Entity extends Position
 						}
 					}
 				}
+				
+				if($prevGroundState == $this->onGround && !$this->onGround){
+					++$this->notOnGroundTicks;
+				}else if($this->onGround){
+					$this->notOnGroundTicks = 0;
+				}
+				
+				if($this->notOnGroundTicks > 80){ //~70 ticks is needed to reach from 127 to 0
+					if(($this->player->gamemode & 1) != CREATIVE && !$this->player->blocked && $this->player->spawned){ //survival(0), adventure(2)
+						if(!Entity::$allowFly){
+							$this->player->close("flying");
+						}
+					}
+				}
+				
 				
 				if($this->isOnLadder()){
 					$this->fallDistance = 0;
@@ -835,7 +867,7 @@ class Entity extends Position
 		
 		$this->counterUpdate();
 		
-		if($this->isPlayer() || $update){
+		if($this->isPlayer()){
 			$this->updateMovement();
 		}
 		

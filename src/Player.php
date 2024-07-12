@@ -285,6 +285,7 @@ class Player{
 			$this->lastCorrect = $pos;
 			$this->entity->fallY = false;
 			$this->entity->fallStart = false;
+			$this->entity->notOnGroundTicks = 0;
 			$this->entity->setPosition($pos, $yaw, $pitch);
 			$this->entity->resetSpeed();
 			$this->entity->updateLast();

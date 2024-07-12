@@ -119,7 +119,7 @@ class ServerAPI{
 			"spawn-protection" => 16,
 			"view-distance" => 10,
 			"max-players" => 20,
-			"allow-flight" => false,
+			"allow-flight" => true,
 			"spawn-animals" => true,
 			"spawn-mobs" => true,
 			"mobs-amount" => 50,
@@ -138,7 +138,10 @@ class ServerAPI{
 			"enable-mob-ai" => true,
 			"abort-reading-after-N-packets" => PocketMinecraftServer::$PACKET_READING_LIMIT
 		]);
-
+		Entity::$allowFly = $this->getProperty("allow-flight", true);
+		if(!Entity::$allowFly){
+			ConsoleAPI::warn("Fly checking is enabled! Players may experience issues with kicking while not flying!");
+		}
 		$this->parseProperties();
 		MobSpawner::$MOB_LIMIT = $this->getProperty("mobs-amount", 50);
 		Entity::$allowedAI = $this->getProperty("enable-mob-ai", true);
