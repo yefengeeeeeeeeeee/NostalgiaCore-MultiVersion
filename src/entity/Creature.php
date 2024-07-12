@@ -21,11 +21,18 @@ abstract class Creature extends Living{
 		return parent::update($now);
 	}
 	
+	
 	public function handlePrePlayerSearcher(){
 		parent::handlePrePlayerSearcher();
-		if($this->closestPlayerEID !== false && !isset($this->level->entityList[$this->closestPlayerEID])){
-			$this->closestPlayerEID = false;
-			$this->closestPlayerDist = INF;
+		if($this->closestPlayerEID !== false){
+			$player = $this->level->entityList[$this->closestPlayerEID] ?? false;
+			if($player === false){
+				$this->closestPlayerEID = false;
+				$this->closestPlayerDist = INF;
+			}else{
+				$dist = ($this->x - $player->x)*($this->x - $player->x) + ($this->y - $player->y)*($this->y - $player->y) + ($this->z - $player->z)*($this->z - $player->z);
+				$this->closestPlayerDist = $dist;
+			}
 		}
 	}
 	

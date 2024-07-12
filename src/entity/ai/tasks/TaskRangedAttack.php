@@ -73,26 +73,26 @@ class TaskRangedAttack extends \TaskBase
 		$diffY = ($target->boundingBox->minY + ($target->height / 3)) - $posY;
 		$diffZ = $target->z - $selfEntity->z;
 		$v12 = sqrt($diffX * $diffX + $diffZ * $diffZ);
-		//if($v12 >= 1.0e-7){
-		$yaw = ((atan2($diffZ, $diffX) * 180) / M_PI) - 90;
-		$pitch = -((atan2($diffY, $v12) * 180) / M_PI);
-		$v16 = $diffX / $v12;
-		$v18 = $diffZ / $v12;
-		$arrow->x = $selfEntity->x + $v16;
-		$arrow->y = $posY;
-		$arrow->z = $selfEntity->z + $v18;
-		$arrow->yaw = $yaw;
-		$arrow->pitch = $pitch;
-		$v20 = $v12 * 0.2;
-		$arrow->shoot($diffX, $diffY + $v20, $diffZ, 1.6, 12);
-		$this->server->api->entity->spawnToAll($arrow);
-		//}
+		if($v12 >= 0.0000001){
+			$yaw = ((atan2($diffZ, $diffX) * 180) / M_PI) - 90;
+			$pitch = -((atan2($diffY, $v12) * 180) / M_PI);
+			$v16 = $diffX / $v12;
+			$v18 = $diffZ / $v12;
+			$arrow->x = $selfEntity->x + $v16;
+			$arrow->y = $posY;
+			$arrow->z = $selfEntity->z + $v18;
+			$arrow->yaw = $yaw;
+			$arrow->pitch = $pitch;
+			$v20 = $v12 * 0.2;
+			$arrow->shoot($diffX, $diffY + $v20, $diffZ, 1.6, 12);
+			$this->server->api->entity->spawnToAll($arrow);
+		}
 	}
 	
 	
 	public function isTargetValid(EntityAI $ai){
 		$e = $ai->entity;
-		if($e->target instanceof Entity && !$e->target->closed){
+		if($e->target instanceof Entity && !$e->target->closed && !$e->target->dead){
 			$t = $e->target;
 			$xDiff = ($t->x - $e->x);
 			$yDiff = ($t->y - $e->y);
@@ -114,7 +114,7 @@ class TaskRangedAttack extends \TaskBase
 			}
 		}
 
-		$closestTarget = $e->closestPlayerDist <= $this->rangeSquared ? $e->level->entityList[$e->closestPlayerEID] : null;
+		$closestTarget = $e->closestPlayerToAttackDist <= $this->rangeSquared ? $e->level->entityList[$e->closestPlayerToAttackEID] : null;
 		
 		if($closestTarget != null){
 			$e->target = $closestTarget; //TODO dont save entity object ?

@@ -50,7 +50,7 @@ class TaskAttackPlayer extends TaskBase
 	
 	public function isTargetValid(EntityAI $ai){
 		$e = $ai->entity;
-		if($e->target instanceof Entity && !$e->target->closed){
+		if($e->target instanceof Entity && !$e->target->closed && !$e->target->dead){
 			$t = $e->target;
 			$xDiff = ($t->x - $e->x);
 			$yDiff = ($t->y - $e->y);
@@ -72,7 +72,7 @@ class TaskAttackPlayer extends TaskBase
 			}
 		}
 		
-		$closestTarget = $e->closestPlayerDist <= $this->rangeSquared ? $e->level->entityList[$e->closestPlayerEID] : null;
+		$closestTarget = $e->closestPlayerToAttackDist <= $this->rangeSquared ? $e->level->entityList[$e->closestPlayerToAttackEID] : null;
 		
 		if($closestTarget != null){
 			$e->target = $closestTarget; //TODO dont save entity object ?

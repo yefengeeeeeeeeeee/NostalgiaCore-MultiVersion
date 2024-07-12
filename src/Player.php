@@ -298,7 +298,14 @@ class Player{
 				$this->forceMovement = $pos;
 			}
 		}
-
+		
+		$pk = new SetEntityMotionPacket();
+		$pk->eid = 0;
+		$pk->speedX = 0;
+		$pk->speedY = 0;
+		$pk->speedZ = 0;
+		$this->dataPacket($pk);
+		
 		$pk = new MovePlayerPacket;
 		$pk->eid = 0;
 		$pk->x = $pos->x;

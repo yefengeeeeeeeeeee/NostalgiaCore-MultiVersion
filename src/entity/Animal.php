@@ -21,21 +21,29 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 		$this->searchForClosestPlayers = true;
 	}
 	
+	public function isPlayerValid(Player $player){
+		return $player->spawned && $this->isFood($player->getHeldItem()->id) && !$player->entity->dead;
+	}
+	
 	public function handlePrePlayerSearcher(){
 		parent::handlePrePlayerSearcher();
-		
-		if($this->closestPlayerThatCanFeedEID !== false && !isset($this->level->entityList[$this->closestPlayerThatCanFeedEID])){
-			$this->closestPlayerThatCanFeedEID = false;
-			$this->closestPlayerThatCanFeedDist = INF;
+		if($this->closestPlayerThatCanFeedEID !== false){
+			$player = $this->level->entityList[$this->closestPlayerThatCanFeedEID] ?? false;
+			if($player === false || !$this->isPlayerValid($player->player)){
+				$this->closestPlayerThatCanFeedEID = false;
+				$this->closestPlayerThatCanFeedDist = INF;
+			}else{
+				$dist = ($this->x - $player->x)*($this->x - $player->x) + ($this->y - $player->y)*($this->y - $player->y) + ($this->z - $player->z)*($this->z - $player->z);
+				$this->closestPlayerThatCanFeedDist = $dist;
+			}
 		}
-		
 	}
 	
 	public function handlePlayerSearcher(Player $player, $dist){
 		parent::handlePlayerSearcher($player, $dist);
 		
 		if($this->closestPlayerThatCanFeedDist >= $dist){
-			if($player->spawned && $this->isFood($player->getHeldItem()->id)){
+			if($this->isPlayerValid($player)){
 				$this->closestPlayerThatCanFeedDist = $dist;
 				$this->closestPlayerThatCanFeedEID = $player->entity->eid;
 			}

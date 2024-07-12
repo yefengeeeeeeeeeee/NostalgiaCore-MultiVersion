@@ -584,7 +584,7 @@ class Level{
 					$e->handlePrePlayerSearcher();
 					
 					foreach($this->players as $player){
-						$dist = ($e->x - $player->entity->x)*($e->x - $player->entity->x) + ($e->y - $player->entity->y) + ($e->z - $player->entity->z);
+						$dist = ($e->x - $player->entity->x)*($e->x - $player->entity->x) + ($e->y - $player->entity->y)*($e->y - $player->entity->y) + ($e->z - $player->entity->z)*($e->z - $player->entity->z);
 						$e->handlePlayerSearcher($player, $dist);
 					}
 				}
