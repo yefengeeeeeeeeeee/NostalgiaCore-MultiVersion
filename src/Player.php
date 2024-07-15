@@ -468,7 +468,9 @@ class Player{
 			$this->server->api->dhandle("player.armor", $data);
 		}
 	}
-
+	public $lastOrderX = 0;
+	public $lastOrderZ = 0;
+	
 	public function orderChunks(){
 		if(!($this->entity instanceof Entity) or $this->connected === false){
 			return false;
@@ -476,6 +478,8 @@ class Player{
 		$X = ((int)$this->entity->x) >> 4;
 		$Z = ((int)$this->entity->z) >> 4;
 		$this->chunksOrder = [];
+		$this->lastOrderX = $X;
+		$this->lastOrderZ = $Z;
 		if(self::$smallChunks){
 			$Y = ((int)$this->entity->y) >> 4;
 			$v = new Vector3($X, $Y, $Z);
@@ -622,7 +626,9 @@ class Player{
 		}
 
 		$this->lastChunk = [$x, $z];
-
+		if($this->lastOrderX != ($this->entity->x >> 4) || $this->lastOrderZ != ($this->entity->z >> 4)){
+			$this->orderChunks();
+		}
 		$this->server->schedule(MAX_CHUNK_RATE, [$this, "getNextChunk"], $world);
 	}
 
