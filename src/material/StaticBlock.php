@@ -74,6 +74,7 @@ class StaticBlock
 		
 		self::setBlockBounds(SUGARCANE_BLOCK, 0.5 - 0.375, 0, 0.5 - 0.375, 0.5 + 0.375, 1, 0.5 + 0.375);
 		self::setBlockBounds(SNOW_LAYER, 0, 0, 0, 1, 0.125, 1);
+		self::setBlockBounds(CARPET, 0, 0, 0, 1, 0, 1);
 		//Stairs: based on different factors
 		//Stone wall: based on state
 		

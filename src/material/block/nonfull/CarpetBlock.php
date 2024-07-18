@@ -27,7 +27,9 @@ class CarpetBlock extends FlowableBlock{
 		$this->isFullBlock = false;		
 		$this->isSolid = true;
 	}
-	
+	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
+		return [static::getAABB($level, $x, $y, $z)];
+	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() !== AIR){

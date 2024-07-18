@@ -285,7 +285,7 @@ class Level{
 		$t = $this->getTime() % 19200;
 		return $t < TimeAPI::$phases["sunrise"] && $t > TimeAPI::$phases["sunset"];
 	}
-	public function save($force = false, $extra = true){
+	public function save($force = false, $entities = true, $tiles = true, $blockupdates = true){
 		if(!isset($this->level)){
 			return false;
 		}
@@ -293,7 +293,7 @@ class Level{
 			return;
 		}
 
-		if($extra !== false){
+		if($entities){
 			$entities = [];
 			
 			foreach($this->entityList as $entity){
@@ -303,13 +303,16 @@ class Level{
 			}
 			$this->entities->setAll($entities);
 			$this->entities->save();
+		}
+		if($tiles){
 			$tiles = [];
 			foreach($this->server->api->tile->getAll($this) as $tile){
 				$tiles[] = $tile->data;
 			}
 			$this->tiles->setAll($tiles);
 			$this->tiles->save();
-
+		}
+		if($blockupdates){
 			$blockUpdates = [];
 			$updates = $this->server->query("SELECT x,y,z,type,delay FROM blockUpdates WHERE level = '" . $this->getName() . "';");
 			if($updates !== false and $updates !== true){
@@ -322,7 +325,6 @@ class Level{
 
 			$this->blockUpdates->setAll($blockUpdates);
 			$this->blockUpdates->save();
-
 		}
 
 		$this->level->setData("time", (int) $this->time);
@@ -422,9 +424,9 @@ class Level{
 				$this->changedBlocks = [];
 			}
 		}
-
+		
 		if($this->nextSave < $now){
-			$this->save(false, false);
+			$this->save(false, true, true, true);
 		}
 	}
 
