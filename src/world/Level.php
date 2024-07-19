@@ -271,7 +271,7 @@ class Level{
 	
 	public function __destruct(){
 		if(isset($this->level)){
-			$this->save(false, false);
+			$this->save(false, false, false, false);
 			$this->level->close();
 			unset($this->level);
 		}
