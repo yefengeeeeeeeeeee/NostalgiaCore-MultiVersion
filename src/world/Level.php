@@ -397,6 +397,7 @@ class Level{
 		if(count($this->changedCount) > 0){
 			arsort($this->changedCount);
 			$resendChunks = [];
+			$reorder = false;
 			foreach($this->changedCount as $index => $count){
 				if($count < 582){//Optimal value, calculated using the relation between minichunks and single packets
 					break;
@@ -404,10 +405,17 @@ class Level{
 				foreach($this->players as $p){
 					unset($p->chunksLoaded[$index]);
 				}
+				$reorder = true;
 				unset($this->changedBlocks[$index]);
 			}
 			$this->changedCount = [];
-
+			
+			if($reorder){
+				foreach($this->players as $p){
+					$p->orderChunks();
+				}
+			}
+			
 			if(count($this->changedBlocks) > 0){
 				foreach($this->changedBlocks as $i => $blocks){
 					foreach($blocks as $b){
