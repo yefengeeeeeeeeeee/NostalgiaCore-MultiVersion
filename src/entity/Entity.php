@@ -791,6 +791,10 @@ class Entity extends Position
 								}
 							}
 							
+							if($id == WATER  || $id === STILL_WATER || $id === COBWEB || $id == LAVA  || $id === STILL_LAVA){
+								$this->notOnGroundTicks = 0;
+							}
+							
 							intersects:
 							if($y <= floor($this->boundingBox->minY) && !$this->onGround){
 								if($intersects > 0) $this->onGround = count($bounds) > 0;
@@ -828,6 +832,7 @@ class Entity extends Position
 				
 				if($this->isOnLadder()){
 					$this->fallDistance = 0;
+					$this->notOnGroundTicks = 0;
 					$this->fallStart = $this->y;
 				}
 				
