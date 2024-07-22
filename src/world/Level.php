@@ -65,7 +65,7 @@ class Level{
 		$this->changedBlocks = [];
 		$this->changedCount = [];
 		$this->mobSpawner = new MobSpawner($this);
-		$this->randInt1 = 0x283AE83; //it is static in 0.1, and i dont care is it in 0.8
+		$this->randInt1 = 0x283AE83;
 		$this->randInt2 = 0x3C6EF35F;
 	}
 

@@ -61,7 +61,7 @@ class Player{
 	private $bandwidthStats = [0, 0, 0];
 	private $lag = [];
 	private $lagStat = 0;
-	private $spawnPosition;
+	public $spawnPosition;
 	private $packetLoss = 0;
 	private $lastChunk = false;
 	private $bigCnt;
@@ -637,7 +637,7 @@ class Player{
 	 */
 	public function setSpawn(Vector3 $pos){
 		if(!($pos instanceof Position)){
-			$level = $this->level;
+			$level = $this->entity->level;
 		}else{
 			$level = $pos->level;
 		}
@@ -1004,7 +1004,45 @@ class Player{
 				return "view";
 		}
 	}
-
+	
+	public function checkSpawnPosition(){
+		if($this->server->api->dhandle("player.checkspawnpos", ["player" => $this]) === false) return;
+		$level = $this->spawnPosition->level;
+		if(!isset($this->server->api->level->levels[$level->getName()])){
+			ConsoleAPI::warn("Level to respawn {$this->iusername} was unloaded, changing spawnpoint to default.");
+			$level = $this->server->api->level->getDefault();
+			$this->spawnPosition = $level->getSpawn();
+		}else{
+			$x0 = floor($this->spawnPosition->x - $this->entity->width/2);
+			$x1 = floor($this->spawnPosition->x + $this->entity->width/2 + 1);
+			$y0 = floor($this->spawnPosition->y);
+			$y1 = floor($this->spawnPosition->y + $this->entity->height + 1);
+			$z0 = floor($this->spawnPosition->z - $this->entity->width/2);
+			$z1 = floor($this->spawnPosition->z + $this->entity->width/2 + 1);
+			
+			for($x = $x0; $x < $x1; ++$x) {
+				for($z = $z0; $z < $z1; ++$z) {
+					for($y = $y0; $y < $y1; ++$y) {
+						$bid = $this->entity->level->level->getBlockID($x, $y, $z);
+						if($bid > 0 && StaticBlock::getIsSolid($bid)){
+							$blockBounds = StaticBlock::$prealloc[$bid]::getCollisionBoundingBoxes($this->entity->level, $x, $y, $z, $this->entity);
+							
+							foreach($blockBounds as $blockBound){
+								if($this->entity->boundingBox->intersectsWith($blockBound)){
+									$this->sendChat("Your spawn positon is obstructed.");
+									goto reset_spawn_pos;
+								}
+							}
+						}
+					}
+				}
+			}
+			return;
+			reset_spawn_pos:
+			$this->spawnPosition = $this->server->api->level->getDefault()->getSpawn();
+		}
+	}
+	
 	public function setGamemode($gm){
 		if($gm < 0 or $gm > 3 or $this->gamemode === $gm){
 			return false;
@@ -2134,6 +2172,8 @@ class Player{
 				}
 				$this->craftingItems = [];
 				$this->toCraft = [];
+				
+				$this->checkSpawnPosition();
 				$this->teleport($this->spawnPosition, false, false, true, false);
 				
 				$pk = new MovePlayerPacket();
