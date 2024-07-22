@@ -696,7 +696,6 @@ class Player{
 		while($count > 0){
 			$add = 0;
 			foreach($inv as $s => $item){
-				console("{$item->getID()} {$item->getMetadata()} $type, $damage");
 				if($item->getID() === AIR){
 					$add = min($item->getMaxStackSize(), $count);
 					$inv[$s] = BlockAPI::getItem($type, $damage, $add);
@@ -1479,6 +1478,8 @@ class Player{
 			return;
 		}
 
+		
+		
 		switch($packet->pid()){
 			case 0x01:
 				break;
@@ -2206,19 +2207,21 @@ class Player{
 				$packet->item = $this->getSlot($this->slot);
 				$sendOnDrop = false;
 				
-				/*if($prevItem != $packet->item){
+				if($prevItem->getID() != $packet->item->getID() || $prevItem->getMetadata() != $packet->item->getMetadata()){
 					if(count($this->inventory) >= 36){
 						foreach($this->inventory as $slot => $item){
 							if($item->getID() == 0) goto inv_desync_on_drop;
 						}
-						//crafting sends drop packet if inv is full, TODO: add it into craffting array
-						goto inv_desync_on_drop;
+						
+						$this->toCraft[] = $prevItem; //vanilla drops only result?
+						$this->lastCraft = microtime(true);
+						break;
 					}else{
 						inv_desync_on_drop:
 						ConsoleAPI::debug("Inventory desync on drop({$this->iusername})");
 						$sendOnDrop = true;
 					}
-				}*/
+				}
 				
 				$this->craftingItems = [];
 				$this->toCraft = [];
@@ -2239,6 +2242,8 @@ class Player{
 					$sZ += sin($f3) * $f1;
 					$this->server->api->entity->dropRawPos($this->level, $this->entity->x, $this->entity->y - 0.3 + $this->entity->height - 0.12, $this->entity->z, $packet->item, $sX, $sY, $sZ);
 					$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0), $sendOnDrop);
+				}else{
+					$this->sendInventory(); //send if blocked
 				}
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
@@ -2647,9 +2652,24 @@ class Player{
 				$s = $this->getSlot($slot);
 				if($s->count <= 0 or $s->getID() === AIR){
 					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $item->count), false);
-				}else{
+				}else if($s->getID() == $item->getID() && $s->getMetadata() == $item->getMetadata() && ($s->count + $item->count) <= $s->maxStackSize){
 					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $s->count + $item->count), false);
+				}else{
+					$f1 = 0.3;
+					$sX = -sin(($this->entity->yaw / 180) * M_PI) * cos(($this->entity->pitch / 180) * M_PI) * $f1;
+					$sZ = cos(($this->entity->yaw / 180) * M_PI) * cos(($this->entity->pitch / 180) * M_PI) * $f1;
+					$sY = -sin(($this->entity->pitch / 180) * M_PI) * $f1 + 0.1;
+					$f1 = 0.02;
+					$f3 = $this->entity->random->nextFloat() * M_PI * 2.0;
+					$f1 *= $this->entity->random->nextFloat();
+					$sX += cos($f3) * $f1;
+					$sY += ($this->entity->random->nextFloat() - $this->entity->random->nextFloat()) * 0.1;
+					$sZ += sin($f3) * $f1;
+					$this->server->api->entity->dropRawPos($this->level, $this->entity->x, $this->entity->y - 0.3 + $this->entity->height - 0.12, $this->entity->z, $item, $sX, $sY, $sZ);
 				}
+				
+				$this->sendInventory(); //force send on crafting
+				
 				switch($item->getID()){
 					case WORKBENCH:
 						AchievementAPI::grantAchievement($this, "buildWorkBench");
