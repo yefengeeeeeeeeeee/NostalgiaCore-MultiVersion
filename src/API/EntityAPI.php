@@ -82,7 +82,7 @@ class EntityAPI{
 						$this->summon($pos, ENTITY_MOB, $type, ["IsBaby" => $isBaby]);
 					}
 					
-					return "$amount ".($isBaby === 1 ? "Baby" : "")." $mobName(s) spawned in $x, $y, $z.";
+					return "$amount ".($isBaby ? "Baby " : "")."$mobName(s) spawned in $x, $y, $z.";
 				}
 				elseif(strtolower($args[1]) == "baby"){//summon <mob> [baby]
 					$this->summon($pos, ENTITY_MOB, $type, ["IsBaby" => 1]);
