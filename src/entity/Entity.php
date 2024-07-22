@@ -416,11 +416,11 @@ class Entity extends Position
 			foreach($this->server->api->entity->getRadius($this, 2, false) as $item){
 				if($item->class === ENTITY_ITEM && !$item->closed && $item->spawntime > 0 && $item->delayBeforePickup <= 0){
 					if($item->boundingBox->intersectsWith($myBB)){ 
-						if((($this->player->gamemode & 0x01) === 1 || $this->player->hasSpace($item->type, $item->meta, $item->stack) === true) && $this->server->api->dhandle("player.pickup", array(
+						if((($this->player->gamemode & 0x01) === 1 || $this->player->hasSpace($item->itemID, $item->meta, $item->stack) === true) && $this->server->api->dhandle("player.pickup", array(
 							"eid" => $this->player->eid,
 							"player" => $this->player,
 							"entity" => $item,
-							"block" => $item->type,
+							"block" => $item->itemID,
 							"meta" => $item->meta,
 							"target" => $item->eid
 						)) !== false){

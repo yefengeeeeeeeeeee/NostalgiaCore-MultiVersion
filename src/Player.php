@@ -696,12 +696,14 @@ class Player{
 		while($count > 0){
 			$add = 0;
 			foreach($inv as $s => $item){
+				console("{$item->getID()} {$item->getMetadata()} $type, $damage");
 				if($item->getID() === AIR){
 					$add = min($item->getMaxStackSize(), $count);
 					$inv[$s] = BlockAPI::getItem($type, $damage, $add);
 					break;
 				}elseif($item->getID() === $type and $item->getMetadata() === $damage){
 					$add = min($item->getMaxStackSize() - $item->count, $count);
+					
 					if($add <= 0){
 						continue;
 					}
@@ -1476,7 +1478,7 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketReceiveEvent($this, $packet)) === BaseEvent::DENY){
 			return;
 		}
-		
+
 		switch($packet->pid()){
 			case 0x01:
 				break;
@@ -2200,7 +2202,24 @@ class Player{
 					break;
 				}
 				$packet->eid = $this->eid;
+				$prevItem = $packet->item;
 				$packet->item = $this->getSlot($this->slot);
+				$sendOnDrop = false;
+				
+				/*if($prevItem != $packet->item){
+					if(count($this->inventory) >= 36){
+						foreach($this->inventory as $slot => $item){
+							if($item->getID() == 0) goto inv_desync_on_drop;
+						}
+						//crafting sends drop packet if inv is full, TODO: add it into craffting array
+						goto inv_desync_on_drop;
+					}else{
+						inv_desync_on_drop:
+						ConsoleAPI::debug("Inventory desync on drop({$this->iusername})");
+						$sendOnDrop = true;
+					}
+				}*/
+				
 				$this->craftingItems = [];
 				$this->toCraft = [];
 				$data["eid"] = $packet->eid;
@@ -2219,7 +2238,7 @@ class Player{
 					$sY += ($this->entity->random->nextFloat() - $this->entity->random->nextFloat()) * 0.1;
 					$sZ += sin($f3) * $f1;
 					$this->server->api->entity->dropRawPos($this->level, $this->entity->x, $this->entity->y - 0.3 + $this->entity->height - 0.12, $this->entity->z, $packet->item, $sX, $sY, $sZ);
-					$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0), false);
+					$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0), $sendOnDrop);
 				}
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
