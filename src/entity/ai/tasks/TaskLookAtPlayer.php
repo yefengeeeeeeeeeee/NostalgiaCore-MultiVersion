@@ -33,7 +33,6 @@ class TaskLookAtPlayer extends TaskBase{
 			return;
 		}
 		$ai->mobController->setLookPosition($this->target->x, $this->target->y + $this->target->getEyeHeight(), $this->target->z, 10, $ai->entity->getVerticalFaceSpeed());
-		$ai->mobController->lookOn($this->target);
 		$this->selfCounter--;
 	}
 	
