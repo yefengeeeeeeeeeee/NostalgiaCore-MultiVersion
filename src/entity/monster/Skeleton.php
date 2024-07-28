@@ -20,11 +20,19 @@ class Skeleton extends Monster{
 	}
 	
 	public function updateBurning(){
-		if($this->fire > 0 or !$this->level->isDay() || $this->inWater){ //TODO fix burning in water
+		if($this->fire > 0 || !$this->level->isDay() || $this->inWater){
 			return false;
 		}
+		//bad fix for burning in water
+		[$block, $meta] = $this->level->level->getBlock((int)$this->x, (int)$this->y, (int)$this->z);
+		if($block == WATER || $block == STILL_WATER){
+			$v16 = ((int)$this->y + 1) - LiquidBlock::getPercentAir($meta);
+			if($this->boundingBox->intersectsWith(new AxisAlignedBB((int)$this->x, (int)$this->y, (int)$this->z, (int)$this->x + 1, $v16, (int)$this->z + 1))){
+				return false;
+			}
+		}
 		
-		for($y = $this->y; $y < 129; $y++){
+		for($y = (int)$this->y; $y < 129; $y++){
 			$block = $this->level->level->getBlockID($this->x, $y, $this->z);
 			if(StaticBlock::getIsSolid($block)){
 				return false;
@@ -42,9 +50,9 @@ class Skeleton extends Monster{
 		}
 	}
 	
-	public function update($now){
+	public function updateEntityMovement(){
 		$this->updateBurning();
-		parent::update($now);
+		return parent::updateEntityMovement();
 	}
 	
 	public function getDrops(){

@@ -395,7 +395,13 @@ class Entity extends Position
 		if($this->level->handleMaterialAcceleration($this->boundingBox->expand(0, -0.4, 0)->contract(0.001, 0.001, 0.001), 0, $this)){
 			$this->fallDistance = 0;
 			$this->inWater = true;
-			$this->fire = 0;
+			if($this->fire > 0){
+				$this->fire = 0;
+				$this->updateMetadata();
+			}else{
+				$this->fire = 0;
+			}
+			
 		}else{
 			$this->inWater = false;
 		}
@@ -454,7 +460,6 @@ class Entity extends Position
 		}
 		
 		$this->handleWaterMovement();
-		
 		if($this->fire > 0){ //TODO move somewhere
 			if(!$this->isImmuneToFire){
 				if(($this->fire % 20) == 0){
