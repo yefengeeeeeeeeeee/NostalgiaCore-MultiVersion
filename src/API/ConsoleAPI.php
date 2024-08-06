@@ -277,6 +277,9 @@ class ConsoleAPI{
 	public static function info($msg){
 		console("[INFO] ".$msg);
 	}
+	public static function notice($msg){
+		console("[NOTICE] ".$msg);
+	}
 	public static function warn($msg){
 		console("[WARNING] ".$msg);
 	}
@@ -309,6 +312,7 @@ class ConsoleLoop extends Thread{
 
 		while(!$this->stop){
 			$this->line = $this->readLine();
+			if($this->stop) break;
 			$this->synchronized(function($t) {
 				$this->wait();
 				$this->line = false;
@@ -324,6 +328,14 @@ class ConsoleLoop extends Thread{
 
 	private function readLine(){
 		if($this->fp){
+			do{
+				if($this->stop){
+					ConsoleAPI::notice("Force stopping console thread!");
+					return "";
+				}
+				$read = [$this->fp];
+				$changed = stream_select($read, $write, $except, 1);
+			}while($changed <= 0);
 			$line = trim(fgets($this->fp));
 		}else{
 			$line = trim(readline(""));

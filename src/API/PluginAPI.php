@@ -50,6 +50,10 @@ class PluginAPI extends stdClass{
 	}
 
 	public function __destruct(){
+		if(!isset($this->plugins) || !is_array($this->plugins)){
+			ConsoleAPI::warn("PluginAPI::\$plugins is null (destructor called twice?)");
+			return;
+		}
 		foreach($this->plugins as $p){
 			if(method_exists($p[0], "__destruct")){$p[0]->__destruct();};
 		}
