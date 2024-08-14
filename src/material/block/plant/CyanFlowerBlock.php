@@ -14,7 +14,7 @@ class CyanFlowerBlock extends FlowableBlock{
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			$down = $this->getSide(0);
-			if($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 60){
+			if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){
 				$this->level->setBlock($block, $this, true, false, true);
 				return true;
 			}
@@ -22,7 +22,8 @@ class CyanFlowerBlock extends FlowableBlock{
 	}
 
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
-		if(StaticBlock::getIsTransparent($level->level->getBlockID($x, $y - 1, $z))){ //Replace with common break method
+		$downId = $level->level->getBlockID($x, $y - 1, $z);
+		if(StaticBlock::getIsTransparent($downId) and $downId !== FARMLAND){ //Replace with common break method
 			ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(CYAN_FLOWER));
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
