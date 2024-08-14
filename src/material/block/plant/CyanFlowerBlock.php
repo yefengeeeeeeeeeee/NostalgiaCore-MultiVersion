@@ -11,15 +11,16 @@ class CyanFlowerBlock extends FlowableBlock{
 	public static function getAABB(Level $level, $x, $y, $z){
 		return null;
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-			$down = $this->getSide(0);
-			if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){
-				$this->level->setBlock($block, $this, true, false, true);
-				return true;
-			}
+		$down = $this->getSide(0);
+		if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){
+			$this->level->setBlock($block, $this, true, false, true);
+			return true;
+		}
 		return false;
 	}
+
 
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		$downId = $level->level->getBlockID($x, $y - 1, $z);
