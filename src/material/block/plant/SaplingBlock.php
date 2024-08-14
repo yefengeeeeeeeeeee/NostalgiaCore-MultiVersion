@@ -44,7 +44,8 @@ class SaplingBlock extends FlowableBlock{
 		return false;
 	}
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
-		if(StaticBlock::getIsTransparent($level->level->getBlockID($x, $y - 1, $z))){ //Replace with common break method
+		$downID = $level->level->getBlockID($x, $y - 1, $z);
+		if(StaticBlock::getIsTransparent($downID) && $downID !== FARMLAND){ //Replace with common break method
 			[$id, $meta] = $level->level->getBlock($x, $y, $z);
 			ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem($id, $meta));
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
