@@ -26,7 +26,7 @@ abstract class Structure{
 		$this->mapSymToID[$sym] = $id;
 	}
 	public function getMappingFor($sym){
-		return isset($this->mapSymToID[$sym]) ? $this->mapSymToID[$sym] : Structure::MAP_NO_KEY;
+		return $this->mapSymToID[$sym] ?? Structure::MAP_NO_KEY;
 	}
 	
 	protected function placeBlock($level, $sym, $tv){

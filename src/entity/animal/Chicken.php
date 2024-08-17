@@ -7,7 +7,7 @@ class Chicken extends Animal{
 		$this->timeUntilEgg = mt_rand(0,6000) + 6000;
 		$this->setSize(0.4, 0.7);
 		parent::__construct($level, $eid, $class, $type, $data);
-		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 4, "generic");
+		$this->setHealth($this->data["Health"] ?? 4, "generic");
 		$this->setName('Chicken');
 		$this->setSpeed(0.25);
 		

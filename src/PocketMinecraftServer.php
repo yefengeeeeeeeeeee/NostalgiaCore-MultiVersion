@@ -688,7 +688,7 @@ class PocketMinecraftServer{
 			E_DEPRECATED => "E_DEPRECATED",
 			E_USER_DEPRECATED => "E_USER_DEPRECATED",
 		];
-		$er["type"] = isset($errorConversion[$er["type"]]) ? $errorConversion[$er["type"]] : $er["type"];
+		$er["type"] = $errorConversion[$er["type"]] ?? $er["type"];
 		$dump .= "Error: " . var_export($er, true) . "\r\n\r\n";
 		if(stripos($er["file"], "plugin") !== false){
 			$dump .= "THIS ERROR WAS CAUSED BY A PLUGIN. REPORT IT TO THE PLUGIN DEVELOPER.\r\n";

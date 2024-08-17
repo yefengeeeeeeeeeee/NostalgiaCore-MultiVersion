@@ -141,7 +141,7 @@ class Entity extends Position
 		$this->isStatic = false;
 		$this->name = "";
 		$this->gravity = 0.08;
-		$this->state = $this->data["State"] = isset($this->data["State"]) ? $this->data["State"] : 0;
+		$this->state = $this->data["State"] = $this->data["State"] ?? 0;
 		$this->tickCounter = 0;
 		$this->x = isset($this->data["x"]) ? (float) $this->data["x"] : 0;
 		$this->y = isset($this->data["y"]) ? (float) $this->data["y"] : 0;
@@ -151,7 +151,7 @@ class Entity extends Position
 		$this->speedZ = isset($this->data["speedZ"]) ? (float) $this->data["speedZ"] : 0;
 		$this->speed = 0;
 		$this->yaw = isset($this->data["yaw"]) ? (float) $this->data["yaw"] : 0;
-		$this->headYaw = isset($this->data["headYaw"]) ? $this->data["headYaw"] : $this->yaw;
+		$this->headYaw = $this->data["headYaw"] ?? $this->yaw;
 		$this->pitch = isset($this->data["pitch"]) ? (float) $this->data["pitch"] : 0;
 		$this->position = array(
 			"level" => $this->level,
@@ -178,9 +178,9 @@ class Entity extends Position
 				
 				break;
 			case ENTITY_OBJECT:
-				$this->x = isset($this->data["TileX"]) ? $this->data["TileX"] : $this->x;
-				$this->y = isset($this->data["TileY"]) ? $this->data["TileY"] : $this->y;
-				$this->z = isset($this->data["TileZ"]) ? $this->data["TileZ"] : $this->z;
+				$this->x = $this->data["TileX"] ?? $this->x;
+				$this->y = $this->data["TileY"] ?? $this->y;
+				$this->z = $this->data["TileZ"] ?? $this->z;
 				$this->setHealth(1, "generic");
 				$this->stepHeight = false;
 				$this->setSize(1, 1);

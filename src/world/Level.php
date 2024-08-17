@@ -551,7 +551,7 @@ class Level{
 				$curChunkZ = (int)$e->z >> 4;
 				$index = "$curChunkX $curChunkZ";
 				
-				if(isset($this->entityListPositioned[$index]) && isset($this->entityListPositioned[$index][$k])){
+				if(isset($this->entityListPositioned[$index][$k])){
 					unset($this->entityListPositioned[$index][$k]);
 				}
 				

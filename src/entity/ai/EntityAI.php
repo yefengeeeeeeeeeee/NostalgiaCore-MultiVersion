@@ -51,7 +51,7 @@ class EntityAI
 	 * @return TaskBase | false
 	 */
 	public function getTask($id){
-		return isset($this->tasks[$id]) ? $this->tasks[$id] : false;
+		return $this->tasks[$id] ?? false;
 	}
 	
 	public function isStarted($id){

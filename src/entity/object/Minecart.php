@@ -59,9 +59,9 @@ class Minecart extends Vehicle{
 	function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		parent::__construct($level, $eid, $class, $type, $data);
 		$this->canBeAttacked = true;
-		$this->x = isset($this->data["TileX"]) ? $this->data["TileX"]:$this->x;
-		$this->y = isset($this->data["TileY"]) ? $this->data["TileY"]:$this->y;
-		$this->z = isset($this->data["TileZ"]) ? $this->data["TileZ"]:$this->z;
+		$this->x = $this->data["TileX"] ?? $this->x;
+		$this->y = $this->data["TileY"] ?? $this->y;
+		$this->z = $this->data["TileZ"] ?? $this->z;
 		$this->setHealth(1, "generic"); //orig: 3
 		$this->setSize(0.98, 0.7);
 		$this->yOffset = $this->height / 2;

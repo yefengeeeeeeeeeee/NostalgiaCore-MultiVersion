@@ -118,11 +118,7 @@ function arg($name, $default = false){
 		$arguments = arguments($argv);
 	}
 
-	if(isset($arguments["commands"][$name])){
-		return $arguments["commands"][$name];
-	}else{
-		return $default;
-	}
+    return $arguments["commands"][$name] ?? $default;
 }
 
 function arguments($args){
@@ -217,7 +213,7 @@ function getTrace($start = 1){
 		foreach($trace[$i]["args"] as $name => $value){
 			$params .= (is_object($value) ? get_class($value) . " " . (method_exists($value, "__toString") ? $value->__toString() : "object") : gettype($value) . " " . @strval($value)) . ", ";
 		}
-		$messages[] = "#$j " . (isset($trace[$i]["file"]) ? $trace[$i]["file"] : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . $trace[$i]["type"] : "") . $trace[$i]["function"] . "(" . substr($params, 0, -2) . ")";
+		$messages[] = "#$j " . ($trace[$i]["file"] ?? "") . "(" . ($trace[$i]["line"] ?? "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . $trace[$i]["type"] : "") . $trace[$i]["function"] . "(" . substr($params, 0, -2) . ")";
 	}
 	return $messages;
 }
@@ -243,7 +239,7 @@ function error_handler($errno, $errstr, $errfile, $errline){
 		E_DEPRECATED => "E_DEPRECATED",
 		E_USER_DEPRECATED => "E_USER_DEPRECATED",
 	];
-	$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
+	$errno = $errorConversion[$errno] ?? $errno;
 	console("[ERROR] A " . $errno . " error happened: \"$errstr\" in \"$errfile\" at line $errline", true, true, 0);
 	foreach(getTrace() as $i => $line){
 		console("[TRACE] $line");
