@@ -383,7 +383,7 @@ class Entity extends Position
 	 * @return boolean
 	 */
 	public function isPickable(){
-		return $this->isPlayer() ? !$this->dead : false;
+		return $this->isPlayer() && !$this->dead;
 	}
 	
 	public function handleLavaMovement(){ //TODO maybe try merging with water?

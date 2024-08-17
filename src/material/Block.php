@@ -163,15 +163,15 @@ abstract class Block extends Position{
 	}
 	
 	public static function containsX($id, $v){
-		return $v == null ? false : $v->y >= StaticBlock::$minYs[$id] && $v->y <= StaticBlock::$maxYs[$id] && $v->z >= StaticBlock::$minZs[$id] && $v->z <= StaticBlock::$maxZs[$id];
+		return !($v == null) && $v->y >= StaticBlock::$minYs[$id] && $v->y <= StaticBlock::$maxYs[$id] && $v->z >= StaticBlock::$minZs[$id] && $v->z <= StaticBlock::$maxZs[$id];
 	}
 	
 	public static function containsY($id, $v){
-		return $v == null ? false : $v->x >= StaticBlock::$minXs[$id] && $v->x <= StaticBlock::$maxXs[$id] && $v->z >= StaticBlock::$minZs[$id] && $v->z <= StaticBlock::$maxZs[$id];
+		return !($v == null) && $v->x >= StaticBlock::$minXs[$id] && $v->x <= StaticBlock::$maxXs[$id] && $v->z >= StaticBlock::$minZs[$id] && $v->z <= StaticBlock::$maxZs[$id];
 	}
 	
 	public static function containsZ($id, $v){
-		return $v == null ? false : $v->x >= StaticBlock::$minXs[$id] && $v->x <= StaticBlock::$maxXs[$id] && $v->y >= StaticBlock::$minYs[$id] && $v->y <= StaticBlock::$maxYs[$id];
+		return !($v == null) && $v->x >= StaticBlock::$minXs[$id] && $v->x <= StaticBlock::$maxXs[$id] && $v->y >= StaticBlock::$minYs[$id] && $v->y <= StaticBlock::$maxYs[$id];
 	}
 	
 	public static function updateShape(Level $level, $x, $y, $z){

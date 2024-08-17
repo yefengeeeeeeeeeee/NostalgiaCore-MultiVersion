@@ -63,7 +63,7 @@ class RailLogic
 	}
 	
 	public function canConnectTo(RailLogic $rail){
-		return $this->connectsTo($rail) ? true : (count($this->railPositions) == 2 ? false : (empty($this->railPositions) ? true : true));
+		return $this->connectsTo($rail) || ((count($this->railPositions) == 2 ? false : (empty($this->railPositions) ? true : true)));
 	}
 	
 	public function hasNeighborRail($x, $y, $z){
