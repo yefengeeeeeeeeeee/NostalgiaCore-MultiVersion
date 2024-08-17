@@ -18,14 +18,14 @@ class DoubleWoodSlabBlock extends SolidBlock{
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
-        return match ($item->isAxe()) {
-            5 => 0.4,
-            4 => 0.5,
-            3 => 0.75,
-            2 => 0.25,
-            1 => 1.5,
-            default => 3,
-        };
+		return match ($item->isAxe()) {
+			5 => 0.4,
+			4 => 0.5,
+			3 => 0.75,
+			2 => 0.25,
+			1 => 1.5,
+			default => 3,
+		};
 	}
 	
 	public function getDrops(Item $item, Player $player){

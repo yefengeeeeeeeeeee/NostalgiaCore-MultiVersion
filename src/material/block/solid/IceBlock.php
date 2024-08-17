@@ -58,14 +58,14 @@ class IceBlock extends TransparentBlock{
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
-        return match ($item->getPickaxeLevel()) {
-            5 => 0.1,
-            4 => 0.15,
-            3 => 0.2,
-            2 => 0.1,
-            1 => 0.4,
-            default => 0.75,
-        };
+		return match ($item->getPickaxeLevel()) {
+			5 => 0.1,
+			4 => 0.15,
+			3 => 0.2,
+			2 => 0.1,
+			1 => 0.4,
+			default => 0.75,
+		};
 	}
 
 	public function getDrops(Item $item, Player $player){

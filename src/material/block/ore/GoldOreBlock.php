@@ -11,11 +11,11 @@ class GoldOreBlock extends SolidBlock{
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
-        return match ($item->getPickaxeLevel()) {
-            5 => 0.6,
-            4 => 0.75,
-            default => 15,
-        };
+		return match ($item->getPickaxeLevel()) {
+			5 => 0.6,
+			4 => 0.75,
+			default => 15,
+		};
 	}
 	
 	public function getDrops(Item $item, Player $player){

@@ -17,14 +17,14 @@ class QuartzBlock extends SolidBlock{
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
-        return match ($item->getPickaxeLevel()) {
-            5 => 0.15,
-            4 => 0.2,
-            3 => 0.3,
-            2 => 0.1,
-            1 => 0.6,
-            default => 4,
-        };
+		return match ($item->getPickaxeLevel()) {
+			5 => 0.15,
+			4 => 0.2,
+			3 => 0.3,
+			2 => 0.1,
+			1 => 0.6,
+			default => 4,
+		};
 	}
 	
 	public function getDrops(Item $item, Player $player){

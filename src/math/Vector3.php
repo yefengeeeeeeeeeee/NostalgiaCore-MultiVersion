@@ -104,15 +104,15 @@ class Vector3{
 	}
 
 	public function getSide($side, $step = 1){
-        return match ((int)$side) {
-            0 => new Vector3($this->x, $this->y - $step, $this->z),
-            1 => new Vector3($this->x, $this->y + $step, $this->z),
-            2 => new Vector3($this->x, $this->y, $this->z - $step),
-            3 => new Vector3($this->x, $this->y, $this->z + $step),
-            4 => new Vector3($this->x - $step, $this->y, $this->z),
-            5 => new Vector3($this->x + $step, $this->y, $this->z),
-            default => $this,
-        };
+		return match ((int)$side) {
+			0 => new Vector3($this->x, $this->y - $step, $this->z),
+			1 => new Vector3($this->x, $this->y + $step, $this->z),
+			2 => new Vector3($this->x, $this->y, $this->z - $step),
+			3 => new Vector3($this->x, $this->y, $this->z + $step),
+			4 => new Vector3($this->x - $step, $this->y, $this->z),
+			5 => new Vector3($this->x + $step, $this->y, $this->z),
+			default => $this,
+		};
 	}
 
 	public function distance($x = 0, $y = 0, $z = 0){

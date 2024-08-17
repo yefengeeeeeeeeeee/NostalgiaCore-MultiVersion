@@ -38,9 +38,9 @@ abstract class RakNetInfo{
 	const ACK = 0xc0;
 
 	public static function isValid($pid){
-        return match ((int)$pid) {
-            RakNetInfo::UNCONNECTED_PING, RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS, RakNetInfo::OPEN_CONNECTION_REQUEST_1, RakNetInfo::OPEN_CONNECTION_REPLY_1, RakNetInfo::OPEN_CONNECTION_REQUEST_2, RakNetInfo::OPEN_CONNECTION_REPLY_2, RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION, RakNetInfo::UNCONNECTED_PONG, RakNetInfo::ADVERTISE_SYSTEM, RakNetInfo::DATA_PACKET_0, RakNetInfo::DATA_PACKET_1, RakNetInfo::DATA_PACKET_2, RakNetInfo::DATA_PACKET_3, RakNetInfo::DATA_PACKET_4, RakNetInfo::DATA_PACKET_5, RakNetInfo::DATA_PACKET_6, RakNetInfo::DATA_PACKET_7, RakNetInfo::DATA_PACKET_8, RakNetInfo::DATA_PACKET_9, RakNetInfo::DATA_PACKET_A, RakNetInfo::DATA_PACKET_B, RakNetInfo::DATA_PACKET_C, RakNetInfo::DATA_PACKET_D, RakNetInfo::DATA_PACKET_E, RakNetInfo::DATA_PACKET_F, RakNetInfo::NACK, RakNetInfo::ACK => true,
-            default => false,
-        };
+		return match ((int)$pid) {
+			RakNetInfo::UNCONNECTED_PING, RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS, RakNetInfo::OPEN_CONNECTION_REQUEST_1, RakNetInfo::OPEN_CONNECTION_REPLY_1, RakNetInfo::OPEN_CONNECTION_REQUEST_2, RakNetInfo::OPEN_CONNECTION_REPLY_2, RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION, RakNetInfo::UNCONNECTED_PONG, RakNetInfo::ADVERTISE_SYSTEM, RakNetInfo::DATA_PACKET_0, RakNetInfo::DATA_PACKET_1, RakNetInfo::DATA_PACKET_2, RakNetInfo::DATA_PACKET_3, RakNetInfo::DATA_PACKET_4, RakNetInfo::DATA_PACKET_5, RakNetInfo::DATA_PACKET_6, RakNetInfo::DATA_PACKET_7, RakNetInfo::DATA_PACKET_8, RakNetInfo::DATA_PACKET_9, RakNetInfo::DATA_PACKET_A, RakNetInfo::DATA_PACKET_B, RakNetInfo::DATA_PACKET_C, RakNetInfo::DATA_PACKET_D, RakNetInfo::DATA_PACKET_E, RakNetInfo::DATA_PACKET_F, RakNetInfo::NACK, RakNetInfo::ACK => true,
+			default => false,
+		};
 	}
 }

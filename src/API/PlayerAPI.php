@@ -57,18 +57,18 @@ class PlayerAPI{
 						}
 					}
 				}else{
-                    $message = match ($data["cause"]) {
-                        "cactus" => " was pricked to death",
-                        "lava" => " tried to swim in lava",
-                        "fire" => " went up in flames",
-                        "burning" => " burned to death",
-                        "suffocation" => " suffocated in a wall",
-                        "water" => " drowned",
-                        "void" => " fell out of the world",
-                        "fall" => " hit the ground too hard",
-                        "explosion" => " blew up",
-                        default => " died",
-                    };
+					$message = match ($data["cause"]) {
+						"cactus" => " was pricked to death",
+						"lava" => " tried to swim in lava",
+						"fire" => " went up in flames",
+						"burning" => " burned to death",
+						"suffocation" => " suffocated in a wall",
+						"water" => " drowned",
+						"void" => " fell out of the world",
+						"fall" => " hit the ground too hard",
+						"explosion" => " blew up",
+						default => " died",
+					};
 				}
 				$this->server->api->chat->broadcast($data["player"]->username . $message);
 				return true;
