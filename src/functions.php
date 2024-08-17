@@ -140,7 +140,7 @@ function arguments($args){
 	foreach($args as $arg){
 
 		// Is it a command? (prefixed with --)
-		if(substr($arg, 0, 2) === '--'){
+		if(str_starts_with($arg, '--')){
 
 			$value = preg_split('/[= ]/', $arg, 2);
 			$com = substr(array_shift($value), 2);
@@ -152,7 +152,7 @@ function arguments($args){
 		}
 
 		// Is it a flag? (prefixed with -)
-		if(substr($arg, 0, 1) === '-'){
+		if(str_starts_with($arg, '-')){
 			$ret['flags'][] = substr($arg, 1);
 			continue;
 		}

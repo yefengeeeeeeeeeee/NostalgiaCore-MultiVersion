@@ -120,7 +120,7 @@ $inc = get_included_files();
 $inc[] = array_shift($inc);
 $srcdir = realpath(FILE_PATH . "src/");
 foreach($inc as $s){
-	if(strpos(realpath(dirname($s)), $srcdir) === false and strtolower(basename($s)) !== "pocketmine-mp.php"){
+	if(!str_contains(realpath(dirname($s)), $srcdir) and strtolower(basename($s)) !== "pocketmine-mp.php"){
 		continue;
 	}
 	$sha1sum ^= sha1_file($s, true);

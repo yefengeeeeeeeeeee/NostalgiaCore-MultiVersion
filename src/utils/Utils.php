@@ -87,7 +87,7 @@ class Utils{
 	 * PHP8 has internal function for doing it: {@link str_ends_with}
 	 */
 	public static function endsWith($str, $check) {
-		return substr($str, -strlen($check)) === $check;
+		return str_ends_with($str, $check);
 	}
 	
 	public static function hasEmoji($s){
@@ -148,7 +148,7 @@ class Utils{
 	public static function getOS(){
 		$uname = php_uname("s");
 		if(stripos($uname, "Darwin") !== false){
-			if(strpos(php_uname("m"), "iP") === 0){
+			if(str_starts_with(php_uname("m"), "iP")){
 				return "ios";
 			}else{
 				return "mac";

@@ -548,7 +548,7 @@ class PocketMinecraftServer{
 						$this->custom["times_" . $CID] = 0;
 					}
 					$ln = 15;
-					if($this->description == "" or substr($this->description, -1) != " "){
+					if($this->description == "" or !str_ends_with($this->description, " ")){
 						$this->description .= " ";
 					}
 					$txt = substr($this->description, $this->custom["times_" . $CID], $ln);

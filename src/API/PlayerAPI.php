@@ -190,8 +190,8 @@ class PlayerAPI{
 				}
 				break;
 			case "tp":
-				if(count($args) <= 2 or substr($args[0], 0, 2) === "w:" or substr($args[1], 0, 2) === "w:"){
-					if((!isset($args[1]) or substr($args[0], 0, 2) === "w:") and isset($args[0]) and ($issuer instanceof Player)){
+				if(count($args) <= 2 or str_starts_with($args[0], "w:") or str_starts_with($args[1], "w:")){
+					if((!isset($args[1]) or str_starts_with($args[0], "w:")) and isset($args[0]) and ($issuer instanceof Player)){
 						$name = $issuer->username;
 						$target = implode(" ", $args);
 					}elseif(isset($args[1]) and isset($args[0])){
@@ -297,7 +297,7 @@ class PlayerAPI{
 	}
 
 	public function teleport(&$name, &$target){
-		if(substr($target, 0, 2) === "w:"){
+		if(str_starts_with($target, "w:")){
 			$lv = $this->server->api->level->get(substr($target, 2));
 			if($lv instanceof Level){
 				$origin = $this->get($name);

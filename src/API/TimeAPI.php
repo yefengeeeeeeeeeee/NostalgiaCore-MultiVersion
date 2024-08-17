@@ -31,7 +31,7 @@ class TimeAPI{
 				$p = strtolower(array_shift($args));
 				switch($p){
 					case "check":
-						if(substr($args[0] ?? "", 0, 2) === "w:"){
+						if(str_starts_with($args[0] ?? "", "w:")){
 							$levelName = preg_replace("/w:/", "", $args[0]);
 							$level = $this->server->api->level->get($levelName);
 							if($level instanceof Level){
@@ -44,7 +44,7 @@ class TimeAPI{
 						$output .= "Time" . $world . ": " . $this->getDate($level) . ", " . $this->getPhase($level) . " (" . $this->get(true, $level) . " ticks)\n";
 						break;
 					case "add":
-						if(substr($args[1] ?? "", 0, 2) === "w:"){
+						if(str_starts_with($args[1] ?? "", "w:")){
 							$levelName = preg_replace("/w:/", "", $args[1]);
 							$level = $this->server->api->level->get($levelName);
 							if($level instanceof Level){
@@ -65,7 +65,7 @@ class TimeAPI{
 						$output .= "Added $addTime ticks" . $world . "\n";
 						break;
 					case "set":
-						if(isset($args[1]) and substr($args[1], 0, 2) === "w:"){
+						if(isset($args[1]) and str_starts_with($args[1], "w:")){
 							$levelName = preg_replace("/w:/", "", $args[1]);
 							$level = $this->server->api->level->get($levelName);
 							if($level instanceof Level){
@@ -92,7 +92,7 @@ class TimeAPI{
 					case "day":
 					case "sunset":
 					case "night":
-						if(count($args) > 1 && substr($args[1], 0, 2) === "w:"){
+						if(count($args) > 1 && str_starts_with($args[1], "w:")){
 							$levelName = preg_replace("/w:/", "", $args[1]);
 							$level = $this->server->api->level->get($levelName);
 							if($level instanceof Level){
