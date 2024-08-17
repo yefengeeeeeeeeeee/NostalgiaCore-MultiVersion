@@ -118,7 +118,7 @@ function arg($name, $default = false){
 		$arguments = arguments($argv);
 	}
 
-    return $arguments["commands"][$name] ?? $default;
+	return $arguments["commands"][$name] ?? $default;
 }
 
 function arguments($args){
@@ -159,7 +159,7 @@ function arguments($args){
 
 		$ret['input'][] = $arg;
 
-    }
+	}
 
 	return $ret;
 }
@@ -175,13 +175,13 @@ function console($message, $EOL = true, $log = true, $level = 1){
 		if(ENABLE_ANSI === true){
 			$add = "";
 			if(preg_match("/\[([a-zA-Z0-9]*)\]/", $message, $matches) > 0){
-                $add .= match ($matches[1]) {
-                    "ERROR", "SEVERE" => FORMAT_RED,
-                    "INTERNAL", "DEBUG" => FORMAT_WHITE,
-                    "WARNING" => FORMAT_YELLOW,
-                    "NOTICE" => FORMAT_AQUA,
-                    default => FORMAT_GRAY,
-                };
+				$add .= match ($matches[1]) {
+					"ERROR", "SEVERE" => FORMAT_RED,
+					"INTERNAL", "DEBUG" => FORMAT_WHITE,
+					"WARNING" => FORMAT_YELLOW,
+					"NOTICE" => FORMAT_AQUA,
+					default => FORMAT_GRAY,
+				};
 			}
 			$message = TextFormat::toANSI($time . $add . $message . FORMAT_RESET);
 		}else{

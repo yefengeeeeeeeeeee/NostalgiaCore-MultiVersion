@@ -564,7 +564,7 @@ class Utils{
 	}
 
 	public static function readBool($b){
-		return !(Utils::readByte($b, false) === 0);
+		return Utils::readByte($b, false) != 0;
 	}
 
 	public static function writeBool($b){

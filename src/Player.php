@@ -413,7 +413,7 @@ class Player{
 	 * @return Item
 	 */
 	public function getSlot($slot){
-        return $this->inventory[(int)$slot] ?? BlockAPI::getItem(AIR, 0, 0);
+		return $this->inventory[(int)$slot] ?? BlockAPI::getItem(AIR, 0, 0);
 	}
 
 	/**
@@ -720,7 +720,7 @@ class Player{
 	 * @return Item
 	 */
 	public function getArmor($slot){
-        return $this->armor[(int)$slot] ?? BlockAPI::getItem(AIR, 0, 0);
+		return $this->armor[(int)$slot] ?? BlockAPI::getItem(AIR, 0, 0);
 	}
 
 	public function setArmor($slot, Item $armor, $send = true){
@@ -1029,7 +1029,8 @@ class Player{
 					}
 				}
 			}
-            reset_spawn_pos:
+			return;
+			reset_spawn_pos:
 			$this->spawnPosition = $this->server->api->level->getDefault()->getSpawn();
 		}
 	}
