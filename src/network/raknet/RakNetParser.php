@@ -143,7 +143,7 @@ class RakNetParser{
 			$orderChannel = false;
 		}
 
-		if($hasSplit == true){
+		if($hasSplit){
 			$splitCount = $this->getInt();
 			$splitID = $this->getShort();
 			$splitIndex = $this->getInt();

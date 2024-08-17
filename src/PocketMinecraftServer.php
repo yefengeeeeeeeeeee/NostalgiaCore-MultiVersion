@@ -106,7 +106,7 @@ class PocketMinecraftServer{
 		if(self::$FORCE_20_TPS){
 			ConsoleAPI::warn("Forcing 20 tps. This may result in higher CPU usage!");
 		}
-		if($this->extraprops->get("discord-msg") == true){
+		if($this->extraprops->get("discord-msg")){
 			if($this->extraprops->get("discord-webhook-url") !== "none"){
 				console("[INFO] Discord Logger is enabled.");
 			}else{
@@ -226,7 +226,7 @@ class PocketMinecraftServer{
 	}
 	
 	public function send2Discord($msg){
-		if($this->extraprops->get("discord-msg") == true and $this->extraprops->get("discord-webhook-url") !== "none"){
+		if($this->extraprops->get("discord-msg") and $this->extraprops->get("discord-webhook-url") !== "none"){
 			$url = $this->extraprops->get("discord-webhook-url");
 			$name = $this->extraprops->get("discord-bot-name");
 			$this->asyncOperation(ASYNC_CURL_POST, [
