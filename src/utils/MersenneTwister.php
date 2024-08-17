@@ -125,7 +125,7 @@ class MersenneTwister{
 		$this->init_with_integer(19650218);
 		$i = 1;
 		$j = 0;
-		$k = (N > $key_length ? N : $key_length);
+		$k = (max(N, $key_length));
 		for(; $k; $k--){
 			$mt[$i] = add_3($mt[$i] ^
 				mul_by_1664525($mt[$i - 1] ^ (($mt[$i - 1] >> 30) & 3)),

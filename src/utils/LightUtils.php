@@ -15,6 +15,6 @@ class LightUtils{
 		$diffZ = ($source->z - $block->z);
 		$distance = $diffX*$diffX + $diffY*$diffY + $diffZ*$diffZ;
 		$result = floor($source->getMaxLightValue() - $distance);
-		return $result <= 0 ? 0 : $result;
+		return max($result, 0);
 	}
 }
