@@ -376,7 +376,7 @@ class Level{
 		if(count($this->players) == 0) return false;
 		if($this->server->api->time->getPhase($this)  === "night"){ //TODO vanilla
 			foreach($this->players as $p){
-				if($p->isSleeping == false || $p->sleepingTime < 100){
+				if(!$p->isSleeping || $p->sleepingTime < 100){
 					return false;
 				}
 			}
@@ -906,7 +906,7 @@ class Level{
 			return false;
 		}
 		$now = microtime(true);
-		if($this->stopTime == true){
+		if($this->stopTime){
 			$time = $this->startTime;
 		}else{
 			$time = $this->startTime + ($now - $this->startCheck) * 20;

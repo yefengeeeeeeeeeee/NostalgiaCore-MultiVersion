@@ -7,7 +7,7 @@ require_once(FILE_PATH . "/src/functions.php");
 /***REM_END***/
 define("DATA_PATH", realpath(arg("data-path", FILE_PATH)) . "/");
 
-if(arg("enable-ansi", strpos(strtoupper(php_uname("s")), "WIN") === 0 ? false : true) === true and arg("disable-ansi", false) !== true){
+if(arg("enable-ansi", !(strpos(strtoupper(php_uname("s")), "WIN") === 0)) === true and arg("disable-ansi", false) !== true){
 	define("ENABLE_ANSI", true);
 }else{
 	define("ENABLE_ANSI", false);
@@ -120,7 +120,7 @@ $inc = get_included_files();
 $inc[] = array_shift($inc);
 $srcdir = realpath(FILE_PATH . "src/");
 foreach($inc as $s){
-	if(strpos(realpath(dirname($s)), $srcdir) === false and strtolower(basename($s)) !== "pocketmine-mp.php"){
+	if(!str_contains(realpath(dirname($s)), $srcdir) and strtolower(basename($s)) !== "pocketmine-mp.php"){
 		continue;
 	}
 	$sha1sum ^= sha1_file($s, true);
@@ -130,7 +130,7 @@ ini_set("opcache.mmap_base", bin2hex(Utils::getRandomBytes(8, false))); //Fix OP
 define("SOURCE_SHA1SUM", bin2hex($sha1sum));
 
 /***REM_START***/
-if(!file_exists(DATA_PATH . "server.properties") and arg("no-wizard", false) != true){
+if(!file_exists(DATA_PATH . "server.properties") and !arg("no-wizard", false)){
 	$installer = new Installer();
 }
 /***REM_END***/

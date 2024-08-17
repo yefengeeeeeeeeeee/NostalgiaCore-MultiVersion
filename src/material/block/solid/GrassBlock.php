@@ -45,7 +45,6 @@ class GrassBlock extends SolidBlock{
 			ServerAPI::request()->api->entity->drop(new Position($this->x+0.5, $this->y+1, $this->z+0.5, $this->level), BlockAPI::getItem(295,0,1));
 			return;
 		}
-		return;
 	}
 	public static function onRandomTick(Level $level, $x, $y, $z){
 		if(!StaticBlock::getIsTransparent($level->level->getBlockID($x, $y + 1, $z)) && mt_rand(0, 2) == 1){

@@ -4,7 +4,7 @@ set_time_limit(0);
 
 if(ini_get("date.timezone") == ""){ //No Timezone set
 	date_default_timezone_set("GMT");
-	if(strpos(" " . strtoupper(php_uname("s")), " WIN") !== false){
+	if(str_contains(" " . strtoupper(php_uname("s")), " WIN")){
 		$time = time();
 		$time -= $time % 60;
 		//Example: USA
@@ -24,7 +24,7 @@ if(ini_get("date.timezone") == ""){ //No Timezone set
 	date_default_timezone_set($d);
 }else{
 	$d = @date_default_timezone_get();
-	if(strpos($d, "/") === false){
+	if(!str_contains($d, "/")){
 		$d = timezone_name_from_abbr($d);
 		@ini_set("date.timezone", $d);
 		date_default_timezone_set($d);

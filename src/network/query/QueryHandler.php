@@ -39,7 +39,7 @@ class QueryHandler{
 	public function regenerateInfo(){
 		$str = "";
 		$plist = "NostalgiaCore " . MAJOR_VERSION;
-		if($this->server->extraprops->get("query-plugins") == true){
+		if($this->server->extraprops->get("query-plugins")){
 			$pl = $this->server->api->plugin->getList();
 			if(count($pl) > 0){
 				$plist .= ":";

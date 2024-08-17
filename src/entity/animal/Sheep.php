@@ -7,10 +7,10 @@ class Sheep extends Animal{
 	function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		$this->setSize(0.9, 1.3);
 		parent::__construct($level, $eid, $class, $type, $data);
-		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"] : 8, "generic");
+		$this->setHealth($this->data["Health"] ?? 8, "generic");
 		$this->setName("Sheep");
-		$this->data["Sheared"] = isset($this->data["Sheared"]) ? $this->data["Sheared"] : 0;
-		$this->data["Color"] = isset($this->data["Color"]) ? $this->data["Color"] : $this->sheepColor();
+		$this->data["Sheared"] = $this->data["Sheared"] ?? 0;
+		$this->data["Color"] = $this->data["Color"] ?? $this->sheepColor();
 		$this->setSpeed(0.25);
 		
 		$this->ai->addTask(new TaskRandomWalk(1.0));

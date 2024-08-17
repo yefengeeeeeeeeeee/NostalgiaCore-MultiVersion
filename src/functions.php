@@ -118,11 +118,7 @@ function arg($name, $default = false){
 		$arguments = arguments($argv);
 	}
 
-	if(isset($arguments["commands"][$name])){
-		return $arguments["commands"][$name];
-	}else{
-		return $default;
-	}
+	return $arguments["commands"][$name] ?? $default;
 }
 
 function arguments($args){
@@ -144,7 +140,7 @@ function arguments($args){
 	foreach($args as $arg){
 
 		// Is it a command? (prefixed with --)
-		if(substr($arg, 0, 2) === '--'){
+		if(str_starts_with($arg, '--')){
 
 			$value = preg_split('/[= ]/', $arg, 2);
 			$com = substr(array_shift($value), 2);
@@ -156,13 +152,12 @@ function arguments($args){
 		}
 
 		// Is it a flag? (prefixed with -)
-		if(substr($arg, 0, 1) === '-'){
+		if(str_starts_with($arg, '-')){
 			$ret['flags'][] = substr($arg, 1);
 			continue;
 		}
 
 		$ret['input'][] = $arg;
-		continue;
 
 	}
 
@@ -180,25 +175,13 @@ function console($message, $EOL = true, $log = true, $level = 1){
 		if(ENABLE_ANSI === true){
 			$add = "";
 			if(preg_match("/\[([a-zA-Z0-9]*)\]/", $message, $matches) > 0){
-				switch($matches[1]){
-					case "ERROR":
-					case "SEVERE":
-						$add .= FORMAT_RED;
-						break;
-					case "INTERNAL":
-					case "DEBUG":
-						$add .= FORMAT_WHITE;
-						break;
-					case "WARNING":
-						$add .= FORMAT_YELLOW;
-						break;
-					case "NOTICE":
-						$add .= FORMAT_AQUA;
-						break;
-					default:
-						$add .= FORMAT_GRAY;
-						break;
-				}
+				$add .= match ($matches[1]) {
+					"ERROR", "SEVERE" => FORMAT_RED,
+					"INTERNAL", "DEBUG" => FORMAT_WHITE,
+					"WARNING" => FORMAT_YELLOW,
+					"NOTICE" => FORMAT_AQUA,
+					default => FORMAT_GRAY,
+				};
 			}
 			$message = TextFormat::toANSI($time . $add . $message . FORMAT_RESET);
 		}else{
@@ -218,7 +201,7 @@ function getTrace($start = 1){
 		foreach($trace[$i]["args"] as $name => $value){
 			$params .= (is_object($value) ? get_class($value) . " " . (method_exists($value, "__toString") ? $value->__toString() : "object") : gettype($value) . " " . @strval($value)) . ", ";
 		}
-		$messages[] = "#$j " . (isset($trace[$i]["file"]) ? $trace[$i]["file"] : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . $trace[$i]["type"] : "") . $trace[$i]["function"] . "(" . substr($params, 0, -2) . ")";
+		$messages[] = "#$j " . ($trace[$i]["file"] ?? "") . "(" . ($trace[$i]["line"] ?? "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . $trace[$i]["type"] : "") . $trace[$i]["function"] . "(" . substr($params, 0, -2) . ")";
 	}
 	return $messages;
 }
@@ -244,7 +227,7 @@ function error_handler($errno, $errstr, $errfile, $errline){
 		E_DEPRECATED => "E_DEPRECATED",
 		E_USER_DEPRECATED => "E_USER_DEPRECATED",
 	];
-	$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
+	$errno = $errorConversion[$errno] ?? $errno;
 	console("[ERROR] A " . $errno . " error happened: \"$errstr\" in \"$errfile\" at line $errline", true, true, 0);
 	foreach(getTrace() as $i => $line){
 		console("[TRACE] $line");

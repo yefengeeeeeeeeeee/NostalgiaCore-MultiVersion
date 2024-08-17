@@ -152,7 +152,7 @@ class ServerAPI{
 		//define("MAX_CHUNK_RATE", 20 / $this->getProperty("max-chunks-per-second", 8)); //Default rate ~512 kB/s
 		MobSpawner::$spawnAnimals = $this->getProperty("spawn-animals");
 		MobSpawner::$spawnMobs = $this->getProperty("spawn-mobs");
-		if($this->getProperty("upnp-forwarding") == true){
+		if($this->getProperty("upnp-forwarding")){
 			console("[INFO] [UPnP] Trying to port forward...");
 			UPnP_PortForward($this->getProperty("server-port"));
 		}
@@ -245,7 +245,7 @@ class ServerAPI{
 
 	public function setProperty($name, $value, $save = true){
 		$this->config->set($name, $value);
-		if($save == true){
+		if($save){
 			$this->writeProperties();
 		}
 		$this->loadProperties();

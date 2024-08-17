@@ -133,8 +133,8 @@ class MobSpawner{
 			$b1 = $this->level->level->getBlockID($x, $y - 1, $z);
 			if(
 				!StaticBlock::getIsSolid($b) && !StaticBlock::getIsLiquid($b) && 
-				(StaticBlock::getIsSolid($b1) && ($grassOnly ? $b1 === GRASS : true) && 
-				($highMob ? !StaticBlock::getIsSolid($b2) && !StaticBlock::getIsLiquid($b2) : true))
+				(StaticBlock::getIsSolid($b1) && (!$grassOnly || $b1 === GRASS) &&
+				(!$highMob || !StaticBlock::getIsSolid($b2) && !StaticBlock::getIsLiquid($b2)))
 			){
 				$allowed[] = $y;
 			}

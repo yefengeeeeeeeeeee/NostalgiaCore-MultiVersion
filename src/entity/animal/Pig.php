@@ -5,7 +5,7 @@ class Pig extends Animal implements Rideable{
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		$this->setSize(0.9, 0.9);
 		parent::__construct($level, $eid, $class, $type, $data);
-		$this->setHealth(isset($this->data["Health"]) ? $this->data["Health"]:10, "generic");
+		$this->setHealth($this->data["Health"] ?? 10, "generic");
 		$this->server = ServerAPI::request();
 		$this->setName("Pig");
 		$this->setSpeed(0.25);

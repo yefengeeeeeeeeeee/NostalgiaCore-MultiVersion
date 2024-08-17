@@ -87,7 +87,7 @@ class TaskAttackPlayer extends TaskBase
 	}
 	
 	public function onEnd(EntityAI $ai)
-    {
+	{
 		$ai->entity->target = false;
 	}
 

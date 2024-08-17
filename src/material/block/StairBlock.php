@@ -80,7 +80,7 @@ class StairBlock extends TransparentBlock{
 			for($v15 = 0; $v15 < /*count($v11}*/ 2; ++$v15){
 				$v16 = $v11[$v15];
 				if($v16 == $v12){
-					; //wat
+					//wat
 				}
 			}
 			

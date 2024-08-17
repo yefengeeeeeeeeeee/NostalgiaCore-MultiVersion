@@ -16,7 +16,7 @@ class Matrix implements ArrayAccess{
 		for($r = 0; $r < $this->rows; ++$r){
 			$this->matrix[$r] = [];
 			for($c = 0; $c < $this->columns; ++$c){
-				$this->matrix[$r][$c] = isset($m[$r][$c]) ? $m[$r][$c] : 0;
+				$this->matrix[$r][$c] = $m[$r][$c] ?? 0;
 			}
 		}
 	}
@@ -140,15 +140,12 @@ class Matrix implements ArrayAccess{
 		if($this->isSquare() !== true){
 			return false;
 		}
-		switch($this->rows){
-			case 1:
-				return 0;
-			case 2:
-				return $this->matrix[0][0] * $this->matrix[1][1] - $this->matrix[0][1] * $this->matrix[1][0];
-			case 3:
-				return $this->matrix[0][0] * $this->matrix[1][1] * $this->matrix[2][2] + $this->matrix[0][1] * $this->matrix[1][2] * $this->matrix[2][0] + $this->matrix[0][2] * $this->matrix[1][0] * $this->matrix[2][1] - $this->matrix[2][0] * $this->matrix[1][1] * $this->matrix[0][2] - $this->matrix[2][1] * $this->matrix[1][2] * $this->matrix[0][0] - $this->matrix[2][2] * $this->matrix[1][0] * $this->matrix[0][1];
-		}
-		return false;
+		return match ($this->rows) {
+			1 => 0,
+			2 => $this->matrix[0][0] * $this->matrix[1][1] - $this->matrix[0][1] * $this->matrix[1][0],
+			3 => $this->matrix[0][0] * $this->matrix[1][1] * $this->matrix[2][2] + $this->matrix[0][1] * $this->matrix[1][2] * $this->matrix[2][0] + $this->matrix[0][2] * $this->matrix[1][0] * $this->matrix[2][1] - $this->matrix[2][0] * $this->matrix[1][1] * $this->matrix[0][2] - $this->matrix[2][1] * $this->matrix[1][2] * $this->matrix[0][0] - $this->matrix[2][2] * $this->matrix[1][0] * $this->matrix[0][1],
+			default => false,
+		};
 	}
 
 

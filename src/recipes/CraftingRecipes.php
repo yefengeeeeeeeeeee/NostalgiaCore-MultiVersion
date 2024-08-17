@@ -3,7 +3,7 @@
 class CraftingRecipes{
 
 	private static $small = [ // Probably means craftable on crafting bench and in inventory. Name it better!
-	                           // Building
+							   // Building
 		"CLAY:?x4=>CLAY_BLOCK:0x1",
 		"WOODEN_PLANKS:?x4=>WORKBENCH:0x1",
 		"GLOWSTONE_DUST:?x4=>GLOWSTONE_BLOCK:0x1",
@@ -73,7 +73,7 @@ class CraftingRecipes{
 	];
 
 	private static $big = [ // Probably means only craftable on crafting bench. Name it better!
-	                         // Building
+							 // Building
 		"WOOL:?x3,WOODEN_PLANKS:?x3=>BED:0x1",
 		"WOODEN_PLANKS:?x8=>CHEST:0x1",
 		"STICK:?x6=>FENCE:0x2",

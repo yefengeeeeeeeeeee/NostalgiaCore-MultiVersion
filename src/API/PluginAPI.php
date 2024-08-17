@@ -55,7 +55,7 @@ class PluginAPI extends stdClass{
 			return;
 		}
 		foreach($this->plugins as $p){
-			if(method_exists($p[0], "__destruct")){$p[0]->__destruct();};
+			if(method_exists($p[0], "__destruct")) $p[0]->__destruct();
 		}
 		unset($this->plugins);
 	}

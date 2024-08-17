@@ -104,22 +104,15 @@ class Vector3{
 	}
 
 	public function getSide($side, $step = 1){
-		switch((int) $side){
-			case 0:
-				return new Vector3($this->x, $this->y - $step, $this->z);
-			case 1:
-				return new Vector3($this->x, $this->y + $step, $this->z);
-			case 2:
-				return new Vector3($this->x, $this->y, $this->z - $step);
-			case 3:
-				return new Vector3($this->x, $this->y, $this->z + $step);
-			case 4:
-				return new Vector3($this->x - $step, $this->y, $this->z);
-			case 5:
-				return new Vector3($this->x + $step, $this->y, $this->z);
-			default:
-				return $this;
-		}
+		return match ((int)$side) {
+			0 => new Vector3($this->x, $this->y - $step, $this->z),
+			1 => new Vector3($this->x, $this->y + $step, $this->z),
+			2 => new Vector3($this->x, $this->y, $this->z - $step),
+			3 => new Vector3($this->x, $this->y, $this->z + $step),
+			4 => new Vector3($this->x - $step, $this->y, $this->z),
+			5 => new Vector3($this->x + $step, $this->y, $this->z),
+			default => $this,
+		};
 	}
 
 	public function distance($x = 0, $y = 0, $z = 0){

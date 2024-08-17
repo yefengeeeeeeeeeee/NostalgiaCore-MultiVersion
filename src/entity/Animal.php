@@ -14,7 +14,7 @@ abstract class Animal extends Creature implements Ageable, Breedable{
 	
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		parent::__construct($level, $eid, $class, $type, $data);
-		$this->setAge(isset($data["Age"]) ? $data["Age"] : 0);
+		$this->setAge($data["Age"] ?? 0);
 		if(isset($this->data["IsBaby"]) && $this->data["IsBaby"] && $this->getAge() >= 0){
 			$this->setAge(-24000);
 		}

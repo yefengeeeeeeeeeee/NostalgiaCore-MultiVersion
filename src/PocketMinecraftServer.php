@@ -106,7 +106,7 @@ class PocketMinecraftServer{
 		if(self::$FORCE_20_TPS){
 			ConsoleAPI::warn("Forcing 20 tps. This may result in higher CPU usage!");
 		}
-		if($this->extraprops->get("discord-msg") == true){
+		if($this->extraprops->get("discord-msg")){
 			if($this->extraprops->get("discord-webhook-url") !== "none"){
 				console("[INFO] Discord Logger is enabled.");
 			}else{
@@ -226,7 +226,7 @@ class PocketMinecraftServer{
 	}
 	
 	public function send2Discord($msg){
-		if($this->extraprops->get("discord-msg") == true and $this->extraprops->get("discord-webhook-url") !== "none"){
+		if($this->extraprops->get("discord-msg") and $this->extraprops->get("discord-webhook-url") !== "none"){
 			$url = $this->extraprops->get("discord-webhook-url");
 			$name = $this->extraprops->get("discord-bot-name");
 			$this->asyncOperation(ASYNC_CURL_POST, [
@@ -548,7 +548,7 @@ class PocketMinecraftServer{
 						$this->custom["times_" . $CID] = 0;
 					}
 					$ln = 15;
-					if($this->description == "" or substr($this->description, -1) != " "){
+					if($this->description == "" or !str_ends_with($this->description, " ")){
 						$this->description .= " ";
 					}
 					$txt = substr($this->description, $this->custom["times_" . $CID], $ln);
@@ -688,7 +688,7 @@ class PocketMinecraftServer{
 			E_DEPRECATED => "E_DEPRECATED",
 			E_USER_DEPRECATED => "E_USER_DEPRECATED",
 		];
-		$er["type"] = isset($errorConversion[$er["type"]]) ? $errorConversion[$er["type"]] : $er["type"];
+		$er["type"] = $errorConversion[$er["type"]] ?? $er["type"];
 		$dump .= "Error: " . var_export($er, true) . "\r\n\r\n";
 		if(stripos($er["file"], "plugin") !== false){
 			$dump .= "THIS ERROR WAS CAUSED BY A PLUGIN. REPORT IT TO THE PLUGIN DEVELOPER.\r\n";

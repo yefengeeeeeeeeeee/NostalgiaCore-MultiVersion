@@ -57,38 +57,18 @@ class PlayerAPI{
 						}
 					}
 				}else{
-					switch($data["cause"]){
-						case "cactus":
-							$message = " was pricked to death";
-							break;
-						case "lava":
-							$message = " tried to swim in lava";
-							break;
-						case "fire":
-							$message = " went up in flames";
-							break;
-						case "burning":
-							$message = " burned to death";
-							break;
-						case "suffocation":
-							$message = " suffocated in a wall";
-							break;
-						case "water":
-							$message = " drowned";
-							break;
-						case "void":
-							$message = " fell out of the world";
-							break;
-						case "fall":
-							$message = " hit the ground too hard";
-							break;
-						case "explosion":
-							$message = " blew up";
-							break;
-						default:
-							$message = " died";
-							break;
-					}
+					$message = match ($data["cause"]) {
+						"cactus" => " was pricked to death",
+						"lava" => " tried to swim in lava",
+						"fire" => " went up in flames",
+						"burning" => " burned to death",
+						"suffocation" => " suffocated in a wall",
+						"water" => " drowned",
+						"void" => " fell out of the world",
+						"fall" => " hit the ground too hard",
+						"explosion" => " blew up",
+						default => " died",
+					};
 				}
 				$this->server->api->chat->broadcast($data["player"]->username . $message);
 				return true;
@@ -190,8 +170,8 @@ class PlayerAPI{
 				}
 				break;
 			case "tp":
-				if(count($args) <= 2 or substr($args[0], 0, 2) === "w:" or substr($args[1], 0, 2) === "w:"){
-					if((!isset($args[1]) or substr($args[0], 0, 2) === "w:") and isset($args[0]) and ($issuer instanceof Player)){
+				if(count($args) <= 2 or str_starts_with($args[0], "w:") or str_starts_with($args[1], "w:")){
+					if((!isset($args[1]) or str_starts_with($args[0], "w:")) and isset($args[0]) and ($issuer instanceof Player)){
 						$name = $issuer->username;
 						$target = implode(" ", $args);
 					}elseif(isset($args[1]) and isset($args[0])){
@@ -297,7 +277,7 @@ class PlayerAPI{
 	}
 
 	public function teleport(&$name, &$target){
-		if(substr($target, 0, 2) === "w:"){
+		if(str_starts_with($target, "w:")){
 			$lv = $this->server->api->level->get(substr($target, 2));
 			if($lv instanceof Level){
 				$origin = $this->get($name);

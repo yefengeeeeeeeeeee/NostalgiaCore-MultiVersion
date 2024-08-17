@@ -130,7 +130,7 @@ class AchievementAPI{
 			return false;
 		}
 		
-		if(!isset($player->achievements[$achievementId]) or $player->achievements[$achievementId] == false){
+		if(!isset($player->achievements[$achievementId]) or !$player->achievements[$achievementId]){
 			return false;
 		}
 		return true;
@@ -140,7 +140,7 @@ class AchievementAPI{
 		if(isset(self::$achievements[$achievementId])){
 			$result = ServerAPI::request()->api->dhandle("achievement.broadcast", ["player" => $player, "achievementId" => $achievementId]);
 			if($result !== false and $result !== true){
-				if(ServerAPI::request()->api->getProperty("announce-player-achievements") == true){
+				if(ServerAPI::request()->api->getProperty("announce-player-achievements")){
 					ServerAPI::request()->api->chat->broadcast($player->username . " has just earned the achievement [" . self::$achievements[$achievementId]["name"] . "]");
 				}else{
 					$player->sendChat("You have just earned the achievement [" . self::$achievements[$achievementId]["name"] . "]");
