@@ -10,21 +10,15 @@ class NetherrackBlock extends SolidBlock{
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
-		switch($item->getPickaxeLevel()){
-			case 5:
-				return 0.1;
-			case 4:
-				return 0.1;
-			case 3:
-				return 0.15;
-			case 2:
-				return 0.05;
-			case 1:
-				return 0.3;
-			default:
-				return 2;
 		}
+        return match ($item->getPickaxeLevel()) {
+            5 => 0.1,
+            4 => 0.1,
+            3 => 0.15,
+            2 => 0.05,
+            1 => 0.3,
+            default => 2,
+        };
 	}
 
 	public function getDrops(Item $item, Player $player){

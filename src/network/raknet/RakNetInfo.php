@@ -38,37 +38,9 @@ abstract class RakNetInfo{
 	const ACK = 0xc0;
 
 	public static function isValid($pid){
-		switch((int) $pid){
-			case RakNetInfo::UNCONNECTED_PING:
-			case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
-			case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
-			case RakNetInfo::OPEN_CONNECTION_REPLY_1:
-			case RakNetInfo::OPEN_CONNECTION_REQUEST_2:
-			case RakNetInfo::OPEN_CONNECTION_REPLY_2:
-			case RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION:
-			case RakNetInfo::UNCONNECTED_PONG:
-			case RakNetInfo::ADVERTISE_SYSTEM:
-			case RakNetInfo::DATA_PACKET_0:
-			case RakNetInfo::DATA_PACKET_1:
-			case RakNetInfo::DATA_PACKET_2:
-			case RakNetInfo::DATA_PACKET_3:
-			case RakNetInfo::DATA_PACKET_4:
-			case RakNetInfo::DATA_PACKET_5:
-			case RakNetInfo::DATA_PACKET_6:
-			case RakNetInfo::DATA_PACKET_7:
-			case RakNetInfo::DATA_PACKET_8:
-			case RakNetInfo::DATA_PACKET_9:
-			case RakNetInfo::DATA_PACKET_A:
-			case RakNetInfo::DATA_PACKET_B:
-			case RakNetInfo::DATA_PACKET_C:
-			case RakNetInfo::DATA_PACKET_D:
-			case RakNetInfo::DATA_PACKET_E:
-			case RakNetInfo::DATA_PACKET_F:
-			case RakNetInfo::NACK:
-			case RakNetInfo::ACK:
-				return true;
-			default:
-				return false;
-		}
+        return match ((int)$pid) {
+            RakNetInfo::UNCONNECTED_PING, RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS, RakNetInfo::OPEN_CONNECTION_REQUEST_1, RakNetInfo::OPEN_CONNECTION_REPLY_1, RakNetInfo::OPEN_CONNECTION_REQUEST_2, RakNetInfo::OPEN_CONNECTION_REPLY_2, RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION, RakNetInfo::UNCONNECTED_PONG, RakNetInfo::ADVERTISE_SYSTEM, RakNetInfo::DATA_PACKET_0, RakNetInfo::DATA_PACKET_1, RakNetInfo::DATA_PACKET_2, RakNetInfo::DATA_PACKET_3, RakNetInfo::DATA_PACKET_4, RakNetInfo::DATA_PACKET_5, RakNetInfo::DATA_PACKET_6, RakNetInfo::DATA_PACKET_7, RakNetInfo::DATA_PACKET_8, RakNetInfo::DATA_PACKET_9, RakNetInfo::DATA_PACKET_A, RakNetInfo::DATA_PACKET_B, RakNetInfo::DATA_PACKET_C, RakNetInfo::DATA_PACKET_D, RakNetInfo::DATA_PACKET_E, RakNetInfo::DATA_PACKET_F, RakNetInfo::NACK, RakNetInfo::ACK => true,
+            default => false,
+        };
 	}
 }

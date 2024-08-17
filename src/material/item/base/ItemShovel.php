@@ -7,20 +7,14 @@ class ItemShovel extends ItemTool
 	}
 
 	public function getLevel(){
-		switch($this->id){
-			case WOODEN_SHOVEL:
-				return 1;
-			case GOLDEN_SHOVEL:
-				return 2;
-			case STONE_SHOVEL:
-				return 3;
-			case IRON_SHOVEL:
-				return 4;
-			case DIAMOND_SHOVEL:
-				return 5;
-			default:
-				return false;
-		}
+        return match ($this->id) {
+            WOODEN_SHOVEL => 1,
+            GOLDEN_SHOVEL => 2,
+            STONE_SHOVEL => 3,
+            IRON_SHOVEL => 4,
+            DIAMOND_SHOVEL => 5,
+            default => false,
+        };
 	}
 }
 

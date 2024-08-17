@@ -175,25 +175,13 @@ function console($message, $EOL = true, $log = true, $level = 1){
 		if(ENABLE_ANSI === true){
 			$add = "";
 			if(preg_match("/\[([a-zA-Z0-9]*)\]/", $message, $matches) > 0){
-				switch($matches[1]){
-					case "ERROR":
-					case "SEVERE":
-						$add .= FORMAT_RED;
-						break;
-					case "INTERNAL":
-					case "DEBUG":
-						$add .= FORMAT_WHITE;
-						break;
-					case "WARNING":
-						$add .= FORMAT_YELLOW;
-						break;
-					case "NOTICE":
-						$add .= FORMAT_AQUA;
-						break;
-					default:
-						$add .= FORMAT_GRAY;
-						break;
-				}
+                $add .= match ($matches[1]) {
+                    "ERROR", "SEVERE" => FORMAT_RED,
+                    "INTERNAL", "DEBUG" => FORMAT_WHITE,
+                    "WARNING" => FORMAT_YELLOW,
+                    "NOTICE" => FORMAT_AQUA,
+                    default => FORMAT_GRAY,
+                };
 			}
 			$message = TextFormat::toANSI($time . $add . $message . FORMAT_RESET);
 		}else{

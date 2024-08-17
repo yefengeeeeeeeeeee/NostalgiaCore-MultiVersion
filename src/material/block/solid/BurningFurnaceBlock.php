@@ -55,21 +55,15 @@ class BurningFurnaceBlock extends SolidBlock implements LightingBlock{
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
-		switch($item->getPickaxeLevel()){
-			case 5:
-				return 0.7;
-			case 4:
-				return 0.9;
-			case 3:
-				return 1.35;
-			case 2:
-				return 0.45;
-			case 1:
-				return 2.65;
-			default:
-				return 17.5;
 		}
+        return match ($item->getPickaxeLevel()) {
+            5 => 0.7,
+            4 => 0.9,
+            3 => 1.35,
+            2 => 0.45,
+            1 => 2.65,
+            default => 17.5,
+        };
 	}
 	
 	public function getDrops(Item $item, Player $player){

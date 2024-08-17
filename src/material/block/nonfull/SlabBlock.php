@@ -93,21 +93,15 @@ class SlabBlock extends TransparentBlock{
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
-		switch($item->getPickaxeLevel()){
-			case 5:
-				return 0.4;
-			case 4:
-				return 0.5;
-			case 3:
-				return 0.75;
-			case 2:
-				return 0.25;
-			case 1:
-				return 1.5;
-			default:
-				return 10;
 		}
+        return match ($item->getPickaxeLevel()) {
+            5 => 0.4,
+            4 => 0.5,
+            3 => 0.75,
+            2 => 0.25,
+            1 => 1.5,
+            default => 10,
+        };
 	}
 	
 	public function getDrops(Item $item, Player $player){

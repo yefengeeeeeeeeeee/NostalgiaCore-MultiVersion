@@ -10,17 +10,13 @@ class IronOreBlock extends SolidBlock{
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
-		switch($item->getPickaxeLevel()){
-			case 5:
-				return 0.6;
-			case 4:
-				return 0.75;
-			case 3:
-				return 1.15;
-			default:
-				return 15;
 		}
+        return match ($item->getPickaxeLevel()) {
+            5 => 0.6,
+            4 => 0.75,
+            3 => 1.15,
+            default => 15,
+        };
 	}
 	
 	public function getDrops(Item $item, Player $player){

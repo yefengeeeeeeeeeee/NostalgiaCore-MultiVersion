@@ -259,20 +259,14 @@ class Item{
 	
 	//TODO remove?
 	public function getPickaxeLevel(){ //Returns false or level of the pickaxe
-		switch($this->id){
-			case WOODEN_PICKAXE:
-				return 1;
-			case GOLDEN_PICKAXE:
-				return 2;
-			case STONE_PICKAXE:
-				return 3;
-			case IRON_PICKAXE:
-				return 4;
-			case DIAMOND_PICKAXE:
-				return 5;
-			default:
-				return false;
-		}
+        return match ($this->id) {
+            WOODEN_PICKAXE => 1,
+            GOLDEN_PICKAXE => 2,
+            STONE_PICKAXE => 3,
+            IRON_PICKAXE => 4,
+            DIAMOND_PICKAXE => 5,
+            default => false,
+        };
 	}
 	
 	public function isAxe(){
