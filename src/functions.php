@@ -162,9 +162,8 @@ function arguments($args){
 		}
 
 		$ret['input'][] = $arg;
-		continue;
 
-	}
+    }
 
 	return $ret;
 }

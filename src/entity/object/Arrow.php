@@ -139,8 +139,7 @@ class Arrow extends Entity{
 				++$this->groundTicks;
 				if($this->groundTicks >= 1200){ //TODO customizeable?
 					$this->close();
-					return;
-				}
+                }
 			}else{
 				$this->inGround = false;
 				$this->speedX *= lcg_value() * 0.2;

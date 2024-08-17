@@ -1037,8 +1037,7 @@ class Player{
 					}
 				}
 			}
-			return;
-			reset_spawn_pos:
+            reset_spawn_pos:
 			$this->spawnPosition = $this->server->api->level->getDefault()->getSpawn();
 		}
 	}

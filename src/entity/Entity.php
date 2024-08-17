@@ -1496,8 +1496,7 @@ class Entity extends Position
 	{
 		if($this->class === ENTITY_PLAYER){
 			$this->player->teleport(new Vector3($this->x, $this->y, $this->z), false, false, true, false);
-			return;
-		}
+        }
 	}
 
 	public function moveEntityWithOffset($oX, $oY, $oZ)
