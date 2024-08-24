@@ -110,7 +110,7 @@ class PlayerAPI{
 					$sc = (int)$scrw;
 					if($sc < 5 || $sc > 9) return "Slot count must be between 5 and 9.";
 					
-					$issuer->slotCount = $sc;
+					$issuer->setSlotCount($sc);
 					$issuer->sendInventory();
 					return "Changed slot count to $sc";
 				}else{

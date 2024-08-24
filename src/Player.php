@@ -3,7 +3,7 @@
 
 class Player{
 	
-	public static $smallChunks = false;
+	public static $smallChunks = false, $experimentalHotbar = true;
 	/** @var Config */
 	public $data;
 	/** @var Entity */
@@ -15,6 +15,7 @@ class Player{
 	public $inventory;
 	public $slot;
 	public $hotbar;
+	public $curHotbarIndex = 0;
 	public $armor = [];
 	public $loggedIn = false;
 	public $gamemode;
@@ -106,7 +107,7 @@ class Player{
 		$this->gamemode = $this->server->gamemode;
 		$this->level = $this->server->api->level->getDefault();
 		$this->slot = 0;
-		$this->hotbar = [0, -1, -1, -1, -1, -1, -1, -1, -1];
+		$this->hotbar = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 		$this->packetStats = [0, 0];
 		
 		$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
@@ -165,7 +166,12 @@ class Player{
 		$this->setSpawn($spawnPoint);
 		return true;
 	}
-
+	
+	public function setSlotCount($cnt){
+		$this->slotCount = $cnt;
+		$this->data->set("slot-count", $this->slotCount);
+	}
+	
 	/**
 	 * @param Vector3 $pos
 	 * @param float|boolean $yaw
@@ -1660,8 +1666,8 @@ class Player{
 					$this->hotbar = $this->data->get("hotbar");
 					$this->slot = $this->hotbar[0];
 				}else{
-					$this->slot = -1;//0
-					$this->hotbar = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
+					$this->slot = 0;
+					$this->hotbar = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 				}
 				
 				if($this->data->exists("slot-count")){
@@ -1837,21 +1843,36 @@ class Player{
 				$data["slot"] = $packet->slot;
 
 				if($this->server->handle("player.equipment.change", $data) !== false){
-					$this->slot = $packet->slot;
-					if(($this->gamemode & 0x01) === SURVIVAL && count($this->hotbar) >= $this->slotCount){
-						
+					if(!Player::$experimentalHotbar) $this->slot = $packet->slot;
+					if(($this->gamemode & 0x01) === SURVIVAL){
 						$has = false;
+						$slotPos = 0;
+						$packetSlotPos = 0;
 						for($i = 0; $i < $this->slotCount; ++$i){
-							if($this->slot == $this->hotbar[$i]){
+							if($this->slot == $this->hotbar[$i]) $slotPos = $i;
+							if($packet->slot == $this->hotbar[$i]){
+								$packetSlotPos = $i;
 								$has = true;
 								break;
 							}
 						}
 						
-						if(!$has){
-							array_pop($this->hotbar);
-							array_unshift($this->hotbar, $this->slot);
+						if(Player::$experimentalHotbar && $has) {
+							$this->slot = $packet->slot;
+							$this->curHotbarIndex = $packetSlotPos;
 						}
+						if(!$has){
+							if(Player::$experimentalHotbar) {
+								$this->slot = $packet->slot;
+								$this->hotbar[$this->curHotbarIndex] = $packet->slot;
+							}
+							else{
+								$this->curHotbarIndex = 0;
+								array_pop($this->hotbar);
+								array_unshift($this->hotbar, $this->slot);
+							}
+						}
+						if(Player::$experimentalHotbar) $this->sendInventory();
 					}
 				}else{
 					//$this->sendInventorySlot($packet->slot);
