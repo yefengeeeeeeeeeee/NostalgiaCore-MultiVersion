@@ -1873,6 +1873,8 @@ class Player{
 							}
 						}
 						if(Player::$experimentalHotbar) $this->sendInventory();
+					}else{
+						$this->slot = $packet->slot;
 					}
 				}else{
 					//$this->sendInventorySlot($packet->slot);
@@ -2003,7 +2005,9 @@ class Player{
 								$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_SNOWBALL, $data);
 							}
 							
-							$this->removeItem($slotItem->getID(), $slotItem->meta, 1);
+							if(($this->gamemode & 0x01) == 0x0) {
+								$this->removeItem($slotItem->getID(), $slotItem->meta, 1);
+							}
 							
 							$this->server->api->entity->spawnToAll($e);
 						}
