@@ -91,6 +91,26 @@ class PMFLevel extends PMF{
 		for($index = 0; $index < $cnt; ++$index){
 			$this->write(Utils::writeShort($this->locationTable[$index][0]));
 		}
+
+		$this->backupLocTable();
+	}
+	
+	public function backupLocTable(){
+		$dir = dirname($this->file);
+		if(is_file("$dir/loctable.pmf")){
+			$val = copy("$dir/loctable.pmf", "$dir/loctable.pmf.old");
+			if($val === false) ConsoleAPI::warn("Failed to backup loctable data!");
+		}
+		
+		$file = fopen("$dir/loctable.pmf", "wb");
+		try{
+			for($index = 0; $index < $cnt; ++$index){
+				fwrite($file, Utils::writeShort($this->locationTable[$index][0]), 2);
+			}
+		}finally{
+			fclose($file);
+		}
+		
 	}
 
 	public function getXZ($index, &$X = null, &$Z = null){
