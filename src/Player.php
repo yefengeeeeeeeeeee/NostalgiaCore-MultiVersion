@@ -204,15 +204,24 @@ class Player{
 				foreach($this->level->entityList as $e){
 					if($e->eid !== $this->entity->eid){
 						if($e->isPlayer()){
-							$pk = new MoveEntityPacket_PosRot();
+							$pk = new MovePlayerPacket();
 							$pk->eid = $this->entity->eid;
 							$pk->x = -256;
 							$pk->y = 128;
 							$pk->z = -256;
 							$pk->yaw = 0;
 							$pk->pitch = 0;
+							$pk->bodyYaw = 0;
 							$e->player->dataPacket($pk);
+							
+							$pk = new MovePlayerPacket();
 							$pk->eid = $e->eid;
+							$pk->x = -256;
+							$pk->y = 128;
+							$pk->z = -256;
+							$pk->yaw = 0;
+							$pk->pitch = 0;
+							$pk->bodyYaw = 0;
 							$this->dataPacket($pk);
 							
 						}else{

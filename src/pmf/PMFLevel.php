@@ -104,6 +104,7 @@ class PMFLevel extends PMF{
 		
 		$file = fopen("$dir/loctable.pmf", "wb");
 		try{
+			$cnt = pow($this->levelData["width"], 2);
 			for($index = 0; $index < $cnt; ++$index){
 				fwrite($file, Utils::writeShort($this->locationTable[$index][0]), 2);
 			}
