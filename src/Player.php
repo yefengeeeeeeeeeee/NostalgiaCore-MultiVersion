@@ -286,9 +286,13 @@ class Player{
 						$player->sendArmor($this);
 					}
 				}
+				
+				$resyncpos = new Position($pos->x, $pos->y, $pos->z, $pos->level);
+			}else{
+				$resyncpos = new Vector3($pos->x, $pos->y, $pos->z);
 			}
-
-			$this->lastCorrect = $pos;
+			
+			$this->lastCorrect = $resyncpos;
 			$this->entity->fallY = false;
 			$this->entity->fallStart = false;
 			$this->entity->notOnGroundTicks = 0;
@@ -302,7 +306,7 @@ class Player{
 			}
 			$this->entity->check = true;
 			if($force === true){
-				$this->forceMovement = $pos;
+				$this->forceMovement = $resyncpos;
 			}
 		}
 		
