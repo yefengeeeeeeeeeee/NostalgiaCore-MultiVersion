@@ -15,7 +15,7 @@ class Monster extends Creature{
 	 * @see Entity::attackEntity()
 	 */
 	public function attackEntity($entity, $distance){
-		if($distance < 2.0 && $entity->boundingBox->maxX > $this->boundingBox->minY && $entity->boundingBox->minY < $this->boundingBox->maxY){
+		if($distance < 2.0 && $entity->boundingBox->maxY > $this->boundingBox->minY && $entity->boundingBox->minY < $this->boundingBox->maxY){
 			$entity->harm($this->getAttackDamage(), $this->eid);
 			return true;
 		}else{
