@@ -14,7 +14,7 @@ class PlayerEquipmentPacket extends RakNetDataPacket{
 		$this->eid = $this->getInt();
 		$this->item = $this->getShort();
 		$this->meta = $this->getShort();
-		$this->slot = $this->getByte();
+		$this->slot = $this->getSignedByte();
 	}
 	
 	public function encode(){

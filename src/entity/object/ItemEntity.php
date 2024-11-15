@@ -192,7 +192,7 @@ class ItemEntity extends Entity{
 				$this->speedZ = (lcg_value() - lcg_value()) * 0.2;
 			}
 			
-			//$this->searchForOtherItemsNearby(); //not in vanilla 0.8.1, TODO reenable after fixing not correct count in inv
+			//$this->searchForOtherItemsNearby(); //not in vanilla 0.8.1
 		}
 		
 		if($this->closed) return;

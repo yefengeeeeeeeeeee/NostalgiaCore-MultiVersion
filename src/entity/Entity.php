@@ -1279,7 +1279,7 @@ class Entity extends Position
 		$this->speedMeasure = array(0, 0, 0, 0, 0, 0, 0);
 	}
 
-	public function getSpeed() //TODO rename to getBaseSpeed
+	public function getSpeed()
 	{
 		return $this->speed;
 	}

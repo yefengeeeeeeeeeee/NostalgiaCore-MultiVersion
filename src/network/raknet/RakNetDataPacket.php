@@ -123,7 +123,12 @@ abstract class RakNetDataPacket extends stdClass{
 	protected function getShort($unsigned = false){
 		return Utils::readShort($this->get(2), $unsigned);
 	}
-
+	
+	public function getSignedByte(){
+		$b = ord($this->get(1));
+		return $b >= 0x80 ? ($b-256) : $b;
+	}
+	
 	protected function getByte(){
 		return ord($this->get(1));
 	}

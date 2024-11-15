@@ -1682,7 +1682,10 @@ class Player{
 					$this->slot = 0;
 					$this->hotbar = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 				}
-				
+				for($i = 0; $i < count($this->hotbar); ++$i){
+					if($this->hotbar[$i] > 36) $this->hotbar[$i] = -1; //XXX unsafe?
+					if($this->hotbar[$i] < -1) $this->hotbar[$i] = -1;
+				}
 				if($this->data->exists("slot-count")){
 					$this->slotCount = $this->data->get("slot-count");
 				}else{
@@ -1827,7 +1830,7 @@ class Player{
 						$this->slot = -1;
 					}
 					break;
-				}else{
+				}else if($packet->slot > 0){
 					$packet->slot -= 9;
 				}
 
@@ -1878,8 +1881,7 @@ class Player{
 							if(Player::$experimentalHotbar) {
 								$this->slot = $packet->slot;
 								$this->hotbar[$this->curHotbarIndex] = $packet->slot;
-							}
-							else{
+							}else{
 								$this->curHotbarIndex = 0;
 								array_pop($this->hotbar);
 								array_unshift($this->hotbar, $this->slot);

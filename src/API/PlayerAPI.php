@@ -365,7 +365,7 @@ class PlayerAPI{
 				"z" => $this->server->spawn->z,
 			],
 			"inventory" => array_fill(0, PLAYER_SURVIVAL_SLOTS, [AIR, 0, 0]),
-			"hotbar" => [0, -1, -1, -1, -1, -1, -1, -1, -1],
+			"hotbar" => [0, 1, 2, 3, 4, 5, 6, 7, 8],
 			"armor" => array_fill(0, 4, [AIR, 0]),
 			"gamemode" => $this->server->gamemode,
 			"health" => 20,
