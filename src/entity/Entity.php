@@ -1534,7 +1534,7 @@ class Entity extends Position
 		return $damage;
 	}
 	
-	public function setHealth($health, $cause = "generic", $force = false)
+	public function setHealth($health, $cause = "generic", $force = false, $allowHarm = true)
 	{
 		$health = (int) $health;
 		$harm = false;
@@ -1558,7 +1558,7 @@ class Entity extends Position
 			"cause" => $cause
 		)) !== false or $force === true){
 			$this->health = min(127, max(- 127, $health));
-			if($harm === true){
+			if($harm === true && $allowHarm){
 				$pk = new EntityEventPacket;
 				$pk->eid = $this->eid;
 				$pk->event = EntityEventPacket::ENTITY_DAMAGE;
