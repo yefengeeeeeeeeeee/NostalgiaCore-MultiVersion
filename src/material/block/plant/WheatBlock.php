@@ -44,7 +44,7 @@ class WheatBlock extends FlowableBlock{
 	}
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		if($level->level->getBlockID($x, $y - 1, $z) != FARMLAND){
-			ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(WHEAT_SEEDS, 0, 1));
+			ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(WHEAT_SEEDS, 0, 1), 10);
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
 	}

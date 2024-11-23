@@ -3,7 +3,7 @@
 
 class Player{
 	
-	public static $smallChunks = false, $experimentalHotbar = true;
+	public static $smallChunks = false, $experimentalHotbar = false;
 	/** @var Config */
 	public $data;
 	/** @var Entity */
@@ -2545,6 +2545,7 @@ class Player{
 						}
 						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
 					}
+					$tile->setSlot(0, BlockAPI::getItem(0, 0, 1));
 					$tile->setSlot($packet->slot, $item);
 				}
 				break;
