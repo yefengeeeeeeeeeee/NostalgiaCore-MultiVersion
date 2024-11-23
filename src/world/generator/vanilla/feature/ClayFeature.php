@@ -39,7 +39,6 @@ class ClayFeature
 						$d6 = (($i4 + 0.5) - $d3) / ($sin3 / 2);
 						if(($d4*$d4)+($d5*$d5)+($d6*$d6)<1 && $level->level->getBlockID($i2, $i3, $i4) == SAND){
 							$level->level->setBlockID($i2, $i3, $i4, $clayid);
-							console("Placed clay at".$i2.":".$i4);
 						}
 					}
 				}

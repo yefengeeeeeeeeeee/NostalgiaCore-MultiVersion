@@ -27,7 +27,7 @@ class TaskLookAtPlayer extends TaskBase{
 	}
 
 	public function onUpdate(EntityAI $ai){
-		if(!($this->target instanceof Entity) || Utils::distance($ai->entity, $this->target) > 6 || $this->target->level->getName() != $ai->entity->level->getName()){ //TODO max distance for different mobs
+		if(!($this->target instanceof Entity) || Utils::distance($ai->entity, $this->target) > $this->distance || $this->target->level->getName() != $ai->entity->level->getName()){
 			$this->reset();
 			$this->onEnd($ai);
 			return;

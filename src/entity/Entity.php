@@ -370,7 +370,7 @@ class Entity extends Position
 	private function spawnDrops()
 	{
 		foreach($this->getDrops() as $drop){
-			$this->server->api->entity->drop($this, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF), true);
+			$this->server->api->entity->drop($this, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF));
 		}
 	}
 	
@@ -549,11 +549,11 @@ class Entity extends Position
 	public function updateEntityMovement(){}
 	
 	public function doBlocksCollision(){
-		$minX = floor($this->boundingBox->minX + 0.001);
 		$minY = floor($this->boundingBox->minY + 0.001);
+		$maxY = floor($this->boundingBox->maxY - 0.001);
+		$minX = floor($this->boundingBox->minX + 0.001);
 		$minZ = floor($this->boundingBox->minZ + 0.001);
 		$maxX = floor($this->boundingBox->maxX - 0.001);
-		$maxY = floor($this->boundingBox->maxY - 0.001);
 		$maxZ = floor($this->boundingBox->maxZ - 0.001);
 		
 		for($x = $minX; $x <= $maxX; ++$x){
@@ -803,12 +803,13 @@ class Entity extends Position
 							intersects:
 							if($y <= floor($this->boundingBox->minY) && !$this->onGround){
 								if($intersects > 0) $this->onGround = count($bounds) > 0;
-							}else{
+							}
+							if($y >= floor($this->boundingBox->minY)){
 								$block = $this->level->level->getBlock($x, $y, $z);
 								$id = $block[0];
 								$meta = $block[1];
 								$handleFire = $handleFire || (($id == FIRE || $id == STILL_LAVA || $id == LAVA) && $x >= $fireMinX && $x < $fireMaxX && $y >= $fireMinY && $y < $fireMaxY && $z >= $fireMinZ && $z < $fireMaxZ);
-								$handleCactus = $handleCactus || ($id == CACTUS && $x >= $fireMinX && $x <= $fireMaxX && $y >= $fireMinY && $y <= $fireMaxY && $z >= $fireMinZ && $z <= $fireMaxZ);
+								$handleCactus = $handleCactus || ($id == CACTUS && $x >= $fireMinX && $x < $fireMaxX && $y >= $fireMinY && $y < $fireMaxY && $z >= $fireMinZ && $z < $fireMaxZ);
 								
 								if($id === WATER || $id === STILL_WATER || $id === COBWEB){
 									$this->fallDistance = 0;
@@ -819,6 +820,7 @@ class Entity extends Position
 						}
 					}
 				}
+				
 				if($prevGroundState == $this->onGround && !$this->onGround && $this->player->isSleeping == false){ //isSleeping may be a vector
 					++$this->notOnGroundTicks;
 				}else if($this->onGround){

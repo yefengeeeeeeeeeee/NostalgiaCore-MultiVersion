@@ -82,7 +82,7 @@ class Level{
 		
 		return true;
 	}
-	// TODO neccessary for projectiles
+
 	public function rayTraceBlocks(Vector3 $start, Vector3 $end){
 		
 		$par3 = false; //TODO move to params?

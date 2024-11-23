@@ -102,7 +102,7 @@ class MobController
 			
 			$v8 = $diffX*$diffX + $diffY*$diffY + $diffZ*$diffZ;
 			
-			if($v8 >= 2.500000277905201E-7){ //TODO convert notation
+			if($v8 >= 0.00000025){
 				$v10 = (atan2($diffZ, $diffX) * 180 / M_PI) - 90;
 				$this->entity->yaw = self::limitAngle($this->entity->yaw, $v10, 30);
 				$this->entity->setAIMoveSpeed($this->speedMultiplier * $this->entity->getSpeed() * $this->entity->getSpeedModifer());
