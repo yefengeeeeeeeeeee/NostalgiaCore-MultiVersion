@@ -927,6 +927,7 @@ class Player{
 		foreach($this->inventory as $s => $item){ //force check the inventory for non-full stacks of this item first
 			if($item->getID() === $type and $item->getMetadata() === $damage){
 				$add = min($item->getMaxStackSize() - $item->count, $count);
+				
 				if($add <= 0){
 					continue;
 				}
@@ -937,10 +938,10 @@ class Player{
 				if($count <= 0) return true;
 			}
 		}
-		
+		$toadd = BlockAPI::getItem($type, $damage, $count);
 		foreach($this->inventory as $s => $item){
 			if($item->getID() === AIR){
-				$add = min($item->getMaxStackSize(), $count);
+				$add = min($toadd->getMaxStackSize(), $count);
 				$this->inventory[$s] = BlockAPI::getItem($type, $damage, $add);
 				if($send) $this->sendInventorySlot($s);
 				$count -= $add;
