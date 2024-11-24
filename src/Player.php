@@ -1087,6 +1087,7 @@ class Player{
 			foreach($this->inventory as $slot => $item){
 				$inv[$slot] = BlockAPI::getItem(AIR, 0, 0);
 			}
+			$this->hotbar = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 			$this->lastCorrect = $this->entity->copy();
 			$this->blocked = true;	
 			$this->gamemode = $gm;

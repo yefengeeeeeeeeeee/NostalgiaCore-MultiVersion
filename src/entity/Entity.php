@@ -821,7 +821,7 @@ class Entity extends Position
 					}
 				}
 				
-				if($prevGroundState == $this->onGround && !$this->onGround && $this->player->isSleeping == false){ //isSleeping may be a vector
+				if($prevGroundState == $this->onGround && !$this->onGround && $this->player->isSleeping == false && !$this->dead){ //isSleeping may be a vector
 					++$this->notOnGroundTicks;
 				}else if($this->onGround){
 					$this->notOnGroundTicks = 0;
