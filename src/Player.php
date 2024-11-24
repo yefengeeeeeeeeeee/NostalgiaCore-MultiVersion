@@ -2021,7 +2021,11 @@ class Player{
 							}
 							
 							if(($this->gamemode & 0x01) == 0x0) {
-								$this->removeItem($slotItem->getID(), $slotItem->meta, 1);
+								if($slotItem !== false){
+									if($slotItem->count == 1) $this->inventory[$this->slot] = BlockAPI::getItem(AIR, 0, 0);
+									else $slotItem->count -= 1;
+									//$this->sendInventory();
+								}
 							}
 							
 							$this->server->api->entity->spawnToAll($e);
