@@ -821,7 +821,7 @@ class Level{
 		}
 		if($spawn instanceof Vector3){
 			$x = (int) round($spawn->x);
-			$y = (int) round($spawn->y);
+			$fy = $y = (int) round($spawn->y);
 			$z = (int) round($spawn->z);
 			if($x < 0 || $x > 255 || $z < 0 || $z > 255){
 				return new Position($x, 128, $z, $this);
@@ -834,6 +834,9 @@ class Level{
 				}elseif(!($b instanceof AirBlock)){
 					break;
 				}
+			}
+			if($y == 0){
+				return new Position($x, $fy, $z, $this); //force tp to default if pos is empty
 			}
 			for(; $y < 128; ++$y){
 				$v = new Vector3($x, $y, $z);
