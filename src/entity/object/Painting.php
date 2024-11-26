@@ -20,6 +20,7 @@ class Painting extends Entity{
 		$this->setHealth(1, "generic");
 		$this->canBeAttacked = true;
 		$this->width = 1;
+		$this->setSize(0.5, 0.5);
 		$this->isStatic = true;
 		$mot = $this->data["Motive"] ?? false;
 		$dir = $this->data["Direction"] ?? false;
@@ -33,7 +34,7 @@ class Painting extends Entity{
 		}else{
 			$this->motive = $mot;
 			$this->direction = $dir;
-			//TODO:
+			$this->setDirection($dir);
 		}
 	}
 	
@@ -42,6 +43,7 @@ class Painting extends Entity{
 		foreach(PaintingItem::$motives as $name => $motive){
 			$this->motive = $name;
 			$this->setDirection($dir);
+			
 			if($this->survives()){
 				$tochoose[] = $name;
 			}
@@ -148,6 +150,14 @@ class Painting extends Entity{
 					if(!StaticBlock::getIsSolid($id)){
 						return false;
 					}
+				}
+			}
+			
+			$ents = $this->level->getEntitiesInAABBOfType($this->boundingBox, ENTITY_OBJECT);
+			foreach($ents as $e){
+				if($e->eid == $this->eid) continue;
+				if($e->type == OBJECT_PAINTING){
+					return false;
 				}
 			}
 			return true;
