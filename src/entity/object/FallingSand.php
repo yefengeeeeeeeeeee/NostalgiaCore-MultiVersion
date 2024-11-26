@@ -46,7 +46,7 @@ class FallingSand extends Entity{
 				$this->speedY *= -0.5;
 				$this->close();
 				//TODO vanilla-like checking?
-				$this->level->fastSetBlockUpdate($x, $y, $z, $this->data["Tile"], 0); //TODO add metadata
+				$this->level->fastSetBlockUpdate($x, $y, $z, $this->data["Tile"], 0, true); //TODO add metadata
 			}elseif(($blockAt = $this->level->level->getBlockID($x, $y, $z)) != 0){
 				//TODO vanilla-like checking?
 				if(StaticBlock::getIsTransparent($blockAt) && !StaticBlock::getIsLiquid($blockAt)){
