@@ -236,7 +236,6 @@ class Level{
 		
 		return $appliedVelocity;
 	}
-	
 	/**
 	 * @param Entity $e
 	 * @param AxisAlignedBB $aABB
