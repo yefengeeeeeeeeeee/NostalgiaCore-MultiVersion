@@ -38,6 +38,22 @@ class Painting extends Entity{
 		}
 	}
 	
+	public $counter = 0;
+	public function update($now){
+                if($this->closed === true){
+                        return false;
+                }
+		
+		if(++$this->counter >= 100){
+			$this->counter = 0;
+			if(!$this->survives() && !$this->dead){ //maybe dont check entity collision?
+				$this->makeDead("nosurvive");
+			}
+		}
+		
+		return true;
+	}
+
 	public function setRandomMotive($dir){
 		$tochoose = [];
 		foreach(PaintingItem::$motives as $name => $motive){
@@ -50,8 +66,10 @@ class Painting extends Entity{
 		}
 		if(count($tochoose) > 0){
 			$ind = mt_rand(0, count($tochoose)-1);
-		}else{
-			$ind = 0;
+		}else{ //shouldnt be possible in vanilla but possible here
+			$this->motive = "Kebab";
+			$this->setDirection($dir);
+			return;
 		}
 		
 		$this->motive = $tochoose[$ind];
@@ -176,7 +194,7 @@ class Painting extends Entity{
 		$data["zPos"] = $this->zPos;
 		return $data;
 	}
-	
+
 	public function spawn($player){
 		$pk = new AddPaintingPacket;
 		$pk->eid = $this->eid;
