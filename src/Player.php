@@ -1115,7 +1115,7 @@ class Player{
 		0b00000010 - enablePVP
 		0b00000100 - enablePVE
 		0b00001000 - field_3 (<?>autojump)
-		0b00010000 - field_0
+		0b00010000 - dayLightCycle (0 enabled 1 disabled)
 		0b00100000 - field_5 (<?>nametags_visible)
 		0b01000000 - unused
 		0b10000000 - unused

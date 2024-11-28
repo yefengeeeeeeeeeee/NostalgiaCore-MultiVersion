@@ -56,8 +56,15 @@ class PaintingItem extends Item{
 				"yPos" => $target->y,
 				"zPos" => $target->z,
 			);
-			$e = $server->api->entity->add($level, ENTITY_OBJECT, OBJECT_PAINTING, $data);
-			$server->api->entity->spawnToAll($e);
+			
+			$painting = new Painting($level, 0, ENTITY_OBJECT, OBJECT_PAINTING, $data);
+			if(!$painting->isValid){
+				$player->sendInventory(); //force resync
+				return false;
+			}
+			$painting->eid = $server->api->entity->getNextEID();
+			$server->api->entity->addRaw($painting);
+			$server->api->entity->spawnToAll($painting);
 			if(($player->gamemode & 0x01) === 0x00){
 				$player->removeItem($this->getID(), $this->getMetadata(), 1, false);
 			}

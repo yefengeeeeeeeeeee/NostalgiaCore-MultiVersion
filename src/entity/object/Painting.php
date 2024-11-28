@@ -7,6 +7,9 @@ class Painting extends Entity{
 	public $motive;
 	public $direction;
 	public $xPos, $yPos, $zPos;
+	
+	public $isValid = true;
+	
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		parent::__construct($level, $eid, $class, $type, $data);
 		$this->x = $this->data["TileX"] ?? $this->x;
@@ -17,7 +20,7 @@ class Painting extends Entity{
 		$this->zPos = $this->data["zPos"] ?? (int)$this->z;
 		$this->yPos = $this->data["yPos"] ?? (int)$this->y;
 		
-		$this->setHealth(1, "generic");
+		$this->health = 1;
 		$this->canBeAttacked = true;
 		$this->width = 1;
 		$this->setSize(0.5, 0.5);
@@ -66,9 +69,8 @@ class Painting extends Entity{
 		}
 		if(count($tochoose) > 0){
 			$ind = mt_rand(0, count($tochoose)-1);
-		}else{ //shouldnt be possible in vanilla but possible here
-			$this->motive = "Kebab";
-			$this->setDirection($dir);
+		}else{
+			$this->isValid = false;
 			return;
 		}
 		

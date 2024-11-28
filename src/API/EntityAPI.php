@@ -153,21 +153,30 @@ class EntityAPI{
 		$this->spawnToAll($entity, $pos->level);
 	}
 	
+	public function getNextEID(){
+		return $this->eCnt++;
+	}
+	
+	public function addRaw(Entity $e){
+		$eid = $e->eid;
+		$this->entities[$eid] = $e;
+		$cX = (int)$this->entities[$eid]->x >> 4;
+		$cZ = (int)$this->entities[$eid]->z >> 4;
+		$e->level->entityListPositioned["$cX $cZ"][$eid] = $eid;
+		$e->level->entityList[$eid] = &$this->entities[$eid];
+		$this->server->handle("entity.add", $this->entities[$eid]);
+		return $e;
+	}
 	public function add(Level $level, $class, $type = 0, $data = []){
-		$eid = $this->eCnt++;
+		$eid = $this->getNextEID();
 		$efl = EntityRegistry::$entityList->getEntityFromTypeAndClass($type, $class);
 		if($efl instanceof PropertyEntity){
 			$class = $efl->getEntityName();
-			$this->entities[$eid] = new $class($level, $eid, $efl->getEntityClass(), $efl->getEntityType(), $data);
+			$e = new $class($level, $eid, $efl->getEntityClass(), $efl->getEntityType(), $data);
 		}else{
-			$this->entities[$eid] = new Entity($level, $eid, $class, $type, $data);
+			$e = new Entity($level, $eid, $class, $type, $data);
 		}
-		$cX = (int)$this->entities[$eid]->x >> 4;
-		$cZ = (int)$this->entities[$eid]->z >> 4;
-		$level->entityListPositioned["$cX $cZ"][$eid] = $eid;
-		$level->entityList[$eid] = &$this->entities[$eid];
-		$this->server->handle("entity.add", $this->entities[$eid]);
-		return $this->entities[$eid];
+		return $this->addRaw($e);
 	}
 	
 	public function spawnToAll(Entity $e){

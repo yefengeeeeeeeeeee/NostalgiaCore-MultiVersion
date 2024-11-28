@@ -178,6 +178,7 @@ class Entity extends Position
 				
 				break;
 			case ENTITY_OBJECT:
+				if($this->type == OBJECT_PAINTING) break;
 				$this->x = $this->data["TileX"] ?? $this->x;
 				$this->y = $this->data["TileY"] ?? $this->y;
 				$this->z = $this->data["TileZ"] ?? $this->z;
