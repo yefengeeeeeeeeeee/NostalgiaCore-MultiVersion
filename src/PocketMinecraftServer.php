@@ -92,8 +92,10 @@ class PocketMinecraftServer{
 			"force-20-tps" => false,
 			"enable-mob-pushing" => Living::$entityPushing,
 			"keep-chunks-loaded" => self::$KEEP_CHUNKS_LOADED,
-			"use-experimental-hotbar" => Player::$experimentalHotbar
+			"use-experimental-hotbar" => Player::$experimentalHotbar,
+			"keep-items-on-death" => Entity::$keepInventory
 		]);
+		Entity::$keepInventory = $this->extraprops->get("keep-items-on-death");
 		Player::$experimentalHotbar = $this->extraprops->get("use-experimental-hotbar");
 		Player::$smallChunks = $this->extraprops->get("16x16x16_chunk_sending");
 		Living::$despawnMobs = $this->extraprops->get("despawn-mobs");

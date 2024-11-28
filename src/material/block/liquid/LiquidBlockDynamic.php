@@ -6,7 +6,7 @@ class LiquidBlockDynamic extends LiquidBlock{
 	}
 	
 	public static $blockID = 0;
-	public static $sourcesAround = 0; //TODO rename
+	public static $sourcesAround = 0;
 	public static $spread = [0, 0, 0,  0];
 	
 	public static function getHighest(Level $level, $x, $y, $z, $highest){

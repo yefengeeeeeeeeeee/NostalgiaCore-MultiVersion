@@ -14,6 +14,7 @@ class Entity extends Position
 	public $fallDistance = 0;
 	public static $updateOnTick, $allowedAI;
 	public static $allowFly = true;
+	public static $keepInventory = false;
 	public $canBeAttacked;
 	public $moveTime, $lookTime, $idleTime, $knockbackTime = 0;
 	public $attackTimeout = 0;
@@ -341,6 +342,9 @@ class Entity extends Position
 	{
 		if($this->class === ENTITY_PLAYER and $this->player instanceof Player and ($this->player->gamemode & 0x01) === 0){
 			$inv = [];
+			if(self::$keepInventory){
+				return [];
+			}
 			for($i = 0; $i < PLAYER_SURVIVAL_SLOTS; ++ $i){
 				$slot = $this->player->getSlot($i);
 				$this->player->setSlot($i, BlockAPI::getItem(AIR, 0, 0));

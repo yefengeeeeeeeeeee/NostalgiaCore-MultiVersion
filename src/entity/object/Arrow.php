@@ -188,10 +188,8 @@ class Arrow extends Entity{
 				$v4 = MovingObjectPosition::fromEntity($bestEnt);
 			}
 			
-			//TODO entity collisions
 			if($v4 != null){
 				if($v4->entityHit != null){
-					//TODO entity hit
 					$v49 = sqrt($this->speedY*$this->speedY + $this->speedX*$this->speedX + $this->speedZ*$this->speedZ);
 					$damage = ceil($v49+$v49);
 					
