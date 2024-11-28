@@ -503,7 +503,7 @@ class BlockAPI{
 			//$face = -1;
 		}
 
-		if($hand->isSolid === true and $player->entity->inBlock($block)){
+		if($hand->isSolid === true and $player->entity->inBlock($block) && $hand->getID() != BED_BLOCK){
 			return $this->cancelAction($block, $player, false); //Entity in block
 		}
 
