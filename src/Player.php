@@ -1441,7 +1441,7 @@ class Player{
 			$this->chunksLoaded = [];
 			$this->chunksOrder = [];
 			$this->chunkCount = [];
-			$this->cratingItems = [];
+			$this->craftingItems = [];
 			$this->received = [];
 			//$this->entity->close();
 		}
