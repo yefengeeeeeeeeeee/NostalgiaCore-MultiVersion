@@ -99,7 +99,7 @@ abstract class Living extends Entity implements Pathfindable{
 				foreach($this->level->entityListPositioned[$ind] ?? [] as $entid){
 					if(($this->level->entityList[$entid] ?? null) instanceof Entity){
 						if($this->level->entityList[$entid]->isPushable() && $bb->intersectsWith($this->level->entityList[$entid]->boundingBox)){
-							$this->level->entityList[$entid]->applyCollision($this, true);
+							$this->level->entityList[$entid]->applyCollision($this);
 						}
 					}
 				}

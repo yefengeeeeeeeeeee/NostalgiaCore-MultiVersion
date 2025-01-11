@@ -150,7 +150,7 @@ class EntityAPI{
 			"y" => $pos->y,
 			"z" => $pos->z
 		] + $data);
-		$this->spawnToAll($entity, $pos->level);
+		$this->spawnToAll($entity);
 	}
 	
 	public function getNextEID(){
