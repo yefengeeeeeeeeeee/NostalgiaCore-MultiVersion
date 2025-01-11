@@ -295,7 +295,7 @@ class CraftingRecipes{
 						break;
 					}
 				}
-				if($continue === false or $craftItem[0] !== $recipe[1][0] or $recipe[1][1] !== $recipe[1][1] or $recipe[1][2] !== $recipe[1][2]){
+				if($continue === false or $craftItem[0] !== $recipe[1][0]){
 					$continue = false;
 					continue;
 				}

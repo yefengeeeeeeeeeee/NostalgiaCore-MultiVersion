@@ -591,7 +591,6 @@ class PocketMinecraftServer{
 					$this->clients[$CID] = new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
 					$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_2);
 					$pk->serverID = $this->serverID;
-					$pk->port = $this->port;
 					$pk->mtuSize = $packet->mtuSize;
 					$pk->ip = $packet->ip;
 					$pk->port = $packet->port;

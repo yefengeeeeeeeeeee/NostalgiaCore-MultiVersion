@@ -397,7 +397,7 @@ class Minecart extends Vehicle{
 					if($e instanceof Entity && $e->eid != $this->eid && $e->eid != $this->linkedEntity){
 						if($e->isPushable() && $e->boundingBox->intersectsWith($bb)){
 							if($e->isPlayer()){
-								$this->applyCollision($e, true);
+								$this->applyCollision($e);
 							}else{
 								$e->applyCollision($this);
 							}

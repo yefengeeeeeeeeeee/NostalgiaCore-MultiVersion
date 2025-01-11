@@ -161,7 +161,7 @@ class BanAPI{
 				$player = $this->server->api->player->get($user);
 				if(!($player instanceof Player)){
 					$this->ops->set($user);
-					$this->ops->save($user);
+					$this->ops->save();
 					$output .= $user . " is now op\n";
 					break;
 				}

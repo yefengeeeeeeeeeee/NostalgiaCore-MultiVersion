@@ -15,7 +15,6 @@ class SmeltingData{
 		RED_MUSHROOM => [DYE, 1],
 		RAW_BEEF => [STEAK, 0],
 		RAW_CHICKEN => [COOKED_CHICKEN, 0],
-		RED_MUSHROOM => [DYE, 1],
 		POTATO => [BAKED_POTATO, 0],
 	];
 }
