@@ -667,22 +667,6 @@ class Player{
 	public function sendInventorySlot($s){
 		$this->sendInventory();
 		return true;
-		$s = (int) $s;
-		if(!isset($this->inventory[$s])){
-			$pk = new ContainerSetSlotPacket;
-			$pk->windowid = 0;
-			$pk->slot = (int) $s;
-			$pk->item = BlockAPI::getItem(AIR, 0, 0);
-			$this->dataPacket($pk);
-		}
-
-		$slot = $this->inventory[$s];
-		$pk = new ContainerSetSlotPacket;
-		$pk->windowid = 0;
-		$pk->slot = (int) $s;
-		$pk->item = $slot;
-		$this->dataPacket($pk);
-		return true;
 	}
 
 	public function sendInventory(){
