@@ -337,7 +337,6 @@ class BlockAPI{
 					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$issuer->username;
 					break;
 				}
-				break;
 		}
 		return $output;
 	}

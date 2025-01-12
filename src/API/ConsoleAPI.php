@@ -92,7 +92,7 @@ class ConsoleAPI{
 				$end = strlen($line);
 			}
 			$cmd = strtolower(substr($line, 0, $end));
-			$params = (string) substr($line, $end + 1);
+			$params = substr($line, $end + 1);
 			if(isset($this->alias[$cmd])){
 				return $this->run($this->alias[$cmd] . ($params !== "" ? " " . $params : ""), $issuer, $cmd);
 			}

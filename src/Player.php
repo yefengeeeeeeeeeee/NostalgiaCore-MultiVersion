@@ -666,7 +666,7 @@ class Player{
 
 	public function sendInventorySlot($s){
 		$this->sendInventory();
-		return;
+		return true;
 		$s = (int) $s;
 		if(!isset($this->inventory[$s])){
 			$pk = new ContainerSetSlotPacket;
@@ -1727,7 +1727,7 @@ class Player{
 				$this->server->schedule(50, [$this, "measureLag"], [], true);
 				
 				$pk = new SetTimePacket;
-				$pk->time = (int) $this->level->getTime();
+				$pk->time = $this->level->getTime();
 				$pk->started = !$this->level->isTimeStopped();
 				$this->dataPacket($pk);
 				

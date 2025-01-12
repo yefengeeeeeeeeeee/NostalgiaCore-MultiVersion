@@ -34,7 +34,6 @@ class Random{
 			$this->haveNextNextGaussian = false;
 			return $this->nextNextGaussian;
 		}else{
-			$v1 = $v2 = $s = null;
 			do{
 				$v1 = 2 * $this->nextFloat() - 1;   // between -1.0 and 1.0
 				$v2 = 2 * $this->nextFloat() - 1;   // between -1.0 and 1.0
