@@ -39,11 +39,8 @@ class GrassBlock extends SolidBlock{
 		$chance = lcg_value() * 100;
 		if($chance <= 1){
 			ServerAPI::request()->api->entity->drop(new Position($this->x+0.5, $this->y+1, $this->z+0.5, $this->level), BlockAPI::getItem(BEETROOT_SEEDS,0,1), 10);
-			return;
-		}
-		elseif($chance > 1 and $chance <= 16){
+		}elseif($chance > 1 and $chance <= 16){
 			ServerAPI::request()->api->entity->drop(new Position($this->x+0.5, $this->y+1, $this->z+0.5, $this->level), BlockAPI::getItem(SEEDS,0,1), 10);
-			return;
 		}
 	}
 	public static function onRandomTick(Level $level, $x, $y, $z){

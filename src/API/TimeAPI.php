@@ -22,7 +22,6 @@ class TimeAPI{
 		$output = "";
 		switch($cmd){
 			case "time":
-				$level = false;
 				if($issuer instanceof Player){
 					$level = $issuer->level;
 				}else{

@@ -218,7 +218,6 @@ class PlayerAPI{
 				}else{
 					return "Usage: /$cmd [player]\n";
 				}
-				break;
 			case "list":
 				$output .= "There are " . count($this->server->clients) . "/" . $this->server->maxClients . " players online:\n";
 				if(count($this->server->clients) == 0){
@@ -228,7 +227,6 @@ class PlayerAPI{
 					$output .= $c->username . ", ";
 				}
 				return substr($output, 0, -2) . "\n";
-				break;
 			case "loc":
 				if(!($issuer instanceof Player)) return "Please run this command in-game.";
 				$x = round($issuer->entity->x, 1, PHP_ROUND_HALF_UP);

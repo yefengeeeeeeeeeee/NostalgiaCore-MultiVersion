@@ -109,7 +109,6 @@ class Config{
 					default:
 						$this->correct = false;
 						return false;
-						break;
 				}
 				if(!is_array($this->config)){
 					$this->config = $default;
@@ -247,7 +246,7 @@ class Config{
 		unset($this->correct);
 		unset($this->type);
 		$this->load($this->file);
-		$correct = $this->check();
+		$this->check();
 	}
 
 	/**

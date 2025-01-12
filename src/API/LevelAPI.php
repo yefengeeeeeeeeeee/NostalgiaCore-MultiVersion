@@ -170,7 +170,6 @@ class LevelAPI{
 				}
 				$issuer->entity->level->setSpawn(new Vector3($issuer->entity->x, $issuer->entity->y, $issuer->entity->z));
 				return ("Spawn set!");
-				break;
 			case "save-all":
 				$output .= "Saving...\n";
 				foreach($this->server->clients as $p){

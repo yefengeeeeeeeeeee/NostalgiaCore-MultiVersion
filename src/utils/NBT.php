@@ -67,7 +67,6 @@ class NBT{
 				default:
 					echo bin2hex(substr($this->binary, $this->offset - 1)) . PHP_EOL . PHP_EOL;
 					die("Invalid NBT Tag $tag");
-					break;
 			}
 			$node[$name] = $value;
 		}
@@ -155,7 +154,6 @@ class NBT{
 				default:
 					echo bin2hex(substr($this->binary, $this->offset - 1)) . PHP_EOL . PHP_EOL;
 					die("Invalid NBT Tag $tag");
-					break;
 			}
 			$node[] = $value;
 		}

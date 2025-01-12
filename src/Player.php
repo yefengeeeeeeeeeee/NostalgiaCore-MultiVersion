@@ -666,22 +666,6 @@ class Player{
 
 	public function sendInventorySlot($s){
 		$this->sendInventory();
-		return;
-		$s = (int) $s;
-		if(!isset($this->inventory[$s])){
-			$pk = new ContainerSetSlotPacket;
-			$pk->windowid = 0;
-			$pk->slot = (int) $s;
-			$pk->item = BlockAPI::getItem(AIR, 0, 0);
-			$this->dataPacket($pk);
-		}
-
-		$slot = $this->inventory[$s];
-		$pk = new ContainerSetSlotPacket;
-		$pk->windowid = 0;
-		$pk->slot = (int) $s;
-		$pk->item = $slot;
-		$this->dataPacket($pk);
 		return true;
 	}
 
@@ -1727,7 +1711,7 @@ class Player{
 				$this->server->schedule(50, [$this, "measureLag"], [], true);
 				
 				$pk = new SetTimePacket;
-				$pk->time = (int) $this->level->getTime();
+				$pk->time = $this->level->getTime();
 				$pk->started = !$this->level->isTimeStopped();
 				$this->dataPacket($pk);
 				
