@@ -2541,7 +2541,7 @@ class Player{
 						}
 						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
 					}
-					$tile->setSlot(0, BlockAPI::getItem(0, 0, 1));
+
 					$tile->setSlot($packet->slot, $item);
 				}
 				break;
