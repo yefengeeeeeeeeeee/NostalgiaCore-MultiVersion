@@ -16,6 +16,9 @@ class UseItemPacket extends RakNetDataPacket{
 	public $posZ;
 	
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+            return  ProtocolInfo12::USE_ITEM_PACKET;
+        }
 		return ProtocolInfo::USE_ITEM_PACKET;
 	}
 	

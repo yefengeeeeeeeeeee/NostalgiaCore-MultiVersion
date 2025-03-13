@@ -7,6 +7,11 @@ class RespawnPacket extends RakNetDataPacket{
 	public $z;
 	
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+            return  ProtocolInfo9::RESPAWN_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+            return  ProtocolInfo12::RESPAWN_PACKET;
+        }
 		return ProtocolInfo::RESPAWN_PACKET;
 	}
 	

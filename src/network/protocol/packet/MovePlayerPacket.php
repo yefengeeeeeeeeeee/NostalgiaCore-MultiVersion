@@ -10,6 +10,9 @@ class MovePlayerPacket extends RakNetDataPacket{
 	public $bodyYaw;
 	
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+            return  ProtocolInfo12::MOVE_PLAYER_PACKET;
+        }
 		return ProtocolInfo::MOVE_PLAYER_PACKET;
 	}
 	

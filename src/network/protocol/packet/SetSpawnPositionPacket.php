@@ -6,6 +6,11 @@ class SetSpawnPositionPacket extends RakNetDataPacket{
 	public $y;
 	
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+            return  ProtocolInfo9::SET_SPAWN_POSITION_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+            return  ProtocolInfo12::SET_SPAWN_POSITION_PACKET;
+        }
 		return ProtocolInfo::SET_SPAWN_POSITION_PACKET;
 	}
 	

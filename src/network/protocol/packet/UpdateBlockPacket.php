@@ -8,6 +8,9 @@ class UpdateBlockPacket extends RakNetDataPacket{
 	public $meta;
 	
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+            return  ProtocolInfo12::UPDATE_BLOCK_PACKET;
+        }
 		return ProtocolInfo::UPDATE_BLOCK_PACKET;
 	}
 	

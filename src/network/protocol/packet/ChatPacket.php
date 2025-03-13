@@ -4,6 +4,11 @@ class ChatPacket extends RakNetDataPacket{
 	public $message;
 	
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+            return  ProtocolInfo9::CHAT_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+            return  ProtocolInfo12::CHAT_PACKET;
+        }
 		return ProtocolInfo::CHAT_PACKET;
 	}
 	

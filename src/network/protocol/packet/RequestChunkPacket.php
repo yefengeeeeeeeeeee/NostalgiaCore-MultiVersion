@@ -5,6 +5,9 @@ class RequestChunkPacket extends RakNetDataPacket{
 	public $chunkZ;
 	
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+            return  ProtocolInfo12::REQUEST_CHUNK_PACKET;
+        }
 		return ProtocolInfo::REQUEST_CHUNK_PACKET;
 	}
 	

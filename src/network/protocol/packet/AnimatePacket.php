@@ -8,6 +8,11 @@ class AnimatePacket extends RakNetDataPacket{
 	public $eid;
 	
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+            return  ProtocolInfo9::ANIMATE_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+            return  ProtocolInfo12::ANIMATE_PACKET;
+        }
 		return ProtocolInfo::ANIMATE_PACKET;
 	}
 	

@@ -9,6 +9,11 @@ class ContainerOpenPacket extends RakNetDataPacket{
 	public $z;
 	
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+            return  ProtocolInfo9::CONTAINER_OPEN_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+            return  ProtocolInfo12::CONTAINER_OPEN_PACKET;
+        }
 		return ProtocolInfo::CONTAINER_OPEN_PACKET;
 	}
 	
