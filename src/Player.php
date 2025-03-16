@@ -1360,7 +1360,7 @@ class Player{
 			$len += strlen($move->buffer) + 1;
 			++$packets;
 			$moveSent = true;
-		}else if($e->headYaw != $e->lastHeadYaw){
+		}else if($this->PROTOCOL > ProtocolInfo12::CURRENT_PROTOCOL_12 && $e->headYaw != $e->lastHeadYaw){
 			$headyaw = new RotateHeadPacket();
 			$headyaw->eid = $e->eid;
 			$headyaw->yaw = $e->headYaw;

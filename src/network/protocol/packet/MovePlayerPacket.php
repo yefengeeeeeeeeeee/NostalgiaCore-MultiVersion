@@ -23,7 +23,9 @@ class MovePlayerPacket extends RakNetDataPacket{
 		$this->z = $this->getFloat();
 		$this->yaw = $this->getFloat();
 		$this->pitch = $this->getFloat();
-		$this->bodyYaw = $this->getFloat();
+        if($this->PROTOCOL > 13){
+            $this->bodyYaw = $this->getFloat();
+        }
 	}
 	
 	public function encode(){
@@ -34,7 +36,9 @@ class MovePlayerPacket extends RakNetDataPacket{
 		$this->putFloat($this->z);
 		$this->putFloat($this->yaw);
 		$this->putFloat($this->pitch);
-		$this->putFloat($this->bodyYaw);
+        if($this->PROTOCOL > 13){
+            $this->putFloat($this->bodyYaw);
+        }
 	}
 
 }
