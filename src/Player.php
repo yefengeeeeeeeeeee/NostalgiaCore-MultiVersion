@@ -354,6 +354,7 @@ class Player{
 			return;
 		}
 
+        $packet->PROTOCOL = $this->PROTOCOL;
 		$packet->encode();
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;
@@ -1223,6 +1224,7 @@ class Player{
 							}
 							$this->received[$p->messageIndex] = true;
 						}
+                        $p->PROTOCOL = $this->PROTOCOL;
 						$p->decode();
 						$this->handleDataPacket($p);
 					}
@@ -1286,6 +1288,7 @@ class Player{
 		$packet->z = $z;
 		$packet->block = $id;
 		$packet->meta = $meta;
+        $packet->PROTOCOL = $this->PROTOCOL;
 		$packet->encode();
 		
 		$len = 1 + strlen($packet->buffer);
@@ -1318,6 +1321,7 @@ class Player{
 				$motion->speedX = $e->speedX;
 				$motion->speedY = $e->speedY;
 				$motion->speedZ = $e->speedZ;
+                $motion->PROTOCOL = $this->PROTOCOL;
 				$motion->encode();
 				$len += 1 + strlen($motion->buffer);
 				++$packets;
@@ -1339,6 +1343,7 @@ class Player{
 				$move->yaw = $e->yaw;
 				$move->pitch = $e->pitch;
 				$move->bodyYaw = $e->headYaw;
+                $move->PROTOCOL = $this->PROTOCOL;
 				$move->encode();
 			}else{
 				$move = new MoveEntityPacket_PosRot();
@@ -1348,6 +1353,7 @@ class Player{
 				$move->z = $e->z;
 				$move->yaw = $e->yaw;
 				$move->pitch = $e->pitch;
+                $move->PROTOCOL = $this->PROTOCOL;
 				$move->encode();
 			}
 			
@@ -1358,6 +1364,7 @@ class Player{
 			$headyaw = new RotateHeadPacket();
 			$headyaw->eid = $e->eid;
 			$headyaw->yaw = $e->headYaw;
+            $headyaw->PROTOCOL = $this->PROTOCOL;
 			$headyaw->encode();
 			$len += strlen($headyaw->buffer) + 1;
 			++$packets;
@@ -1483,6 +1490,7 @@ class Player{
 			return [];
 		}
 
+        $packet->PROTOCOL = $this->PROTOCOL;
 		$packet->encode();
 		$pk = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$pk->data[] = $packet;
@@ -1515,7 +1523,7 @@ class Player{
             return;
         }
 
-        if ($packet->pid == ProtocolInfo::LOGIN_PACKET) {
+        if ($packet->pid() == ProtocolInfo::LOGIN_PACKET) {
             if ($this->loggedIn === true) {
                 return;
             }
@@ -1527,7 +1535,7 @@ class Player{
                 $this->close("server is full!", false);
                 return;
             }
-            if ($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL) {
+            if ($packet->protocol1 < ProtocolInfo5::CURRENT_PROTOCOL_5 && $packet->protocol1 > ProtocolInfo::CURRENT_PROTOCOL) {
                 if ($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL) {
                     $pk = new LoginStatusPacket;
                     $pk->status = 1;
