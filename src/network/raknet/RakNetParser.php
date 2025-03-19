@@ -59,9 +59,7 @@ class RakNetParser{
 				$this->packet->seqNumber = $this->getLTriad();
 				$this->packet->data = [];
                 $this->packet->ip = $this->source;
-                console($this->source);
                 $PROTOCOL = PlayerAPI::decodeProtocol($this->packet->ip);
-                console("1111");
                 if($PROTOCOL > 13){
                     while(!$this->feof() and ($pk = $this->parseDataPacket()) instanceof RakNetDataPacket){
                         $this->packet->data[] = $pk;
