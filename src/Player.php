@@ -84,6 +84,8 @@ class Player{
 	 * @var boolean $isSneaking
 	 */
 	public $isJumping, $isSneaking;
+
+	private $lastPing = -1;
 	
 	/**
 	 * @param integer $clientID
@@ -1503,6 +1505,17 @@ class Player{
 		}
 		
 	}
+
+	public function sendPing() {
+		$pk = new PingPacket;
+		$pk->time = intdiv(hrtime(true), 1_000_000);
+		$this->directDataPacket($pk);
+	}
+
+	public function getPing() {
+		return $this->lastPing;
+	}
+
 	public function handleDataPacket(RakNetDataPacket $packet){
 		if($this->connected === false){
 			return;
@@ -1511,18 +1524,20 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketReceiveEvent($this, $packet)) === BaseEvent::DENY){
 			return;
 		}
-
-		
 		
 		switch($packet->pid()){
 			case 0x01:
 				break;
 			case ProtocolInfo::PONG_PACKET:
+				$currentTime = intdiv(hrtime(true), 1_000_000);
+				if($currentTime > $packet->ptime){
+					$this->lastPing = $currentTime - $packet->ptime;
+				}
 				break;
 			case ProtocolInfo::PING_PACKET:
 				$pk = new PongPacket;
 				$pk->ptime = $packet->time;
-				$pk->time = abs(microtime(true) * 1000);
+				$pk->time = intdiv(hrtime(true), 1_000_000);
 				$this->directDataPacket($pk);
 				break;
 			case ProtocolInfo::DISCONNECT_PACKET:
