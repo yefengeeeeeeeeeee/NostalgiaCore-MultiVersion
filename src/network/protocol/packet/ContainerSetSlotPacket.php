@@ -6,7 +6,9 @@ class ContainerSetSlotPacket extends RakNetDataPacket{
 	public $item;
 	
 	public function pid(){
-        if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+        if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
+            return  ProtocolInfo7::CONTAINER_SET_SLOT_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
             return  ProtocolInfo9::CONTAINER_SET_SLOT_PACKET;
         }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
             return  ProtocolInfo12::CONTAINER_SET_SLOT_PACKET;

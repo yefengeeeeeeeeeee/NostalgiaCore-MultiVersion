@@ -16,7 +16,9 @@ class UseItemPacket extends RakNetDataPacket{
 	public $posZ;
 	
 	public function pid(){
-        if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+        if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
+            return  ProtocolInfo7::USE_ITEM_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
             return  ProtocolInfo12::USE_ITEM_PACKET;
         }
 		return ProtocolInfo::USE_ITEM_PACKET;
@@ -33,9 +35,11 @@ class UseItemPacket extends RakNetDataPacket{
 		$this->fx = $this->getFloat();
 		$this->fy = $this->getFloat();
 		$this->fz = $this->getFloat();
-		$this->posX = $this->getFloat();
-		$this->posY = $this->getFloat();
-		$this->posZ = $this->getFloat();		
+        if ($this->PROTOCOL > ProtocolInfo9::CURRENT_PROTOCOL_9) {
+            $this->posX = $this->getFloat();
+            $this->posY = $this->getFloat();
+            $this->posZ = $this->getFloat();
+        }
 	}
 	
 	public function encode(){

@@ -333,7 +333,6 @@ class PlayerAPI{
     public static function decodeProtocol($ip){
         foreach(ServerAPI::request()->clients as $p) {
             if($p->ip == $ip){
-                console($p->PROTOCOL);
                 return $p->PROTOCOL;
             }
         }
