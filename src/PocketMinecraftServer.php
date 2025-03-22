@@ -618,6 +618,9 @@ class PocketMinecraftServer{
 			
 			foreach($this->clients as $client){
 				$client->handlePacketQueues();
+				if($this->ticks % 40 == 0){ //2s
+					$client->sendPing();
+				}
 			}
 			
 			foreach($this->api->level->levels as $l){
