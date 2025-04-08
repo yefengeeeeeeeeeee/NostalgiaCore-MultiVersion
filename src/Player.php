@@ -2829,7 +2829,6 @@ class Player{
         if (EventHandler::callEvent(new DataPacketReceiveEvent($this, $packet)) === BaseEvent::DENY) {
             return;
         }
-
         switch ($packet->pid()) {
             case 0x01:
                 break;
@@ -3235,6 +3234,7 @@ class Player{
                         $this->entity->inActionCounter = 0;
                         $this->entity->updateMetadata();
                     }
+					
 
                     if ($this->blocked === true or ($this->entity->position instanceof Vector3 and $blockVector->distance($this->entity->position) > 10)) {
 
@@ -3797,6 +3797,7 @@ class Player{
                 }
                 break;
             case ProtocolInfo7::SEND_INVENTORY_PACKET:
+				console("send");
                 if ($this->spawned === false) {
                     break;
                 }

@@ -34,7 +34,7 @@ abstract class ProtocolInfo{
 	const MOVE_ENTITY_PACKET_POSROT = 0x93;
 	const ROTATE_HEAD_PACKET = 0x94;
 	const MOVE_PLAYER_PACKET = 0x95;
-	//const PLACE_BLOCK_PACKET = 0x96;
+	const PLACE_BLOCK_PACKET = 0x96;
 	const REMOVE_BLOCK_PACKET = 0x97;
 	const UPDATE_BLOCK_PACKET = 0x98;
 	const ADD_PAINTING_PACKET = 0x99;
@@ -65,7 +65,7 @@ abstract class ProtocolInfo{
 	const CONTAINER_SET_SLOT_PACKET = 0xb2;
 	const CONTAINER_SET_DATA_PACKET = 0xb3;
 	const CONTAINER_SET_CONTENT_PACKET = 0xb4;
-	//const CONTAINER_ACK_PACKET = 0xb5;
+	const CONTAINER_ACK_PACKET = 0xb5;
 	const CHAT_PACKET = 0xb6;
 	const ADVENTURE_SETTINGS_PACKET = 0xb7;
 	const ENTITY_DATA_PACKET = 0xb8;
@@ -111,7 +111,7 @@ abstract class ProtocolInfo12{
     const MOVE_ENTITY_PACKET_POSROT = 0x93;
     const ROTATE_HEAD_PACKET = 0xff;
     const MOVE_PLAYER_PACKET = 0x94;
-    //const PLACE_BLOCK_PACKET = 0x96;
+    const PLACE_BLOCK_PACKET = 0x96;
     const REMOVE_BLOCK_PACKET = 0x96;
     const UPDATE_BLOCK_PACKET = 0x97;
     const ADD_PAINTING_PACKET = 0x98;
@@ -142,7 +142,7 @@ abstract class ProtocolInfo12{
     const CONTAINER_SET_SLOT_PACKET = 0xb1;
     const CONTAINER_SET_DATA_PACKET = 0xb2;
     const CONTAINER_SET_CONTENT_PACKET = 0xb3;
-    //const CONTAINER_ACK_PACKET = 0xb5;  //Bruh
+    const CONTAINER_ACK_PACKET = 0xb5;  //Bruh
     const CHAT_PACKET = 0xb5;
     const ADVENTURE_SETTINGS_PACKET = 0xb6;
     const ENTITY_DATA_PACKET = 0xb7;
@@ -180,7 +180,7 @@ abstract class ProtocolInfo9{
 
     const MOVE_ENTITY_PACKET_POSROT = 0x93;
     const MOVE_PLAYER_PACKET = 0x94;
-    //const PLACE_BLOCK_PACKET = 0x95;
+    const PLACE_BLOCK_PACKET = 0x95;
     const REMOVE_BLOCK_PACKET = 0x96;
     const UPDATE_BLOCK_PACKET = 0x97;
     const ADD_PAINTING_PACKET = 0x98;
@@ -206,12 +206,12 @@ abstract class ProtocolInfo9{
     const RESPAWN_PACKET = 0xab;
     const SEND_INVENTORY_PACKET = 0xac;
     const DROP_ITEM_PACKET = 0xad;
-    const CONTAINER_OPEN_PACKET = 0xae;
-    const CONTAINER_CLOSE_PACKET = 0xaf;
-    const CONTAINER_SET_SLOT_PACKET = 0xb0;
-    const CONTAINER_SET_DATA_PACKET = 0xb1;
-    const CONTAINER_SET_CONTENT_PACKET = 0xb2;
-    //const CONTAINER_ACK_PACKET = 0xb3;
+    const CONTAINER_OPEN_PACKET = 0xab;
+    const CONTAINER_CLOSE_PACKET = 0xac;
+    const CONTAINER_SET_SLOT_PACKET = 0xad;
+    const CONTAINER_SET_DATA_PACKET = 0xae;
+    const CONTAINER_SET_CONTENT_PACKET = 0xaf;
+    const CONTAINER_ACK_PACKET = 0xb;
     const CHAT_PACKET = 0xb4;//12 change
     const ADVENTURE_SETTINGS_PACKET = 0xb6;
     const ENTITY_DATA_PACKET = 0xb7;
@@ -252,7 +252,7 @@ abstract class ProtocolInfo7{ // MCPE 0.3 - 0.5 seem using same packet id
 
     const MOVE_ENTITY_PACKET_POSROT = 0x93;
     const MOVE_PLAYER_PACKET = 0x94;
-    //const PLACE_BLOCK_PACKET = 0x95;
+    const PLACE_BLOCK_PACKET = 0x95;
     const REMOVE_BLOCK_PACKET = 0x96;
     const UPDATE_BLOCK_PACKET = 0x97;
     const ADD_PAINTING_PACKET = 0x98;// Maybe exist
@@ -263,12 +263,12 @@ abstract class ProtocolInfo7{ // MCPE 0.3 - 0.5 seem using same packet id
     const REQUEST_CHUNK_PACKET = 0x9d;
     const CHUNK_DATA_PACKET = 0x9e;
     const PLAYER_EQUIPMENT_PACKET = 0x9f;
-    //const PLAYER_ARMOR_EQUIPMENT_PACKET = 0xa0;
+    const PLAYER_ARMOR_EQUIPMENT_PACKET = 0xa0;
     const INTERACT_PACKET = 0xa0;//Change
     const USE_ITEM_PACKET = 0xa1;
     const PLAYER_ACTION_PACKET = 0xa2;
 
-    //const HURT_ARMOR_PACKET = 0xa3;
+    const HURT_ARMOR_PACKET = 0xa3;
     const SET_ENTITY_DATA_PACKET = 0xa3;
     const SET_ENTITY_MOTION_PACKET = 0xa4;
     //const SET_ENTITY_LINK_PACKET = 0xa?;
@@ -281,13 +281,13 @@ abstract class ProtocolInfo7{ // MCPE 0.3 - 0.5 seem using same packet id
     const CONTAINER_OPEN_PACKET = 0xab;
     const CONTAINER_CLOSE_PACKET = 0xac;
     const CONTAINER_SET_SLOT_PACKET = 0xad;
-    //const CONTAINER_SET_DATA_PACKET = 0xb1;
-    //const CONTAINER_SET_CONTENT_PACKET = 0xb2;
-    //const CONTAINER_ACK_PACKET = 0xb3;
+    const CONTAINER_SET_DATA_PACKET = 0xae;
+    const CONTAINER_SET_CONTENT_PACKET = 0xaf;
+    const CONTAINER_ACK_PACKET = 0xb;
     const CHAT_PACKET = 0xb1;//12 change
     const ADVENTURE_SETTINGS_PACKET = 0xb3;
     const ENTITY_DATA_PACKET = 0xb2;
-    //const PLAYER_INPUT_PACKET = 0xb9;
+    const PLAYER_INPUT_PACKET = 0xb9;
 }
 /***REM_START***/
 require_once(FILE_PATH . "src/network/raknet/RakNetDataPacket.php");

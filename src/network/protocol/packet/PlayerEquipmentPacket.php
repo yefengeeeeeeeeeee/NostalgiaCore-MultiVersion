@@ -17,7 +17,7 @@ class PlayerEquipmentPacket extends RakNetDataPacket{
 		$this->eid = $this->getInt();
 		$this->item = $this->getShort();
 		$this->meta = $this->getShort();
-		$this->slot = $this->getSignedByte();
+		if($this->PROTOCOL === ProtocolInfo::CURRENT_PROTOCOL){$this->slot = $this->getSignedByte();}
 	}
 	
 	public function encode(){
@@ -25,7 +25,7 @@ class PlayerEquipmentPacket extends RakNetDataPacket{
 		$this->putInt($this->eid);
 		$this->putShort($this->item);
 		$this->putShort($this->meta);
-		$this->putByte($this->slot);
+		if($this->PROTOCOL === ProtocolInfo::CURRENT_PROTOCOL){$this->putByte($this->slot);}
 	}
 
 }
