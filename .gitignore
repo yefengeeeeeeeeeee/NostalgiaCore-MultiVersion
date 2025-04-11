@@ -5,6 +5,7 @@ logs/*
 bin/*
 .idea/*
 *.log
+server.lock
 *.pmf
 *.txt
 *.properties
