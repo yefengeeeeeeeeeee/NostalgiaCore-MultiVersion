@@ -133,6 +133,10 @@ class Item{
 	public $id;
 	public $meta;
 	public $count;
+	/**
+	 * @var int 
+	 * Max stack size of the item. Use Item::getMaxStackSize to get stack size for specific item.
+	 */
 	public $maxStackSize = 64;
 	public $durability = 0;
 	public $name;

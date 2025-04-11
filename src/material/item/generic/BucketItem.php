@@ -10,8 +10,13 @@ class BucketItem extends Item{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(BUCKET, $meta, $count, "Bucket");
 		$this->isActivable = true;
-		$this->maxStackSize = 1;
+		$this->maxStackSize = 16;
 		$this->name = BucketItem::$possiblenames[$this->meta];
+	}
+	
+	public function getMaxStackSize(){
+		if($this->getMetadata() == 0) return 16;
+		return 1;
 	}
 	
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
@@ -19,11 +24,17 @@ class BucketItem extends Item{
 			if($target instanceof LiquidBlock && $target->getMetadata() == 0){
 				$level->setBlock($target, new AirBlock(), true, false, true);
 				if(($player->gamemode & 0x01) === 0){
-					$this->meta = match($target->getID()){
+					$meta = match($target->getID()){
 						WATER, STILL_WATER => WATER,
 						LAVA, STILL_LAVA => LAVA,
 						default => 0
 					};
+					if($this->count <= 1){
+						$this->meta = $meta;
+					}else{
+						--$this->count;
+						$player->addItem(BUCKET, $meta, 1);
+					}
 				}
 				return true;
 			}
@@ -33,7 +44,12 @@ class BucketItem extends Item{
 				$level->setBlock($block, $water, true, false, true);
 				//$water->place($this, $player, $block, $target, $face, $fx, $fy, $fz);
 				if(($player->gamemode & 0x01) === 0){
-					$this->meta = 0;
+					if($this->count <= 1){
+						$this->meta = 0;
+					}else{
+						--$this->count;
+						$player->addItem(BUCKET, $meta, 0);
+					}
 				}
 				return true;
 			}
@@ -43,7 +59,12 @@ class BucketItem extends Item{
 				$level->setBlock($block, $lava, true, false, true);
 				//$lava->place(clone $this, $player, $block, $target, $face, $fx, $fy, $fz);
 				if(($player->gamemode & 0x01) === 0){
-					$this->meta = 0;
+					if($this->count <= 1){
+						$this->meta = 0;
+					}else{
+						--$this->count;
+						$player->addItem(BUCKET, $meta, 0);
+					}
 				}
 				return true;
 			}
