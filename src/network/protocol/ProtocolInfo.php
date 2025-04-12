@@ -267,8 +267,6 @@ abstract class ProtocolInfo7{ // MCPE 0.3 - 0.5 seem using same packet id
     const INTERACT_PACKET = 0xa0;//Change
     const USE_ITEM_PACKET = 0xa1;
     const PLAYER_ACTION_PACKET = 0xa2;
-
-    const HURT_ARMOR_PACKET = 0xa3;
     const SET_ENTITY_DATA_PACKET = 0xa3;
     const SET_ENTITY_MOTION_PACKET = 0xa4;
     //const SET_ENTITY_LINK_PACKET = 0xa?;

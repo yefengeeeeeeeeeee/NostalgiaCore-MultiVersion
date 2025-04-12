@@ -1712,7 +1712,9 @@ class Player{
             return;
         }
 
-        switch ($packet->pid()) {
+        $internalPid = $packet->getInternalPid();
+
+        switch ($internalPid) {
             case 0x01:
                 break;
             case ProtocolInfo::PONG_PACKET:

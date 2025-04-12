@@ -965,9 +965,9 @@ class RakNetParser{
                 case ProtocolInfo7::PLAYER_EQUIPMENT_PACKET:
                     $data = new PlayerEquipmentPacket;
                     break;
-                /*case ProtocolInfo7::PLAYER_ARMOR_EQUIPMENT_PACKET:
+                case ProtocolInfo7::PLAYER_ARMOR_EQUIPMENT_PACKET:
                     $data = new PlayerArmorEquipmentPacket;
-                    break;*/
+                    break;
                 case ProtocolInfo7::INTERACT_PACKET:
                     $data = new InteractPacket;
                     break;
@@ -977,9 +977,6 @@ class RakNetParser{
                 case ProtocolInfo7::PLAYER_ACTION_PACKET:
                     $data = new PlayerActionPacket;
                     break;
-                /*case ProtocolInfo7::HURT_ARMOR_PACKET:
-                    $data = new HurtArmorPacket;
-                    break;*/
                 case ProtocolInfo7::SET_ENTITY_DATA_PACKET:
                     $data = new SetEntityDataPacket;
                     break;
@@ -1013,12 +1010,12 @@ class RakNetParser{
                 case ProtocolInfo7::CONTAINER_SET_SLOT_PACKET:
                     $data = new ContainerSetSlotPacket;
                     break;
-                /*case ProtocolInfo7::CONTAINER_SET_DATA_PACKET:
+                case ProtocolInfo7::CONTAINER_SET_DATA_PACKET:
                     $data = new ContainerSetDataPacket;
-                    break;*/
-                /*case ProtocolInfo7::CONTAINER_SET_CONTENT_PACKET:
+                    break;
+                case ProtocolInfo7::CONTAINER_SET_CONTENT_PACKET:
                     $data = new ContainerSetContentPacket;
-                    break;*/
+                    break;
                 case ProtocolInfo7::CHAT_PACKET:
                     $data = new ChatPacket;
                     break;
@@ -1028,9 +1025,9 @@ class RakNetParser{
                 case ProtocolInfo7::ENTITY_DATA_PACKET:
                     $data = new EntityDataPacket;
                     break;
-                /*case ProtocolInfo7::PLAYER_INPUT_PACKET:
+                case ProtocolInfo7::PLAYER_INPUT_PACKET:
                     $data = new PlayerInputPacket;
-                    break;*/
+                    break;
                 default:
                     $data = new UnknownPacket();
                     $data->packetID = $pid;

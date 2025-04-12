@@ -36,7 +36,7 @@ class ContainerSetContentPacket extends RakNetDataPacket{
 			$this->putSlot($slot);
 		}
 		if($this->windowid === 0 and count($this->hotbar) > 0){
-			$this->putShort(count($this->hotbar));
+			$this->putShort(count($this->hotbar));//null
 			foreach($this->hotbar as $slot){
 				$this->putInt($slot);
 			}

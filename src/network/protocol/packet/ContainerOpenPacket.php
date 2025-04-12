@@ -28,7 +28,7 @@ class ContainerOpenPacket extends RakNetDataPacket{
 		$this->putByte($this->windowid);
 		$this->putByte($this->type);
 		$this->putByte($this->slots);
-		$this->putInt($this->x);
+		$this->putInt($this->x);//String
 		$this->putInt($this->y);
 		$this->putInt($this->z);
 	}
