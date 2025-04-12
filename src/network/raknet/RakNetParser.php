@@ -6,6 +6,7 @@ class RakNetParser{
 	private $buffer;
     private $source;
 	private $offset;
+    private $isparse = false;
 
 	public function __construct(&$buffer, $source){
         $this->source =& $source;
@@ -964,9 +965,6 @@ class RakNetParser{
                     break;
                 case ProtocolInfo7::PLAYER_EQUIPMENT_PACKET:
                     $data = new PlayerEquipmentPacket;
-                    break;
-                case ProtocolInfo7::PLAYER_ARMOR_EQUIPMENT_PACKET:
-                    $data = new PlayerArmorEquipmentPacket;
                     break;
                 case ProtocolInfo7::INTERACT_PACKET:
                     $data = new InteractPacket;
