@@ -81,7 +81,7 @@ class PacketPool{
 		self::registerPacket(PingPacket::class);
 		self::registerPacket(PlaceBlockPacket::class);
 		self::registerPacket(PlayerActionPacket::class);
-		self::registerPacket(PlayerArmorEquipmentPacket::class);
+		self::registerPacket(PlayerArmorEquipmentPacket::class, [9, 10, 11, 12, 13, 14]);
 		self::registerPacket(PlayerEquipmentPacket::class);
 		self::registerPacket(PlayerInputPacket::class);
 		self::registerPacket(PongPacket::class);
@@ -97,7 +97,7 @@ class PacketPool{
 		self::registerPacket(SendInventoryPacket::class);
 		self::registerPacket(ServerHandshakePacket::class);
 		self::registerPacket(SetEntityDataPacket::class);
-		self::registerPacket(SetEntityLinkPacket::class, [11, 12, 13, 14]);
+		self::registerPacket(SetEntityLinkPacket::class, [12, 13, 14]);
 		self::registerPacket(SetEntityMotionPacket::class);
 		self::registerPacket(SetHealthPacket::class);
 		self::registerPacket(SetSpawnPositionPacket::class);
