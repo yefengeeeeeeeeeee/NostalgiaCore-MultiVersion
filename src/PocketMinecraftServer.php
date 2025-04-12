@@ -67,6 +67,7 @@ class PocketMinecraftServer{
 		$this->saveEnabled = true;
 		$this->tickMeasure = array_fill(0, 40, 0);
 		$this->setType("normal");
+		PacketPool::init();
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, $this->serverip);
 		$this->stop = false;
 		$this->ticks = 0;
