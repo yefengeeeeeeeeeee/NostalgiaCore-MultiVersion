@@ -227,6 +227,7 @@ class PocketMinecraftServer{
 				}, $this->asyncThread);
 			}
 		}
+		release_lock();
 	}
 	
 	public function send2Discord($msg){

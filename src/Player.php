@@ -1523,6 +1523,7 @@ class Player{
 		}
 	}
 
+
     public function sendPing() {
         $pk = new PingPacket;
         $pk->time = intdiv(hrtime(true), 1_000_000);
@@ -3235,6 +3236,7 @@ class Player{
                         $this->entity->updateMetadata();
                     }
 					
+
 
                     if ($this->blocked === true or ($this->entity->position instanceof Vector3 and $blockVector->distance($this->entity->position) > 10)) {
 
@@ -6089,7 +6091,7 @@ class Player{
 				$s = $this->getSlot($slot);
 				if($s->count <= 0 or $s->getID() === AIR){
 					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $item->count), false);
-				}else if($s->getID() == $item->getID() && $s->getMetadata() == $item->getMetadata() && ($s->count + $item->count) <= $s->maxStackSize){
+				}else if($s->getID() == $item->getID() && $s->getMetadata() == $item->getMetadata() && ($s->count + $item->count) <= $s->getMaxStackSize()){
 					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $s->count + $item->count), false);
 				}else{
 					$f1 = 0.3;

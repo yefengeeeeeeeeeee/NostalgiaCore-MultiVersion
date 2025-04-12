@@ -254,3 +254,16 @@ function logg($message, $name, $EOL = true, $level = 2, $close = false){
 		}
 	}
 }
+
+function release_lock(){
+	if(LOCK_FILE !== null){
+		if(!flock(LOCK_FILE, LOCK_UN)){
+			console("[CRITICAL] Failed to release the server.lock file.");
+		}
+		if(!fclose(LOCK_FILE)){
+			console("[CRITICAL] Could not close server.lock resource.");
+		}
+	} else {
+		console("[CRITICAL] Failed to find the server.lock file.");
+	}
+}

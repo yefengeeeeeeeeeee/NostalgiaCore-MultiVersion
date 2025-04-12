@@ -71,6 +71,30 @@ if($errors > 0){
 	exit(1); //Exit with error
 }
 
+$lockFile = fopen(DATA_PATH . "server.lock", "a+b");
+if ($lockFile === false) {
+	console("[ERROR] Unable to open server.lock file. Please check that the current user has read/write permissions to it.");
+	exit(1);
+}
+
+define("LOCK_FILE", $lockFile);
+
+if (!flock(LOCK_FILE, LOCK_EX | LOCK_NB)) {
+	//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the
+	//other server wrote its PID and released exclusive lock before we get our lock
+	flock(LOCK_FILE, LOCK_SH);
+	$pid = stream_get_contents(LOCK_FILE);
+
+	echo "[CRITICAL] Another NostalgiaCore instance (PID $pid) is already using this folder (" . DATA_PATH . ")." . PHP_EOL;
+	echo "[CRITICAL] Please stop the other server first before running a new one." . PHP_EOL;
+	exit(1);
+}
+
+ftruncate(LOCK_FILE, 0);
+fwrite(LOCK_FILE, (string) getmypid());
+fflush(LOCK_FILE);
+flock(LOCK_FILE, LOCK_SH); //prevent acquiring an exclusive lock from another process, but allow reading
+
 $sha1sum = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 /***REM_START***/
 require_once(FILE_PATH . "/src/math/Vector3.php");
