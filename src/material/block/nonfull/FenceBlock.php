@@ -17,6 +17,19 @@ class FenceBlock extends TransparentBlock{
 		return true;
 	}
 	
+	public static function getAABB(Level $level, $x, $y, $z){
+		$v9 = self::canConnectTo($level, $x, $y, $z - 1);
+		$v10 = self::canConnectTo($level, $x, $y, $z + 1);
+		$v11 = self::canConnectTo($level, $x - 1, $y, $z);
+		$v12 = self::canConnectTo($level, $x + 1, $y, $z);
+		$minX = $v11 ? 0 : 0.375;
+		$minZ = $v9 ? 0 : 0.375;
+		$maxZ = $v10 ? 1 : 0.625;
+		$maxX = !$v12 ? 0.625 : 1;
+		StaticBlock::setBlockBounds(static::$blockID, $minX, 0, $minZ, $maxX, 1.5, $maxZ);
+		return parent::getAABB($level, $x, $y, $z);
+	}
+	
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		$v8 = self::canConnectTo($level, $x, $y, $z - 1);
 		$v9 = self::canConnectTo($level, $x, $y, $z + 1);
