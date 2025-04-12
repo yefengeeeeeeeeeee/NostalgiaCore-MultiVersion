@@ -353,13 +353,14 @@ class PMFLevel extends PMF{
 	}
 	
 	public function getBlockID($x, $y, $z){
+		if($y > 127 || $y < 0){
+			return 0;
+		}
+		
 		if($x < 0 || $x > 255 || $z < 0 || $z > 255){
 			return INVISIBLE_BEDROCK;
 		}
 		
-		if($y > 127 || $y < 0){
-			return 0;
-		}
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
@@ -460,11 +461,11 @@ class PMFLevel extends PMF{
 	}
 
 	public function getBlock($x, $y, $z){
-		if($x < 0 || $x > 255 || $z < 0 || $z > 255){
-			return [INVISIBLE_BEDROCK, 0];
-		}
 		if($y < 0 || $y > 127){
 			return [AIR, 0];
+		}
+		if($x < 0 || $x > 255 || $z < 0 || $z > 255){
+			return [INVISIBLE_BEDROCK, 0];
 		}
 		
 		$X = $x >> 4;
