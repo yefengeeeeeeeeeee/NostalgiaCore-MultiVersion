@@ -47,6 +47,32 @@ class GenericBlock extends Block{
 		return $this->level->setBlock($this, new AirBlock(), true, false, true);
 	}
 
+	public static function onPlace(Level $level, $x, $y, $z){
+		[$id, $meta] = $level->level->getBlock($x, $y, $z);
+		if(StaticBlock::getHasPhysics($id)){
+			ServerAPI::request()->api->block->scheduleBlockUpdateXYZ($level, $x, $y, $z, BLOCK_UPDATE_SCHEDULED, 2); //tick delay == 2
+		}else{
+			parent::onPlace($level, $x, $y, $z);
+		}
+	}
+	
+	public static function onUpdate(Level $level, $x, $y, $z, $type){
+		[$id, $meta] = $level->level->getBlock($x, $y, $z);
+		$down = $level->level->getBlockID($x, $y - 1, $z);
+		if($down == AIR || StaticBlock::getIsLiquid($down)){
+			$data = array(
+				"x" => $x + 0.5,
+				"y" => $y - 0.5,
+				"z" => $z + 0.5,
+				"Tile" => $id,
+			);
+			$server = ServerAPI::request();
+			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
+			$e = $server->api->entity->add($level, ENTITY_FALLING, FALLING_SAND, $data);
+			$server->api->entity->spawnToAll($e);
+		}
+	}
+	
 	/**
 	 * @param integer $type
 	 *
@@ -55,19 +81,7 @@ class GenericBlock extends Block{
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		[$id, $meta] = $level->level->getBlock($x, $y, $z);
 		if(StaticBlock::getHasPhysics($id)){ //TODO move from here to different class
-			$down = $level->level->getBlockID($x, $y - 1, $z);
-			if($down == AIR || StaticBlock::getIsLiquid($down)){
-				$data = array(
-					"x" => $x + 0.5,
-					"y" => $y - 0.5,
-					"z" => $z + 0.5,
-					"Tile" => $id,
-				);
-				$server = ServerAPI::request();
-				$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
-				$e = $server->api->entity->add($level, ENTITY_FALLING, FALLING_SAND, $data);
-				$server->api->entity->spawnToAll($e);
-			}
+			static::onUpdate($level, $x, $y, $z, BLOCK_UPDATE_NORMAL);
 		}
 	}
 

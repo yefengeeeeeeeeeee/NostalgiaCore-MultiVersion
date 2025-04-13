@@ -422,6 +422,8 @@ class Player{
 	public function sendBuffer(){
 		if($this->bufferLen > 0 and $this->buffer instanceof RakNetPacket){
 			$this->buffer->seqNumber = $this->counter[0]++;
+			$this->recoveryQueue[$this->buffer->seqNumber] = $this->buffer;
+			$this->buffer->sendtime = microtime(true);
 			$this->send($this->buffer);
 		}
 		$this->bufferLen = 0;
@@ -965,15 +967,6 @@ class Player{
 			}
 
 			if($m !== ""){
-				
-				/*$pk = new LevelEventPacket();
-				$pk->evid = LevelEventPacket::EVENT_OPEN_DOOR_SOUND;
-				$pk->x = $this->entity->x;
-				$pk->y = $this->entity->y;
-				$pk->z = $this->entity->z;
-				$pk->data = 0;
-				$this->dataPacket($pk);*/
-				
 				$pk = new MessagePacket;
 				$pk->source = ($author instanceof Player) ? $author->username : $author;
 				$pk->message = TextFormat::clean($m); //Colors not implemented :(
@@ -2989,6 +2982,7 @@ class Player{
 			switch($packet->pid()){
 				case RakNetInfo::NACK:
 					foreach($packet->packets as $count){
+						
 						if(isset($this->recoveryQueue[$count])){
 							$this->resendQueue[$count] =& $this->recoveryQueue[$count];
 							$this->lag[] = $time - $this->recoveryQueue[$count]->sendtime;
