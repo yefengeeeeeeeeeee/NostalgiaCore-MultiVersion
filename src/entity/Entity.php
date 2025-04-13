@@ -1421,7 +1421,6 @@ class Entity extends Position
 				$this->player->directDataPacket($pk, 0);
 			}
 			$this->knockbackTime = 10;
-			
 		}
 
 		return $ret;
