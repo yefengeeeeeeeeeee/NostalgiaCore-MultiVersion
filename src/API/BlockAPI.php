@@ -505,8 +505,6 @@ class BlockAPI{
 		if($hand->isSolid === true && ($hand->getID() != BED_BLOCK && $hand->getID() != CARPET)){
 			$aabb = $hand->getAABB($block->level, $block->x, $block->y, $block->z);
 			$playerbb = $player->entity->boundingBox;
-			//$aabb->intersectsWith($playerbb) is not good enough for this case
-			//minY+0.21 is used to stop sneaking from triggering action cancelling
 			if(($aabb->maxX > $playerbb->minX && $aabb->minX < $playerbb->maxX) && ($aabb->maxY > ($playerbb->minY+0.21) && $aabb->minY < $playerbb->maxY) && ($aabb->maxZ > $playerbb->minZ && $aabb->minZ < $playerbb->maxZ)){
 				return $this->cancelAction($block, $player, false); //Entity in block
 			}

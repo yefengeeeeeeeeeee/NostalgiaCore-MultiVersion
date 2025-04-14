@@ -97,7 +97,7 @@ class Player{
 	 */
 	public function __construct($clientID, $ip, $port, $MTU){
 		$this->bigCnt = 0;
-		$this->MTU = min($MTU, 1100);
+		$this->MTU = min($MTU, 1492);
 		$this->server = ServerAPI::request();
 		$this->lastBreak = microtime(true);
 		$this->clientID = $clientID;
@@ -355,14 +355,16 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY){
 			return;
 		}
-        $packet->PROTOCOL = $this->PROTOCOL;
+    
+    $packet->PROTOCOL = $this->PROTOCOL;
+
 		$packet->encode();
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;
 		if($len > $MTU){
 			return $this->directBigRawPacket($packet);
 		}
-
+		
 		if(($this->bufferLen + $len) >= $MTU){
 			$this->sendBuffer();
 		}
@@ -1268,6 +1270,8 @@ class Player{
 	public function sendBlockUpdateQueue(){
 		if($this->blockUpdateQueueLength > 0 && $this->blockUpdateQueue instanceof RakNetPacket){
 			$this->blockUpdateQueue->seqNumber = $this->counter[0]++;
+			$this->recoveryQueue[$this->blockUpdateQueue->seqNumber] = $this->blockUpdateQueue;
+			$this->blockUpdateQueue->sendtime = microtime(true);
 			$this->send($this->blockUpdateQueue);
 		}
 		$this->blockUpdateQueueLength = 0;
@@ -2982,13 +2986,13 @@ class Player{
 			switch($packet->pid()){
 				case RakNetInfo::NACK:
 					foreach($packet->packets as $count){
-						
 						if(isset($this->recoveryQueue[$count])){
 							$this->resendQueue[$count] =& $this->recoveryQueue[$count];
 							$this->lag[] = $time - $this->recoveryQueue[$count]->sendtime;
 							unset($this->recoveryQueue[$count]);
+						}else{
+							++$this->packetStats[1]; //lost and wont be recovered
 						}
-						++$this->packetStats[1];
 					}
 					break;
 
