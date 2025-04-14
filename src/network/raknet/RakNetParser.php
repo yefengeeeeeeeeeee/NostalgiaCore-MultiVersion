@@ -4,9 +4,12 @@ class RakNetParser{
 
 	public $packet;
 	private $buffer;
+    private $source;
 	private $offset;
+    private $isparse = false;
 
-	public function __construct(&$buffer){
+	public function __construct(&$buffer, $source){
+        $this->source =& $source;
 		$this->buffer =& $buffer;
 		$this->offset = 0;
 		if(strlen($this->buffer) > 0){
@@ -56,6 +59,9 @@ class RakNetParser{
 			case RakNetInfo::DATA_PACKET_F:
 				$this->packet->seqNumber = $this->getLTriad();
 				$this->packet->data = [];
+                $this->packet->ip = $this->source;
+                $PROTOCOL = PlayerAPI::decodeProtocol($this->packet->ip);
+
 				while(!$this->feof() and ($pk = $this->parseDataPacket()) instanceof RakNetDataPacket){
 					$this->packet->data[] = $pk;
 				}
@@ -117,7 +123,7 @@ class RakNetParser{
 		return !isset($this->buffer[$this->offset]);
 	}
 
-	private function parseDataPacket(){
+	private function parseDataPacket(int $protocol = ProtocolInfo::CURRENT_PROTOCOL){
 		$packetFlags = $this->getByte();
 		$reliability = ($packetFlags & 0b11100000) >> 5;
 		$hasSplit = ($packetFlags & 0b00010000) > 0;
@@ -163,66 +169,8 @@ class RakNetParser{
 			if(strlen($buffer) < ($length - 1)){
 				return false;
 			}
-			
-			$data = match($pid){
-				ProtocolInfo::PING_PACKET => new PingPacket(),
-				ProtocolInfo::PONG_PACKET => new PongPacket(),
-				ProtocolInfo::CLIENT_CONNECT_PACKET => new ClientConnectPacket(),
-				ProtocolInfo::SERVER_HANDSHAKE_PACKET => new ServerHandshakePacket(),
-				ProtocolInfo::DISCONNECT_PACKET => new DisconnectPacket(),
-				ProtocolInfo::LOGIN_PACKET => new LoginPacket(),
-				ProtocolInfo::LOGIN_STATUS_PACKET => new LoginStatusPacket(),
-				ProtocolInfo::READY_PACKET => new ReadyPacket(),
-				ProtocolInfo::MESSAGE_PACKET => new MessagePacket(),
-				ProtocolInfo::SET_TIME_PACKET => new SetTimePacket(),
-				ProtocolInfo::START_GAME_PACKET => new StartGamePacket(),
-				ProtocolInfo::ADD_MOB_PACKET => new AddMobPacket(),
-				ProtocolInfo::ADD_PLAYER_PACKET => new AddPlayerPacket(),
-				ProtocolInfo::REMOVE_PLAYER_PACKET => new RemovePlayerPacket(),
-				ProtocolInfo::ADD_ENTITY_PACKET => new AddEntityPacket(),
-				ProtocolInfo::REMOVE_ENTITY_PACKET => new RemoveEntityPacket(),
-				ProtocolInfo::ADD_ITEM_ENTITY_PACKET => new AddItemEntityPacket(),
-				ProtocolInfo::TAKE_ITEM_ENTITY_PACKET => new TakeItemEntityPacket(),
-				ProtocolInfo::MOVE_ENTITY_PACKET => new MoveEntityPacket(),
-				ProtocolInfo::MOVE_ENTITY_PACKET_POSROT => new MoveEntityPacket_PosRot(),
-				ProtocolInfo::ROTATE_HEAD_PACKET => new RotateHeadPacket(),
-				ProtocolInfo::MOVE_PLAYER_PACKET => new MovePlayerPacket(),
-				ProtocolInfo::REMOVE_BLOCK_PACKET => new RemoveBlockPacket(),
-				ProtocolInfo::UPDATE_BLOCK_PACKET => new UpdateBlockPacket(),
-				ProtocolInfo::ADD_PAINTING_PACKET => new AddPaintingPacket(),
-				ProtocolInfo::EXPLODE_PACKET => new ExplodePacket(),
-				ProtocolInfo::LEVEL_EVENT_PACKET => new LevelEventPacket(),
-				ProtocolInfo::TILE_EVENT_PACKET => new TileEventPacket(),
-				ProtocolInfo::ENTITY_EVENT_PACKET => new EntityEventPacket(),
-				ProtocolInfo::REQUEST_CHUNK_PACKET => new RequestChunkPacket(),
-				ProtocolInfo::CHUNK_DATA_PACKET => new ChunkDataPacket(),
-				ProtocolInfo::PLAYER_EQUIPMENT_PACKET => new PlayerEquipmentPacket(),
-				ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET => new PlayerArmorEquipmentPacket(),
-				ProtocolInfo::INTERACT_PACKET => new InteractPacket(),
-				ProtocolInfo::USE_ITEM_PACKET => new UseItemPacket(),
-				ProtocolInfo::PLAYER_ACTION_PACKET => new PlayerActionPacket(),
-				ProtocolInfo::HURT_ARMOR_PACKET => new HurtArmorPacket(),
-				ProtocolInfo::SET_ENTITY_DATA_PACKET => new SetEntityDataPacket(),
-				ProtocolInfo::SET_ENTITY_MOTION_PACKET => new SetEntityMotionPacket(),
-				ProtocolInfo::SET_HEALTH_PACKET => new SetHealthPacket(),
-				ProtocolInfo::SET_SPAWN_POSITION_PACKET => new SetSpawnPositionPacket(),
-				ProtocolInfo::ANIMATE_PACKET => new AnimatePacket(),
-				ProtocolInfo::RESPAWN_PACKET => new RespawnPacket(),
-				ProtocolInfo::SEND_INVENTORY_PACKET => new SendInventoryPacket(),
-				ProtocolInfo::DROP_ITEM_PACKET => new DropItemPacket(),
-				ProtocolInfo::CONTAINER_OPEN_PACKET => new ContainerOpenPacket(),
-				ProtocolInfo::CONTAINER_CLOSE_PACKET => new ContainerClosePacket(),
-				ProtocolInfo::CONTAINER_SET_SLOT_PACKET => new ContainerSetSlotPacket(),
-				ProtocolInfo::CONTAINER_SET_DATA_PACKET => new ContainerSetDataPacket(),
-				ProtocolInfo::CONTAINER_SET_CONTENT_PACKET => new ContainerSetContentPacket(),
-				ProtocolInfo::CHAT_PACKET => new ChatPacket(),
-				ProtocolInfo::ADVENTURE_SETTINGS_PACKET => new AdventureSettingsPacket(),
-				ProtocolInfo::ENTITY_DATA_PACKET => new EntityDataPacket(),
-				ProtocolInfo::SET_ENTITY_LINK_PACKET => new SetEntityLinkPacket(),
-				ProtocolInfo::PLAYER_INPUT_PACKET => new PlayerInputPacket(),
-				default => new UnknownPacket($pid)
-			};
-			
+
+			$data = PacketPool::getPacket($pid, $protocol);
 			$data->reliability = $reliability;
 			$data->hasSplit = $hasSplit;
 			$data->messageIndex = $messageIndex;
@@ -235,6 +183,235 @@ class RakNetParser{
 		}
 		return $data;
 	}
+
+    private function parseDataPacket12(){
+        $packetFlags = $this->getByte();
+        $reliability = ($packetFlags & 0b11100000) >> 5;
+        $hasSplit = ($packetFlags & 0b00010000) > 0;
+        $length = (int) ceil($this->getShort() / 8);
+        if($reliability === 2
+            or $reliability === 3
+            or $reliability === 4
+            or $reliability === 6
+            or $reliability === 7){
+            $messageIndex = $this->getLTriad();
+        }else{
+            $messageIndex = false;
+        }
+
+        if($reliability === 1
+            or $reliability === 3
+            or $reliability === 4
+            or $reliability === 7){
+            $orderIndex = $this->getLTriad();
+            $orderChannel = $this->getByte();
+        }else{
+            $orderIndex = false;
+            $orderChannel = false;
+        }
+
+        if($hasSplit){
+            $splitCount = $this->getInt();
+            $splitID = $this->getShort();
+            $splitIndex = $this->getInt();
+        }else{
+            $splitCount = false;
+            $splitID = false;
+            $splitIndex = false;
+        }
+
+        if($length <= 0
+            or $orderChannel >= 32
+            or ($hasSplit === true and $splitIndex >= $splitCount)){
+            return false;
+        }else{
+            $pid = $this->getByte();
+            $buffer = $this->get($length - 1);
+            if(strlen($buffer) < ($length - 1)){
+                return false;
+            }
+            switch($pid){
+                case ProtocolInfo12::PING_PACKET:
+                    $data = new PingPacket;
+                    break;
+                case ProtocolInfo12::PONG_PACKET:
+                    $data = new PongPacket;
+                    break;
+                case ProtocolInfo12::CLIENT_CONNECT_PACKET:
+                    $data = new ClientConnectPacket;
+                    break;
+                case ProtocolInfo12::SERVER_HANDSHAKE_PACKET:
+                    $data = new ServerHandshakePacket;
+                    break;
+                case ProtocolInfo12::DISCONNECT_PACKET:
+                    $data = new DisconnectPacket;
+                    break;
+                case ProtocolInfo12::LOGIN_PACKET:
+                    $data = new LoginPacket;
+                    break;
+                case ProtocolInfo12::LOGIN_STATUS_PACKET:
+                    $data = new LoginStatusPacket;
+                    break;
+                case ProtocolInfo12::READY_PACKET:
+                    $data = new ReadyPacket;
+                    break;
+                case ProtocolInfo12::MESSAGE_PACKET:
+                    $data = new MessagePacket;
+                    break;
+                case ProtocolInfo12::SET_TIME_PACKET:
+                    $data = new SetTimePacket;
+                    break;
+                case ProtocolInfo12::START_GAME_PACKET:
+                    $data = new StartGamePacket;
+                    break;
+                case ProtocolInfo12::ADD_MOB_PACKET:
+                    $data = new AddMobPacket;
+                    break;
+                case ProtocolInfo12::ADD_PLAYER_PACKET:
+                    $data = new AddPlayerPacket;
+                    break;
+                case ProtocolInfo12::REMOVE_PLAYER_PACKET:
+                    $data = new RemovePlayerPacket;
+                    break;
+                case ProtocolInfo12::ADD_ENTITY_PACKET:
+                    $data = new AddEntityPacket;
+                    break;
+                case ProtocolInfo12::REMOVE_ENTITY_PACKET:
+                    $data = new RemoveEntityPacket;
+                    break;
+                case ProtocolInfo12::ADD_ITEM_ENTITY_PACKET:
+                    $data = new AddItemEntityPacket;
+                    break;
+                case ProtocolInfo12::TAKE_ITEM_ENTITY_PACKET:
+                    $data = new TakeItemEntityPacket;
+                    break;
+                case ProtocolInfo12::MOVE_ENTITY_PACKET:
+                    $data = new MoveEntityPacket;
+                    break;
+                case ProtocolInfo12::MOVE_ENTITY_PACKET_POSROT:
+                    $data = new MoveEntityPacket_PosRot;
+                    break;
+                case ProtocolInfo12::ROTATE_HEAD_PACKET:
+                    $data = new RotateHeadPacket;
+                    break;
+                case ProtocolInfo12::MOVE_PLAYER_PACKET:
+                    $data = new MovePlayerPacket;
+                    break;
+                case ProtocolInfo12::REMOVE_BLOCK_PACKET:
+                    $data = new RemoveBlockPacket;
+                    break;
+                case ProtocolInfo12::UPDATE_BLOCK_PACKET:
+                    $data = new UpdateBlockPacket;
+                    break;
+                case ProtocolInfo12::ADD_PAINTING_PACKET:
+                    $data = new AddPaintingPacket;
+                    break;
+                case ProtocolInfo12::EXPLODE_PACKET:
+                    $data = new ExplodePacket;
+                    break;
+                case ProtocolInfo12::LEVEL_EVENT_PACKET:
+                    $data = new LevelEventPacket;
+                    break;
+                case ProtocolInfo12::TILE_EVENT_PACKET:
+                    $data = new TileEventPacket;
+                    break;
+                case ProtocolInfo12::ENTITY_EVENT_PACKET:
+                    $data = new EntityEventPacket;
+                    break;
+                case ProtocolInfo12::REQUEST_CHUNK_PACKET:
+                    $data = new RequestChunkPacket;
+                    break;
+                case ProtocolInfo12::CHUNK_DATA_PACKET:
+                    $data = new ChunkDataPacket;
+                    break;
+                case ProtocolInfo12::PLAYER_EQUIPMENT_PACKET:
+                    $data = new PlayerEquipmentPacket;
+                    break;
+                case ProtocolInfo12::PLAYER_ARMOR_EQUIPMENT_PACKET:
+                    $data = new PlayerArmorEquipmentPacket;
+                    break;
+                case ProtocolInfo12::INTERACT_PACKET:
+                    $data = new InteractPacket;
+                    break;
+                case ProtocolInfo12::USE_ITEM_PACKET:
+                    $data = new UseItemPacket;
+                    break;
+                case ProtocolInfo12::PLAYER_ACTION_PACKET:
+                    $data = new PlayerActionPacket;
+                    break;
+                case ProtocolInfo12::HURT_ARMOR_PACKET:
+                    $data = new HurtArmorPacket;
+                    break;
+                case ProtocolInfo12::SET_ENTITY_DATA_PACKET:
+                    $data = new SetEntityDataPacket;
+                    break;
+                case ProtocolInfo12::SET_ENTITY_MOTION_PACKET:
+                    $data = new SetEntityMotionPacket;
+                    break;
+                case ProtocolInfo12::SET_HEALTH_PACKET:
+                    $data = new SetHealthPacket;
+                    break;
+                case ProtocolInfo12::SET_SPAWN_POSITION_PACKET:
+                    $data = new SetSpawnPositionPacket;
+                    break;
+                case ProtocolInfo12::ANIMATE_PACKET:
+                    $data = new AnimatePacket;
+                    break;
+                case ProtocolInfo12::RESPAWN_PACKET:
+                    $data = new RespawnPacket;
+                    break;
+                case ProtocolInfo12::SEND_INVENTORY_PACKET:
+                    $data = new SendInventoryPacket;
+                    break;
+                case ProtocolInfo12::DROP_ITEM_PACKET:
+                    $data = new DropItemPacket;
+                    break;
+                case ProtocolInfo12::CONTAINER_OPEN_PACKET:
+                    $data = new ContainerOpenPacket;
+                    break;
+                case ProtocolInfo12::CONTAINER_CLOSE_PACKET:
+                    $data = new ContainerClosePacket;
+                    break;
+                case ProtocolInfo12::CONTAINER_SET_SLOT_PACKET:
+                    $data = new ContainerSetSlotPacket;
+                    break;
+                case ProtocolInfo12::CONTAINER_SET_DATA_PACKET:
+                    $data = new ContainerSetDataPacket;
+                    break;
+                case ProtocolInfo12::CONTAINER_SET_CONTENT_PACKET:
+                    $data = new ContainerSetContentPacket;
+                    break;
+                case ProtocolInfo12::CHAT_PACKET:
+                    $data = new ChatPacket;
+                    break;
+                case ProtocolInfo12::ADVENTURE_SETTINGS_PACKET:
+                    $data = new AdventureSettingsPacket;
+                    break;
+                case ProtocolInfo12::ENTITY_DATA_PACKET:
+                    $data = new EntityDataPacket;
+                    break;
+                case ProtocolInfo12::SET_ENTITY_LINK_PACKET:
+                    $data = new SetEntityLinkPacket;
+                case ProtocolInfo12::PLAYER_INPUT_PACKET:
+                    $data = new PlayerInputPacket;
+                    break;
+                default:
+                    $data = new UnknownPacket();
+                    $data->packetID = $pid;
+                    break;
+            }
+            $data->reliability = $reliability;
+            $data->hasSplit = $hasSplit;
+            $data->messageIndex = $messageIndex;
+            $data->orderIndex = $orderIndex;
+            $data->orderChannel = $orderChannel;
+            $data->splitCount = $splitCount;
+            $data->splitID = $splitID;
+            $data->splitIndex = $splitIndex;
+            $data->setBuffer($buffer);
+        }
+        return $data;
+    }
 
 	private function getInt($unsigned = false){
 		return Utils::readInt($this->get(4), $unsigned);

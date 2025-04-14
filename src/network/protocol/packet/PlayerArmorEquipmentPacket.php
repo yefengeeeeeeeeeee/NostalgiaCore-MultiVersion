@@ -5,6 +5,9 @@ class PlayerArmorEquipmentPacket extends RakNetDataPacket{
 	public $slots = array();
 	
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+            return  ProtocolInfo12::PLAYER_ARMOR_EQUIPMENT_PACKET;
+        }
 		return ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET;
 	}
 	
