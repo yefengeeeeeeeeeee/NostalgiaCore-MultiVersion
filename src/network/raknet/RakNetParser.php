@@ -62,7 +62,7 @@ class RakNetParser{
                 $this->packet->ip = $this->source;
                 $PROTOCOL = PlayerAPI::decodeProtocol($this->packet->ip);
 
-				while(!$this->feof() and ($pk = $this->parseDataPacket()) instanceof RakNetDataPacket){
+				while(!$this->feof() and ($pk = $this->parseDataPacket($PROTOCOL)) instanceof RakNetDataPacket){
 					$this->packet->data[] = $pk;
 				}
 				break;
