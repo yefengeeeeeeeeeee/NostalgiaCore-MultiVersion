@@ -123,7 +123,7 @@ class RakNetParser{
 		return !isset($this->buffer[$this->offset]);
 	}
 
-	private function parseDataPacket(int $protocol = ProtocolInfo::CURRENT_PROTOCOL){
+	private function parseDataPacket($protocol = ProtocolInfo::CURRENT_PROTOCOL){
 		$packetFlags = $this->getByte();
 		$reliability = ($packetFlags & 0b11100000) >> 5;
 		$hasSplit = ($packetFlags & 0b00010000) > 0;
