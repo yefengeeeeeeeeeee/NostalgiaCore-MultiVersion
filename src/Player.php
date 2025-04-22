@@ -356,9 +356,12 @@ class Player{
 			return;
 		}
     
-    $packet->PROTOCOL = $this->PROTOCOL;
+        $packet->PROTOCOL = $this->PROTOCOL;
 
 		$packet->encode();
+        if($packet->pid() == 163 or $packet->pid() == 164 && $this->PROTOCOL < ProtocolInfo7::CURRENT_PROTOCOL_7){
+            return;
+        }
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;
 		if($len > $MTU){
@@ -2226,6 +2229,73 @@ class Player{
                             $this->entity->updateMetadata();
                         }
                     }
+                }
+                break;
+            case ProtocolInfo::PLACE_BLOCK_PACKET:
+                if (!($this->entity instanceof Entity)) {
+                    break;
+                }
+
+                $blockVector = new Vector3($packet->x, $packet->y, $packet->z);
+
+                if (($this->spawned === false or $this->blocked === true) and $packet->face >= 0 and $packet->face <= 5) {
+                    $target = $this->level->getBlock($blockVector);
+                    $block = $target->getSide($packet->face);
+
+                    $pk = new UpdateBlockPacket;
+                    $pk->x = $target->x;
+                    $pk->y = $target->y;
+                    $pk->z = $target->z;
+                    $pk->block = $target->getID();
+                    $pk->meta = $target->getMetadata();
+                    $this->dataPacket($pk);
+
+                    $pk = new UpdateBlockPacket;
+                    $pk->x = $block->x;
+                    $pk->y = $block->y;
+                    $pk->z = $block->z;
+                    $pk->block = $block->getID();
+                    $pk->meta = $block->getMetadata();
+                    $this->dataPacket($pk);
+                    break;
+                }
+                $this->craftingItems = [];
+                $this->toCraft = [];
+                $packet->eid = $this->eid;
+                $data = [];
+
+                if ($packet->face >= 0 and $packet->face <= 5) { //Use Block, place
+                    if ($this->entity->inAction === true) {
+                        $this->entity->inAction = false;
+                        $this->entity->inActionCounter = 0;
+                        $this->entity->updateMetadata();
+                    }
+
+                    if ($this->blocked === true or ($this->entity->position instanceof Vector3 and $blockVector->distance($this->entity->position) > 10)) {
+
+                    } else {
+                        $this->server->api->block->playerBlockAction($this, $blockVector, $packet->face, $packet->fx, $packet->fy, $packet->fz);
+                        break;
+                    }
+                    $target = $this->level->getBlock($blockVector);
+                    $block = $target->getSide($packet->face);
+
+                    $pk = new UpdateBlockPacket;
+                    $pk->x = $target->x;
+                    $pk->y = $target->y;
+                    $pk->z = $target->z;
+                    $pk->block = $target->getID();
+                    $pk->meta = $target->getMetadata();
+                    $this->dataPacket($pk);
+
+                    $pk = new UpdateBlockPacket;
+                    $pk->x = $block->x;
+                    $pk->y = $block->y;
+                    $pk->z = $block->z;
+                    $pk->block = $block->getID();
+                    $pk->meta = $block->getMetadata();
+                    $this->dataPacket($pk);
+                    break;
                 }
                 break;
             case ProtocolInfo::PLAYER_ACTION_PACKET:
