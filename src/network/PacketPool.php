@@ -25,7 +25,7 @@ class PacketPool{
 		}
 	}
 
-	public static function getPacket(int $pid, int $protocol) : RakNetDataPacket{
+	public static function getPacket($pid, $protocol) : RakNetDataPacket{
 		if(isset(self::$packetPool[$protocol][$pid])) {
 			return clone self::$packetPool[$protocol][$pid];
 		}
