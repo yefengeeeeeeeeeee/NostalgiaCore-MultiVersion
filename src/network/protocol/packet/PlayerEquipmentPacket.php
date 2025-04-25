@@ -23,7 +23,7 @@ class PlayerEquipmentPacket extends RakNetDataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);
-		$this->putShort($this->item);
+		$this->putShort(BlockAPI::convertHighItemIdsToOldItemIds($this->PROTOCOL, $this->item));
 		$this->putShort($this->meta);
 		if($this->PROTOCOL === ProtocolInfo::CURRENT_PROTOCOL){$this->putByte($this->slot);}
 	}

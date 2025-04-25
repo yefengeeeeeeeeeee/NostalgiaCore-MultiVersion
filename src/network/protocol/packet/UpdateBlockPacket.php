@@ -23,7 +23,7 @@ class UpdateBlockPacket extends RakNetDataPacket{
 		$this->putInt($this->x);
 		$this->putInt($this->z);
 		$this->putByte($this->y);
-		$this->putByte($this->block);
+		$this->putByte(BlockAPI::convertHighItemIdsToOldItemIds($this->PROTOCOL, $this->block));
 		$this->putByte($this->meta);
 	}
 

@@ -644,4 +644,30 @@ class BlockAPI{
 			}
 		}
 	}
+
+    public static function convertHighItemIdsToOldItemIds(int $protocolId, int $itemId){
+        if ($protocolId >= ProtocolInfo::CURRENT_PROTOCOL) {
+            return $itemId;
+        }
+
+        $idMap = [];
+        if ($protocolId < ProtocolInfo9::CURRENT_PROTOCOL_9) {
+            $idMap += [
+                87 => 49,
+                405 => 336,
+                406 => 336,
+            ];
+        }
+        if ($protocolId < ProtocolInfo12::CURRENT_PROTOCOL_12) {
+            $idMap += [
+                91 => 103,
+                361 => 362,
+                400 => 297,
+                457 => 295,
+                458 => 297,
+            ];
+        }
+
+        return $idMap[$itemId] ?? $itemId;
+    }
 }

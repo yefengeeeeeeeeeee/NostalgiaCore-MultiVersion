@@ -150,8 +150,8 @@ abstract class RakNetDataPacket extends stdClass{
 		return ord($this->get(1));
 	}
 
-	protected function putSlot(Item $item){
-		$this->putShort($item->getID());
+	protected function putSlot(Int $protocolId, Item $item){
+		$this->putShort(BlockAPI::convertHighItemIdsToOldItemIds($protocolId, $item->getID()));
 		$this->putByte($item->count);
 		$this->putShort($item->getMetadata());
 	}

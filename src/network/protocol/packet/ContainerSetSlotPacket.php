@@ -26,7 +26,7 @@ class ContainerSetSlotPacket extends RakNetDataPacket{
 		$this->reset();
 		$this->putByte($this->windowid);
 		$this->putShort($this->slot);
-		$this->putSlot($this->item);
+		$this->putSlot($this->PROTOCOL, $this->item);
 	}
 
 }

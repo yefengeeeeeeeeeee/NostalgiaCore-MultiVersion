@@ -37,11 +37,11 @@ class SendInventoryPacket extends RakNetDataPacket{
 		$this->putByte($this->windowid);
 		$this->putShort(count($this->slots));
 		foreach($this->slots as $slot){
-			$this->putSlot($slot);
+			$this->putSlot($this->PROTOCOL, $slot);
 		}
 		if($this->windowid === 1 and count($this->armor) === 4){
 			for($s = 0; $s < 4; ++$s){
-				$this->putSlot($this->armor[$s]);
+				$this->putSlot($this->PROTOCOL, $this->armor[$s]);
 			}
 		}
 	}
