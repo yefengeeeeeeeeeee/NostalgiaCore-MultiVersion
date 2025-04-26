@@ -10,7 +10,9 @@ class PlaceBlockPacket extends RakNetDataPacket{
     public $face;
 
     public function pid(){
-        if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL) {
+        if($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
+            return  ProtocolInfo4::PLACE_BLOCK_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL) {
             return ProtocolInfo12::PLACE_BLOCK_PACKET;
         }
         return ProtocolInfo::PLACE_BLOCK_PACKET;

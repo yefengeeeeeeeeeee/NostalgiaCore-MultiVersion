@@ -11,6 +11,9 @@ class AddItemEntityPacket extends RakNetDataPacket{
 	public $roll;
 	
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
+            return  ProtocolInfo4::ADD_ITEM_ENTITY_PACKET;
+        }
 		return ProtocolInfo::ADD_ITEM_ENTITY_PACKET;
 	}
 	

@@ -8,7 +8,11 @@ class ExplodePacket extends RakNetDataPacket{
 	public $records;
 	
 	public function pid(){
-        if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+        if($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
+            return  ProtocolInfo4::EXPLODE_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo7::CURRENT_PROTOCOL_7){
+            return  ProtocolInfo5::EXPLODE_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
             return  ProtocolInfo12::EXPLODE_PACKET;
         }
 		return ProtocolInfo::EXPLODE_PACKET;

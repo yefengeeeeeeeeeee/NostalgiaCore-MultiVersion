@@ -7,7 +7,9 @@ class RemoveBlockPacket extends RakNetDataPacket{
 	public $z;
 	
 	public function pid(){
-        if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+        if($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
+            return  ProtocolInfo4::REMOVE_BLOCK_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
             return  ProtocolInfo12::REMOVE_BLOCK_PACKET;
         }
 		return ProtocolInfo::REMOVE_BLOCK_PACKET;
