@@ -645,7 +645,10 @@ class BlockAPI{
 		}
 	}
 
-    public static function convertHighItemIdsToOldItemIds(int $protocolId, int $itemId){
+	/**
+	 * 方块/物品id转换，防止新版本影响旧版本视觉效果
+	 */
+    public static function convertHighItemIdsToOldItemIds(int $protocolId, int $itemId) : int{
         if ($protocolId >= ProtocolInfo::CURRENT_PROTOCOL) {
             return $itemId;
         }
@@ -653,18 +656,18 @@ class BlockAPI{
         $idMap = [];
         if ($protocolId < ProtocolInfo9::CURRENT_PROTOCOL_9) {
             $idMap += [
-                87 => 49,
-                405 => 336,
-                406 => 336,
+                NETHERRACK => OBSIDIAN, //block
+                NETHER_BRICK => BRICK, //item
+                NETHER_QUARTZ => BRICK, //item
             ];
         }
         if ($protocolId < ProtocolInfo12::CURRENT_PROTOCOL_12) {
             $idMap += [
-                91 => 103,
-                361 => 362,
-                400 => 297,
-                457 => 295,
-                458 => 297,
+                LIT_PUMPKIN => MELON_BLOCK, //block
+                PUMPKIN_SEEDS => MELON_SEEDS, //item
+                PUMPKIN_PIE => BREAD, //item
+                BEETROOT => BREAD, //item
+                BEETROOT_SEEDS => SEEDS, //item
             ];
         }
 
