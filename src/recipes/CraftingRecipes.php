@@ -1,9 +1,9 @@
 <?php
 
-class CraftingRecipes{
+class CraftingRecipes {
 
 	private static $small = [ // Probably means craftable on crafting bench and in inventory. Name it better!
-							   // Building
+		// Building
 		"CLAY:?x4=>CLAY_BLOCK:0x1",
 		"WOODEN_PLANKS:?x4=>WORKBENCH:0x1",
 		"GLOWSTONE_DUST:?x4=>GLOWSTONE_BLOCK:0x1",
@@ -73,7 +73,7 @@ class CraftingRecipes{
 	];
 
 	private static $big = [ // Probably means only craftable on crafting bench. Name it better!
-							 // Building
+		// Building
 		"WOOL:?x3,WOODEN_PLANKS:?x3=>BED:0x1",
 		"WOODEN_PLANKS:?x8=>CHEST:0x1",
 		"STICK:?x6=>FENCE:0x2",
@@ -199,47 +199,47 @@ class CraftingRecipes{
 
 	private static $recipes = [];
 
-	public static function init(){
+	public static function init() {
 		$server = ServerAPI::request();
 		$id = 1;
-		foreach(CraftingRecipes::$small as $recipe){
+		foreach(CraftingRecipes::$small as $recipe) {
 			$recipe = CraftingRecipes::parseRecipe($recipe);
 			$recipe[3] = 0; //Type
 			CraftingRecipes::$recipes[$id] = $recipe;
 			++$id;
 		}
-		foreach(CraftingRecipes::$big as $recipe){
+		foreach(CraftingRecipes::$big as $recipe) {
 			$recipe = CraftingRecipes::parseRecipe($recipe);
 			$recipe[3] = 1;
 			CraftingRecipes::$recipes[$id] = $recipe;
 			++$id;
 		}
-		foreach(CraftingRecipes::$stone as $recipe){
+		foreach(CraftingRecipes::$stone as $recipe) {
 			$recipe = CraftingRecipes::parseRecipe($recipe);
 			$recipe[3] = 2;
 			CraftingRecipes::$recipes[$id] = $recipe;
 			++$id;
 		}
 
-		foreach(CraftingRecipes::$recipes as $id => $recipe){
+		foreach(CraftingRecipes::$recipes as $id => $recipe) {
 			$server->query("INSERT INTO recipes (id, type, recipe) VALUES (" . $id . ", " . $recipe[3] . ", '" . $recipe[2] . "');");
 		}
 	}
 
-	private static function parseRecipe($recipe){
+	private static function parseRecipe($recipe) {
 		$recipe = explode("=>", $recipe);
 		$recipeItems = [];
-		foreach(explode(",", $recipe[0]) as $item){
+		foreach(explode(",", $recipe[0]) as $item) {
 			$item = explode("x", $item);
 			$id = explode(":", $item[0]);
 			$meta = array_pop($id);
 			$id = $id[0];
 
 			$it = BlockAPI::fromString($id);
-			if(!isset($recipeItems[$it->getID()])){
+			if(!isset($recipeItems[$it->getID()])) {
 				$recipeItems[$it->getID()] = [$it->getID(), $meta === "?" ? false : intval($meta) & 0xFFFF, intval($item[1])];
-			}else{
-				if($it->getMetadata() !== $recipeItems[$it->getID()][1]){
+			} else {
+				if($it->getMetadata() !== $recipeItems[$it->getID()][1]) {
 					$recipeItems[$it->getID()][1] = false;
 				}
 				$recipeItems[$it->getID()][2] += $it->count;
@@ -256,7 +256,7 @@ class CraftingRecipes{
 		$craftItem = [$it->getID(), intval($meta) & 0xFFFF, intval($item[1])];
 
 		$recipeString = "";
-		foreach($recipeItems as $item){
+		foreach($recipeItems as $item) {
 			$recipeString .= $item[0] . "x" . $item[2] . ",";
 		}
 		$recipeString = substr($recipeString, 0, -1) . "=>" . $craftItem[0] . "x" . $craftItem[2];
@@ -264,11 +264,11 @@ class CraftingRecipes{
 		return [$recipeItems, $craftItem, $recipeString];
 	}
 
-	public static function canCraft(array $craftItem, array $recipeItems, $type){
+	public static function canCraft(array $craftItem, array $recipeItems, $type) {
 		ksort($recipeItems);
 		$recipeString = "";
-		foreach($recipeItems as $item){
-			if($craftItem[0] === CAKE && $item[0] === BUCKET && $item[1] === 1){ //some dark magic with recipe happened in mcpe, pmmp restores it back to normal
+		foreach($recipeItems as $item) {
+			if($craftItem[0] === CAKE && $item[0] === BUCKET && $item[1] === 1) { //some dark magic with recipe happened in mcpe, pmmp restores it back to normal
 				$item[2] = 3;
 			}
 			$recipeString .= $item[0] . "x" . $item[2] . ",";
@@ -276,33 +276,33 @@ class CraftingRecipes{
 		$recipeString = substr($recipeString, 0, -1) . "=>" . $craftItem[0] . "x" . $craftItem[2];
 		$server = ServerAPI::request();
 		$result = $server->query("SELECT id FROM recipes WHERE type == " . $type . " AND recipe == '" . $recipeString . "';");
-		if($result instanceof SQLite3Result){
+		if($result instanceof SQLite3Result) {
 			$continue = true;
-			while(($r = $result->fetchArray(SQLITE3_NUM)) !== false){
+			while(($r = $result->fetchArray(SQLITE3_NUM)) !== false) {
 				$continue = true;
 				$recipe = CraftingRecipes::$recipes[$r[0]];
-				foreach($recipe[0] as $item){
-					if(!isset($recipeItems[$item[0]])){
+				foreach($recipe[0] as $item) {
+					if(!isset($recipeItems[$item[0]])) {
 						$continue = false;
 						break;
 					}
 					$oitem = $recipeItems[$item[0]];
-					if($craftItem[0] === CAKE && $oitem[0] === BUCKET && $item[1] === 1){ //some dark magic with recipe happened in mcpe, pmmp restores it back to normal x2
+					if($craftItem[0] === CAKE && $oitem[0] === BUCKET && $item[1] === 1) { //some dark magic with recipe happened in mcpe, pmmp restores it back to normal x2
 						$oitem[2] = 3;
 					}
-					if(($oitem[1] !== $item[1] and $item[1] !== false) or $oitem[2] !== $item[2]){
+					if(($oitem[1] !== $item[1] and $item[1] !== false) or $oitem[2] !== $item[2]) {
 						$continue = false;
 						break;
 					}
 				}
-				if($continue === false or $craftItem[0] !== $recipe[1][0]){
+				if($continue === false or $craftItem[0] !== $recipe[1][0]) {
 					$continue = false;
 					continue;
 				}
 				$continue = $recipe;
 				break;
 			}
-		}else{
+		} else {
 			return true;
 		}
 		return $continue;

@@ -21,7 +21,6 @@ class SetEntityLinkPacket extends RakNetDataPacket{
 		$this->putInt($this->type);
 	}
 
-
 	public function pid(){
 		return ProtocolInfo::SET_ENTITY_LINK_PACKET;
 	}

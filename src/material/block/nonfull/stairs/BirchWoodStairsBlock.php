@@ -7,8 +7,8 @@ class BirchWoodStairsBlock extends StairBlock{
 	}
 
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array($this->id, 0, 1),
-		);
+		return [
+			[$this->id, 0, 1],
+		];
 	}
 }

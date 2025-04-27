@@ -25,8 +25,7 @@ class PMF{
 		if(!is_dir($dirname)){
 			@mkdir($dirname, 0755, true);
 		}
-		
-		
+
 		if(!is_resource($this->fp)){
 			if(($this->fp = @fopen($file, "c+b")) === false){
 				return false;

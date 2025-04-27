@@ -175,5 +175,4 @@ class TimeAPI{
 		return $this->set("sunset");
 	}
 
-
 }

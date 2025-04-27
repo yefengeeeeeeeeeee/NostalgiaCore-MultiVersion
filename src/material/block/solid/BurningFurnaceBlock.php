@@ -9,12 +9,12 @@ class BurningFurnaceBlock extends SolidBlock implements LightingBlock{
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		$faces = array(
+		$faces = [
 			0 => 4,
 			1 => 2,
 			2 => 5,
 			3 => 3,
-		);
+		];
 		$this->meta = $faces[$player->entity->getDirection()];
 		$this->level->setBlock($block, $this, true, false, true);
 		return true;
@@ -35,23 +35,23 @@ class BurningFurnaceBlock extends SolidBlock implements LightingBlock{
 		if($t !== false){
 			$furnace = $t;
 		}else{
-			$furnace = $server->api->tile->add($this->level, TILE_FURNACE, $this->x, $this->y, $this->z, array(
-				"Items" => array(),
+			$furnace = $server->api->tile->add($this->level, TILE_FURNACE, $this->x, $this->y, $this->z, [
+				"Items" => [],
 				"id" => TILE_FURNACE,
 				"x" => $this->x,
 				"y" => $this->y,
-				"z" => $this->z			
-			));
+				"z" => $this->z
+			]);
 		}
-		
+
 		if(($player->gamemode & 0x01) === 0x01){
 			return true;
 		}
-		
+
 		$furnace->openInventory($player);
 		return true;
 	}
-	
+
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
@@ -65,18 +65,18 @@ class BurningFurnaceBlock extends SolidBlock implements LightingBlock{
 			default => 17.5,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
-		$drops = array();
+		$drops = [];
 		if($item->getPickaxeLevel() >= 1){
-			$drops[] = array(FURNACE, 0, 1);
+			$drops[] = [FURNACE, 0, 1];
 		}
 		$t = ServerAPI::request()->api->tile->get($this);
 		if($t !== false and $t->class === TILE_FURNACE){
 			for($s = 0; $s < FURNACE_SLOTS; ++$s){
 				$slot = $t->getSlot($s);
 				if($slot->getID() > AIR and $slot->count > 0){
-					$drops[] = array($slot->getID(), $slot->getMetadata(), $slot->count);
+					$drops[] = [$slot->getID(), $slot->getMetadata(), $slot->count];
 				}
 			}
 		}

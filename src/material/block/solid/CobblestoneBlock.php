@@ -20,14 +20,14 @@ class CobblestoneBlock extends SolidBlock{
 			default => 10,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 1){
-			return array(
-				array(COBBLESTONE, 0, 1),
-			);
+			return [
+				[COBBLESTONE, 0, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

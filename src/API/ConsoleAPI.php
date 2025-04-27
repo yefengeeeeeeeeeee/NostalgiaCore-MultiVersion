@@ -24,12 +24,12 @@ class ConsoleAPI{
 		$this->register("defaultgamemode", "<mode>", [$this, "defaultCommands"]);
 
 		$this->server->api->console->alias("tps", "status");
-  
+
 		$this->cmdWhitelist("help");
 		$this->cmdWhitelist("status");
 		$this->cmdWhitelist("?");
 	}
-	
+
 	/**
 	 * Whitelists a CMD so everyone can issue it - Even non OPs.
 	 * @param string $cmd Command to Whitelist
@@ -37,7 +37,7 @@ class ConsoleAPI{
 	public function cmdWhitelist($cmd){
 		$this->server->api->ban->cmdWhitelist[strtolower(trim($cmd))] = true;
 	}
-	
+
 	public function register($cmd, $help, $callback){
 		if(!is_callable($callback)){
 			return false;
@@ -272,19 +272,19 @@ class ConsoleAPI{
 	}
 
 	public static function debug($msg){
-		console("[DEBUG] ".$msg, true, true, 2);
+		console("[DEBUG] " . $msg, true, true, 2);
 	}
 	public static function info($msg){
-		console("[INFO] ".$msg);
+		console("[INFO] " . $msg);
 	}
 	public static function notice($msg){
-		console("[NOTICE] ".$msg);
+		console("[NOTICE] " . $msg);
 	}
 	public static function warn($msg){
-		console("[WARNING] ".$msg);
+		console("[WARNING] " . $msg);
 	}
 	public static function error($msg){
-		console("[ERROR] ".$msg);
+		console("[ERROR] " . $msg);
 	}
 }
 

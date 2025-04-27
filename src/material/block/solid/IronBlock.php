@@ -18,14 +18,14 @@ class IronBlock extends SolidBlock{
 			default => 25,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 3){
-			return array(
-				array(IRON_BLOCK, 0, 1),
-			);
+			return [
+				[IRON_BLOCK, 0, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

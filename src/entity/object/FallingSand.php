@@ -3,9 +3,9 @@
 class FallingSand extends Entity{
 	const TYPE = FALLING_SAND;
 	const CLASS_TYPE = ENTITY_FALLING;
-	
+
 	public $fallTime = 0;
-	
+
 	public function __construct($level, $eid, $class, $type = 0, $data = []){
 		parent::__construct($level, $eid, $class, $type, $data);
 		$this->setHealth(PHP_INT_MAX, "generic");
@@ -15,14 +15,14 @@ class FallingSand extends Entity{
 		$this->hasGravity = true;
 		$this->gravity = 0.04;
 	}
-	
+
 	public function isPickable(){
 		return !$this->dead;
 	}
-	
+
 	public function update($now){
 		if($this->closed) return;
-		
+
 		if( $this->data["Tile"] == AIR) {
 			$this->close();
 			return;
@@ -33,15 +33,15 @@ class FallingSand extends Entity{
 		++$this->fallTime;
 		$this->speedY -= 0.04;
 		$this->move($this->speedX, $this->speedY, $this->speedZ);
-		
+
 		$this->speedX *= 0.98;
 		$this->speedY *= 0.98;
 		$this->speedZ *= 0.98;
-		
+
 		$x = floor($this->x);
 		$y = floor($this->y);
 		$z = floor($this->z);
-		
+
 		if($this->onGround){
 			$this->speedX *= 0.7;
 			$this->speedZ *= 0.7;

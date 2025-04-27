@@ -5,11 +5,11 @@ class DiamondHelmetItem extends ArmorItem{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(DIAMOND_HELMET, $meta, $count, "Diamond Helmet");
 	}
-	
+
 	public function getMaterialDurability(){
 		return Material::DIAMOND;
 	}
-	
+
 	public function getBaseDurability(){
 		return 11;
 	}

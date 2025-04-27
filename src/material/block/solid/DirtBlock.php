@@ -32,33 +32,33 @@ class DirtBlock extends SolidBlock{
 	}
 
 	public static function getGrassInRadius(Level $level, $x, $y, $z){ //umwut (although kinda faster than for loop =D)
-		if($level->level->getBlockID($x+1, $y, $z+1) == 2) return true;
-		if($level->level->getBlockID($x+1, $y, $z) == 2) return true;
-		if($level->level->getBlockID($x+1, $y, $z-1) == 2) return true;
-		if($level->level->getBlockID($x, $y, $z+1) == 2) return true;
-		if($level->level->getBlockID($x, $y, $z-1) == 2) return true;
-		if($level->level->getBlockID($x-1, $y, $z+1) == 2) return true;
-		if($level->level->getBlockID($x-1, $y, $z) == 2) return true;
-		if($level->level->getBlockID($x-1, $y, $z-1) == 2) return true;
+		if($level->level->getBlockID($x + 1, $y, $z + 1) == 2) return true;
+		if($level->level->getBlockID($x + 1, $y, $z) == 2) return true;
+		if($level->level->getBlockID($x + 1, $y, $z - 1) == 2) return true;
+		if($level->level->getBlockID($x, $y, $z + 1) == 2) return true;
+		if($level->level->getBlockID($x, $y, $z - 1) == 2) return true;
+		if($level->level->getBlockID($x - 1, $y, $z + 1) == 2) return true;
+		if($level->level->getBlockID($x - 1, $y, $z) == 2) return true;
+		if($level->level->getBlockID($x - 1, $y, $z - 1) == 2) return true;
 
-		if($level->level->getBlockID($x+1, $y-1, $z+1) == 2) return true;
-		if($level->level->getBlockID($x+1, $y-1, $z) == 2) return true;
-		if($level->level->getBlockID($x+1, $y-1, $z-1) == 2) return true;
-		if($level->level->getBlockID($x, $y-1, $z+1) == 2) return true;
-		if($level->level->getBlockID($x, $y-1, $z) == 2) return true;
-		if($level->level->getBlockID($x, $y-1, $z-1) == 2) return true;
-		if($level->level->getBlockID($x-1, $y-1, $z+1) == 2) return true;
-		if($level->level->getBlockID($x-1, $y-1, $z) == 2) return true;
-		if($level->level->getBlockID($x-1, $y-1, $z-1) == 2) return true;
+		if($level->level->getBlockID($x + 1, $y - 1, $z + 1) == 2) return true;
+		if($level->level->getBlockID($x + 1, $y - 1, $z) == 2) return true;
+		if($level->level->getBlockID($x + 1, $y - 1, $z - 1) == 2) return true;
+		if($level->level->getBlockID($x, $y - 1, $z + 1) == 2) return true;
+		if($level->level->getBlockID($x, $y - 1, $z) == 2) return true;
+		if($level->level->getBlockID($x, $y - 1, $z - 1) == 2) return true;
+		if($level->level->getBlockID($x - 1, $y - 1, $z + 1) == 2) return true;
+		if($level->level->getBlockID($x - 1, $y - 1, $z) == 2) return true;
+		if($level->level->getBlockID($x - 1, $y - 1, $z - 1) == 2) return true;
 
-		if($level->level->getBlockID($x+1, $y+1, $z+1) == 2) return true;
-		if($level->level->getBlockID($x+1, $y+1, $z) == 2) return true;
-		if($level->level->getBlockID($x+1, $y+1, $z-1) == 2) return true;
-		if($level->level->getBlockID($x, $y+1, $z+1) == 2) return true;
-		if($level->level->getBlockID($x, $y+1, $z-1) == 2) return true;
-		if($level->level->getBlockID($x-1, $y+1, $z+1) == 2) return true;
-		if($level->level->getBlockID($x-1, $y+1, $z) == 2) return true;
-		if($level->level->getBlockID($x-1, $y+1, $z-1) == 2) return true;
+		if($level->level->getBlockID($x + 1, $y + 1, $z + 1) == 2) return true;
+		if($level->level->getBlockID($x + 1, $y + 1, $z) == 2) return true;
+		if($level->level->getBlockID($x + 1, $y + 1, $z - 1) == 2) return true;
+		if($level->level->getBlockID($x, $y + 1, $z + 1) == 2) return true;
+		if($level->level->getBlockID($x, $y + 1, $z - 1) == 2) return true;
+		if($level->level->getBlockID($x - 1, $y + 1, $z + 1) == 2) return true;
+		if($level->level->getBlockID($x - 1, $y + 1, $z) == 2) return true;
+		if($level->level->getBlockID($x - 1, $y + 1, $z - 1) == 2) return true;
 
 		return false;
 	}

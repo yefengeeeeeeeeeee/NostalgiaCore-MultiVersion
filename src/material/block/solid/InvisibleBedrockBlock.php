@@ -7,12 +7,12 @@ class InvisibleBedrockBlock extends SolidBlock{
 		$this->breakable = false;
 		$this->hardness = 3600000;
 	}
-	
+
 	public function isBreakable(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return true;
 		}
 		return false;
 	}
-	
+
 }

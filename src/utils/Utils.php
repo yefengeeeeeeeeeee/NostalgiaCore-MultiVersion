@@ -21,25 +21,25 @@ class Utils{
 			default => $id,
 		};
 	}
-	
+
 	public static function wrapAngleTo360($angle)
 	{
 		$angle = fmod($angle, 360);
 		return $angle < 0 ? $angle + 360 : $angle;
 	}
-	
+
 	public static function getSeedNumeric($seed){
 		if($seed === "") return false;
-		elseif(is_int($seed)) return (int)$seed;
+		elseif(is_int($seed)) return (int) $seed;
 		else{
 			$i = 0;
 			for($j = 0; $j < strlen($seed); ++$j){
 				$i = $i * 31 + ord($seed[$j]);
 			}
-			return (int)$i;
+			return (int) $i;
 		}
 	}
-	
+
 	public static function sint32($r){
 		$r &= 0xFFFFFFFF;
 		if ($r & 0x80000000)
@@ -49,11 +49,11 @@ class Utils{
 		}
 		return $r;
 	}
-	
+
 	public static function wrapAngleTo180($angle)
 	{
 		$angle = fmod($angle, 360);
-		
+
 		if($angle >= 180) $angle -= 360;
 		if($angle < -180) $angle += 360;
 		return $angle;
@@ -61,22 +61,22 @@ class Utils{
 	public static function getSign($v){
 		return $v <=> 0;
 	}
-	
+
 	public static function clampDegrees($v){
 		return floor(($v % 360 + 360) % 360);
 	}
-	
+
 	/**
 	 * PHP8 has internal function for doing it: {@link str_ends_with}
 	 */
 	public static function endsWith($str, $check) {
 		return str_ends_with($str, $check);
 	}
-	
+
 	public static function hasEmoji($s){
 		return preg_match(Utils::emojiRegex, $s);
 	}
-	
+
 	public static function getCallableIdentifier(callable $variable){
 		if(is_array($variable)){
 			return sha1(strtolower(get_class($variable[0])) . "::" . strtolower($variable[1]));
@@ -84,11 +84,11 @@ class Utils{
 			return sha1(strtolower($variable));
 		}
 	}
-	
+
 	public static function in_range($num, $min, $max){
 		return $num >= $min && $num <= $max;
 	}
-	
+
 	public static function getUniqueID($raw = false, $extra = ""){
 		$machine = php_uname("a");
 		$machine .= file_exists("/proc/cpuinfo") ? `cat /proc/cpuinfo | grep "model name"` : "";
@@ -181,21 +181,21 @@ class Utils{
 		return Utils::$ip;
 
 	}
-	
+
 	public static function makeHeaders($json){
 		$arr = json_decode($json);
 		$rarr = [];
 		foreach ($arr as $key => $value){
-			$rarr[] = $key.": ".$value;
+			$rarr[] = $key . ": " . $value;
 		}
 		return $rarr;
 	}
-	
+
 	public static function curl_get($page, $timeout = 10, $headers = " "){
 		if(Utils::$online === false){
 			return false;
 		}
-		
+
 		if($headers != " "){
 			$headers = Utils::makeHeaders($headers);
 		}else{
@@ -431,7 +431,7 @@ class Utils{
 		}
 		return $data;
 	}
-	
+
 	public static function readTriad($str){
 		return strlen($str) < 3 ? false : @unpack("N", "\x00$str")[1];
 	}
@@ -444,11 +444,11 @@ class Utils{
 		}
 		return $raw;
 	}
-	
+
 	public static function writeLTriad($value){
 		return substr(pack("V", $value), 0, -1);
 	}
-	
+
 	public static function writeTriad($value){
 		return substr(pack("N", $value), 1);
 	}
@@ -456,11 +456,11 @@ class Utils{
 	public static function getRandomBytes($length = 16, $secure = true, $raw = true, $startEntropy = "", &$rounds = 0, &$drop = 0){
 		return $raw ? random_bytes($length) : bin2hex(random_bytes($length)); //nobody would ever notice other parameters
 	}
-	
+
 	public static function chance($i){//GameHerobrine's code
 		return lcg_value() <= $i / 100;
 	}
-	
+
 	/**
 	 * @deprecated use lcg_value instead
 	 */
@@ -481,10 +481,10 @@ class Utils{
 		if($pos2 instanceof Vector3){
 			$pos2 = $pos2->toArray();
 		}
-		
+
 		return abs($pos2["x"] - $pos1["x"]) + abs($pos2["y"] - $pos1["y"]) + abs($pos2["z"] - $pos1["z"]);
 	}
-	
+
 	/**
 	 * Euclidian distance, but without square roots
 	 */
@@ -498,13 +498,11 @@ class Utils{
 		$pX = ($pos1["x"] - $pos2["x"]);
 		$pY = ($pos1["y"] - $pos2["y"]);
 		$pZ = ($pos1["z"] - $pos2["z"]);
-		return ($pX*$pX) + ($pY*$pY) + ($pZ*$pZ);
+		return ($pX * $pX) + ($pY * $pY) + ($pZ * $pZ);
 	}
-	
+
 	/**
-	 * 
-	 * @param $pos1
-	 * @param $pos2
+	 *
 	 * @return number
 	 */
 	public static function distance($pos1, $pos2){
@@ -514,9 +512,9 @@ class Utils{
 		if($pos2 instanceof Vector3){
 			$pos2 = $pos2->toArray();
 		}
-		return sqrt(($pos1["x"] - $pos2["x"])*($pos1["x"] - $pos2["x"]) + ($pos1["y"] - $pos2["y"])*($pos1["y"] - $pos2["y"]) + ($pos1["z"] - $pos2["z"])*($pos1["z"] - $pos2["z"]));
+		return sqrt(($pos1["x"] - $pos2["x"]) * ($pos1["x"] - $pos2["x"]) + ($pos1["y"] - $pos2["y"]) * ($pos1["y"] - $pos2["y"]) + ($pos1["z"] - $pos2["z"]) * ($pos1["z"] - $pos2["z"]));
 	}
-	
+
 	public static function angle3D($pos1, $pos2){
 		if($pos1 instanceof Vector3){
 			$pos1 = $pos1->toArray();
@@ -572,8 +570,8 @@ class Utils{
 	}
 
 	public static function readInt($str){
-		if(strlen($str) <= 0) return; 
-		
+		if(strlen($str) <= 0) return;
+
 		return @unpack("N", $str)[1] << 32 >> 32; //php has no signed long unpack
 	}
 

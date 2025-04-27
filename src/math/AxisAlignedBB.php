@@ -1,4 +1,5 @@
 <?php
+
 class AxisAlignedBB{
 	public $minX;
 	public $minY;
@@ -6,7 +7,7 @@ class AxisAlignedBB{
 	public $maxX;
 	public $maxY;
 	public $maxZ;
-	
+
 	public function __construct($minX, $minY, $minZ, $maxX, $maxY, $maxZ){
 		$this->minX = $minX;
 		$this->minY = $minY;
@@ -30,7 +31,7 @@ class AxisAlignedBB{
 	public function addMinMax($minX, $minY, $minZ, $maxX, $maxY, $maxZ){
 		return new AxisAlignedBB($this->minX + $minX, $this->minY + $minY, $this->minZ + $minZ, $this->maxX + $maxX, $this->maxY + $maxY, $this->maxZ + $maxZ);
 	}
-	
+
 	public function addCoord($x, $y, $z){
 		$minX = $this->minX;
 		$minY = $this->minY;
@@ -169,7 +170,7 @@ class AxisAlignedBB{
 
 		return $z;
 	}
-	
+
 	public function intersectsWith(AxisAlignedBB $bb){
 		return $bb->maxX >= $this->minX && $bb->minX <= $this->maxX && $bb->maxZ >= $this->minZ && $bb->minZ <= $this->maxZ && $bb->maxY >= $this->minY && $bb->minY <= $this->maxY;
 	}
@@ -180,7 +181,7 @@ class AxisAlignedBB{
 		if($y < $this->minY or $y > $this->maxY){
 			return false;
 		}
-		
+
 		return $z > $this->minZ and $z < $this->maxZ;
 	}
 	public function isXYZInside($x, $y, $z){
@@ -190,7 +191,7 @@ class AxisAlignedBB{
 		if($y < $this->minY or $y > $this->maxY){
 			return false;
 		}
-		
+
 		return $z > $this->minZ and $z < $this->maxZ;
 	}
 	public function isVectorInside(Vector3 $vector){
@@ -219,10 +220,8 @@ class AxisAlignedBB{
 	public function isVectorInXY(Vector3 $vector){
 		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->y >= $this->minY and $vector->y <= $this->maxY;
 	}
-	
+
 	/**
-	 * @param Vector3 $pos1
-	 * @param Vector3 $pos2
 	 * @return NULL|MovingObjectPosition
 	 */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
@@ -301,9 +300,9 @@ class AxisAlignedBB{
 
 		return MovingObjectPosition::fromBlock(0, 0, 0, $f, $vector);
 	}
-	
+
 	public function __toString(){
 		return "AABB min: {$this->minX}, {$this->minY}, {$this->minZ}, max:  {$this->maxX}, {$this->maxY}, {$this->maxZ}";
 	}
-	
+
 }

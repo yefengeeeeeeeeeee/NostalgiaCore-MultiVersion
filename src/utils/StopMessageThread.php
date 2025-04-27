@@ -9,9 +9,9 @@ class StopMessageThread extends Thread
 			$this->name = $server->extraprops->get("discord-bot-name");
 			$this->start();
 		}
-		
+
 	}
-	
+
 	public function run(){
 		Utils::curl_post($this->page, [
 			"username" => $this->name,

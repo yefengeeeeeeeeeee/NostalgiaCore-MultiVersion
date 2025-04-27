@@ -8,7 +8,7 @@
 		const DEFAULT_MEMORY = 128;
 		const DEFAULT_PLAYERS = 20;
 		const DEFAULT_GAMEMODE = SURVIVAL;
-		
+
 		private $lang, $config;
 		public function __construct(){
 			echo "[*] NostalgiaCore set-up wizard\n";
@@ -25,8 +25,8 @@
 				}
 			}while($lang == false);
 			$this->lang = new InstallerLang($lang);
-			echo "[*] ".$this->lang->language_has_been_selected."\n";
-			echo "[?] ".$this->lang->skip_installer." (y/N): ";
+			echo "[*] " . $this->lang->language_has_been_selected . "\n";
+			echo "[?] " . $this->lang->skip_installer . " (y/N): ";
 			if(strtolower($this->getInput()) === "y"){
 				return;
 			}
@@ -34,14 +34,14 @@
 			$this->welcome();
 			$this->generateBaseConfig();
 			$this->generateUserFiles();
-			
+
 			$this->networkFunctions();
-			
+
 			$this->endWizard();
 		}
-		
+
 		private function welcome(){
-			echo $this->lang->welcome_to_pocketmine."\n";
+			echo $this->lang->welcome_to_pocketmine . "\n";
 			echo <<<LICENSE
 
   This program is free software: you can redistribute it and/or modify
@@ -50,44 +50,44 @@
   (at your option) any later version.
 
 LICENSE;
-			echo "\n[?] ".$this->lang->accept_license." (y/N): ";
+			echo "\n[?] " . $this->lang->accept_license . " (y/N): ";
 			if(strtolower($this->getInput("n")) != "y"){
-				echo "[!] ".$this->lang->you_have_to_accept_the_license."\n";
+				echo "[!] " . $this->lang->you_have_to_accept_the_license . "\n";
 				sleep(5);
 				exit(0);
 			}
-			echo "[*] ".$this->lang->setting_up_server_now."\n";
-			echo "[*] ".$this->lang->default_values_info."\n";
-			echo "[*] ".$this->lang->server_properties."\n";
-			
+			echo "[*] " . $this->lang->setting_up_server_now . "\n";
+			echo "[*] " . $this->lang->default_values_info . "\n";
+			echo "[*] " . $this->lang->server_properties . "\n";
+
 		}
-		
+
 		private function generateBaseConfig(){
 			$config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES);
-			echo "[?] ".$this->lang->name_your_server." (".self::DEFAULT_NAME."): ";
+			echo "[?] " . $this->lang->name_your_server . " (" . self::DEFAULT_NAME . "): ";
 			$config->set("server-name", $this->getInput(self::DEFAULT_NAME));
-			echo "[*] ".$this->lang->port_warning."\n";
+			echo "[*] " . $this->lang->port_warning . "\n";
 			do{
-				echo "[?] ".$this->lang->server_port." (".self::DEFAULT_PORT."): ";
+				echo "[?] " . $this->lang->server_port . " (" . self::DEFAULT_PORT . "): ";
 				$port = (int) $this->getInput(self::DEFAULT_PORT);
 				if($port <= 0 or $port > 65535){
-					echo "[!] ".$this->lang->invalid_port."\n";
+					echo "[!] " . $this->lang->invalid_port . "\n";
 				}
 			}while($port <= 0 or $port > 65535);
 			$config->set("server-port", $port);
-			echo "[*] ".$this->lang->ram_warning."\n";
-			echo "[?] ".$this->lang->server_ram." (".self::DEFAULT_MEMORY."): ";
-			$config->set("memory-limit", ((int) $this->getInput(self::DEFAULT_MEMORY))."M");
-			echo "[*] ".$this->lang->gamemode_info."\n";
+			echo "[*] " . $this->lang->ram_warning . "\n";
+			echo "[?] " . $this->lang->server_ram . " (" . self::DEFAULT_MEMORY . "): ";
+			$config->set("memory-limit", ((int) $this->getInput(self::DEFAULT_MEMORY)) . "M");
+			echo "[*] " . $this->lang->gamemode_info . "\n";
 			do{
-				echo "[?] ".$this->lang->default_gamemode.": (".self::DEFAULT_GAMEMODE."): ";
+				echo "[?] " . $this->lang->default_gamemode . ": (" . self::DEFAULT_GAMEMODE . "): ";
 				$gamemode = (int) $this->getInput(self::DEFAULT_GAMEMODE);
 			}while($gamemode < 0 or $gamemode > 3);
 			$config->set("gamemode", $gamemode);
-			echo "[?] ".$this->lang->max_players." (".self::DEFAULT_PLAYERS."): ";
+			echo "[?] " . $this->lang->max_players . " (" . self::DEFAULT_PLAYERS . "): ";
 			$config->set("max-players", (int) $this->getInput(self::DEFAULT_PLAYERS));
-			echo "[*] ".$this->lang->spawn_protection_info."\n";
-			echo "[?] ".$this->lang->spawn_protection." (Y/n): ";
+			echo "[*] " . $this->lang->spawn_protection_info . "\n";
+			echo "[?] " . $this->lang->spawn_protection . " (Y/n): ";
 			if(strtolower($this->getInput("y")) == "n"){
 				$config->set("spawn-protection", -1);
 			}else{
@@ -95,82 +95,80 @@ LICENSE;
 			}
 			$config->save();
 		}
-		
+
 		private function generateUserFiles(){
-			echo "[*] ".$this->lang->op_info."\n";
-			echo "[?] ".$this->lang->op_who.": ";
+			echo "[*] " . $this->lang->op_info . "\n";
+			echo "[?] " . $this->lang->op_who . ": ";
 			$op = strtolower($this->getInput(""));
 			if($op === ""){
-				echo "[!] ".$this->lang->op_warning."\n";
+				echo "[!] " . $this->lang->op_warning . "\n";
 			}else{
-				$ops = new Config(DATA_PATH."ops.txt", CONFIG_LIST);
+				$ops = new Config(DATA_PATH . "ops.txt", CONFIG_LIST);
 				$ops->set($op, true);
 				$ops->save();
 			}
-			echo "[*] ".$this->lang->whitelist_info."\n";
-			echo "[?] ".$this->lang->whitelist_enable." (y/N): ";
+			echo "[*] " . $this->lang->whitelist_info . "\n";
+			echo "[?] " . $this->lang->whitelist_enable . " (y/N): ";
 			$config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES);
 			if(strtolower($this->getInput("n")) === "y"){
-				echo "[!] ".$this->lang->whitelist_warning."\n";
+				echo "[!] " . $this->lang->whitelist_warning . "\n";
 				$config->set("white-list", true);
 			}else{
 				$config->set("white-list", false);
 			}
 			$config->save();
 		}
-		
+
 		private function networkFunctions(){
 			$config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES);
-			echo "[!] ".$this->lang->query_warning1."\n";
-			echo "[!] ".$this->lang->query_warning2."\n";
-			echo "[?] ".$this->lang->query_disable." (y/N): ";
+			echo "[!] " . $this->lang->query_warning1 . "\n";
+			echo "[!] " . $this->lang->query_warning2 . "\n";
+			echo "[?] " . $this->lang->query_disable . " (y/N): ";
 			if(strtolower($this->getInput("n")) === "y"){
 				$config->set("enable-query", false);
 			}else{
 				$config->set("enable-query", true);
 			}
-			
-			echo "[*] ".$this->lang->rcon_info."\n";
-			echo "[?] ".$this->lang->rcon_enable." (y/N): ";
+
+			echo "[*] " . $this->lang->rcon_info . "\n";
+			echo "[?] " . $this->lang->rcon_enable . " (y/N): ";
 			if(strtolower($this->getInput("n")) === "y"){
 				$config->set("enable-rcon", true);
 				$password = substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10);
 				$config->set("rcon.password", $password);
-				echo "[*] ".$this->lang->rcon_password.": ".$password."\n";
+				echo "[*] " . $this->lang->rcon_password . ": " . $password . "\n";
 			}else{
 				$config->set("enable-rcon", false);
 			}
 
 			$config->save();
-			
-			
-			echo "[*] ".$this->lang->ip_get."\n";
-			
+
+			echo "[*] " . $this->lang->ip_get . "\n";
+
 			$externalIP = Utils::getIP();
 			$internalIP = gethostbyname(trim(`hostname`));
-			
-			echo "[!] ".$this->lang->get("ip_warning", array("{{EXTERNAL_IP}}", "{{INTERNAL_IP}}"), array($externalIP, $internalIP))."\n";
-			echo "[!] ".$this->lang->ip_confirm;
+
+			echo "[!] " . $this->lang->get("ip_warning", ["{{EXTERNAL_IP}}", "{{INTERNAL_IP}}"], [$externalIP, $internalIP]) . "\n";
+			echo "[!] " . $this->lang->ip_confirm;
 			$this->getInput();
 		}
-		
+
 		private function endWizard(){
-			echo "[*] ".$this->lang->you_have_finished."\n";
-			echo "[*] ".$this->lang->pocketmine_plugins."\n";
-			echo "[*] ".$this->lang->pocketmine_will_start."\n\n\n";
+			echo "[*] " . $this->lang->you_have_finished . "\n";
+			echo "[*] " . $this->lang->pocketmine_plugins . "\n";
+			echo "[*] " . $this->lang->pocketmine_will_start . "\n\n\n";
 			sleep(4);
 		}
-		
+
 		private function getInput($default = ""){
 			$input = trim(fgets(STDIN));
 			return $input === "" ? $default:$input;
 		}
 
-
 	}
 
 	class InstallerLang{
-		public static $languages = array(
+		public static $languages = [
 			"ru" => "Pyccĸий",
 			"en" => "English",
 			"es" => "Español",
@@ -180,7 +178,7 @@ LICENSE;
 			//"vi" => "Tiếng Việt",
 			"ko" => "한국어",
 			"fr" => "Français",
-			"it" => "Italiano",	
+			"it" => "Italiano",
 			//"lv" => "Latviešu",
 			"nl" => "Nederlands",
 			//"pt" => "Português",
@@ -189,18 +187,18 @@ LICENSE;
 			"tr" => "Türkçe",
 			"uk" => "Український"
 			//"et" => "Eesti",
-		);
-		private $texts = array();
+		];
+		private $texts = [];
 		private $lang;
 		private $langfile;
 		public function __construct($lang = ""){
-			if(file_exists(FILE_PATH."src/lang/Installer/".$lang.".ini")){
+			if(file_exists(FILE_PATH . "src/lang/Installer/" . $lang . ".ini")){
 				$this->lang = $lang;
-				$this->langfile = FILE_PATH."src/lang/Installer/".$lang.".ini";
+				$this->langfile = FILE_PATH . "src/lang/Installer/" . $lang . ".ini";
 			}else{
-				$l = glob(FILE_PATH."src/lang/Installer/".$lang."_*.ini");
+				$l = glob(FILE_PATH . "src/lang/Installer/" . $lang . "_*.ini");
 				if(count($l) > 0){
-					$files = array();
+					$files = [];
 					foreach($l as $file){
 						$files[$file] = filesize($file);
 					}
@@ -209,38 +207,38 @@ LICENSE;
 					$l = key($files);
 					$l = substr($l, strrpos($l, "/") + 1, -4);
 					$this->lang = isset(self::$languages[$l]) ? $l:$lang;
-					$this->langfile = FILE_PATH."src/lang/Installer/".$l.".ini";
+					$this->langfile = FILE_PATH . "src/lang/Installer/" . $l . ".ini";
 				}else{
 					$this->lang = "en";
-					$this->langfile = FILE_PATH."src/lang/Installer/en.ini";
+					$this->langfile = FILE_PATH . "src/lang/Installer/en.ini";
 				}
 			}
-			
-			$this->loadLang(FILE_PATH."src/lang/Installer/en.ini", "en");
+
+			$this->loadLang(FILE_PATH . "src/lang/Installer/en.ini", "en");
 			if($this->lang !== "en"){
 				$this->loadLang($this->langfile, $this->lang);
 			}
 
 		}
-		
+
 		public function getLang(){
 			return ($this->lang);
 		}
-		
+
 		public function loadLang($langfile, $lang = "en"){
-			$this->texts[$lang] = array();
-			$texts = explode("\n", str_replace(array("\r", "\/\/"), array("", "//"), file_get_contents($langfile)));
+			$this->texts[$lang] = [];
+			$texts = explode("\n", str_replace(["\r", "\/\/"], ["", "//"], file_get_contents($langfile)));
 			foreach($texts as $line){
 				$line = trim($line);
 				if($line === ""){
 					continue;
 				}
 				$line = explode("=", $line);
-				$this->texts[$lang][array_shift($line)] = str_replace(array("\\n", "\\N",), "\n", implode("=", $line));
+				$this->texts[$lang][array_shift($line)] = str_replace(["\\n", "\\N",], "\n", implode("=", $line));
 			}
 		}
-		
-		public function get($name, $search = array(), $replace = array()){
+
+		public function get($name, $search = [], $replace = []){
 			if(!isset($this->texts[$this->lang][$name])){
 				if($this->lang !== "en" and isset($this->texts["en"][$name])){
 					return $this->texts["en"][$name];
@@ -253,10 +251,10 @@ LICENSE;
 				return $this->texts[$this->lang][$name];
 			}
 		}
-		
+
 		public function __get($name){
 			return $this->get($name);
 		}
 
-	}	
+	}
 /***REM_END***/

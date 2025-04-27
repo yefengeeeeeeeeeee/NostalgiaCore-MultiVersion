@@ -7,14 +7,14 @@ class CactusBlock extends TransparentBlock{
 		$this->isFullBlock = false;
 		$this->hardness = 2;
 	}
-	
+
 	public static function onEntityCollidedWithBlock(Level $level, $x, $y, $z, Entity $entity){
 		$entity->harm(1, "cactus");
 	}
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		return [new AxisAlignedBB($x + 0.0625, $y, $z + 0.0625, $x + 1 - 0.0625, $y + 1 - 0.0625, $z + 1 - 0.0625)];
 	}
-	
+
 	public static function onRandomTick(Level $level, $x, $y, $z){
 		//$b = $level->level->getBlock($x, $y - 1, $z);
 		$underID = $level->level->getBlockID($x, $y - 1, $z);
@@ -38,7 +38,7 @@ class CactusBlock extends TransparentBlock{
 			return BLOCK_UPDATE_RANDOM;
 		}
 	}
-	
+
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		$down = $level->level->getBlockID($x, $y - 1, $z);
 		$b0 = $level->level->getBlockID($x, $y, $z - 1);
@@ -50,7 +50,7 @@ class CactusBlock extends TransparentBlock{
 			ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(CACTUS));
 		}
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === SAND or $down->getID() === CACTUS){
@@ -67,10 +67,10 @@ class CactusBlock extends TransparentBlock{
 		}
 		return false;
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array($this->id, 0, 1),
-		);
+		return [
+			[$this->id, 0, 1],
+		];
 	}
 }

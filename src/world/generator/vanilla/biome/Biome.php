@@ -20,8 +20,7 @@ class Biome
 	 * @var Biome $tundra
 	 */
 	public static $rainForest, $swampLand, $seasonalForest, $forest, $savanna, $shrubland, $taiga, $desert, $plains, $iceDesert, $tundra;
-	
-	
+
 	public static function init(){
 		Biome::$rainForest = new Biome("Rainforest");
 		Biome::$swampLand = new Biome("Swampland");
@@ -48,26 +47,26 @@ class Biome
 	public static function getBiome($temp, $rain){
 		$i = ((int) ($temp * 63));
 		$j = ((int) ($rain * 63));
-		return Biome::$biomes[$i + $j*64];
+		return Biome::$biomes[$i + $j * 64];
 	}
 	public static function __getBiome($temp, $rain){
 		$rain *= $temp;
 		if($temp < 0.1) return Biome::$tundra;
-		
+
 		if($rain < 0.2){
 			if($temp < 0.5) return Biome::$tundra;
 			if($temp < 0.95) return Biome::$savanna;
 			else return Biome::$desert;
 		}
-		
+
 		if($rain > 0.5 && $temp < 0.7) return Biome::$swampLand;
 		if($temp < 0.5) return Biome::$taiga;
-		
+
 		if($temp < 0.97){
 			if($rain < 0.45) return Biome::$shrubland;
 			else return Biome::$forest;
 		}
-		
+
 		if($rain < 0.45) return Biome::$plains;
 		if($rain < 0.9) return Biome::$seasonalForest;
 		return Biome::$rainForest;
@@ -75,12 +74,12 @@ class Biome
 	public function __construct($name){
 		$this->name = $name;
 	}
-	
+
 	public function getTreeFeature(MTRandom $rand){
 		$rand->nextInt(); //it is necessary
 		return Feature::$TREE;
 	}
-	
+
 	public $name;
 	public $topBlock = GRASS, $fillerBlock = DIRT;
 }

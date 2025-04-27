@@ -6,7 +6,7 @@ class FlowerFeature extends Feature
 	public function __construct($id){
 		$this->id = $id;
 	}
-	
+
 	public function place(Level $level, MTRandom $rand, $x, $y, $z){ //TODO pass VanillaGenerator instance and update heightmap on ceratin block placement
 		for($i = 0; $i < 64; ++$i){
 			$xPos = ($x + $rand->nextInt(8)) - $rand->nextInt(8);
