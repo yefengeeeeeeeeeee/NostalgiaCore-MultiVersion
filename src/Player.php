@@ -2264,7 +2264,7 @@ class Player{
                 $packet->eid = $this->eid;
                 $data = [];
 
-                if ($packet->face >= 0 and $packet->face <= 5) { //Use Block, place
+                if ($packet->face >= 0 and $packet->face <= 5) {
                     if ($this->entity->inAction === true) {
                         $this->entity->inAction = false;
                         $this->entity->inActionCounter = 0;
@@ -2274,7 +2274,7 @@ class Player{
                     if ($this->blocked === true or ($this->entity->position instanceof Vector3 and $blockVector->distance($this->entity->position) > 10)) {
 
                     } else {
-                        $this->server->api->block->playerBlockAction($this, $blockVector, $packet->face, $packet->fx, $packet->fy, $packet->fz);
+                        $this->server->api->block->playerBlockAction($this, $blockVector, $packet->face, $packet->x, $packet->y, $packet->z);
                         break;
                     }
                     $target = $this->level->getBlock($blockVector);
