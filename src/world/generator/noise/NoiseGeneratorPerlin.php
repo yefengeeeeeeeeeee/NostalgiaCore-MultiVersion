@@ -27,7 +27,7 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 		}
 
 	}
-	
+
 	public function getValue($d, $d1, $d2 = 0){
 		$d3 = $d + $this->xCoord;
 		$d4 = $d1 + $this->yCoord;
@@ -44,14 +44,14 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 		$d6 = $d3 * $d3 * $d3 * ($d3 * ($d3 * 6 - 15) + 10);
 		$d7 = $d4 * $d4 * $d4 * ($d4 * ($d4 * 6 - 15) + 10);
 		$d8 = $d5 * $d5 * $d5 * ($d5 * ($d5 * 6 - 15) + 10);
-		
+
 		$k1 = (int) ($this->permutations[$l] + $i1);
 		$l1 = (int) ($this->permutations[$k1] + $j1);
 		$i2 = (int) ($this->permutations[$k1 + 1] + $j1);
 		$j2 = (int) ($this->permutations[$l + 1] + $i1);
 		$k2 = (int) ($this->permutations[$j2] + $j1);
 		$l2 = (int) ($this->permutations[$j2 + 1] + $j1);
-		
+
 		return self::curve($d8,
 			self::curve($d7,
 				self::curve($d6, self::grad3D($this->permutations[$l1], $d3, $d4, $d5), self::grad3D($this->permutations[$k2], $d3 - 1, $d4, $d5)),
@@ -63,7 +63,7 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 			)
 		);
 	}
-	
+
 	public function populateNoiseArray(&$floats, $par1, $par2, $par3, $int1, $int2, $int3, $par4, $par5, $par6, $par7){
 		if($int2 === 1){
 			$n = 0;
@@ -152,7 +152,7 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 	public static function grad2D($int, $par1, $par2){
 		$i = $int & 0x0F;
 		$d1 = (1 - (($i & 0x08) >> 3)) * $par1;
-		$d2 = ($i == 12 || $i == 14) ? $par1 : (($i >= 4)*$par2);
+		$d2 = ($i == 12 || $i == 14) ? $par1 : (($i >= 4) * $par2);
 		return (($i & 0x01) ? -$d1 : $d1) + (($i & 0x02) ? -$d2 : $d2);
 	}
 

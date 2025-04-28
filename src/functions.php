@@ -11,7 +11,6 @@ if(!function_exists("cli_set_process_title")){
 	}
 }
 
-
 function dummy(){
 
 }
@@ -68,8 +67,6 @@ function kill($pid){
 function nullsafe(&$a, $null){
 	return $a ?? $null;
 }
-
-
 
 function require_all($path, &$count = 0){
 	$dir = dir($path . "/");

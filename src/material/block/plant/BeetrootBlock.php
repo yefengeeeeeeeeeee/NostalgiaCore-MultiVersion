@@ -46,7 +46,7 @@ class BeetrootBlock extends FlowableBlock{
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		$drops = [];
 		if($this->meta >= 0x07){

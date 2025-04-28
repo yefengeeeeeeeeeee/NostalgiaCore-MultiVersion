@@ -7,7 +7,7 @@ class RakNetParser{
 	private $offset;
 
 	public function __construct(&$buffer){
-		$this->buffer =& $buffer;
+		$this->buffer = &$buffer;
 		$this->offset = 0;
 		if(strlen($this->buffer) > 0){
 			$this->parse();
@@ -18,7 +18,7 @@ class RakNetParser{
 
 	private function parse(){
 		$this->packet = new RakNetPacket(ord($this->get(1)));
-		$this->packet->buffer =& $this->buffer;
+		$this->packet->buffer = &$this->buffer;
 		$this->packet->length = strlen($this->buffer);
 		switch($this->packet->pid()){
 			case RakNetInfo::UNCONNECTED_PING:
@@ -163,7 +163,7 @@ class RakNetParser{
 			if(strlen($buffer) < ($length - 1)){
 				return false;
 			}
-			
+
 			$data = match($pid){
 				ProtocolInfo::PING_PACKET => new PingPacket(),
 				ProtocolInfo::PONG_PACKET => new PongPacket(),
@@ -222,7 +222,7 @@ class RakNetParser{
 				ProtocolInfo::PLAYER_INPUT_PACKET => new PlayerInputPacket(),
 				default => new UnknownPacket($pid)
 			};
-			
+
 			$data->reliability = $reliability;
 			$data->hasSplit = $hasSplit;
 			$data->messageIndex = $messageIndex;

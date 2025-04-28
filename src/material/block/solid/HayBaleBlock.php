@@ -6,16 +6,16 @@ class HayBaleBlock extends SolidBlock{
 		parent::__construct(HAY_BALE, $meta, "Hay Bale");
 		$this->hardness = 10;
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		$faces = array(
+		$faces = [
 			0 => 0,
 			1 => 0,
 			2 => 0b1000,
 			3 => 0b1000,
 			4 => 0b0100,
 			5 => 0b0100,
-		);
+		];
 
 		$this->meta = ($this->meta & 0x03) | $faces[$face];
 		$this->level->setBlock($block, $this, true, false, true);
@@ -23,9 +23,9 @@ class HayBaleBlock extends SolidBlock{
 	}
 
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array($this->id, 0, 1),
-		);
+		return [
+			[$this->id, 0, 1],
+		];
 	}
-	
+
 }

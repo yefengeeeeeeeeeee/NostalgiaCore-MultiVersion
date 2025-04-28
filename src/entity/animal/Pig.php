@@ -1,7 +1,8 @@
 <?php
+
 class Pig extends Animal implements Rideable{
 	const TYPE = MOB_PIG;
-	
+
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		$this->setSize(0.9, 0.9);
 		parent::__construct($level, $eid, $class, $type, $data);
@@ -9,7 +10,7 @@ class Pig extends Animal implements Rideable{
 		$this->server = ServerAPI::request();
 		$this->setName("Pig");
 		$this->setSpeed(0.25);
-		
+
 		$this->ai->addTask(new TaskRandomWalk(1.0));
 		$this->ai->addTask(new TaskLookAtPlayer(6));
 		$this->ai->addTask(new TaskPanic(1.5));
@@ -25,18 +26,18 @@ class Pig extends Animal implements Rideable{
 	public function isSaddled(){
 		return (boolean) $this->getState();
 	}
-	
+
 	/**
 	 * @param boolean $value
 	 */
 	public function setSaddled($value = null){
 		$this->setState($value === null ? !$this->getState() : $value);
 	}
-	
+
 	public function canRide($e){
 		return $this->isSaddled() && $this->linkedEntity == 0 && $e->linkedEntity == 0;
 	}
-	
+
 	public function updateEntityMovement(){
 		/*if($this->linkedEntity != 0){
 			$e = $this->level->entityList[$this->linkedEntity] ?? false;
@@ -47,10 +48,10 @@ class Pig extends Animal implements Rideable{
 				$this->yaw = $e->headYaw;
 			}
 		}*/
-		
+
 		parent::updateEntityMovement();
 	}
-	
+
 	public function interactWith(Entity $e, $action)
 	{
 		if($e->isPlayer() && $action === InteractPacket::ACTION_HOLD){
@@ -59,7 +60,7 @@ class Pig extends Animal implements Rideable{
 				$e->setRiding($this);
 				return true;
 			}
-			
+
 			if($slot->getID() === SADDLE){
 				if(!$this->isSaddled()){
 					$e->player->removeItem($slot->getID(), 0, 1);
@@ -67,15 +68,15 @@ class Pig extends Animal implements Rideable{
 				}
 				return true; //avoid further interactions
 			}
-			
+
 		}
 		return parent::interactWith($e, $action);
 	}
-	
+
 	public function isFood($id){
 		return $id === POTATO || $id === CARROT || $id === BEETROOT;
 	}
-	
+
 	public function getDrops(){
 		return $this->isBaby() ? parent::getDrops() : ($this->isSaddled() ? [
 			[($this->fire > 0 ? COOKED_PORKCHOP : RAW_PORKCHOP), 0, mt_rand(0,2)],

@@ -7,15 +7,15 @@ class ContainerOpenPacket extends RakNetDataPacket{
 	public $x;
 	public $y;
 	public $z;
-	
+
 	public function pid(){
 		return ProtocolInfo::CONTAINER_OPEN_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->windowid);

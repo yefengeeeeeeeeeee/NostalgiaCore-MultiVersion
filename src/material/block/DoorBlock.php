@@ -86,14 +86,13 @@ class DoorBlock extends TransparentBlock{
 				}
 				break;
 		}
-		
-		
+
 		return [$aabb->offset($x, $y, $z)];
 	}
-	
+
 	public static function getCompositeData(Level $level, $x, $y, $z){
 		$myMeta = $level->level->getBlockDamage($x, $y, $z);
-		
+
 		if(($myMeta & 8) != 0){
 			$metaLower = $level->level->getBlockDamage($x, $y - 1, $z);
 			$metaUpper = $myMeta;
@@ -101,19 +100,18 @@ class DoorBlock extends TransparentBlock{
 			$metaLower = $myMeta;
 			$metaUpper = $level->level->getBlockDamage($x, $y + 1, $z);
 		}
-		
+
 		return $metaLower & 7 | (($myMeta & 8) != 0 ? 8 : 0) | (($metaUpper & 1 != 0) ? 16 : 0);
 	}
 
-	
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		if($level->level->getBlockID($x, $y - 1, $z) == AIR){ //Replace with common break method
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 			$id = $level->level->getBlockID($x, $y, $z);
-			
-			if($id == 64) ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(324, 0, 1));
-			elseif($id == 71) ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(330, 0, 1));
-				
+
+			if($id == 64) ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(324, 0, 1));
+			elseif($id == 71) ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(330, 0, 1));
+
 			$top = $level->level->getBlockID($x, $y + 1, $z);
 			if($top == IRON_DOOR_BLOCK || $top == DOOR_BLOCK){
 				$level->fastSetBlockUpdate($x, $y + 1, $z, 0, 0);
@@ -121,12 +119,7 @@ class DoorBlock extends TransparentBlock{
 		}
 	}
 
-
 	/**
-	 * @param Item $item
-	 * @param Player $player
-	 * @param Block $block
-	 * @param Block $target
 	 * @param integer $face
 	 * @param integer $fx
 	 * @param integer $fy
@@ -142,12 +135,12 @@ class DoorBlock extends TransparentBlock{
 				return false;
 			}
 			$direction = $player->entity->getDirection();
-			$face = array(
+			$face = [
 				0 => 3,
 				1 => 4,
 				2 => 2,
 				3 => 5,
-			);
+			];
 			$next = $this->getSide($face[(($direction + 2) % 4)]);
 			$next2 = $this->getSide($face[$direction]);
 			$metaUp = 0x08;
@@ -155,17 +148,15 @@ class DoorBlock extends TransparentBlock{
 				$metaUp |= 0x01;
 			}
 			$this->level->setBlock($blockUp, BlockAPI::get($this->id, $metaUp), true, false, true); //Top
-			
+
 			$this->meta = $direction & 0x03;
 			$this->level->setBlock($block, $this, true, false, true); //Bottom
-			return true;			
+			return true;
 		}
 		return false;
 	}
 
 	/**
-	 * @param Item $item
-	 * @param Player $player
 	 *
 	 * @return boolean
 	 */
@@ -186,8 +177,6 @@ class DoorBlock extends TransparentBlock{
 	}
 
 	/**
-	 * @param Item $item
-	 * @param Player $player
 	 *
 	 * @return boolean
 	 */

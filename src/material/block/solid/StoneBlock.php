@@ -20,15 +20,15 @@ class StoneBlock extends SolidBlock{
 			default => 7.5,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 1){
-			return array(
-				array(COBBLESTONE, 0, 1),
-			);
+			return [
+				[COBBLESTONE, 0, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
-	
+
 }

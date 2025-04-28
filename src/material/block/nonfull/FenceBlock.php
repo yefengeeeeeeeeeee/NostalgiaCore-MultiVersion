@@ -7,16 +7,16 @@ class FenceBlock extends TransparentBlock{
 		$this->isFullBlock = false;
 		$this->hardness = 15;
 	}
-	
+
 	public static function canConnectTo(Level $level, $x, $y, $z){
 		$id = $level->level->getBlockID($x, $y, $z);
-		
+
 		if($id != FENCE && $id != FENCE_GATE){
 			return StaticBlock::getIsSolid($id) && $id != PUMPKIN; //TODO check var6 != null && var6.blockMaterial.isOpaque() && var6.renderAsNormalBlock() ? var6.blockMaterial != Material.pumpkin : false;
 		}
 		return true;
 	}
-	
+
 	public static function getAABB(Level $level, $x, $y, $z){
 		$v9 = self::canConnectTo($level, $x, $y, $z - 1);
 		$v10 = self::canConnectTo($level, $x, $y, $z + 1);
@@ -29,7 +29,7 @@ class FenceBlock extends TransparentBlock{
 		StaticBlock::setBlockBounds(static::$blockID, $minX, 0, $minZ, $maxX, 1.5, $maxZ);
 		return parent::getAABB($level, $x, $y, $z);
 	}
-	
+
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		$v8 = self::canConnectTo($level, $x, $y, $z - 1);
 		$v9 = self::canConnectTo($level, $x, $y, $z + 1);
@@ -47,11 +47,11 @@ class FenceBlock extends TransparentBlock{
 		$v15 = 0.625;
 		if($v10) $v12 = 0;
 		if($v11) $v13 = 1;
-		
+
 		if($v10 || $v11 || !$v8 && !$v9){
 			$arr[] = new AxisAlignedBB($x + $v12, $y + 0, $z + $v14, $x + $v13, $y + 1.5, $z + $v15);
 		}
 		return $arr;
 	}
-	
+
 }

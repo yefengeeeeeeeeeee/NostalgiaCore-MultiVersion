@@ -103,7 +103,6 @@ require_once(FILE_PATH . "/src/pmf/PMF.php");
 
 require_once(FILE_PATH . "/src/astarnavigator/TileNavigator.php");
 
-
 require_once(FILE_PATH . "/src/entity/ai/tasks/TaskBase.php");
 
 require_once(FILE_PATH . "/src/entity/Rideable.php");
@@ -137,8 +136,6 @@ require_once(FILE_PATH . "/src/world/generator/vanilla/biome/Biome.php");
 require_once(FILE_PATH . "/src/world/generator/vanilla/feature/Feature.php");
 
 require_all(FILE_PATH . "src/");
-
-
 
 $inc = get_included_files();
 $inc[] = array_shift($inc);

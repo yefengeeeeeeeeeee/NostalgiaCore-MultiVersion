@@ -17,14 +17,14 @@ class GoldOreBlock extends SolidBlock{
 			default => 15,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 4){
-			return array(
-				array(GOLD_ORE, 0, 1),
-			);
+			return [
+				[GOLD_ORE, 0, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

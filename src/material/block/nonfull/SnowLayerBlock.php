@@ -20,20 +20,20 @@ class SnowLayerBlock extends FlowableBlock{
 		}
 		return false;
 	}
-	
+
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		if($level->level->getBlockID($x, $y - 1, $z) == AIR){ //Replace with common break method
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 		}
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->isShovel() !== false){
-			return array(
-				array(SNOWBALL, 0, 1),
-			);
+			return [
+				[SNOWBALL, 0, 1],
+			];
 		}
-		
-		return array();
+
+		return [];
 	}
 }

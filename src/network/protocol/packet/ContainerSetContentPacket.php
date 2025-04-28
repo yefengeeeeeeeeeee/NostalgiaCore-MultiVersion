@@ -2,13 +2,13 @@
 
 class ContainerSetContentPacket extends RakNetDataPacket{
 	public $windowid;
-	public $slots = array();
-	public $hotbar = array();
-	
+	public $slots = [];
+	public $hotbar = [];
+
 	public function pid(){
 		return ProtocolInfo::CONTAINER_SET_CONTENT_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->windowid = $this->getByte();
 		$count = $this->getShort();
@@ -22,7 +22,7 @@ class ContainerSetContentPacket extends RakNetDataPacket{
 			}
 		}
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->windowid);

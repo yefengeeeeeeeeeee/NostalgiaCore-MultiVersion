@@ -6,15 +6,15 @@ class ExplodePacket extends RakNetDataPacket{
 	public $z;
 	public $radius;
 	public $records;
-	
+
 	public function pid(){
 		return ProtocolInfo::EXPLODE_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putFloat($this->x);

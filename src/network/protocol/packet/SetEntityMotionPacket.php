@@ -5,15 +5,15 @@ class SetEntityMotionPacket extends RakNetDataPacket{
 	public $speedX;
 	public $speedY;
 	public $speedZ;
-	
+
 	public function pid(){
 		return ProtocolInfo::SET_ENTITY_MOTION_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

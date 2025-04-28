@@ -55,7 +55,7 @@ class MinecraftInterface{
 			$packet = new QueryPacket;
 			$packet->ip = $source;
 			$packet->port = $port;
-			$packet->buffer =& $buffer;
+			$packet->buffer = &$buffer;
 			if(EventHandler::callEvent(new PacketReceiveEvent($packet)) === BaseEvent::DENY){
 				return false;
 			}
@@ -64,7 +64,7 @@ class MinecraftInterface{
 			$packet = new Packet();
 			$packet->ip = $source;
 			$packet->port = $port;
-			$packet->buffer =& $buffer;
+			$packet->buffer = &$buffer;
 			EventHandler::callEvent(new PacketReceiveEvent($packet));
 			return false;
 		}

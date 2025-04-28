@@ -6,27 +6,27 @@ class Level{
 	 */
 	public $entities;
 	/**
-	 * This is an array of entities in this world. 
+	 * This is an array of entities in this world.
 	 * @var Entity[]
 	 */
 	public $entityList;
-	
+
 	public $entityListPositioned = [];
 	public $entitiesInLove = [];
-	
+
 	/**
 	 * @var Player[]
 	 */
 	public $players = [];
-	
+
 	public $tiles, $blockUpdates, $nextSave, $level, $mobSpawner, $totalMobsAmount = 0;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
-	
+
 	public $randInt1, $randInt2;
 	public $queuedBlockUpdates = [];
-	
+
 	public $forceDisableBlockQueue = false;
-	
+
 	public static $randomUpdateBlocks = [
 		FIRE => true,
 		FARMLAND => true,
@@ -45,7 +45,7 @@ class Level{
 		ICE => true,
 		LEAVES => true
 	];
-	
+
 	public function __construct(PMFLevel $level, Config $entities, Config $tiles, Config $blockUpdates, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
@@ -72,29 +72,29 @@ class Level{
 	public function close(){
 		$this->__destruct();
 	}
-	
+
 	public function isTopSolidBlocking($x, $y, $z){
 		$idmeta = $this->level->getBlock($x, $y, $z);
 		$id = $idmeta[0];
 		$meta = $idmeta[1];
 		if($id == 0) return false;
 		if(StaticBlock::getIsTransparent($id)) return false;
-		
+
 		return true;
 	}
 
 	public function rayTraceBlocks(Vector3 $start, Vector3 $end){
-		
+
 		$par3 = false; //TODO move to params?
 		$par4 = true;
-		
+
 		$xStart = floor($start->x);
 		$yStart = floor($start->y);
 		$zStart = floor($start->z);
 		$xEnd = floor($end->x);
 		$yEnd = floor($end->y);
 		$zEnd = floor($end->z);
-		
+
 		[$startID, $startMeta] = $this->level->getBlock($xStart, $yStart, $zStart);
 		$block = StaticBlock::getBlock($startID);
 
@@ -104,66 +104,66 @@ class Level{
 			$v14 = $block::clip($this, $xStart, $yStart, $zStart, $start, $end);
 			if($v14 != null) return $v14;
 		}
-		
+
 		for($i = 0; $i <= 200; ++$i){
-			
+
 			if(is_nan($start->x) || is_nan($start->y) || is_nan($start->z) || ($xStart == $xEnd && $yStart == $yEnd && $zStart == $zEnd)){ //also add checks for nan?
 				return null;
 			}
-			
+
 			$v39 = $v40 = $v41 = true;
 			$v15 = $v17 = $v19 = 999.0; //nice mojang
-			
+
 			if($xEnd > $xStart) $v15 = $xStart + 1;
 			elseif($xEnd < $xStart) $v15 = $xStart;
 			else $v39 = false;
-			
+
 			if($yEnd > $yStart) $v17 = $yStart + 1;
 			elseif($yEnd < $yStart) $v17 = $yStart;
 			else $v40 = false;
-			
+
 			if($zEnd > $zStart) $v19 = $zStart + 1;
 			elseif($zEnd < $zStart) $v19 = $zStart;
 			else $v41 = false;
-			
+
 			$v21 = $v23 = $v25 = 999.0; //nice mojang x2
 			$v27 = $end->x - $start->x;
 			$v29 = $end->y - $start->y;
 			$v31 = $end->z - $start->z;
-			
-			if($v39) $v21 = $v27 == 0 ? ($v15 - $start->x)*INF : ($v15 - $start->x) / $v27;
-			if($v40) $v23 = $v29 == 0 ? ($v17 - $start->y)*INF : ($v17 - $start->y) / $v29;
-			if($v41) $v25 = $v31 == 0 ? ($v19 - $start->z)*INF : ($v19 - $start->z) / $v31;
-			
+
+			if($v39) $v21 = $v27 == 0 ? ($v15 - $start->x) * INF : ($v15 - $start->x) / $v27;
+			if($v40) $v23 = $v29 == 0 ? ($v17 - $start->y) * INF : ($v17 - $start->y) / $v29;
+			if($v41) $v25 = $v31 == 0 ? ($v19 - $start->z) * INF : ($v19 - $start->z) / $v31;
+
 			if($v21 < $v23 && $v21 < $v25){
 				$v42 = $xEnd > $xStart ? 4 : 5;
-				
+
 				$start->x = $v15;
 				$start->y += $v29 * $v21;
 				$start->z += $v31 * $v21;
 			}elseif($v23 < $v25){
 				$v42 = $yEnd > $yStart ? 0 : 1;
-				
+
 				$start->x += $v27 * $v23;
 				$start->y = $v17;
 				$start->z += $v31 * $v23;
 			}else{
 				$v42 = $zEnd > $zStart ? 2 : 3;
-				
+
 				$start->x += $v27 * $v25;
 				$start->y += $v29 * $v25;
 				$start->z = $v19;
 			}
-			
+
 			$xStart = floor($start->x);
 			if($v42 == 5) --$xStart;
-			
+
 			$yStart = floor($start->y);
 			if($v42 == 1) --$yStart;
-			
+
 			$zStart = floor($start->z);
 			if($v42 == 3) --$zStart;
-			
+
 			[$blockID, $blockMeta] = $this->level->getBlock($xStart, $yStart, $zStart);
 			$block = StaticBlock::getBlock($blockID);
 
@@ -173,10 +173,10 @@ class Level{
 				if($v38 != null) return $v38;
 			}
 		}
-		
+
 		return null;
 	}
-	 
+
 	public function isLavaInBB($aabb){
 		$minX = floor($aabb->minX);
 		$maxX = floor($aabb->maxX + 1);
@@ -184,20 +184,20 @@ class Level{
 		$maxY = floor($aabb->maxY + 1);
 		$minZ = floor($aabb->minZ);
 		$maxZ = floor($aabb->maxZ + 1);
-		
+
 		for($x = $minX; $x < $maxX; ++$x){
 			for($y = $minY; $y < $maxY; ++$y){
 				for($z = $minZ; $z < $maxZ; ++$z){
 					$blockId = $this->level->getBlockID($x, $y, $z);
-					
+
 					if($blockId == LAVA || $blockId == STILL_LAVA) return true;
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	public function handleMaterialAcceleration(AxisAlignedBB $aabb, $materialType, Entity $entity){
 		$minX = floor($aabb->minX);
 		$maxX = ceil($aabb->maxX);
@@ -205,9 +205,9 @@ class Level{
 		$maxY = ceil($aabb->maxY);
 		$minZ = floor($aabb->minZ);
 		$maxZ = ceil($aabb->maxZ);
-		
+
 		//1.5.2 checks that all chunks exist, not needed here i think
-		
+
 		$appliedVelocity = false;
 		$velocityVec = new Vector3(0, 0, 0);
 		for($x = $minX; $x < $maxX; ++$x){
@@ -220,12 +220,12 @@ class Level{
 							$appliedVelocity = true;
 							StaticBlock::$prealloc[$block]::addVelocityToEntity($this, $x, $y, $z, $entity, $velocityVec);
 						}
-						
+
 					}
 				}
 			}
 		}
-		
+
 		if($velocityVec->length() > 0){ //also checks is player flying
 			$velocityVec = $velocityVec->normalize(); //TODO do not use vec methods
 			$v18 = 0.014;
@@ -233,12 +233,10 @@ class Level{
 			$entity->speedY += $velocityVec->y * $v18;
 			$entity->speedZ += $velocityVec->z * $v18;
 		}
-		
+
 		return $appliedVelocity;
 	}
 	/**
-	 * @param Entity $e
-	 * @param AxisAlignedBB $aABB
 	 * @return AxisAlignedBB[]
 	 */
 	public function getCubes(Entity $e, AxisAlignedBB $aABB) {
@@ -249,14 +247,14 @@ class Level{
 		$y1 = floor($aABB->maxY + 1);
 		$z0 = floor($aABB->minZ);
 		$z1 = floor($aABB->maxZ + 1);
-		
+
 		for($x = $x0; $x < $x1; ++$x) {
 			for($z = $z0; $z < $z1; ++$z) {
 				for($y = $y0 - 1; $y < $y1; ++$y) {
 					$bid = $this->level->getBlockID($x, $y, $z);
 					if($bid > 0){
 						$blockBounds = StaticBlock::$prealloc[$bid]::getCollisionBoundingBoxes($this, $x, $y, $z, $e); //StaticBlock::getBoundingBoxForBlockCoords($b, $x, $y, $z);
-						
+
 						foreach($blockBounds as $blockBound){
 							if($aABB->intersectsWith($blockBound)) $aABBs[] = $blockBound;
 						}
@@ -264,10 +262,10 @@ class Level{
 				}
 			}
 		}
-		
+
 		return $aABBs;
 	}
-	
+
 	public function __destruct(){
 		if(isset($this->level)){
 			$this->save(false, false, false, false);
@@ -276,7 +274,7 @@ class Level{
 		}
 		unset($this->mobSpawner->level);
 	}
-	
+
 	public function isDay(){
 		return $this->getTime() % 19200 < TimeAPI::$phases["sunset"];
 	}
@@ -294,7 +292,7 @@ class Level{
 
 		if($entities){
 			$entities = [];
-			
+
 			foreach($this->entityList as $entity){
 				if($entity instanceof Entity){
 					$entities[] = $entity->createSaveData();
@@ -355,7 +353,7 @@ class Level{
 	public function freeChunk($X, $Z, Player $player){
 		unset($this->usedChunks[$X . "." . $Z][$player->CID]);
 	}
-	
+
 	public function checkCollisionsFor(Entity $e){
 		if($e->level->getName() != $this->getName()){
 			return false; //not the same world
@@ -368,12 +366,12 @@ class Level{
 		}
 	}
 	public function isObstructed($e){
-		
+
 	}
-	
+
 	public function checkSleep(){ //TODO events?
 		if(count($this->players) == 0) return false;
-		if($this->server->api->time->getPhase($this)  === "night"){ //TODO vanilla
+		if($this->server->api->time->getPhase($this) === "night"){ //TODO vanilla
 			foreach($this->players as $p){
 				if(!$p->isSleeping || $p->sleepingTime < 100){
 					return false;
@@ -385,14 +383,14 @@ class Level{
 			$p->stopSleep();
 		}
 	}
-	
+
 	public function checkThings(){
 		if(!isset($this->level)){
 			return false;
 		}
 		$now = microtime(true);
 		$this->players = $this->server->api->player->getAll($this);
-		
+
 		if(count($this->changedCount) > 0){
 			arsort($this->changedCount);
 			$reorder = false;
@@ -407,13 +405,13 @@ class Level{
 				unset($this->changedBlocks[$index]);
 			}
 			$this->changedCount = [];
-			
+
 			if($reorder){
 				foreach($this->players as $p){
 					$p->orderChunks();
 				}
 			}
-			
+
 			if(count($this->changedBlocks) > 0){
 				foreach($this->changedBlocks as $i => $blocks){
 					foreach($blocks as $b){
@@ -421,7 +419,7 @@ class Level{
 						$pk->x = ($b >> 32) & 0xff;
 						$pk->y = ($b >> 24) & 0xff;
 						$pk->z = ($b >> 16) & 0xff;
-						$pk->block =($b >> 8) & 0xff;
+						$pk->block = ($b >> 8) & 0xff;
 						$pk->meta = $b & 0xff;
 						$this->server->api->player->broadcastPacket($this->players, $pk);
 					}
@@ -430,7 +428,7 @@ class Level{
 				$this->changedBlocks = [];
 			}
 		}
-		
+
 		if($this->nextSave < $now){
 			$this->save(false, true, true, true);
 		}
@@ -475,29 +473,29 @@ class Level{
 			$this->updateNeighborsAt($x, $y, $z, $id);
 		}
 	}
-	
+
 	public function updateNeighborsAt($x, $y, $z, $oldID){
 		$block = $this->level->getBlockID($x - 1, $y, $z);
 		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x - 1, $y, $z, $x, $y, $z, $oldID);
 		$block = $this->level->getBlockID($x + 1, $y, $z);
 		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x + 1, $y, $z, $x, $y, $z, $oldID);
-		
+
 		$block = $this->level->getBlockID($x, $y - 1, $z);
 		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x, $y - 1, $z, $x, $y, $z, $oldID);
 		$block = $this->level->getBlockID($x, $y + 1, $z);
 		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x, $y + 1, $z, $x, $y, $z, $oldID);
-		
+
 		$block = $this->level->getBlockID($x, $y, $z - 1);
 		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x, $y, $z - 1, $x, $y, $z, $oldID);
 		$block = $this->level->getBlockID($x, $y, $z + 1);
 		if($block) StaticBlock::getBlock($block)::neighborChanged($this, $x, $y, $z + 1, $x, $y, $z, $oldID);
 	}
-	
+
 	public function fastSetBlockUpdate($x, $y, $z, $id, $meta, $updateBlocksAround = false, $tiles = false){
 		$oldID = $this->level->getBlockID($x, $y, $z);
-		
+
 		$this->level->setBlock($x, $y, $z, $id, $meta);
-		
+
 		if($tiles){ //TODO rewrite
 			$this->server->api->tile->invalidateAll($this, $x, $y, $z);
 		}
@@ -506,7 +504,7 @@ class Level{
 		}
 		$this->addBlockToSendQueue($x, $y, $z, $id, $meta);
 	}
-	
+
 	public function onTick(PocketMinecraftServer $server, $currentTime){
 		if(!$this->stopTime) ++$this->time;
 		for($cX = 0; $cX < 16; ++$cX){
@@ -528,7 +526,7 @@ class Level{
 		}
 		$this->totalMobsAmount = 0;
 		$post = [];
-		
+
 		foreach($this->entityList as $k => $e){
 			if(!($e instanceof Entity)){
 				unset($this->entityList[$k]);
@@ -536,27 +534,27 @@ class Level{
 				//TODO try to remove from $entityListPositioned?
 				continue;
 			}
-			
+
 			$dd = CORRECT_ENTITY_CLASSES[$e->class] ?? false;
 			if($dd === false || ($dd !== true && !isset($dd[$e->type]))){
 				ConsoleAPI::warn("Entity $k has invalid entity! {$e->class} {$e->type}");
 				$e->close();
-				
+
 				unset($this->entityList[$k]);
 				unset($this->server->entities[$k]);
-				
-				$curChunkX = (int)$e->x >> 4;
-				$curChunkZ = (int)$e->z >> 4;
+
+				$curChunkX = (int) $e->x >> 4;
+				$curChunkZ = (int) $e->z >> 4;
 				$index = "$curChunkX $curChunkZ";
-				
+
 				if(isset($this->entityListPositioned[$index][$k])){
 					unset($this->entityListPositioned[$index][$k]);
 				}
-				
+
 				continue;
 			}
-			$curChunkX = (int)$e->x >> 4;
-			$curChunkZ = (int)$e->z >> 4;
+			$curChunkX = (int) $e->x >> 4;
+			$curChunkZ = (int) $e->z >> 4;
 			if($e->class === ENTITY_MOB && !$e->isPlayer()){
 				++$this->totalMobsAmount;
 			}
@@ -564,14 +562,14 @@ class Level{
 				$e->update($currentTime);
 				if(!$e->isPlayer()) $post[] = $k;
 			}
-			
+
 			if($e instanceof Entity){
-				$newChunkX = (int)$e->x >> 4;
-				$newChunkZ = (int)$e->z >> 4;
+				$newChunkX = (int) $e->x >> 4;
+				$newChunkZ = (int) $e->z >> 4;
 				if($e->chunkX != $newChunkX || $e->chunkZ != $newChunkZ){
 					$oldIndex = "{$e->chunkX} {$e->chunkZ}";
 					unset($this->entityListPositioned[$oldIndex][$e->eid]);
-					
+
 					if($e->level == $this){
 						$e->chunkX = $newChunkX;
 						$e->chunkZ = $newChunkZ;
@@ -587,30 +585,27 @@ class Level{
 					unset($this->entityListPositioned[$index][$e->eid]);
 					$this->entityListPositioned[$newIndex][$e->eid] = $e->eid; //set to e->eid to avoid possible memory leaks
 				}
-				
+
 				if($e->searchForClosestPlayers){
 					$e->handlePrePlayerSearcher();
-					
+
 					foreach($this->players as $player){
-						$dist = ($e->x - $player->entity->x)*($e->x - $player->entity->x) + ($e->y - $player->entity->y)*($e->y - $player->entity->y) + ($e->z - $player->entity->z)*($e->z - $player->entity->z);
+						$dist = ($e->x - $player->entity->x) * ($e->x - $player->entity->x) + ($e->y - $player->entity->y) * ($e->y - $player->entity->y) + ($e->z - $player->entity->z) * ($e->z - $player->entity->z);
 						$e->handlePlayerSearcher($player, $dist);
 					}
 				}
-				
-				
-				
+
 			}elseif(isset($this->entityListPositioned["$curChunkX $curChunkZ"])){
 				unset($this->entityListPositioned["$curChunkX $curChunkZ"][$k]);
 			}
 		}
-		
+
 		$this->checkSleep();
-		
+
 		if($server->ticks % 100 === 0){
 			$this->mobSpawner->handle();
 		}
-		
-		
+
 		foreach($this->players as $player){
 			foreach($post as $eid){
 				$e = $this->entityList[$eid] ?? false;
@@ -620,7 +615,7 @@ class Level{
 				$player->addEntityMovementUpdateToQueue($e);
 			}
 			$player->sendEntityMovementUpdateQueue();
-			
+
 			foreach($this->queuedBlockUpdates as $ind => $update){
 				$x = $update[0];
 				$y = $update[1];
@@ -632,10 +627,10 @@ class Level{
 			}
 			$player->sendBlockUpdateQueue();
 		}
-		
+
 		$this->queuedBlockUpdates = [];
 	}
-	
+
 	public function isBoundingBoxOnFire(AxisAlignedBB $bb){
 		$minX = floor($bb->minX);
 		$maxX = floor($bb->maxX + 1);
@@ -643,7 +638,7 @@ class Level{
 		$maxY = floor($bb->maxY + 1);
 		$minZ = floor($bb->minZ);
 		$maxZ = floor($bb->maxZ + 1);
-		
+
 		for($x = $minX; $x < $maxX; ++$x){
 			for($y = $minY; $y < $maxY; ++$y){
 				for($z = $minZ; $z < $maxZ; ++$z){
@@ -652,14 +647,14 @@ class Level{
 				}
 			}
 		}
-		
+
 		return false;
 	}
 	public function getEntitiesInAABBOfType(AxisAlignedBB $bb, $class){
-		$minChunkX = ((int)($bb->minX)) >> 4;
-		$minChunkZ = ((int)($bb->minZ)) >> 4;
-		$maxChunkX = ((int)($bb->maxX)) >> 4;
-		$maxChunkZ = ((int)($bb->maxZ)) >> 4;
+		$minChunkX = ((int) ($bb->minX)) >> 4;
+		$minChunkZ = ((int) ($bb->minZ)) >> 4;
+		$maxChunkX = ((int) ($bb->maxX)) >> 4;
+		$maxChunkZ = ((int) ($bb->maxZ)) >> 4;
 		$ents = [];
 		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
 			for($chunkZ = $minChunkZ; $chunkZ <= $maxChunkZ; ++$chunkZ){
@@ -677,14 +672,13 @@ class Level{
 		return $ents;
 	}
 	/**
-	 * @param AxisAlignedBB $bb
 	 * @return Entity[]
 	 */
 	public function getEntitiesInAABB(AxisAlignedBB $bb){
-		$minChunkX = ((int)($bb->minX)) >> 4;
-		$minChunkZ = ((int)($bb->minZ)) >> 4;
-		$maxChunkX = ((int)($bb->maxX)) >> 4;
-		$maxChunkZ = ((int)($bb->maxZ)) >> 4;
+		$minChunkX = ((int) ($bb->minX)) >> 4;
+		$minChunkZ = ((int) ($bb->minZ)) >> 4;
+		$maxChunkX = ((int) ($bb->maxX)) >> 4;
+		$maxChunkZ = ((int) ($bb->maxZ)) >> 4;
 		$ents = [];
 		//TODO also index by chunkY?
 		for($chunkX = $minChunkX; $chunkX <= $maxChunkX; ++$chunkX){
@@ -702,20 +696,20 @@ class Level{
 		}
 		return $ents;
 	}
-	
+
 	public function addBlockToSendQueue($x, $y, $z, $id, $meta){
 		if(!$this->forceDisableBlockQueue){
 			$this->queuedBlockUpdates["$x $y $z"] = [$x, $y, $z, $id, $meta];
 		}
 	}
-	
+
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){
 		if(!isset($this->level) or (($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
 			return false;
 		}
 		$oldID = $this->level->getBlockID($pos->x, $pos->y, $pos->z);
 		$ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata());
-		if($ret === true){ 
+		if($ret === true){
 			if(!($pos instanceof Position)){
 				$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 			}
@@ -731,15 +725,15 @@ class Level{
 				$this->changedBlocks[$i][] = ($block->x & 0xff) << 32 | ($block->y & 0xff) << 24 | ($block->z & 0xff) << 16 | ($block->getID() & 0xff) << 8 | ($block->meta & 0xff);
 				++$this->changedCount[$i];
 			}
-			
+
 			if($tiles === true){
 				$this->server->api->tile->invalidateAll($this, $pos->x, $pos->y, $pos->z);
 			}
-			
+
 			if($update === true){
 				$this->updateNeighborsAt($pos->x, $pos->y, $pos->z, $oldID);
 			}
-			
+
 		}
 		return $ret;
 	}
@@ -857,7 +851,7 @@ class Level{
 		}
 		return new Position($this->level->getData("spawnX"), $this->level->getData("spawnY"), $this->level->getData("spawnZ"), $this);
 	}
-	
+
 	/**
 	 * @param number $x
 	 * @param number $y
@@ -865,15 +859,14 @@ class Level{
 	 * @param boolean $positionfy assign coordinates to block or not
 	 * @return GenericBlock | false if failed
 	 */
-	
+
 	public function getBlockWithoutVector($x, $y, $z, $positionfy = true){
-		$b = $this->level->getBlock((int)$x, (int)$y, (int)$z);
+		$b = $this->level->getBlock((int) $x, (int) $y, (int) $z);
 		return BlockAPI::get($b[0], $b[1], $positionfy ? new Position($x, $y, $z, $this) : false);
 	}
-	
+
 	/**
 	 * Recommended to use {@link getBlockWithoutVector()} if you dont have the vector
-	 * @param Vector3 $pos
 	 * @return Block|false if failed
 	 */
 	public function getBlock(Vector3 $pos){
@@ -922,11 +915,11 @@ class Level{
 			$this->time -= 20 * 13;
 		}
 	}
-	
+
 	public function isTimeStopped(){
 		return $this->stopTime;
 	}
-	
+
 	public function stopTime(){
 		$this->stopTime = true;
 		$this->startCheck = 0;

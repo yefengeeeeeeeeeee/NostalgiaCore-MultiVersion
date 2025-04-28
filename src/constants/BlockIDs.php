@@ -109,7 +109,6 @@ define("SOUL_SAND", 88);
 define("GLOWSTONE", 89);
 define("GLOWSTONE_BLOCK", 89);
 
-
 define("LIT_PUMPKIN", 91);
 define("JACK_O_LANTERN", 91);
 define("CAKE_BLOCK", 92);

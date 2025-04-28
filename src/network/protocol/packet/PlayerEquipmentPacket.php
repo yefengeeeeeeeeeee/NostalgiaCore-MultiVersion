@@ -5,18 +5,18 @@ class PlayerEquipmentPacket extends RakNetDataPacket{
 	public $item;
 	public $meta;
 	public $slot;
-	
+
 	public function pid(){
 		return ProtocolInfo::PLAYER_EQUIPMENT_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->item = $this->getShort();
 		$this->meta = $this->getShort();
 		$this->slot = $this->getSignedByte();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

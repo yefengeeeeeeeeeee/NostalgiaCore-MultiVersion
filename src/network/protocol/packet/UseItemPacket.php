@@ -14,11 +14,11 @@ class UseItemPacket extends RakNetDataPacket{
 	public $posX;
 	public $posY;
 	public $posZ;
-	
+
 	public function pid(){
 		return ProtocolInfo::USE_ITEM_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->x = $this->getInt();
 		$this->y = $this->getInt();
@@ -32,9 +32,9 @@ class UseItemPacket extends RakNetDataPacket{
 		$this->fz = $this->getFloat();
 		$this->posX = $this->getFloat();
 		$this->posY = $this->getFloat();
-		$this->posZ = $this->getFloat();		
+		$this->posZ = $this->getFloat();
 	}
-	
+
 	public function encode(){
 
 	}

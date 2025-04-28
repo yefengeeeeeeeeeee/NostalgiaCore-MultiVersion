@@ -10,7 +10,7 @@ class RCON{
 	 * @var Array[RCONInstance]
 	 */
 	private $workers;
-	
+
 	private $socket, $password, $threads, $clientsPerThread;
 
 	public function __construct($password, $port = 19132, $interface = "0.0.0.0", $threads = 1, $clientsPerThread = 50){
@@ -83,7 +83,7 @@ class RCONInstance extends Thread{
 		$this->maxClients = (int) $maxClients;
 		$this->start();
 	}
-	
+
 	public function close(){
 		$this->stop = true;
 	}
@@ -108,7 +108,7 @@ class RCONInstance extends Thread{
 							}else{
 								socket_set_nonblock($client);
 								socket_set_option($client, SOL_SOCKET, SO_KEEPALIVE, 1);
-								
+
 								$id = $nextClientId++;
 								$clients[$id] = $client;
 								$authenticated[$id] = false;
@@ -121,7 +121,7 @@ class RCONInstance extends Thread{
 							$disconnect[$id] = $sock;
 							continue;
 						}
-						
+
 						switch($packetType){
 							case 3: //Login
 								if($authenticated[$id]){
@@ -160,19 +160,18 @@ class RCONInstance extends Thread{
 					}
 				}
 			}
-			
+
 			foreach($authenticated as $id => $status){
 				if(!isset($disconnect[$id]) and !$authenticated[$id] and $timeouts[$id] < microtime(true)){ //Timeout
 					$disconnect[$id] = $clients[$id];
 				}
 			}
-			
+
 			foreach($disconnect as $id => $client){
 				$this->disconnectClient($client);
 				unset($clients[$id], $authenticated[$id], $timeouts[$id]);
 			}
-			
-			
+
 		}
 		foreach($clients as $client){
 			$this->disconnectClient($client);
@@ -180,7 +179,7 @@ class RCONInstance extends Thread{
 		unset($this->socket, $this->cmd, $this->response, $this->stop);
 		exit(0);
 	}
-	
+
 	private function disconnectClient($client){
 		socket_getpeername($client, $ip, $port);
 		@socket_set_option($client, SOL_SOCKET, SO_LINGER, ["l_onoff" => 1, "l_linger" => 1]);
@@ -190,7 +189,7 @@ class RCONInstance extends Thread{
 		@socket_close($client);
 		console("Disconnected client: /$ip:$port");
 	}
-	
+
 	private function readPacket($client, &$size, &$requestID, &$packetType, &$payload){
 		@socket_set_nonblock($client);
 		$d = @socket_read($client, 4);

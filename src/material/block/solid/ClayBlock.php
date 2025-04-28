@@ -8,8 +8,8 @@ class ClayBlock extends SolidBlock{
 	}
 
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array(CLAY, 0, 4),
-		);
+		return [
+			[CLAY, 0, 4],
+		];
 	}
 }

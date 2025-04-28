@@ -3,7 +3,7 @@
 class DyeItem extends Item{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(DYE, $meta, $count, "Dye");
-		$names = array(
+		$names = [
 			0 => "Inc Sac",
 			1 => "Rose Red",
 			2 => "Cactus Green",
@@ -20,7 +20,7 @@ class DyeItem extends Item{
 			13 => "Magenta Dye",
 			14 => "Orange Dye",
 			15 => "Bone Meal",
-		);
+		];
 		$this->name = $names[$this->meta];
 	}
 }

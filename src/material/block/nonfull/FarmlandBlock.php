@@ -7,27 +7,27 @@ class FarmlandBlock extends TransparentBlock{
 		$this->hardness = 3;
 	}
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array(DIRT, 0, 1),
-		);
+		return [
+			[DIRT, 0, 1],
+		];
 	}
 	public function hasCrops(){
 		//TODO vanilla 0.8.1 detection method
 		$b = $this->getSide(1);
 		return $b->isTransparent && $b->id != 0;
 	}
-	
+
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 1, $z + 1)];
 	}
-	
+
 	public static function fallOn(Level $level, $x, $y, $z, Entity $entity, $fallDistance){
 		$rv = lcg_value();
 		if($rv < ($fallDistance - 0.5)){
 			$level->fastSetBlockUpdate($x, $y, $z, DIRT, 0);
 		}
 	}
-	
+
 	public static function onRandomTick(Level $level, $x, $y, $z){
 		$meta = $level->level->getBlockDamage($x, $y, $z);
 		$b = $level->level->getBlockID($x, $y + 1, $z);
@@ -41,8 +41,7 @@ class FarmlandBlock extends TransparentBlock{
 				$level->fastSetBlockUpdate($x, $y, $z, DIRT, 0, true);
 			}
 		}
-		
-		
+
 	}
 
 	public static function checkWaterStatic(Level $level, $x, $y, $z)
@@ -58,7 +57,7 @@ class FarmlandBlock extends TransparentBlock{
 			}
 		}
 	}
-	
+
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		if(!StaticBlock::getIsTransparent($level->level->getBlockID($x, $y + 1, $z))){
 			$level->fastSetBlockUpdate($x, $y, $z, DIRT, 0, true);

@@ -6,28 +6,28 @@ class WoodBlock extends SolidBlock{
 	const SPRUCE = 1;
 	const BIRCH = 2;
 	const JUNGLE = 3;
-	
+
 	public function __construct($meta = 0){
 		parent::__construct(WOOD, $meta, "Wood");
-		$names = array(
+		$names = [
 			WoodBlock::OAK => "Oak Wood",
 			WoodBlock::SPRUCE => "Spruce Wood",
 			WoodBlock::BIRCH => "Birch Wood",
 			WoodBlock::JUNGLE => "Jungle Wood",
-		);
+		];
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 10;
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		$faces = array(
+		$faces = [
 			0 => 0,
 			1 => 0,
 			2 => 0b1000,
 			3 => 0b1000,
 			4 => 0b0100,
 			5 => 0b0100,
-		);
+		];
 
 		$this->meta = ($this->meta & 0x03) | $faces[$face];
 		$this->level->setBlock($block, $this, true, false, true);
@@ -51,8 +51,8 @@ class WoodBlock extends SolidBlock{
 		}
 	}
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array($this->id, $this->meta & 0x03, 1),
-		);
+		return [
+			[$this->id, $this->meta & 0x03, 1],
+		];
 	}
 }

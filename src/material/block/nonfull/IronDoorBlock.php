@@ -21,14 +21,14 @@ class IronDoorBlock extends DoorBlock{
 			default => 25,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 1){
-			return array(
-				array(IRON_DOOR, 0, 1),
-			);
+			return [
+				[IRON_DOOR, 0, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
 }
