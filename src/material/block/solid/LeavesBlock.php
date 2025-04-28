@@ -22,7 +22,7 @@ class LeavesBlock extends TransparentBlock{
 	}
 
 	public static function createIndex($x, $y, $z){
-		return $x . "." . $y . "." . $z;
+		return $x.".".$y.".".$z;
 	}
 	public static function findLog(Level $level, $x, $y, $z, array $visited, $distance){ //port from newest pocketmine
 		$index = self::createIndex($x, $y, $z);

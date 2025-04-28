@@ -1,6 +1,6 @@
 <?php
 
-class MovingObjectPosition {
+class MovingObjectPosition{
 
 	/** 0 = block, 1 = entity, 2 = none*/
 	public $typeOfHit = 2;
@@ -21,11 +21,11 @@ class MovingObjectPosition {
 	/** @var Entity */
 	public $entityHit = null;
 
-	protected function __construct() {
+	protected function __construct(){
 
 	}
 
-	public function __toString() {
+	public function __toString(){
 		return "MovingObjectPosition: {blockXYZ: {$this->blockX} {$this->blockY} {$this->blockZ}, side: {$this->sideHit} hitVec: {$this->hitVector} entityHit: {$this->entityHit}}";
 	}
 
@@ -37,7 +37,7 @@ class MovingObjectPosition {
 	 *
 	 * @return MovingObjectPosition
 	 */
-	public static function fromBlock($x, $y, $z, $side, Vector3 $hitVector) {
+	public static function fromBlock($x, $y, $z, $side, Vector3 $hitVector){
 		$ob = new MovingObjectPosition;
 		$ob->typeOfHit = 0;
 		$ob->blockX = $x;
@@ -52,7 +52,7 @@ class MovingObjectPosition {
 	 *
 	 * @return MovingObjectPosition
 	 */
-	public static function fromEntity(Entity $entity) {
+	public static function fromEntity(Entity $entity){
 		$ob = new MovingObjectPosition;
 		$ob->typeOfHit = 1;
 		$ob->entityHit = $entity;

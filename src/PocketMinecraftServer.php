@@ -1,69 +1,18 @@
 <?php
 
-class PocketMinecraftServer {
+class PocketMinecraftServer{
 
-	public $tCnt;
-	public $ticks;
-	public $extraprops;
-	public $serverID;
-	public $interface;
-	public $database;
-	public $version;
-	public $invisible;
-	public $tickMeasure;
-	public $preparedSQL;
-	public $seed;
-	public $gamemode;
-	public $name;
-	public $maxClients;
-	public $clients;
-	public $eidCnt;
-	public $custom;
-	public $description;
-	public $motd;
-	public $port;
-	public $saveEnabled;
+	public $tCnt, $ticks;
+	public $extraprops, $serverID, $interface, $database, $version, $invisible, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
 	/**
 	 * @var ServerAPI
 	 */
 	public $api;
-	private $serverip;
-	private $evCnt;
-	private $handCnt;
-	private $events;
-	private $eventsID;
-	private $handlers;
-	private $serverType;
-	private $lastTick;
-	private $memoryStats;
-	private $async = [];
-	private $asyncID = 0;
+	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $memoryStats, $async = [], $asyncID = 0;
 
-	public $doTick;
-
-	public $levelData;
-
-	public $tiles;
-
-	public $entities;
-
-	public $schedule;
-
-	public $scheduleCnt;
-
-	public $whitelist;
-
-	public $spawn;
-
-	public $difficulty;
-
-	public $stop;
-
-	public $asyncThread;
-	public static $FORCE_20_TPS = false;
-	public static $KEEP_CHUNKS_LOADED = true;
-	public static $PACKET_READING_LIMIT = 100;
-	public function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverip = "0.0.0.0") {
+	public $doTick, $levelData, $tiles, $entities, $schedule, $scheduleCnt, $whitelist, $spawn, $difficulty, $stop, $asyncThread;
+	public static $FORCE_20_TPS = false, $KEEP_CHUNKS_LOADED = true, $PACKET_READING_LIMIT = 100;
+	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverip = "0.0.0.0"){
 		$this->port = (int) $port;
 		$this->doTick = true;
 		$this->gamemode = (int) $gamemode;
@@ -77,7 +26,7 @@ class PocketMinecraftServer {
 
 	public static $SAVE_PLAYER_DATA = true;
 
-	private function load() {
+	private function load(){
 		global $dolog;
 		/*if(defined("DEBUG") and DEBUG >= 0){
 			@cli_set_process_title("NostalgiaCore ".MAJOR_VERSION);
@@ -120,7 +69,7 @@ class PocketMinecraftServer {
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, $this->serverip);
 		$this->stop = false;
 		$this->ticks = 0;
-		if(!defined("NO_THREADS")) {
+		if(!defined("NO_THREADS")){
 			$this->asyncThread = new AsyncMultipleQueue();
 		}
 		console("[INFO] Loading extra.properties...");
@@ -157,24 +106,24 @@ class PocketMinecraftServer {
 		MobController::$ADVANCED = $this->extraprops->get("experimental-mob-ai");
 		Explosion::$enableExplosions = $this->extraprops->get("enable-explosions");
 		NetherReactorBlock::$enableReactor = $this->extraprops->get("enable-nether-reactor");
-		if(self::$FORCE_20_TPS) {
+		if(self::$FORCE_20_TPS){
 			ConsoleAPI::warn("Forcing 20 tps. This may result in higher CPU usage!");
 		}
-		if($this->extraprops->get("discord-msg")) {
-			if($this->extraprops->get("discord-webhook-url") !== "none") {
+		if($this->extraprops->get("discord-msg")){
+			if($this->extraprops->get("discord-webhook-url") !== "none"){
 				console("[INFO] Discord Logger is enabled.");
-			} else {
+			}else{
 				console("[WARNING] Discord Logger is enabled in extra.properties,");
 				console("[WARNING] but you didn't put the webhook url, so it won't work.");
 			}
-		} elseif($this->extraprops->get("version") == null) {
+		}elseif($this->extraprops->get("version") == null){
 			console("[WARNING] Your extra.properties file is corrupted!");
 			console("[WARNING] To fix it - just remove it! Server will generate it again automatically.");
 		}
 		$dolog = $this->extraprops->get("save-console-data");
 	}
 
-	public function onShutdown() {
+	public function onShutdown(){
 		console("[INFO] Saving...");
 		$save = $this->saveEnabled;
 		$this->saveEnabled = true;
@@ -182,7 +131,7 @@ class PocketMinecraftServer {
 		$this->saveEnabled = $save;
 	}
 
-	public function startDatabase() {
+	public function startDatabase(){
 		$this->preparedSQL = new stdClass();
 		$this->preparedSQL->entity = new stdClass();
 		$this->database = new SQLite3(":memory:");
@@ -204,16 +153,16 @@ class PocketMinecraftServer {
 		$this->preparedSQL->entity->setLevel = $this->database->prepare("UPDATE entities SET level = :level WHERE EID = :eid ;");
 	}
 
-	public function query($sql, $fetch = false) {
+	public function query($sql, $fetch = false){
 		$result = $this->database->query($sql) or console("[ERROR] [SQL Error] " . $this->database->lastErrorMsg() . ". Query: " . $sql, true, true, 0);
-		if($fetch === true and ($result instanceof SQLite3Result)) {
+		if($fetch === true and ($result instanceof SQLite3Result)){
 			$result = $result->fetchArray(SQLITE3_ASSOC);
 		}
 		return $result;
 	}
 
-	public function setType($type = "normal") {
-		switch(trim(strtolower($type))) {
+	public function setType($type = "normal"){
+		switch(trim(strtolower($type))){
 			case "normal":
 			case "demo":
 				$this->serverType = "MCCPP;Demo;";
@@ -224,9 +173,9 @@ class PocketMinecraftServer {
 		}
 	}
 
-	public function titleTick() {
+	public function titleTick(){
 		$time = microtime(true);
-		if(defined("DEBUG") and DEBUG >= 0) {
+		if(defined("DEBUG") and DEBUG >= 0){
 			//echo "\x1b]0;NostalgiaCore " . MAJOR_VERSION . " | Online " . count($this->clients) . "/" . $this->maxClients . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "MB | U " . round(($this->interface->bandwidth[1] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " D " . round(($this->interface->bandwidth[0] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " kB/s | TPS " . $this->getTPS() . "\x07";
 		}
 
@@ -236,18 +185,18 @@ class PocketMinecraftServer {
 	/**
 	 * @return float
 	 */
-	public function getTPS() {
+	public function getTPS(){
 		$v = array_values($this->tickMeasure);
 		$divval = ($v[39] - $v[0]);
-		if($divval === 0) {
+		if($divval === 0){
 			return 0;
 		}
 		$tps = 40 / $divval;
 		return round($tps, 4);
 	}
 
-	public function checkTicks() {
-		if($this->getTPS() < 12) {
+	public function checkTicks(){
+		if($this->getTPS() < 12){
 			console("[WARNING] Can't keep up! Is the server overloaded?");
 		}
 	}
@@ -255,14 +204,14 @@ class PocketMinecraftServer {
 	/**
 	 * @param string $reason
 	 */
-	public function close($reason = "server stop") {
+	public function close($reason = "server stop"){
 		$this->onShutdown();
-		if($this->stop !== true) {
-			if(is_int($reason)) {
+		if($this->stop !== true){
+			if(is_int($reason)){
 				$reason = "signal stop";
 			}
-			if(($this->api instanceof ServerAPI) === true) {
-				if(($this->api->chat instanceof ChatAPI) === true) {
+			if(($this->api instanceof ServerAPI) === true){
+				if(($this->api->chat instanceof ChatAPI) === true){
 					$this->api->chat->send(false, "Stopping server...");
 					self::$_tmp = new StopMessageThread($this, "[INFO] Stopping server..."); //broadcast didnt want to send message to discord for some reason
 				}
@@ -270,8 +219,8 @@ class PocketMinecraftServer {
 			$this->stop = true;
 			$this->trigger("server.close", $reason);
 			$this->interface->close();
-			if(!defined("NO_THREADS")) {
-				$this->asyncThread->synchronized(function ($t) {
+			if(!defined("NO_THREADS")){
+				$this->asyncThread->synchronized(function ($t){
 					$t->stop = true;
 					$t->notify();
 				}, $this->asyncThread);
@@ -280,8 +229,8 @@ class PocketMinecraftServer {
 		release_lock();
 	}
 
-	public function send2Discord($msg) {
-		if($this->extraprops->get("discord-msg") and $this->extraprops->get("discord-webhook-url") !== "none") {
+	public function send2Discord($msg){
+		if($this->extraprops->get("discord-msg") and $this->extraprops->get("discord-webhook-url") !== "none"){
 			$url = $this->extraprops->get("discord-webhook-url");
 			$name = $this->extraprops->get("discord-bot-name");
 			$this->asyncOperation(ASYNC_CURL_POST, [
@@ -294,15 +243,15 @@ class PocketMinecraftServer {
 		}
 	}
 
-	public function asyncOperation($type, array $data, callable $callable = null) {
-		if(defined("NO_THREADS")) {
+	public function asyncOperation($type, array $data, callable $callable = null){
+		if(defined("NO_THREADS")){
 			return false;
 		}
 		$d = "";
 		$type = (int) $type;
-		switch($type) {
+		switch($type){
 			case ASYNC_CURL_GET:
-				if(isset($data["headers"])) {
+				if(isset($data["headers"])){
 					$jsstr = json_encode($data["headers"]);
 				}
 				$d .= Utils::writeShort(strlen($data["url"])) . $data["url"] . (isset($data["timeout"]) ? Utils::writeShort($data["timeout"]) : Utils::writeShort(10)) . (isset($data["headers"]) ? Utils::writeShort(strlen($jsstr)) . $jsstr : Utils::writeShort(1) . " ");
@@ -310,7 +259,7 @@ class PocketMinecraftServer {
 			case ASYNC_CURL_POST:
 				$d .= Utils::writeShort(strlen($data["url"])) . $data["url"] . (isset($data["timeout"]) ? Utils::writeShort($data["timeout"]) : Utils::writeShort(10));
 				$d .= Utils::writeShort(count($data["data"]));
-				foreach($data["data"] as $key => $value) {
+				foreach($data["data"] as $key => $value){
 					$d .= Utils::writeShort(strlen($key)) . $key . Utils::writeInt(strlen($value)) . $value;
 				}
 				break;
@@ -323,55 +272,55 @@ class PocketMinecraftServer {
 		return $ID;
 	}
 
-	public function trigger($event, $data = "") {
-		if(isset($this->events[$event])) {
-			foreach($this->events[$event] as $evid => $ev) {
-				if(!is_callable($ev)) {
+	public function trigger($event, $data = ""){
+		if(isset($this->events[$event])){
+			foreach($this->events[$event] as $evid => $ev){
+				if(!is_callable($ev)){
 					$this->deleteEvent($evid);
 					continue;
 				}
-				if(is_array($ev)) {
+				if(is_array($ev)){
 					$method = $ev[1];
 					$ev[0]->$method($data, $event);
-				} else {
+				}else{
 					$ev($data, $event);
 				}
 			}
-		} elseif(isset(Deprecation::$events[$event])) {
+		}elseif(isset(Deprecation::$events[$event])){
 			$sub = "";
-			if(Deprecation::$events[$event] !== false) {
+			if(Deprecation::$events[$event] !== false){
 				$sub = " Substitute \"" . Deprecation::$events[$event] . "\" found.";
 			}
 			console("[ERROR] Event \"$event\" has been deprecated.$sub [Trigger]");
 		}
 	}
 
-	public function deleteEvent($id) {
+	public function deleteEvent($id){
 		$id = (int) $id;
-		if(isset($this->eventsID[$id])) {
+		if(isset($this->eventsID[$id])){
 			$ev = $this->eventsID[$id];
 			$this->eventsID[$id] = null;
 			unset($this->eventsID[$id]);
 			$this->events[$ev][$id] = null;
 			unset($this->events[$ev][$id]);
-			if(count($this->events[$ev]) === 0) {
+			if(count($this->events[$ev]) === 0){
 				unset($this->events[$ev]);
 			}
 		}
 	}
 
-	public function asyncOperationChecker() {
-		if(defined("NO_THREADS")) {
+	public function asyncOperationChecker(){
+		if(defined("NO_THREADS")){
 			return false;
 		}
-		if(isset($this->asyncThread->output[5])) {
+		if(isset($this->asyncThread->output[5])){
 			$offset = 0;
 			$ID = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
 			$offset += 4;
 			$type = Utils::readShort(substr($this->asyncThread->output, $offset, 2));
 			$offset += 2;
 			$data = [];
-			switch($type) {
+			switch($type){
 				case ASYNC_CURL_GET:
 				case ASYNC_CURL_POST:
 					$len = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
@@ -383,11 +332,11 @@ class PocketMinecraftServer {
 			}
 
 			$this->asyncThread->output = substr($this->asyncThread->output, $offset);
-			if(isset($this->async[$ID]) and $this->async[$ID] !== null and is_callable($this->async[$ID])) {
-				if(is_array($this->async[$ID])) {
+			if(isset($this->async[$ID]) and $this->async[$ID] !== null and is_callable($this->async[$ID])){
+				if(is_array($this->async[$ID])){
 					$method = $this->async[$ID][1];
 					$result = $this->async[$ID][0]->$method($data, $type, $ID);
-				} else {
+				}else{
 					$result = $this->async[$ID]($data, $type, $ID);
 				}
 			}
@@ -401,12 +350,12 @@ class PocketMinecraftServer {
 	 *
 	 * @return boolean
 	 */
-	public function addHandler($event, callable $callable, $priority = 5) {
-		if(!is_callable($callable)) {
+	public function addHandler($event, callable $callable, $priority = 5){
+		if(!is_callable($callable)){
 			return false;
-		} elseif(isset(Deprecation::$events[$event])) {
+		}elseif(isset(Deprecation::$events[$event])){
 			$sub = "";
-			if(Deprecation::$events[$event] !== false) {
+			if(Deprecation::$events[$event] !== false){
 				$sub = " Substitute \"" . Deprecation::$events[$event] . "\" found.";
 			}
 			console("[ERROR] Event \"$event\" has been deprecated.$sub [Adding handle to " . (is_array($callable) ? get_class($callable[0]) . "::" . $callable[1] : $callable) . "]");
@@ -419,64 +368,64 @@ class PocketMinecraftServer {
 		return $hnid;
 	}
 
-	public function dhandle($e, $d) {
+	public function dhandle($e, $d){
 		return $this->handle($e, $d);
 	}
 
-	public function handle($event, &$data) {
+	public function handle($event, &$data){
 		$this->preparedSQL->selectHandlers->reset();
 		$this->preparedSQL->selectHandlers->clear();
 		$this->preparedSQL->selectHandlers->bindValue(":name", $event, SQLITE3_TEXT);
 		$handlers = $this->preparedSQL->selectHandlers->execute();
 		$result = null;
-		if($handlers instanceof SQLite3Result) {
+		if($handlers instanceof SQLite3Result){
 			$call = [];
-			while(($hn = $handlers->fetchArray(SQLITE3_ASSOC)) !== false) {
+			while(($hn = $handlers->fetchArray(SQLITE3_ASSOC)) !== false){
 				$call[(int) $hn["ID"]] = true;
 			}
 			$handlers->finalize();
-			foreach($call as $hnid => $boolean) {
-				if($result !== false and $result !== true) {
+			foreach($call as $hnid => $boolean){
+				if($result !== false and $result !== true){
 					$called[$hnid] = true;
 					$handler = $this->handlers[$hnid];
-					if(is_array($handler)) {
+					if(is_array($handler)){
 						$method = $handler[1];
 						$result = $handler[0]->$method($data, $event);
-					} else {
+					}else{
 						$result = $handler($data, $event);
 					}
-				} else {
+				}else{
 					break;
 				}
 			}
-		} elseif(isset(Deprecation::$events[$event])) {
+		}elseif(isset(Deprecation::$events[$event])){
 			$sub = "";
-			if(Deprecation::$events[$event] !== false) {
+			if(Deprecation::$events[$event] !== false){
 				$sub = " Substitute \"" . Deprecation::$events[$event] . "\" found.";
 			}
 			console("[ERROR] Event \"$event\" has been deprecated.$sub [Handler]");
 		}
 
-		if($result !== false) {
+		if($result !== false){
 			$this->trigger($event, $data);
 		}
 		return $result;
 	}
 
-	public function eventHandler($data, $event) {
-		switch($event) {
+	public function eventHandler($data, $event){
+		switch($event){
 
 		}
 	}
 
-	public function init() {
+	public function init(){
 		register_tick_function([$this, "tick"]);
 		declare(ticks=5000); //Minimum TPS for main thread locks
 
 		$this->loadEvents();
 		register_shutdown_function([$this, "dumpError"]);
 		register_shutdown_function([$this, "close"]);
-		if(function_exists("pcntl_signal")) {
+		if(function_exists("pcntl_signal")){
 			pcntl_signal(SIGTERM, [$this, "close"]);
 			pcntl_signal(SIGINT, [$this, "close"]);
 			pcntl_signal(SIGHUP, [$this, "close"]);
@@ -488,8 +437,8 @@ class PocketMinecraftServer {
 		$this->process();
 	}
 
-	public function loadEvents() {
-		if(ENABLE_ANSI === true) {
+	public function loadEvents(){
+		if(ENABLE_ANSI === true){
 			$this->schedule(30, [$this, "titleTick"], [], true);
 		}
 		$this->schedule(20 * 15, [$this, "checkTicks"], [], true);
@@ -497,8 +446,8 @@ class PocketMinecraftServer {
 		$this->schedule(20, [$this, "asyncOperationChecker"], [], true);
 	}
 
-	public function schedule($ticks, callable $callback, $data = [], $repeat = false, $eventName = "server.schedule") {
-		if(!is_callable($callback)) {
+	public function schedule($ticks, callable $callback, $data = [], $repeat = false, $eventName = "server.schedule"){
+		if(!is_callable($callback)){
 			return false;
 		}
 
@@ -511,8 +460,8 @@ class PocketMinecraftServer {
 	/**
 	 * @return string
 	 */
-	public function getGamemode() {
-		switch($this->gamemode) {
+	public function getGamemode(){
+		switch($this->gamemode){
 			case SURVIVAL:
 				return "survival";
 			case CREATIVE:
@@ -524,16 +473,17 @@ class PocketMinecraftServer {
 		}
 	}
 
-	public function process() {
+	public function process()
+	{
 		$lastLoop = 0;
-		if(self::$FORCE_20_TPS) {
-			while($this->stop === false) {
+		if(self::$FORCE_20_TPS){
+			while($this->stop === false){
 				$packetcnt = 0;
-				while($packet = $this->interface->readPacket()) {
+				while($packet = $this->interface->readPacket()){
 					if($packet instanceof Packet) {
 						$this->packetHandler($packet);
-						if(++$packetcnt > self::$PACKET_READING_LIMIT) {
-							ConsoleAPI::warn("Reading more than " . self::$PACKET_READING_LIMIT . " packets per tick! Forcing ticking!");
+						if(++$packetcnt > self::$PACKET_READING_LIMIT){
+							ConsoleAPI::warn("Reading more than ".self::$PACKET_READING_LIMIT." packets per tick! Forcing ticking!");
 							break;
 						}
 					}
@@ -541,30 +491,30 @@ class PocketMinecraftServer {
 
 				$this->tick();
 			}
-		} else {
-			while($this->stop === false) {
+		}else{
+			while($this->stop === false){
 				$packetcnt = 0;
 				startReadingAgain:
 				$packet = $this->interface->readPacket();
-				if($packet instanceof Packet) {
+				if($packet instanceof Packet){
 					$this->packetHandler($packet);
 					$lastLoop = 0;
-					if(++$packetcnt > self::$PACKET_READING_LIMIT) {
-						ConsoleAPI::warn("Reading more than " . self::$PACKET_READING_LIMIT . " packets per tick! Forcing ticking!");
-					} else {
+					if(++$packetcnt > self::$PACKET_READING_LIMIT){
+						ConsoleAPI::warn("Reading more than ".self::$PACKET_READING_LIMIT." packets per tick! Forcing ticking!");
+					}else{
 						goto startReadingAgain;
 					}
-				} elseif($this->tick() > 0) {
+				} elseif($this->tick() > 0){
 					$lastLoop = 0;
-				} else {
+				} else{
 					++$lastLoop;
-					if($lastLoop < 16) {
+					if($lastLoop < 16){
 						usleep(1);
-					} elseif($lastLoop < 128) {
+					} elseif($lastLoop < 128){
 						usleep(100);
-					} elseif($lastLoop < 256) {
+					} elseif($lastLoop < 256){
 						usleep(512);
-					} else {
+					} else{
 						usleep(10000);
 					}
 				}
@@ -574,19 +524,19 @@ class PocketMinecraftServer {
 
 	}
 
-	public function packetHandler(Packet $packet) {
+	public function packetHandler(Packet $packet){
 		$data = &$packet;
 		$CID = PocketMinecraftServer::clientID($packet->ip, $packet->port);
-		if(isset($this->clients[$CID])) {
+		if(isset($this->clients[$CID])){
 			$this->clients[$CID]->handlePacket($packet);
-		} else {
-			if($this->handle("server.noauthpacket." . $packet->pid(), $packet) === false) {
+		}else{
+			if($this->handle("server.noauthpacket." . $packet->pid(), $packet) === false){
 				return;
 			}
-			switch($packet->pid()) {
+			switch($packet->pid()){
 				case RakNetInfo::UNCONNECTED_PING:
 				case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
-					if($this->invisible === true) {
+					if($this->invisible === true){
 						$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
 						$pk->pingID = $packet->pingID;
 						$pk->serverID = $this->serverID;
@@ -596,11 +546,11 @@ class PocketMinecraftServer {
 						$this->send($pk);
 						break;
 					}
-					if(!isset($this->custom["times_" . $CID])) {
+					if(!isset($this->custom["times_" . $CID])){
 						$this->custom["times_" . $CID] = 0;
 					}
 					$ln = 15;
-					if($this->description == "" or !str_ends_with($this->description, " ")) {
+					if($this->description == "" or !str_ends_with($this->description, " ")){
 						$this->description .= " ";
 					}
 					$txt = substr($this->description, $this->custom["times_" . $CID], $ln);
@@ -615,14 +565,14 @@ class PocketMinecraftServer {
 					$this->custom["times_" . $CID] = ($this->custom["times_" . $CID] + 1) % strlen($this->description);
 					break;
 				case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
-					if($packet->structure !== RakNetInfo::STRUCTURE) {
+					if($packet->structure !== RakNetInfo::STRUCTURE){
 						console("[DEBUG] Incorrect structure #" . $packet->structure . " from " . $packet->ip . ":" . $packet->port, true, true, 2);
 						$pk = new RakNetPacket(RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION);
 						$pk->serverID = $this->serverID;
 						$pk->ip = $packet->ip;
 						$pk->port = $packet->port;
 						$this->send($pk);
-					} else {
+					}else{
 						$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_1);
 						$pk->serverID = $this->serverID;
 						$pk->mtuSize = strlen($packet->buffer);
@@ -632,7 +582,7 @@ class PocketMinecraftServer {
 					}
 					break;
 				case RakNetInfo::OPEN_CONNECTION_REQUEST_2:
-					if($this->invisible === true) {
+					if($this->invisible === true){
 						break;
 					}
 
@@ -648,30 +598,30 @@ class PocketMinecraftServer {
 		}
 	}
 
-	public static function clientID($ip, $port) {
+	public static function clientID($ip, $port){
 		return crc32($ip . $port) ^ crc32($port . $ip . BOOTUP_RANDOM);
 		//return $ip . ":" . $port;
 	}
 
-	public function send(Packet $packet) {
+	public function send(Packet $packet){
 		return $this->interface->writePacket($packet);
 	}
 
-	public function tick() {
+	public function tick(){
 		$time = microtime(true);
-		if($this->lastTick <= ($time - 0.05)) {
+		if($this->lastTick <= ($time - 0.05)){
 			$this->tickMeasure[] = $this->lastTick = $time;
 			unset($this->tickMeasure[key($this->tickMeasure)]);
 			++$this->ticks;
 
-			foreach($this->clients as $client) {
+			foreach($this->clients as $client){
 				$client->handlePacketQueues();
-				if($this->ticks % 40 == 0) { //2s
+				if($this->ticks % 40 == 0){ //2s
 					$client->sendPing();
 				}
 			}
 
-			foreach($this->api->level->levels as $l) {
+			foreach($this->api->level->levels as $l){
 				$l->onTick($this, $time);
 			}
 			$r = $this->tickerFunction($time);
@@ -680,34 +630,34 @@ class PocketMinecraftServer {
 		return 0;
 	}
 
-	public function tickerFunction($time) {
+	public function tickerFunction($time){
 		//actions that repeat every x time will go here
 		$this->preparedSQL->selectActions->reset();
 		$this->preparedSQL->selectActions->bindValue(":time", $time, SQLITE3_FLOAT);
 		$actions = $this->preparedSQL->selectActions->execute();
 
 		$actionCount = 0;
-		if($actions instanceof SQLite3Result) {
-			while(($action = $actions->fetchArray(SQLITE3_ASSOC)) !== false) {
+		if($actions instanceof SQLite3Result){
+			while(($action = $actions->fetchArray(SQLITE3_ASSOC)) !== false){
 				$cid = $action["ID"];
 				$this->preparedSQL->updateAction->reset();
 				$this->preparedSQL->updateAction->bindValue(":time", $time, SQLITE3_FLOAT);
 				$this->preparedSQL->updateAction->bindValue(":id", $cid, SQLITE3_INTEGER);
 				$this->preparedSQL->updateAction->execute();
-				if(isset($this->schedule[$cid]) && is_array($this->schedule[$cid]) && isset($this->schedule[$cid][0]) && is_callable($this->schedule[$cid][0])) {
+				if(isset($this->schedule[$cid]) && is_array($this->schedule[$cid]) && isset($this->schedule[$cid][0]) && is_callable($this->schedule[$cid][0])){
 					++$actionCount;
-					try {
-						$return = @call_user_func($this->schedule[$cid][0] ?? function () {}, $this->schedule[$cid][1], $this->schedule[$cid][2]); //somehow args can be null
-					} catch(TypeError $e) {
-						$m = $e->getMessage() . "\nStack trace:\n" . $e->getTraceAsString();
+					try{
+						$return = @call_user_func($this->schedule[$cid][0] ?? function(){}, $this->schedule[$cid][1], $this->schedule[$cid][2]); //somehow args can be null
+					}catch(TypeError $e){
+						$m = $e->getMessage()."\nStack trace:\n".$e->getTraceAsString();
 						ConsoleAPI::error($m);
 						$return = false;
 					}
-				} else {
+				}else{
 					$return = false;
 				}
 
-				if($action["repeat"] == 0 or $return === false) {
+				if($action["repeat"] == 0 or $return === false){
 					$this->query("DELETE FROM actions WHERE ID = " . $action["ID"] . ";");
 					$this->schedule[$cid] = null;
 					unset($this->schedule[$cid]);
@@ -718,8 +668,8 @@ class PocketMinecraftServer {
 		return $actionCount;
 	}
 
-	public function dumpError() {
-		if($this->stop === true) {
+	public function dumpError(){
+		if($this->stop === true){
 			return;
 		}
 		ini_set("memory_limit", "-1"); //Fix error dump not dumped on memory problems
@@ -745,18 +695,18 @@ class PocketMinecraftServer {
 		];
 		$er["type"] = $errorConversion[$er["type"]] ?? $er["type"];
 		$dump .= "Error: " . var_export($er, true) . "\r\n\r\n";
-		if(stripos($er["file"], "plugin") !== false) {
+		if(stripos($er["file"], "plugin") !== false){
 			$dump .= "THIS ERROR WAS CAUSED BY A PLUGIN. REPORT IT TO THE PLUGIN DEVELOPER.\r\n";
 		}
 
 		$dump .= "Code: \r\n";
 		$file = @file($er["file"], FILE_IGNORE_NEW_LINES);
-		for($l = max(0, $er["line"] - 10); $l < $er["line"] + 10; ++$l) {
+		for($l = max(0, $er["line"] - 10); $l < $er["line"] + 10; ++$l){
 			$dump .= "[" . ($l + 1) . "] " . @$file[$l] . "\r\n";
 		}
 		$dump .= "\r\n\r\n";
 		$dump .= "Backtrace: \r\n";
-		foreach(getTrace() as $line) {
+		foreach(getTrace() as $line){
 			$dump .= "$line\r\n";
 		}
 		$dump .= "\r\n\r\n";
@@ -771,21 +721,21 @@ class PocketMinecraftServer {
 		global $arguments;
 		$dump .= "Parameters: " . var_export($arguments, true) . "\r\n\r\n\r\n";
 		$p = $this->api->getProperties();
-		if($p["rcon.password"] != "") {
+		if($p["rcon.password"] != ""){
 			$p["rcon.password"] = "******";
 		}
 		$dump .= "server.properties: " . var_export($p, true) . "\r\n\r\n\r\n";
-		if($this->api->plugin instanceof PluginAPI) {
+		if($this->api->plugin instanceof PluginAPI){
 			$plist = $this->api->plugin->getList();
 			$dump .= "Loaded plugins:\r\n";
-			foreach($plist as $p) {
+			foreach($plist as $p){
 				$dump .= $p["name"] . " " . $p["version"] . " by " . $p["author"] . "\r\n";
 			}
 			$dump .= "\r\n\r\n";
 		}
 
 		$extensions = [];
-		foreach(get_loaded_extensions() as $ext) {
+		foreach(get_loaded_extensions() as $ext){
 			$extensions[$ext] = phpversion($ext);
 		}
 
@@ -806,7 +756,7 @@ class PocketMinecraftServer {
 		console("[SEVERE] Please submit the \"{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
 	}
 
-	public function debugInfo($console = false) {
+	public function debugInfo($console = false){
 		$info = [];
 		$info["tps"] = $this->getTPS();
 		$info["memory_usage"] = round((memory_get_usage() / 1024) / 1024, 2) . "MB";
@@ -820,33 +770,33 @@ class PocketMinecraftServer {
 		$info["actions"] = $info["actions"]["count"];
 		$info["garbage"] = gc_collect_cycles();
 		$this->handle("server.debug", $info);
-		if($console === true) {
+		if($console === true){
 			console("[INFO] TPS: " . $info["tps"] . ", Memory usage: " . $info["memory_usage"] . " (Peak " . $info["memory_peak_usage"] . "), Entities: " . $info["entities"] . ", Events: " . $info["events"] . ", Handlers: " . $info["handlers"] . ", Actions: " . $info["actions"] . ", Garbage: " . $info["garbage"], true, true);
 		}
 		return $info;
 	}
 
-	public function checkMemory() {
+	public function checkMemory(){
 		$info = $this->debugInfo();
 		$data = $info["memory_usage"] . "," . $info["players"] . "," . $info["entities"];
 		$i = count($this->memoryStats) - 1;
-		if($i < 0 or $this->memoryStats[$i] !== $data) {
+		if($i < 0 or $this->memoryStats[$i] !== $data){
 			$this->memoryStats[] = $data;
 		}
 	}
 
-	public function event($event, callable $func) {
-		if(!is_callable($func)) {
+	public function event($event, callable $func){
+		if(!is_callable($func)){
 			return false;
-		} elseif(isset(Deprecation::$events[$event])) {
+		}elseif(isset(Deprecation::$events[$event])){
 			$sub = "";
-			if(Deprecation::$events[$event] !== false) {
+			if(Deprecation::$events[$event] !== false){
 				$sub = " Substitute \"" . Deprecation::$events[$event] . "\" found.";
 			}
 			console("[ERROR] Event \"$event\" has been deprecated.$sub [Attach to " . (is_array($func) ? get_class($func[0]) . "::" . $func[1] : $func) . "]");
 		}
 		$evid = $this->evCnt++;
-		if(!isset($this->events[$event])) {
+		if(!isset($this->events[$event])){
 			$this->events[$event] = [];
 		}
 		$this->events[$event][$evid] = $func;

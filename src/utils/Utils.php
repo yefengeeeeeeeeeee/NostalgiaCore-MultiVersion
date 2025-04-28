@@ -186,7 +186,7 @@ class Utils{
 		$arr = json_decode($json);
 		$rarr = [];
 		foreach ($arr as $key => $value){
-			$rarr[] = $key . ": " . $value;
+			$rarr[] = $key.": ".$value;
 		}
 		return $rarr;
 	}

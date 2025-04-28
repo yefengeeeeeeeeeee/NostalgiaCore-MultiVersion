@@ -1,6 +1,6 @@
 <?php
 
-class FuelData {
+class FuelData{
 
 	public static $duration = [
 		COAL => 80,

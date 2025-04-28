@@ -1,5 +1,5 @@
 <?php
 
-interface OtherPluginRequirement {
+interface OtherPluginRequirement{
 	public function getRequiredPlugins();
 }

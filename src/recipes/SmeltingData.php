@@ -1,6 +1,6 @@
 <?php
 
-class SmeltingData {
+class SmeltingData{
 
 	public static $product = [
 		COBBLESTONE => [STONE, 0],

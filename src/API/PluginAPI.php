@@ -139,8 +139,8 @@ class PluginAPI extends stdClass{
 				if($ext2 === "phar"){
 					++$pharCnt;
 					$pluginInfo = []; //TODO: A PluginInfo class?
-					$filePath = $this->pluginsPath() . $file;
-					$p = new Phar($this->pluginsPath() . $file, 0);
+					$filePath = $this->pluginsPath().$file;
+					$p = new Phar($this->pluginsPath().$file, 0);
 					foreach (new RecursiveIteratorIterator($p) as $file) {
 						$name = $file->getFileName();
 						$content = file_get_contents($file->getPathName());
@@ -149,7 +149,7 @@ class PluginAPI extends stdClass{
 							break;
 						}
 					}
-					console("[INFO] Loading PHAR plugin \"" . FORMAT_GREEN . $pluginInfo["name"] . FORMAT_RESET . "\" " . FORMAT_AQUA . $pluginInfo["version"] . FORMAT_RESET . " by " . FORMAT_AQUA . $pluginInfo["author"] . FORMAT_RESET);
+					console("[INFO] Loading PHAR plugin \"".FORMAT_GREEN.$pluginInfo["name"].FORMAT_RESET."\" ".FORMAT_AQUA.$pluginInfo["version"].FORMAT_RESET." by ".FORMAT_AQUA.$pluginInfo["author"].FORMAT_RESET);
 
 					$aver = CURRENT_API_VERSION;
 					if(!in_array((string) CURRENT_API_VERSION, $pluginInfo["api"])){
@@ -159,13 +159,13 @@ class PluginAPI extends stdClass{
 					}
 
 					$phr = "phar://$filePath/";
-					include($phr . "/src/" . $pluginInfo["classLoader"]);
+					include($phr."/src/".$pluginInfo["classLoader"]);
 					$class = $pluginInfo["CLClass"];
 					$loader = new $class();
 					$loader->loadAll($phr);
 
 					$pluginName = PharUtils::getNameSpaceClass($pluginInfo["mainFile"]);
-					include($phr . "/src/" . $pluginInfo["mainFile"]);
+					include($phr."/src/".$pluginInfo["mainFile"]);
 					$plugin = new $pluginName($this->server->api, false);
 					if(!($plugin instanceof Plugin)){
 						console("[ERROR] Plugin \"" . $pluginInfo["name"] . "\" doesn't use the Plugin Interface");

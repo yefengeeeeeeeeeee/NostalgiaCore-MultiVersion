@@ -36,7 +36,7 @@ class EntityAPI{
 		$output = "";
 		switch($cmd){
 			case "entcnt":
-				return "Total amount of entities: " . count($this->entities);
+				return "Total amount of entities: ". count($this->entities);
 			case "summon":
 			case "spawnmob":
 				if(!($issuer instanceof Player)){
@@ -81,7 +81,7 @@ class EntityAPI{
 						$this->summon($pos, ENTITY_MOB, $type, ["IsBaby" => $isBaby]);
 					}
 
-					return "$amount " . ($isBaby ? "Baby " : "") . "$mobName(s) spawned in $x, $y, $z.";
+					return "$amount ".($isBaby ? "Baby " : "")."$mobName(s) spawned in $x, $y, $z.";
 				}
 				elseif(strtolower($args[1]) == "baby"){//summon <mob> [baby]
 					$this->summon($pos, ENTITY_MOB, $type, ["IsBaby" => 1]);

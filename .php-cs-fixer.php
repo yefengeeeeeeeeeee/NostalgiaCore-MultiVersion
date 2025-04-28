@@ -17,9 +17,6 @@ return (new PhpCsFixer\Config)
 		'cast_spaces' => [
 			'space' => 'single'
 		],
-		'concat_space' => [
-			'spacing' => 'one'
-		],
 		'elseif' => true,
 		'indentation_type' => true,
 		'no_closing_tag' => true,

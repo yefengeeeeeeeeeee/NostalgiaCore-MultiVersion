@@ -235,7 +235,7 @@ class BlockAPI{
 					break;
 				}
 				$itemheld = $issuer->getSlot($issuer->slot);
-				$output = self::getItem($itemheld->getID(), $itemheld->getMetadata()) . "";
+				$output = self::getItem($itemheld->getID(), $itemheld->getMetadata())."";
 				break;
 			case "setblock":
 				if(!($issuer instanceof Player)){
@@ -289,7 +289,7 @@ class BlockAPI{
 					break;
 				}else{
 					$level->setBlock($pos, $block, true, false, true);
-					$output .= "Placed $block in " . implode(", ", $coords) . ", w:" . $level->getName();
+					$output .= "Placed $block in ".implode(", ", $coords).", w:".$level->getName();
 				}
 				break;
 			case "give":
@@ -311,7 +311,7 @@ class BlockAPI{
 					}
 
 					$player->addItem($item->getID(), $item->getMetadata(), $item->count);
-					$output .= "Giving " . $item->count . " of " . $item->getName() . " (" . $item->getID() . ":" . $item->getMetadata() . ") to " . $player->username;
+					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$player->username;
 					break;
 				}else{
 					$item = self::fromString($args[0] ?? "");
@@ -334,7 +334,7 @@ class BlockAPI{
 					}
 
 					$issuer->addItem($item->getID(), $item->getMetadata(), $item->count);
-					$output .= "Giving " . $item->count . " of " . $item->getName() . " (" . $item->getID() . ":" . $item->getMetadata() . ") to " . $issuer->username;
+					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$issuer->username;
 					break;
 				}
 		}

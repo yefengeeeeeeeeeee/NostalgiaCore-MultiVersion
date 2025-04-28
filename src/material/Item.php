@@ -294,7 +294,7 @@ class Item{
 	}
 
 	public function __toString(){
-		return "Item " . $this->name . " (" . $this->id . ":" . $this->meta . ")";
+		return "Item ". $this->name ." (".$this->id.":".$this->meta.")";
 	}
 
 	public function getDamageAgainstOf($e){

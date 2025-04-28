@@ -292,7 +292,7 @@ abstract class Block extends Position{
 	}
 
 	final public function __toString(){
-		return "Block " . $this->name . " (" . $this->id . ":" . $this->meta . ")";
+		return "Block ". $this->name ." (".$this->id.":".$this->meta.")";
 	}
 
 	abstract function isBreakable(Item $item, Player $player);
