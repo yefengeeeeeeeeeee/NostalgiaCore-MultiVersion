@@ -73,7 +73,6 @@ abstract class ProtocolInfo{
 
 }
 /*Unused:
- * 0xb5
  * 0x96
  * 0x17
  * 0x14
@@ -142,7 +141,7 @@ abstract class ProtocolInfo12{
     const CONTAINER_SET_SLOT_PACKET = 0xb1;
     const CONTAINER_SET_DATA_PACKET = 0xb2;
     const CONTAINER_SET_CONTENT_PACKET = 0xb3;
-    const CONTAINER_ACK_PACKET = 0xb5;  //Bruh
+    const CONTAINER_ACK_PACKET = 0xb4;
     const CHAT_PACKET = 0xb5;
     const ADVENTURE_SETTINGS_PACKET = 0xb6;
     const ENTITY_DATA_PACKET = 0xb7;

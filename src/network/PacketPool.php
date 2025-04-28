@@ -57,6 +57,7 @@ class PacketPool{
 		self::registerPacket(ContainerSetContentPacket::class);
 		self::registerPacket(ContainerSetDataPacket::class);
 		self::registerPacket(ContainerSetSlotPacket::class);
+        self::registerPacket(ContainerAckPacket::class);
 
 		self::registerPacket(DisconnectPacket::class);
 		self::registerPacket(DropItemPacket::class);
