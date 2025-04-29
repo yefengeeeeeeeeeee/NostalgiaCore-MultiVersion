@@ -5,7 +5,7 @@ class PlayerEquipmentPacket extends RakNetDataPacket{
 	public $item;
 	public $meta;
 	public $slot;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
             return  ProtocolInfo3::PLAYER_EQUIPMENT_PACKET;
@@ -18,14 +18,14 @@ class PlayerEquipmentPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::PLAYER_EQUIPMENT_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->item = $this->getShort();
 		$this->meta = $this->getShort();
 		if($this->PROTOCOL === ProtocolInfo::CURRENT_PROTOCOL){$this->slot = $this->getSignedByte();}
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

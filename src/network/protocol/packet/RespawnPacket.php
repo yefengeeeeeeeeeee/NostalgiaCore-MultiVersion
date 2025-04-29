@@ -5,7 +5,7 @@ class RespawnPacket extends RakNetDataPacket{
 	public $x;
 	public $y;
 	public $z;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
             return  ProtocolInfo3::RESPAWN_PACKET;
@@ -22,14 +22,14 @@ class RespawnPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::RESPAWN_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->x = $this->getFloat();
 		$this->y = $this->getFloat();
 		$this->z = $this->getFloat();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

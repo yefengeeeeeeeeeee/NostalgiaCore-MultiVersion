@@ -3,9 +3,9 @@
 class SendInventoryPacket extends RakNetDataPacket{
 	public $eid;
 	public $windowid;
-	public $slots = array();
-	public $armor = array();
-	
+	public $slots = [];
+	public $armor = [];
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
             return  ProtocolInfo3::SEND_INVENTORY_PACKET;
@@ -22,7 +22,7 @@ class SendInventoryPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::SEND_INVENTORY_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->windowid = $this->getByte();
@@ -36,7 +36,7 @@ class SendInventoryPacket extends RakNetDataPacket{
 			}
 		}
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

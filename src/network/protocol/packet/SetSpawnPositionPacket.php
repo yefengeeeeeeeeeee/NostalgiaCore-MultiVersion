@@ -4,7 +4,7 @@ class SetSpawnPositionPacket extends RakNetDataPacket{
 	public $x;
 	public $z;
 	public $y;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
             return  ProtocolInfo7::SET_SPAWN_POSITION_PACKET;
@@ -15,11 +15,11 @@ class SetSpawnPositionPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::SET_SPAWN_POSITION_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->x);

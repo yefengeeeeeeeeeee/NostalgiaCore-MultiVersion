@@ -7,7 +7,7 @@ class PlayerActionPacket extends RakNetDataPacket{
 	public $z;
 	public $face;
 	public $eid;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo7::CURRENT_PROTOCOL_7){
             return  ProtocolInfo5::PLAYER_ACTION_PACKET;
@@ -18,7 +18,7 @@ class PlayerActionPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::PLAYER_ACTION_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->action = $this->getInt();
 		$this->x = $this->getInt();
@@ -27,7 +27,7 @@ class PlayerActionPacket extends RakNetDataPacket{
 		$this->face = $this->getInt();
 		$this->eid = $this->getInt();
 	}
-	
+
 	public function encode(){
 
 	}

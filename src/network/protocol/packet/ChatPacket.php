@@ -2,7 +2,7 @@
 
 class ChatPacket extends RakNetDataPacket{
 	public $message;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo7::CURRENT_PROTOCOL_7){
             return  ProtocolInfo5::CHAT_PACKET;
@@ -15,11 +15,11 @@ class ChatPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::CHAT_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putString($this->message);

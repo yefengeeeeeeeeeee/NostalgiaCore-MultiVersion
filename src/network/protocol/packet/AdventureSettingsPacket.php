@@ -2,7 +2,7 @@
 
 class AdventureSettingsPacket extends RakNetDataPacket{
 	public $flags;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
             return  ProtocolInfo7::ADVENTURE_SETTINGS_PACKET;
@@ -13,11 +13,11 @@ class AdventureSettingsPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::ADVENTURE_SETTINGS_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->flags);

@@ -3,7 +3,7 @@
 class SetEntityDataPacket extends RakNetDataPacket{
 	public $eid;
 	public $metadata;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
             return  ProtocolInfo3::SET_ENTITY_DATA_PACKET;
@@ -18,11 +18,11 @@ class SetEntityDataPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::SET_ENTITY_DATA_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
         if($this->PROTOCOL >= ProtocolInfo7::CURRENT_PROTOCOL_7)

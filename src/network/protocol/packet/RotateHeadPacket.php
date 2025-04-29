@@ -16,13 +16,13 @@ class RotateHeadPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::ROTATE_HEAD_PACKET;
 	}
-	
+
 	public function decode(){
 	   $this->get(7); //id + data
 	   $this->eid = $this->getInt();
 	   $this->yaw = $this->getByte();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

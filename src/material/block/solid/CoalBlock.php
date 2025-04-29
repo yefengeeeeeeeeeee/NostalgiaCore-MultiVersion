@@ -20,14 +20,14 @@ class CoalBlock extends SolidBlock{
 			default => 25,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 1){
-			return array(
-				array(COAL_BLOCK, 0, 1),
-			);
+			return [
+				[COAL_BLOCK, 0, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

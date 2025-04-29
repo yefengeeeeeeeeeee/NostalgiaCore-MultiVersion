@@ -17,7 +17,7 @@ class SignPostBlock extends TransparentBlock{
 		$this->isFullBlock = false;
 		$this->hardness = 5;
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if(($target->isSolid || $target->getID() === SIGN_POST || $target->getID() === WALL_SIGN) && $face !== 0){
 			if(!isset(self::$faces[$face])){
@@ -32,7 +32,7 @@ class SignPostBlock extends TransparentBlock{
 		}
 		return false;
 	}
-	
+
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		if($level->level->getBlockID($x, $y - 1, $z) === AIR){ //Replace with common break method
 			ServerAPI::request()->api->entity->drop(new Position($x, $y, $z, $level), BlockAPI::getItem(SIGN, 0, 1));
@@ -40,15 +40,15 @@ class SignPostBlock extends TransparentBlock{
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true, true);
 		}
 	}
-	
+
 	public function onBreak(Item $item, Player $player){
 		$this->level->setBlock($this, new AirBlock(), true, true, true);
 		return true;
 	}
 
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array(SIGN, 0, 1),
-		);
-	}	
+		return [
+			[SIGN, 0, 1],
+		];
+	}
 }

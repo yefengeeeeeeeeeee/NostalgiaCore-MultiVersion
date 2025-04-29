@@ -6,7 +6,7 @@ class ExplodePacket extends RakNetDataPacket{
 	public $z;
 	public $radius;
 	public $records;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
             return  ProtocolInfo4::EXPLODE_PACKET;
@@ -17,11 +17,11 @@ class ExplodePacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::EXPLODE_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putFloat($this->x);

@@ -6,7 +6,7 @@ class StonecutterBlock extends SolidBlock{
 		parent::__construct(STONECUTTER, $meta, "Stonecutter");
 		$this->isActivable = true;
 	}
-	
+
 	public function onActivate(Item $item, Player $player){
 		$player->toCraft[-1] = 2;
 		return true;
@@ -20,6 +20,6 @@ class StonecutterBlock extends SolidBlock{
 		}else{
 			return [];
 		}
-		
-	}	
+
+	}
 }

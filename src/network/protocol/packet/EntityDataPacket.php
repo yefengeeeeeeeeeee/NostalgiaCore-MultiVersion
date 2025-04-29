@@ -5,7 +5,7 @@ class EntityDataPacket extends RakNetDataPacket{
 	public $y;
 	public $z;
 	public $namedtag;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
             return  ProtocolInfo7::ENTITY_DATA_PACKET;
@@ -16,14 +16,14 @@ class EntityDataPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::ENTITY_DATA_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->x = $this->getShort();
 		$this->y = $this->getByte();
 		$this->z = $this->getShort();
 		$this->namedtag = $this->get(true);
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putShort($this->x);

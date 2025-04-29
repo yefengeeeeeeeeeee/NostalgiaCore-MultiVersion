@@ -22,13 +22,13 @@ class InteractPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::INTERACT_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->action = $this->getByte();
 		$this->eid = $this->getInt();
 		$this->target = $this->getInt();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->action);

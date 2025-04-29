@@ -6,7 +6,7 @@ class DiamondBlock extends SolidBlock{
 		parent::__construct(DIAMOND_BLOCK, 0, "Diamond Block");
 		$this->hardness = 30;
 	}
-	
+
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
@@ -17,14 +17,14 @@ class DiamondBlock extends SolidBlock{
 			default => 25,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 4){
-			return array(
-				array(DIAMOND_BLOCK, 0, 1),
-			);
+			return [
+				[DIAMOND_BLOCK, 0, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

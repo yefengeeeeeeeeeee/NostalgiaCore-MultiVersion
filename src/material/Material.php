@@ -1,4 +1,5 @@
 <?php
+
 /*value - durability*/
 class Material{
 	const LEATHER = 5; //when enums

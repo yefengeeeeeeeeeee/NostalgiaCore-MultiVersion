@@ -4,7 +4,7 @@ class WoolBlock extends SolidBlock{
 	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(WOOL, $meta, "Wool");
-		$names = array(
+		$names = [
 			0 => "White Wool",
 			1 => "Orange Wool",
 			2 => "Magenta Wool",
@@ -21,9 +21,9 @@ class WoolBlock extends SolidBlock{
 			13 => "Green Wool",
 			14 => "Red Wool",
 			15 => "Black Wool",
-		);
+		];
 		$this->name = $names[$this->meta];
 		$this->hardness = 4;
 	}
-	
+
 }

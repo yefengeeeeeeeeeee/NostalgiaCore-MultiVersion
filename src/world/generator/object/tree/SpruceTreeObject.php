@@ -60,5 +60,4 @@ class SpruceTreeObject extends TreeObject{
 		}
 	}
 
-
 }

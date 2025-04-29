@@ -6,7 +6,7 @@ class UpdateBlockPacket extends RakNetDataPacket{
 	public $y;
 	public $block;
 	public $meta;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
             return  ProtocolInfo4::UPDATE_BLOCK_PACKET;
@@ -15,11 +15,11 @@ class UpdateBlockPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::UPDATE_BLOCK_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->x);

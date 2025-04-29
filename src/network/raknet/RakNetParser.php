@@ -21,7 +21,7 @@ class RakNetParser{
 
 	private function parse(){
 		$this->packet = new RakNetPacket(ord($this->get(1)));
-		$this->packet->buffer =& $this->buffer;
+		$this->packet->buffer = &$this->buffer;
 		$this->packet->length = strlen($this->buffer);
 		switch($this->packet->pid()){
 			case RakNetInfo::UNCONNECTED_PING:

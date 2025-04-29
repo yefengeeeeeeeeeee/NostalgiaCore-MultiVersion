@@ -7,7 +7,7 @@ class ContainerOpenPacket extends RakNetDataPacket{
 	public $x;
 	public $y;
 	public $z;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
             return  ProtocolInfo3::CONTAINER_OPEN_PACKET;
@@ -24,11 +24,11 @@ class ContainerOpenPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::CONTAINER_OPEN_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->windowid);

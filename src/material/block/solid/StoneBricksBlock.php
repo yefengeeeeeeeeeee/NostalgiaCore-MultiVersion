@@ -4,12 +4,12 @@ class StoneBricksBlock extends SolidBlock{
 	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(STONE_BRICKS, $meta, "Stone Bricks");
-		$names = array(
+		$names = [
 			0 => "Stone Bricks",
 			1 => "Mossy Stone Bricks",
 			2 => "Cracked Stone Bricks",
 			3 => "Chiseled Stone Bricks",
-		);
+		];
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 30;
 	}
@@ -27,15 +27,15 @@ class StoneBricksBlock extends SolidBlock{
 			default => 7.5,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 1){
-			return array(
-				array(STONE_BRICKS, $this->meta & 0x03, 1),
-			);
+			return [
+				[STONE_BRICKS, $this->meta & 0x03, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
-	
+
 }

@@ -8,11 +8,11 @@ class MoveEntityPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::MOVE_ENTITY_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 	}

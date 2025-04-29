@@ -4,7 +4,7 @@ class ContainerSetDataPacket extends RakNetDataPacket{
 	public $windowid;
 	public $property;
 	public $value;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
             return  ProtocolInfo3::CONTAINER_SET_DATA_PACKET;
@@ -21,11 +21,11 @@ class ContainerSetDataPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::CONTAINER_SET_DATA_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->windowid);

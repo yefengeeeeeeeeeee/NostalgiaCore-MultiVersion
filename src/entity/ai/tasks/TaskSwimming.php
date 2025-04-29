@@ -9,7 +9,7 @@ class TaskSwimming extends TaskBase
 
 	public function onEnd(EntityAI $ai)
 	{
-		
+
 	}
 
 	public function onUpdate(EntityAI $ai)
@@ -18,12 +18,12 @@ class TaskSwimming extends TaskBase
 			$this->reset();
 			return;
 		}
-		
+
 		if(lcg_value() < 0.8){ #1.5.2 method
 			$ai->mobController->setJumping(true);
 		}
 	}
-	
+
 	public function canBeExecuted(EntityAI $ai)
 	{
 		return $ai->entity->inWater || $ai->entity->inLava;

@@ -35,7 +35,7 @@ class SuperflatGenerator implements LevelGenerator{
 			$this->populators[] = new MineshaftPopulator(isset($this->options["mineshaft"]["chance"]) ? floatval($this->options["mineshaft"]["chance"]) : 0.01);
 		}*/
 	}
-	
+
 	public function parsePreset($preset){
 		$this->preset = $preset;
 		$preset = explode(";", $preset);
@@ -60,7 +60,6 @@ class SuperflatGenerator implements LevelGenerator{
 		for(; $y < 0xFF; ++$y){
 			$this->structure[$y] = new AirBlock();
 		}
-
 
 		for($Y = 0; $Y < 8; ++$Y){
 			$this->chunks[$Y] = "";
@@ -132,7 +131,7 @@ class SuperflatGenerator implements LevelGenerator{
 			$end = 128 + $spawn[0];
 			for($x = $start; $x <= $end; ++$x){
 				for($z = $start; $z <= $end; ++$z){
-					if(floor(sqrt(($x - 128)*($x - 128)+ ($z - 128)*($z - 128))) <= $spawn[0]){
+					if(floor(sqrt(($x - 128) * ($x - 128) + ($z - 128) * ($z - 128))) <= $spawn[0]){
 						$this->level->setBlockRaw(new Vector3($x, $this->floorLevel - 1, $z), $spawn[1], null);
 					}
 				}

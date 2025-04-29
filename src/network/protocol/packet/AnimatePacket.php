@@ -3,10 +3,10 @@
 class AnimatePacket extends RakNetDataPacket{
 	const ANIM_SWING_HAND = 0x1;
 	const ANIM_STOP_SLEEP = 0x3;
-	
+
 	public $action;
 	public $eid;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
             return  ProtocolInfo3::ANIMATE_PACKET;
@@ -23,12 +23,12 @@ class AnimatePacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::ANIMATE_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->action = $this->getByte();
 		$this->eid = $this->getInt();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->action);

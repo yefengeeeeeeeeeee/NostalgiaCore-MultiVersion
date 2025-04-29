@@ -14,7 +14,7 @@ class UseItemPacket extends RakNetDataPacket{
 	public $posX;
 	public $posY;
 	public $posZ;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
             return  ProtocolInfo3::USE_ITEM_PACKET;
@@ -29,7 +29,7 @@ class UseItemPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::USE_ITEM_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->x = $this->getInt();
 		$this->y = $this->getInt();
@@ -47,7 +47,7 @@ class UseItemPacket extends RakNetDataPacket{
             $this->posZ = $this->getFloat();
         }
 	}
-	
+
 	public function encode(){
 
 	}

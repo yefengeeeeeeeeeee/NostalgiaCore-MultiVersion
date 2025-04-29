@@ -4,7 +4,7 @@ class ChunkDataPacket extends RakNetDataPacket{
 	public $chunkX;
 	public $chunkZ;
 	public $data;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
             return  ProtocolInfo3::CHUNK_DATA_PACKET;
@@ -17,11 +17,11 @@ class ChunkDataPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::CHUNK_DATA_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->chunkX);

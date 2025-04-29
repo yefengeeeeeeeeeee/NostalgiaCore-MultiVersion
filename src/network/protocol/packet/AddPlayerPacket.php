@@ -23,15 +23,15 @@ class AddPlayerPacket extends RakNetDataPacket{
 	 *@var array
 	 */
 	public $metadata;
-	
+
 	public function pid(){
 		return ProtocolInfo::ADD_PLAYER_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putLong($this->clientID);

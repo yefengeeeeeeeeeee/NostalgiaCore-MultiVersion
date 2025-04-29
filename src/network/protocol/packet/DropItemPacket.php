@@ -4,7 +4,7 @@ class DropItemPacket extends RakNetDataPacket{
 	public $eid;
 	public $unknown;
 	public $item;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
             return  ProtocolInfo3::DROP_ITEM_PACKET;
@@ -21,13 +21,13 @@ class DropItemPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::DROP_ITEM_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->unknown = $this->getByte();
 		$this->item = $this->getSlot();
 	}
-	
+
 	public function encode(){
 
 	}

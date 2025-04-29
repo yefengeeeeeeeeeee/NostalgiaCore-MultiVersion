@@ -9,15 +9,15 @@ class AddMobPacket extends RakNetDataPacket{
 	public $pitch;
 	public $yaw;
 	public $metadata;
-	
+
 	public function pid(){
 		return ProtocolInfo::ADD_MOB_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

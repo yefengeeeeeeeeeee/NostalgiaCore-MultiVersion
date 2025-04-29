@@ -4,7 +4,7 @@ class ContainerSetSlotPacket extends RakNetDataPacket{
 	public $windowid;
 	public $slot;
 	public $item;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
             return  ProtocolInfo3::CONTAINER_SET_SLOT_PACKET;
@@ -21,13 +21,13 @@ class ContainerSetSlotPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::CONTAINER_SET_SLOT_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->windowid = $this->getByte();
 		$this->slot = $this->getShort();
 		$this->item = $this->getSlot();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->windowid);

@@ -4,15 +4,15 @@ class SandstoneBlock extends SolidBlock{
 	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(SANDSTONE, $meta, "Sandstone");
-		$names = array(
+		$names = [
 			0 => "Sandstone",
 			1 => "Chiseled Sandstone",
 			2 => "Smooth Sandstone",
-		);
-		$this->name = $names[$this->meta & 0x03];		
+		];
+		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 4;
 	}
-	
+
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
@@ -29,12 +29,12 @@ class SandstoneBlock extends SolidBlock{
 
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 1){
-			return array(
-				array(SANDSTONE, $this->meta & 0x03, 1),
-			);
+			return [
+				[SANDSTONE, $this->meta & 0x03, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
-	
+
 }

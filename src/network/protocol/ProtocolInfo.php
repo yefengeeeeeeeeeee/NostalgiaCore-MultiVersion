@@ -1,6 +1,5 @@
 <?php
 
-
 abstract class ProtocolInfo{
 
 	const CURRENT_PROTOCOL = 14;

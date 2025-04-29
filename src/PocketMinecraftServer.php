@@ -9,7 +9,7 @@ class PocketMinecraftServer{
 	 */
 	public $api;
 	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $memoryStats, $async = [], $asyncID = 0;
-	
+
 	public $doTick, $levelData, $tiles, $entities, $schedule, $scheduleCnt, $whitelist, $spawn, $difficulty, $stop, $asyncThread;
 	public static $FORCE_20_TPS = false, $KEEP_CHUNKS_LOADED = true, $PACKET_READING_LIMIT = 100;
 	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverip = "0.0.0.0"){
@@ -23,10 +23,9 @@ class PocketMinecraftServer{
 		$this->serverip = $serverip;
 		$this->load();
 	}
-	
+
 	public static $SAVE_PLAYER_DATA = true;
-	
-	
+
 	private function load(){
 		global $dolog;
 		/*if(defined("DEBUG") and DEBUG >= 0){
@@ -86,10 +85,10 @@ class PocketMinecraftServer{
 			"discord-ru-smiles" => false,
 			"discord-webhook-url" => "none",
 			"discord-bot-name" => "NostalgiaCore Logger",
-			"despawn-mobs" => true, 
+			"despawn-mobs" => true,
 			"mob-despawn-ticks" => 18000,
 			"16x16x16_chunk_sending" => false,
-			"experimental-mob-ai" => false,	
+			"experimental-mob-ai" => false,
 			"force-20-tps" => false,
 			"enable-mob-pushing" => Living::$entityPushing,
 			"keep-chunks-loaded" => self::$KEEP_CHUNKS_LOADED,
@@ -230,7 +229,7 @@ class PocketMinecraftServer{
 		}
 		release_lock();
 	}
-	
+
 	public function send2Discord($msg){
 		if($this->extraprops->get("discord-msg") and $this->extraprops->get("discord-webhook-url") !== "none"){
 			$url = $this->extraprops->get("discord-webhook-url");
@@ -244,7 +243,7 @@ class PocketMinecraftServer{
 			], null);
 		}
 	}
-	
+
 	public function asyncOperation($type, array $data, callable $callable = null){
 		if(defined("NO_THREADS")){
 			return false;
@@ -348,7 +347,6 @@ class PocketMinecraftServer{
 
 	/**
 	 * @param string $event
-	 * @param callable $callable
 	 * @param integer $priority
 	 *
 	 * @return boolean
@@ -433,7 +431,7 @@ class PocketMinecraftServer{
 			pcntl_signal(SIGINT, [$this, "close"]);
 			pcntl_signal(SIGHUP, [$this, "close"]);
 		}
-		
+
 		console("[INFO] Default game type: " . strtoupper($this->getGamemode()));
 		$this->trigger("server.start", microtime(true));
 		console('[INFO] Done (' . round(microtime(true) - START_TIME, 3) . 's)! For help, type "help" or "?"');
@@ -453,7 +451,7 @@ class PocketMinecraftServer{
 		if(!is_callable($callback)){
 			return false;
 		}
-		
+
 		$chcnt = $this->scheduleCnt++;
 		$this->schedule[$chcnt] = [$callback, $data, $eventName];
 		$this->query("INSERT INTO actions (ID, interval, last, repeat) VALUES(" . $chcnt . ", " . ($ticks / 20) . ", " . microtime(true) . ", " . (((bool) $repeat) === true ? 1 : 0) . ");");
@@ -491,7 +489,7 @@ class PocketMinecraftServer{
 						}
 					}
 				}
-				
+
 				$this->tick();
 			}
 		}else{
@@ -524,12 +522,11 @@ class PocketMinecraftServer{
 				$this->tick();
 			}
 		}
-		
-		
+
 	}
 
 	public function packetHandler(Packet $packet){
-		$data =& $packet;
+		$data = &$packet;
 		$CID = PocketMinecraftServer::clientID($packet->ip, $packet->port);
 		if(isset($this->clients[$CID])){
 			$this->clients[$CID]->handlePacket($packet);
@@ -617,14 +614,14 @@ class PocketMinecraftServer{
 			$this->tickMeasure[] = $this->lastTick = $time;
 			unset($this->tickMeasure[key($this->tickMeasure)]);
 			++$this->ticks;
-			
+
 			foreach($this->clients as $client){
 				$client->handlePacketQueues();
 				if($this->ticks % 40 == 0){ //2s
 					$client->sendPing();
 				}
 			}
-			
+
 			foreach($this->api->level->levels as $l){
 				$l->onTick($this, $time);
 			}

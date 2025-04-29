@@ -7,15 +7,15 @@ abstract class ItemTool extends Item
 	const STONE_LEVEL = 3;
 	const IRON_LEVEL = 4;
 	const DIAMOND_LEVEL = 5;
-	
+
 	public function isTool(){
 		return true;
 	}
 	public function useOn($object, $force = false){
-		
+
 		if($this->isSword() && !($object instanceof Entity)){
 			$this->meta += 2;
-		}else if(($object instanceof Entity) && !$this->isSword()){
+		}elseif(($object instanceof Entity) && !$this->isSword()){
 			$this->meta += 2;
 		}else{
 			$this->meta++;

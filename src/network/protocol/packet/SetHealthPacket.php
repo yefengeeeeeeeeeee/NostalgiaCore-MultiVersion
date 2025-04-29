@@ -2,7 +2,7 @@
 
 class SetHealthPacket extends RakNetDataPacket{
 	public $health;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
             return  ProtocolInfo3::SET_HEALTH_PACKET;
@@ -19,11 +19,11 @@ class SetHealthPacket extends RakNetDataPacket{
         }
 		return ProtocolInfo::SET_HEALTH_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->health = $this->getByte();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->health);

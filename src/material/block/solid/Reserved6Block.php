@@ -7,5 +7,5 @@ class Reserved6Block extends SolidBlock{
 		$this->breakable = true;
 		$this->hardness = 0;
 	}
-	
+
 }

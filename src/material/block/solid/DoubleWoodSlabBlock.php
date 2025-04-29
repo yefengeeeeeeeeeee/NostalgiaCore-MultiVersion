@@ -4,12 +4,12 @@ class DoubleWoodSlabBlock extends SolidBlock{
 	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(DOUBLE_WOOD_SLAB, $meta, "Double Wooden Slab");
-		$names = array(
+		$names = [
 			0 => "Oak",
 			1 => "Spruce",
 			2 => "Birch",
 			3 => "Jungle",
-		);
+		];
 		$this->name = "Double " . $names[$this->meta & 0x07] . " Wooden Slab";
 		$this->hardness = 15;
 	}
@@ -27,11 +27,11 @@ class DoubleWoodSlabBlock extends SolidBlock{
 			default => 3,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array(WOOD_SLAB, $this->meta & 0x07, 2),
-		);
+		return [
+			[WOOD_SLAB, $this->meta & 0x07, 2],
+		];
 	}
-	
+
 }

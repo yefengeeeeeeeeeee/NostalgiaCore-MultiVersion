@@ -9,18 +9,18 @@ class AddItemEntityPacket extends RakNetDataPacket{
 	public $yaw;
 	public $pitch;
 	public $roll;
-	
+
 	public function pid(){
         if($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
             return  ProtocolInfo4::ADD_ITEM_ENTITY_PACKET;
         }
 		return ProtocolInfo::ADD_ITEM_ENTITY_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

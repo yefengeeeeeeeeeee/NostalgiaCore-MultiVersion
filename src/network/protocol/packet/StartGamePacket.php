@@ -8,15 +8,15 @@ class StartGamePacket extends RakNetDataPacket{
 	public $x;
 	public $y;
 	public $z;
-	
+
 	public function pid(){
 		return ProtocolInfo::START_GAME_PACKET;
 	}
-	
+
 	public function decode(){
 
-	}	
-	
+	}
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->seed);//long
