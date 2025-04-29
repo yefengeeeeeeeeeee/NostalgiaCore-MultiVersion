@@ -15,9 +15,10 @@ class LoginPacket extends RakNetDataPacket{
 		$this->username = $this->getString();
 		$this->protocol1 = $this->getInt();
 		$this->protocol2 = $this->getInt();
-		$this->clientId = $this->getInt();
+		$this->clientId = $this->getInt();//null
 		$this->loginData = $this->getString();
-	}
+    $this->PROTOCOL = $this->protocol1;
+	}	
 
 	public function encode(){
 

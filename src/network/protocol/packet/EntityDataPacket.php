@@ -7,6 +7,13 @@ class EntityDataPacket extends RakNetDataPacket{
 	public $namedtag;
 
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
+            return  ProtocolInfo7::ENTITY_DATA_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+            return  ProtocolInfo9::ENTITY_DATA_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+            return  ProtocolInfo12::ENTITY_DATA_PACKET;
+        }
 		return ProtocolInfo::ENTITY_DATA_PACKET;
 	}
 

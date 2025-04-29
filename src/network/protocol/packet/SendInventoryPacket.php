@@ -7,6 +7,19 @@ class SendInventoryPacket extends RakNetDataPacket{
 	public $armor = [];
 
 	public function pid(){
+        if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
+            return  ProtocolInfo3::SEND_INVENTORY_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
+            return  ProtocolInfo4::SEND_INVENTORY_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo7::CURRENT_PROTOCOL_7){
+            return  ProtocolInfo5::SEND_INVENTORY_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
+            return  ProtocolInfo7::SEND_INVENTORY_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+            return  ProtocolInfo9::SEND_INVENTORY_PACKET;
+        }else if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+            return  ProtocolInfo12::SEND_INVENTORY_PACKET;
+        }
 		return ProtocolInfo::SEND_INVENTORY_PACKET;
 	}
 
@@ -30,11 +43,11 @@ class SendInventoryPacket extends RakNetDataPacket{
 		$this->putByte($this->windowid);
 		$this->putShort(count($this->slots));
 		foreach($this->slots as $slot){
-			$this->putSlot($slot);
+			$this->putSlot($this->PROTOCOL, $slot);
 		}
 		if($this->windowid === 1 and count($this->armor) === 4){
 			for($s = 0; $s < 4; ++$s){
-				$this->putSlot($this->armor[$s]);
+				$this->putSlot($this->PROTOCOL, $this->armor[$s]);
 			}
 		}
 	}

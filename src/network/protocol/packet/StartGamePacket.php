@@ -19,7 +19,7 @@ class StartGamePacket extends RakNetDataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->seed);
+		$this->putInt($this->seed);//long
 		$this->putInt($this->generator);
 		$this->putInt($this->gamemode);
 		$this->putInt($this->eid);

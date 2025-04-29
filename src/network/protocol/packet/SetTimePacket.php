@@ -14,7 +14,7 @@ class SetTimePacket extends RakNetDataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->time);
+		$this->putInt($this->time);//long
 		$this->putByte($this->started ? 0x80:0x00);
 	}
 
