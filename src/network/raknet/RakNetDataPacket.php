@@ -15,7 +15,7 @@ abstract class RakNetDataPacket extends stdClass{
 	private $offset = 0;
 
   public $PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
-	
+
 	abstract public function encode();
 
 	abstract public function decode();
@@ -37,21 +37,21 @@ abstract class RakNetDataPacket extends stdClass{
 		$this->setBuffer(chr($this->pid()));
 	}
 
-    public function isPacketExist(int $protocol) : int{
+	public function isPacketExist(int $protocol) : int{
 
-        $exist = true;
-        return $exist;
-    }
+		$exist = true;
+		return $exist;
+	}
 
 	abstract public function pid();
 
-    public function getInternalPid() : int{
-        $rawProtocol = $this->PROTOCOL;
-        $this->PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
-        $pid = (int) $this->pid();
-        $this->PROTOCOL = $rawProtocol;
-        return $pid;
-    }
+	public function getInternalPid() : int{
+		$rawProtocol = $this->PROTOCOL;
+		$this->PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
+		$pid = (int) $this->pid();
+		$this->PROTOCOL = $rawProtocol;
+		return $pid;
+	}
 
 	protected function getLong($unsigned = false){
 		return Utils::readLong($this->get(8), $unsigned);

@@ -645,12 +645,12 @@ class BlockAPI{
 	/**
 	 * 方块/物品id转换，防止新版本影响旧版本视觉效果
 	 */
-    public static function convertHighItemIdsToOldItemIds(int $protocolId, int $itemId) : int{
-        if ($protocolId >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
-            return $itemId;
-        }
+	public static function convertHighItemIdsToOldItemIds(int $protocolId, int $itemId) : int{
+		if ($protocolId >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
+			return $itemId;
+		}
 
-        $idMap = [ //default for protocol < 12
+		$idMap = [ //default for protocol < 12
 			LIT_PUMPKIN => MELON_BLOCK, //block
 			PUMPKIN_SEEDS => MELON_SEEDS, //item
 			PUMPKIN_PIE => BREAD, //item
@@ -658,14 +658,14 @@ class BlockAPI{
 			BEETROOT_SEEDS => SEEDS, //item
 		];
 
-        if ($protocolId < ProtocolInfo9::CURRENT_PROTOCOL_9) {
-            $idMap += [
-                NETHERRACK => OBSIDIAN, //block
-                NETHER_BRICK => BRICK, //item
-                NETHER_QUARTZ => BRICK, //item
-            ];
-        }
+		if ($protocolId < ProtocolInfo9::CURRENT_PROTOCOL_9) {
+			$idMap += [
+				NETHERRACK => OBSIDIAN, //block
+				NETHER_BRICK => BRICK, //item
+				NETHER_QUARTZ => BRICK, //item
+			];
+		}
 
-        return $idMap[$itemId] ?? $itemId;
-    }
+		return $idMap[$itemId] ?? $itemId;
+	}
 }

@@ -4,9 +4,9 @@ class HurtArmorPacket extends RakNetDataPacket{
 	public $health;
 
 	public function pid(){
-        if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
-            return  ProtocolInfo12::HURT_ARMOR_PACKET;
-        }
+		if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+			return  ProtocolInfo12::HURT_ARMOR_PACKET;
+		}
 		return ProtocolInfo::HURT_ARMOR_PACKET;
 	}
 

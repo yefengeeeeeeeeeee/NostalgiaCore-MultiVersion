@@ -10,11 +10,11 @@ class MovePlayerPacket extends RakNetDataPacket{
 	public $bodyYaw;
 
 	public function pid(){
-        if($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
-            return  ProtocolInfo4::MOVE_PLAYER_PACKET;
-        }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
-            return  ProtocolInfo12::MOVE_PLAYER_PACKET;
-        }
+		if($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
+			return  ProtocolInfo4::MOVE_PLAYER_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+			return  ProtocolInfo12::MOVE_PLAYER_PACKET;
+		}
 		return ProtocolInfo::MOVE_PLAYER_PACKET;
 	}
 
@@ -25,9 +25,9 @@ class MovePlayerPacket extends RakNetDataPacket{
 		$this->z = $this->getFloat();
 		$this->yaw = $this->getFloat();
 		$this->pitch = $this->getFloat();
-        if($this->PROTOCOL > 13){
-            $this->bodyYaw = $this->getFloat();
-        }
+		if($this->PROTOCOL > 13){
+			$this->bodyYaw = $this->getFloat();
+		}
 	}
 
 	public function encode(){
@@ -38,9 +38,9 @@ class MovePlayerPacket extends RakNetDataPacket{
 		$this->putFloat($this->z);
 		$this->putFloat($this->yaw);
 		$this->putFloat($this->pitch);
-        if($this->PROTOCOL > 13){
-            $this->putFloat($this->bodyYaw);
-        }
+		if($this->PROTOCOL > 13){
+			$this->putFloat($this->bodyYaw);
+		}
 	}
 
 }

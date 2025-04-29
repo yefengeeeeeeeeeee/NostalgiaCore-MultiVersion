@@ -17,8 +17,8 @@ class LoginPacket extends RakNetDataPacket{
 		$this->protocol2 = $this->getInt();
 		$this->clientId = $this->getInt();//null
 		$this->loginData = $this->getString();
-    $this->PROTOCOL = $this->protocol1;
-	}	
+	$this->PROTOCOL = $this->protocol1;
+	}
 
 	public function encode(){
 

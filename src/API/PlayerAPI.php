@@ -327,16 +327,16 @@ class PlayerAPI{
 		return $o;
 	}
 
-    /**
-     * @return int
-     */
-    public static function decodeProtocol($ip){
-        foreach(ServerAPI::request()->clients as $p) {
-            if($p->ip == $ip){
-                return $p->PROTOCOL;
-            }
-        }
-    }
+	/**
+	 * @return int
+	 */
+	public static function decodeProtocol($ip){
+		foreach(ServerAPI::request()->clients as $p) {
+			if($p->ip == $ip){
+				return $p->PROTOCOL;
+			}
+		}
+	}
 
 	public function add($CID){
 		if(isset($this->server->clients[$CID])){
