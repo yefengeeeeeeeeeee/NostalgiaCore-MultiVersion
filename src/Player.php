@@ -351,7 +351,11 @@ class Player{
 			return;
 		}
 
-	$packet->PROTOCOL = $this->PROTOCOL;
+        if(PacketPool::isPacketExist($packet->pid(), $this->PROTOCOL) != true){
+            return;
+        }
+
+        $packet->PROTOCOL = $this->PROTOCOL;
 
 		$packet->encode();
 		if($packet->pid() == 163 or $packet->pid() == 164 && $this->PROTOCOL < ProtocolInfo7::CURRENT_PROTOCOL_7){

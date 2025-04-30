@@ -35,6 +35,13 @@ class PacketPool{
 		return $pk;
 	}
 
+    public static function isPacketExist($pid, $protocol) : bool{
+        if(isset(self::$packetPool[$protocol][$pid])) {
+            return true;
+        }
+        return false;
+    }
+
 	public static function init() : void{
 		if(self::$isInit){
 			return;

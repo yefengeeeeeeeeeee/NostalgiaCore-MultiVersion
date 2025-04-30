@@ -37,12 +37,6 @@ abstract class RakNetDataPacket extends stdClass{
 		$this->setBuffer(chr($this->pid()));
 	}
 
-	public function isPacketExist(int $protocol) : int{
-
-		$exist = true;
-		return $exist;
-	}
-
 	abstract public function pid();
 
 	public function getInternalPid() : int{
