@@ -23,13 +23,17 @@ class DropItemPacket extends RakNetDataPacket{
 	}
 
 	public function decode(){
+        //if($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8)$this->reset();
 		$this->eid = $this->getInt();
 		$this->unknown = $this->getByte();
 		$this->item = $this->getSlot();
 	}
 
 	public function encode(){
-
+        /*$this->reset();
+        $this->putInt($this->eid);
+        $this->putByte($this->unknown);
+        $this->putSlot($this->item);*/
 	}
 
 }

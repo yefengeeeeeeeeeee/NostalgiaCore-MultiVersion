@@ -15,6 +15,8 @@ class UseItemPacket extends RakNetDataPacket{
 	public $posY;
 	public $posZ;
 
+    public $unknownInt1;
+
 	public function pid(){
 		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
 			return  ProtocolInfo3::USE_ITEM_PACKET;
@@ -31,6 +33,7 @@ class UseItemPacket extends RakNetDataPacket{
 	}
 
 	public function decode(){
+        //if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9)$this->reset();
 		$this->x = $this->getInt();
 		$this->y = $this->getInt();
 		$this->z = $this->getInt();
@@ -38,6 +41,10 @@ class UseItemPacket extends RakNetDataPacket{
 		$this->item = $this->getShort();
 		$this->meta = $this->getByte(); //Mojang: fix this
 		$this->eid = $this->getInt();
+        if ($this->PROTOCOL > ProtocolInfo9::CURRENT_PROTOCOL_9) {
+            $this->unknownInt1 = $this->getInt();
+            return;
+        }
 		$this->fx = $this->getFloat();
 		$this->fy = $this->getFloat();
 		$this->fz = $this->getFloat();
@@ -49,7 +56,15 @@ class UseItemPacket extends RakNetDataPacket{
 	}
 
 	public function encode(){
-
+        /*$this->reset();
+        $this->putInt($this->x);
+        $this->putInt($this->y);
+        $this->putInt($this->z);
+        $this->putInt($this->face);
+        $this->putShort($this->item);
+        $this->putByte($this->meta);
+        $this->putInt($this->eid);
+        $this->putInt($this->unknownInt1);*/
 	}
 
 }

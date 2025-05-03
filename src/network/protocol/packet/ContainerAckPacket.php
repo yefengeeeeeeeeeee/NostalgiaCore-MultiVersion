@@ -2,6 +2,7 @@
 
 class ContainerAckPacket extends RakNetDataPacket{
 	public $unknwonubyte1;
+    public $unknwonubyte2; // Only exist in Version 0.3.3 && 0.4.0
 	public $unknownshort;
 	public $write1;
 	public $write0;
@@ -24,6 +25,10 @@ class ContainerAckPacket extends RakNetDataPacket{
 	public function decode(){
 		$this->unknwonubyte1 = $this->getByte();
 		$this->unknownshort = $this->getShort();
+        if($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
+            $this->unknwonubyte2 = $this->getByte();
+            return;
+        }
 		$this->write1 = $this->get();
 		$this->write0 = $this->get();
 		ConsoleAPI::debug($this->unknwonubyte1);
@@ -33,8 +38,15 @@ class ContainerAckPacket extends RakNetDataPacket{
 	}
 
 	public function encode(){
+        if($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
+            $this->reset();
+        }
 		$this->putByte($this->unknwonubyte1);
 		$this->putShort($this->unknownshort);
+        if($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
+            $this->putByte($this->unknwonubyte2);
+            return;
+        }
 		$this->put($this->write1);
 		$this->put($this->write0);
 		ConsoleAPI::debug($this->unknwonubyte1);

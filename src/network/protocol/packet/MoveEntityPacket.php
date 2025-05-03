@@ -14,7 +14,7 @@ class MoveEntityPacket extends RakNetDataPacket{
 	}
 
 	public function encode(){
-		$this->reset();
+		$this->reset(); //null
 	}
 
 }

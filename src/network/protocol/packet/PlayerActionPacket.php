@@ -20,6 +20,7 @@ class PlayerActionPacket extends RakNetDataPacket{
 	}
 
 	public function decode(){
+        //if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9)$this->reset();
 		$this->action = $this->getInt();
 		$this->x = $this->getInt();
 		$this->y = $this->getInt();
@@ -29,7 +30,13 @@ class PlayerActionPacket extends RakNetDataPacket{
 	}
 
 	public function encode(){
-
+        /*$this->reset();
+        $this->putInt($this->action);
+        $this->putInt($this->x);
+        $this->putInt($this->y);
+        $this->putInt($this->z);
+        $this->putInt($this->face);
+        $this->putInt($this->eid);*/
 	}
 
 }

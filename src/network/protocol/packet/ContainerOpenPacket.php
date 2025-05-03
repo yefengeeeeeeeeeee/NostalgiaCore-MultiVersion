@@ -7,6 +7,7 @@ class ContainerOpenPacket extends RakNetDataPacket{
 	public $x;
 	public $y;
 	public $z;
+    public $unknownstring;
 
 	public function pid(){
 		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
@@ -35,7 +36,7 @@ class ContainerOpenPacket extends RakNetDataPacket{
 		$this->putByte($this->type);
 		$this->putByte($this->slots);
         if ($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
-            $this->putString();
+            $this->putString($this->unknownstring);
         }else{
             $this->putInt($this->x);
             $this->putInt($this->y);

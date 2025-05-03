@@ -16,6 +16,7 @@ class RemoveBlockPacket extends RakNetDataPacket{
 	}
 
 	public function decode(){
+        //if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9)$this->reset();
 		$this->eid = $this->getInt();
 		$this->x = $this->getInt();
 		$this->z = $this->getInt();
@@ -23,7 +24,11 @@ class RemoveBlockPacket extends RakNetDataPacket{
 	}
 
 	public function encode(){
-
+        /*$this->reset();
+        $this->putInt($this->eid);
+        $this->putInt($this->x);
+        $this->putInt($this->z);
+        $this->putInt($this->y);*/
 	}
 
 }

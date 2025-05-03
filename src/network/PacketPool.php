@@ -55,7 +55,7 @@ class PacketPool{
 		self::registerPacket(AdventureSettingsPacket::class, [8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(AnimatePacket::class);
 
-		self::registerPacket(ChatPacket::class, [7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(ChatPacket::class, [6, 7, 8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(ChunkDataPacket::class);
 		self::registerPacket(ClientConnectPacket::class);
 		self::registerPacket(ClientHandshakePacket::class);
@@ -88,7 +88,7 @@ class PacketPool{
 
 		self::registerPacket(PingPacket::class);
 		self::registerPacket(PlaceBlockPacket::class);
-		self::registerPacket(PlayerActionPacket::class, [7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(PlayerActionPacket::class, [6, 7, 8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(PlayerArmorEquipmentPacket::class, [9, 10, 11, 12, 13, 14]);
 		self::registerPacket(PlayerEquipmentPacket::class);
 		self::registerPacket(PlayerInputPacket::class, [8, 9, 10, 11, 12, 13, 14]);

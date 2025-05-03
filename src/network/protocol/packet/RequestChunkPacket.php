@@ -18,12 +18,15 @@ class RequestChunkPacket extends RakNetDataPacket{
 	}
 
 	public function decode(){
+        //if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9)$this->reset();
 		$this->chunkX = $this->getInt();
 		$this->chunkZ = $this->getInt();
 	}
 
 	public function encode(){
-
+        /*$this->reset();
+        $this->putInt($this->chunkX);
+        $this->putInt($this->chunkZ);*/
 	}
 
 }

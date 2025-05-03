@@ -8,11 +8,13 @@ class ReadyPacket extends RakNetDataPacket{
 	}
 
 	public function decode(){
+        //if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9)$this->reset();
 		$this->status = $this->getByte();
 	}
 
 	public function encode(){
-
+        /*$this->reset();
+        $this->putByte($this->status);*/
 	}
 
 }

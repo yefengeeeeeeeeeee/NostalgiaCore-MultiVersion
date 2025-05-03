@@ -28,6 +28,9 @@ class ContainerSetContentPacket extends RakNetDataPacket{
 		for($s = 0; $s < $count and !$this->feof(); ++$s){
 			$this->slots[$s] = $this->getSlot();
 		}
+        if($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
+            return;
+        }
 		if($this->windowid === 0){
 			$count = $this->getShort();
 			for($s = 0; $s < $count and !$this->feof(); ++$s){
@@ -43,8 +46,11 @@ class ContainerSetContentPacket extends RakNetDataPacket{
 		foreach($this->slots as $slot){
 			$this->putSlot($this->PROTOCOL, $slot);
 		}
+        if($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
+            return;
+        }
 		if($this->windowid === 0 and count($this->hotbar) > 0){
-			$this->putShort(count($this->hotbar));//null
+			$this->putShort(count($this->hotbar));
 			foreach($this->hotbar as $slot){
 				$this->putInt($slot);
 			}

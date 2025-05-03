@@ -25,7 +25,6 @@ class SetEntityDataPacket extends RakNetDataPacket{
 
 	public function encode(){
 		$this->reset();
-		if($this->PROTOCOL >= ProtocolInfo8::CURRENT_PROTOCOL_8)
 		$this->putInt($this->eid);
 		$this->put(Utils::writeMetadata($this->metadata));
 	}
