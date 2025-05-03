@@ -18,12 +18,12 @@ class UseItemPacket extends RakNetDataPacket{
 	public function pid(){
 		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
 			return  ProtocolInfo3::USE_ITEM_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
+		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
 			return  ProtocolInfo4::USE_ITEM_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo7::CURRENT_PROTOCOL_7){
-			return  ProtocolInfo5::USE_ITEM_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
+			return  ProtocolInfo6::USE_ITEM_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
-			return  ProtocolInfo7::USE_ITEM_PACKET;
+			return  ProtocolInfo8::USE_ITEM_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
 			return  ProtocolInfo12::USE_ITEM_PACKET;
 		}

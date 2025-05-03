@@ -216,9 +216,9 @@ abstract class ProtocolInfo9{
 	const PLAYER_INPUT_PACKET = 0xb9;
 
 }
-abstract class ProtocolInfo7{
+abstract class ProtocolInfo8{
 
-	const CURRENT_PROTOCOL_7 = 7;
+	const CURRENT_PROTOCOL_8 = 8;
 
 	const PING_PACKET = 0x00;
 
@@ -283,9 +283,9 @@ abstract class ProtocolInfo7{
 	const ENTITY_DATA_PACKET = 0xb2;
 	const PLAYER_INPUT_PACKET = 0xb9;
 }
-abstract class ProtocolInfo5{
+abstract class ProtocolInfo6{
 
-	const CURRENT_PROTOCOL_5 = 5;
+	const CURRENT_PROTOCOL_6 = 6;
 
 	const PING_PACKET = 0x00;
 

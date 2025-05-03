@@ -9,10 +9,10 @@ class PlayerEquipmentPacket extends RakNetDataPacket{
 	public function pid(){
 		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
 			return  ProtocolInfo3::PLAYER_EQUIPMENT_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
+		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
 			return  ProtocolInfo4::PLAYER_EQUIPMENT_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo7::CURRENT_PROTOCOL_7){
-			return  ProtocolInfo5::PLAYER_EQUIPMENT_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
+			return  ProtocolInfo6::PLAYER_EQUIPMENT_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
 			return  ProtocolInfo12::PLAYER_EQUIPMENT_PACKET;
 		}

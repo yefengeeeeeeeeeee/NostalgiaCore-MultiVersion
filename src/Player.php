@@ -358,7 +358,7 @@ class Player{
         $packet->PROTOCOL = $this->PROTOCOL;
 
 		$packet->encode();
-		if($packet->pid() == 163 or $packet->pid() == 164 && $this->PROTOCOL < ProtocolInfo7::CURRENT_PROTOCOL_7){
+		if($packet->pid() == 163 or $packet->pid() == 164 && $this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
 			return;
 		}
 		$len = strlen($packet->buffer) + 1;

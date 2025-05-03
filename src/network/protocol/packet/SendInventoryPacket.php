@@ -9,12 +9,12 @@ class SendInventoryPacket extends RakNetDataPacket{
 	public function pid(){
 		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
 			return  ProtocolInfo3::SEND_INVENTORY_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
+		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
 			return  ProtocolInfo4::SEND_INVENTORY_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo7::CURRENT_PROTOCOL_7){
-			return  ProtocolInfo5::SEND_INVENTORY_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
+			return  ProtocolInfo6::SEND_INVENTORY_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
-			return  ProtocolInfo7::SEND_INVENTORY_PACKET;
+			return  ProtocolInfo8::SEND_INVENTORY_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
 			return  ProtocolInfo9::SEND_INVENTORY_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){

@@ -9,7 +9,7 @@ class MoveEntityPacket_PosRot extends RakNetDataPacket{
 	public $pitch;
 
 	public function pid(){
-		if($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
+		if($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
 			return  ProtocolInfo4::MOVE_ENTITY_PACKET_POSROT;
 		}
 		return ProtocolInfo::MOVE_ENTITY_PACKET_POSROT;

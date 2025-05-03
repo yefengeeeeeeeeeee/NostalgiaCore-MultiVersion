@@ -50,12 +50,12 @@ class PacketPool{
 		self::registerPacket(AddEntityPacket::class);
 		self::registerPacket(AddItemEntityPacket::class);
 		self::registerPacket(AddMobPacket::class);
-		self::registerPacket(AddPaintingPacket::class, [7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(AddPaintingPacket::class, [8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(AddPlayerPacket::class);
-		self::registerPacket(AdventureSettingsPacket::class, [7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(AdventureSettingsPacket::class, [8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(AnimatePacket::class);
 
-		self::registerPacket(ChatPacket::class, [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(ChatPacket::class, [7, 8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(ChunkDataPacket::class);
 		self::registerPacket(ClientConnectPacket::class);
 		self::registerPacket(ClientHandshakePacket::class);
@@ -69,7 +69,7 @@ class PacketPool{
 		self::registerPacket(DisconnectPacket::class);
 		self::registerPacket(DropItemPacket::class);
 
-		self::registerPacket(EntityDataPacket::class, [7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(EntityDataPacket::class, [8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(EntityEventPacket::class);
 		self::registerPacket(ExplodePacket::class);
 
@@ -88,10 +88,10 @@ class PacketPool{
 
 		self::registerPacket(PingPacket::class);
 		self::registerPacket(PlaceBlockPacket::class);
-		self::registerPacket(PlayerActionPacket::class, [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(PlayerActionPacket::class, [7, 8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(PlayerArmorEquipmentPacket::class, [9, 10, 11, 12, 13, 14]);
 		self::registerPacket(PlayerEquipmentPacket::class);
-		self::registerPacket(PlayerInputPacket::class, [7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(PlayerInputPacket::class, [8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(PongPacket::class);
 
 		self::registerPacket(ReadyPacket::class);
@@ -108,7 +108,7 @@ class PacketPool{
 		self::registerPacket(SetEntityLinkPacket::class, [12, 13, 14]);
 		self::registerPacket(SetEntityMotionPacket::class, [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(SetHealthPacket::class);
-		self::registerPacket(SetSpawnPositionPacket::class, [7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(SetSpawnPositionPacket::class, [8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(SetTimePacket::class);
 		self::registerPacket(StartGamePacket::class);
 
