@@ -37,6 +37,7 @@ class ContainerOpenPacket extends RakNetDataPacket{
 		$this->putByte($this->slots);
         if ($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
             $this->putString($this->unknownstring);
+            ConsoleAPI::debug($this->unknownstring);
         }else{
             $this->putInt($this->x);
             $this->putInt($this->y);

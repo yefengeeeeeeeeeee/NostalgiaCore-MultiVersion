@@ -35,6 +35,8 @@ class ContainerAckPacket extends RakNetDataPacket{
 		ConsoleAPI::debug($this->unknownshort);
 		ConsoleAPI::debug($this->write1);
 		ConsoleAPI::debug($this->write0);
+
+        ConsoleAPI::debug($this->unknwonubyte2);
 	}
 
 	public function encode(){
@@ -53,6 +55,8 @@ class ContainerAckPacket extends RakNetDataPacket{
 		ConsoleAPI::debug($this->unknownshort);
 		ConsoleAPI::debug($this->write1);
 		ConsoleAPI::debug($this->write0);
+
+        ConsoleAPI::debug($this->unknwonubyte2);
 	}
 
 }
