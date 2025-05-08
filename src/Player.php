@@ -2415,7 +2415,9 @@ class Player{
 				if($packet->windowid === 0){
 					$craft = false;
 					$slot = $this->getSlot($packet->slot);
-					if($slot->count >= $packet->item->count and (($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()) or ($packet->item->getID() === AIR and $packet->item->count === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
+
+					if($slot->count >= $packet->item->count && (($slot->getID() === $packet->item->getID() && $slot->getMetadata() === $packet->item->getMetadata()) || ($packet->item->getID() === AIR && $packet->item->count === 0)) && !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
+						if(!isset($this->toCraft[-1])) $this->toCraft[-1] = 0;
 						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->count - $packet->item->count);
 						$this->craftingItems[$packet->slot] = $use;
 						$craft = true;
@@ -2681,7 +2683,11 @@ class Player{
 	public function craftItems(array $craft, array $recipe, $type){
 		$craftItem = [0, true, 0];
 		unset($craft[-1]);
-		
+
+		if($type !== 0 && $type !== 1 && $type !== 2){ //allow only small(0), big(1) or stone(2)
+			return false;
+		}
+
 		foreach($craft as $slot => $item){
 			if($item instanceof Item){
 				$craftItem[0] = $item->getID();
