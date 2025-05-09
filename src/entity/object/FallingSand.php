@@ -27,6 +27,7 @@ class FallingSand extends Entity{
 			$this->close();
 			return;
 		}
+
 		$this->lastX = $this->x;
 		$this->lastY = $this->y;
 		$this->lastZ = $this->z;
@@ -42,6 +43,14 @@ class FallingSand extends Entity{
 		$y = floor($this->y);
 		$z = floor($this->z);
 		
+		if(($blockAt = $this->level->level->getBlockID($x, $y, $z)) != 0){
+			//TODO vanilla-like checking?
+			if(StaticBlock::getIsTransparent($blockAt) && !StaticBlock::getIsLiquid($blockAt)){
+				$this->close();
+				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->data["Tile"], 0, 1)); //TODO add metadata
+				return;
+			}
+		}
 		if($this->onGround){
 			$this->speedX *= 0.7;
 			$this->speedZ *= 0.7;
@@ -49,12 +58,6 @@ class FallingSand extends Entity{
 			$this->close();
 			//TODO vanilla-like checking?
 			$this->level->fastSetBlockUpdate($x, $y, $z, $this->data["Tile"], 0, true); //TODO add metadata
-		}elseif(($blockAt = $this->level->level->getBlockID($x, $y, $z)) != 0){
-			//TODO vanilla-like checking?
-			if(StaticBlock::getIsTransparent($blockAt) && !StaticBlock::getIsLiquid($blockAt)){
-				$this->close();
-				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->data["Tile"], 0, 1)); //TODO add metadata
-			}
 		}
 	}
 }
