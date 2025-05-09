@@ -1,7 +1,10 @@
 <?php
 
 class CraftingRecipes{
-
+	const TYPE_INVENTORY = 0;
+	const TYPE_CRAFTIGTABLE = 1;
+	const TYPE_STONECUTTER = 2;
+	
 	private static $small = [ // Probably means craftable on crafting bench and in inventory. Name it better!
 							   // Building
 		"CLAY:?x4=>CLAY_BLOCK:0x1",
@@ -204,19 +207,19 @@ class CraftingRecipes{
 		$id = 1;
 		foreach(CraftingRecipes::$small as $recipe){
 			$recipe = CraftingRecipes::parseRecipe($recipe);
-			$recipe[3] = 0; //Type
+			$recipe[3] = self::TYPE_INVENTORY; //Type
 			CraftingRecipes::$recipes[$id] = $recipe;
 			++$id;
 		}
 		foreach(CraftingRecipes::$big as $recipe){
 			$recipe = CraftingRecipes::parseRecipe($recipe);
-			$recipe[3] = 1;
+			$recipe[3] = self::TYPE_CRAFTIGTABLE;
 			CraftingRecipes::$recipes[$id] = $recipe;
 			++$id;
 		}
 		foreach(CraftingRecipes::$stone as $recipe){
 			$recipe = CraftingRecipes::parseRecipe($recipe);
-			$recipe[3] = 2;
+			$recipe[3] = self::TYPE_STONECUTTER;
 			CraftingRecipes::$recipes[$id] = $recipe;
 			++$id;
 		}
@@ -268,9 +271,6 @@ class CraftingRecipes{
 		ksort($recipeItems);
 		$recipeString = "";
 		foreach($recipeItems as $item){
-			if($craftItem[0] === CAKE && $item[0] === BUCKET && $item[1] === 1){ //some dark magic with recipe happened in mcpe, pmmp restores it back to normal
-				$item[2] = 3;
-			}
 			$recipeString .= $item[0] . "x" . $item[2] . ",";
 		}
 		$recipeString = substr($recipeString, 0, -1) . "=>" . $craftItem[0] . "x" . $craftItem[2];
@@ -287,9 +287,7 @@ class CraftingRecipes{
 						break;
 					}
 					$oitem = $recipeItems[$item[0]];
-					if($craftItem[0] === CAKE && $oitem[0] === BUCKET && $item[1] === 1){ //some dark magic with recipe happened in mcpe, pmmp restores it back to normal x2
-						$oitem[2] = 3;
-					}
+					
 					if(($oitem[1] !== $item[1] and $item[1] !== false) or $oitem[2] !== $item[2]){
 						$continue = false;
 						break;

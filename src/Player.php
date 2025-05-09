@@ -2460,56 +2460,31 @@ class Player{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-
-				if($this->lastCraft <= (microtime(true) - 1)){
-					if(isset($this->toCraft[-1])){
-						$this->toCraft = [-1 => $this->toCraft[-1]];
-					}else{
-						$this->toCraft = [];
-					}
-					$this->craftingItems = [];
-				}
-
-				if($packet->windowid === 0){
-					$craft = false;
+				
+				if($packet->windowid === 0){ //crafting
+					
 					$slot = $this->getSlot($packet->slot);
-
-					if($slot->count >= $packet->item->count && (($slot->getID() === $packet->item->getID() && $slot->getMetadata() === $packet->item->getMetadata()) || ($packet->item->getID() === AIR && $packet->item->count === 0)) && !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
-						if(!isset($this->toCraft[-1])) $this->toCraft[-1] = 0;
-						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->count - $packet->item->count);
-						$this->craftingItems[$packet->slot] = $use;
-						$craft = true;
-					}elseif($slot->count <= $packet->item->count and ($slot->getID() === AIR or ($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()))){ //Crafting final
-						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count - $slot->count);
-						if(count($this->toCraft) === 0){
-							$this->toCraft[-1] = 0;
-						}
-						$this->toCraft[$packet->slot] = $craftItem;
-						$craft = true;
-					}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->count > 0 and $slot->getID() > AIR and ($slot->getID() !== $packet->item->getID() or $slot->getMetadata() !== $packet->item->getMetadata())){ //Crafting final
-						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
-						if(count($this->toCraft) === 0){
-							$this->toCraft[-1] = 0;
-						}
-						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->count);
-						$this->craftingItems[$packet->slot] = $use;
-						$this->toCraft[$packet->slot] = $craftItem;
-						$craft = true;
-					}
-
-					if($craft === true){
-						$this->lastCraft = microtime(true);
-					}
-
-					if($craft === true and count($this->craftingItems) > 0 and count($this->toCraft) > 0 and ($recipe = $this->craftItems($this->toCraft, $this->craftingItems, $this->toCraft[-1])) !== true){
-						if($recipe === false){
-							$this->sendInventory();
-							$this->toCraft = [];
+					$citem = $packet->item;
+					if($slot->getID() == $citem->getID() && $slot->getMetadata() == $citem->getMetadata()){
+						if($citem->count > $slot->count){ //item added, result
+							$this->addCraftingResult($slot->getID(), $slot->getMetadata(), $citem->count - $slot->count);
+						}else if($citem->count < $slot->count){ //item removed, ingridient
+							$this->addCraftingIngridient($slot->getID(), $slot->getMetadata(), $slot->count - $citem->count);
 						}else{
-							$this->toCraft = [-1 => $this->toCraft[-1]];
+							//item synchronized
 						}
+					}else if($citem->getID() == 0 && $slot->getID() > 0){ //client sent air, server has not air, ingridient
+						$this->addCraftingIngridient($slot->getID(), $slot->getMetadata(), $slot->count);
+					}else if($slot->getID() == 0 && $citem->getID() > 0){ //client sent non-air, server has air, result
+						$this->addCraftingResult($citem->getID(), $citem->getMetadata(), $citem->count);
+					}else{
+						$this->sendInventory();
+						$this->toCraft = [];
 						$this->craftingItems = [];
+						ConsoleAPI::warn("{$this->username} tried modifying inventory<?>! Server item: $slot({$slot->count}), Client item: $citem({$citem->count})");
+						$this->sendChat("[NC] Haxxor(or bug?).");
 					}
+					
 				}else{
 					$this->toCraft = [];
 					$this->craftingItems = [];
@@ -2697,6 +2672,63 @@ class Player{
 		}
 	}
 
+	public $craftingType = 0;
+	public function tryCraft(){
+		if(count($this->toCraft) <= 0 || count($this->craftingItems) <= 0) return;
+		
+		if(count($this->toCraft) > 1){
+			ConsoleAPI::warn("Trying to craft more than 1 item, not supported for now.");
+			return false;
+		}
+		foreach($this->toCraft as $i => $e){
+			$toCraft = [$i >> 8, $i & 0xff, $e];
+		}
+		$ingridients = [];
+		foreach($this->craftingItems as $i => $e){
+			$ingridients[$i >> 8] = [$i >> 8, $i & 0xff, $e];
+		}
+
+		
+		$cc = CraftingRecipes::canCraft($toCraft, $ingridients, $this->craftingType);
+		if(!is_array($cc) && $this->craftingType == CraftingRecipes::TYPE_CRAFTIGTABLE){
+			$cc = CraftingRecipes::canCraft($toCraft, $ingridients, CraftingRecipes::TYPE_INVENTORY);
+			if(!is_array($cc)){
+				return; //recipe not found
+			}
+		}
+		
+		var_dump($cc);
+		$this->addItem($toCraft[0], $toCraft[1], $toCraft[2], false);
+		foreach($ingridients as [$id, $meta, $count]){
+			$this->removeItem($id, $meta, $count, false);
+		}
+		$this->sendInventory();
+		$this->toCraft = [];
+		$this->craftingItems = [];
+	}
+	
+	public function addCraftingResult($id, $meta, $count){
+		$index = ($id << 8) | $meta;
+		
+		if(!isset($this->toCraft[$index])) $this->toCraft[$index] = 0;
+		$this->toCraft[$index] += $count;
+		console("Result: $id, $meta, $count");
+		if($this->tryCraft() === false){
+			$this->sendInventory();
+		}
+	}
+	
+	public function addCraftingIngridient($id, $meta, $count){
+		$index = ($id << 8) | $meta;
+		
+		if(!isset($this->craftingItems[$index])) $this->craftingItems[$index] = 0;
+		$this->craftingItems[$index] += $count;
+		console("Ingridient: $id, $meta, $count");
+		if($this->tryCraft() === false){
+			$this->sendInventory();
+		}
+	}
+	
 	public function hasItem($type, $damage = false){
 		foreach($this->inventory as $s => $item){
 			if($item->getID() === $type and ($item->getMetadata() === $damage or $damage === false) and $item->count > 0){
