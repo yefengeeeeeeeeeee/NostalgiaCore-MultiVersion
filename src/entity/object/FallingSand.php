@@ -27,7 +27,18 @@ class FallingSand extends Entity{
 			$this->close();
 			return;
 		}
-
+		//$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
+		if($this->fallTime == 0){
+			$x = floor($this->x);
+			$y = floor($this->y);
+			$z = floor($this->z);
+			if($this->level->level->getBlockID($x, $y, $z) != $this->data["Tile"]){
+				$this->close();
+				return;
+			}
+			$this->level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
+		}
+		
 		$this->lastX = $this->x;
 		$this->lastY = $this->y;
 		$this->lastZ = $this->z;
