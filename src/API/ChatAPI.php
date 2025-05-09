@@ -35,6 +35,7 @@ class ChatAPI{
 					break;
 				}
 				$sender = ($issuer instanceof Player) ? "Server" : ucfirst($issuer);
+				if(Utils::hasEmoji($s)) return "Your message contains illegal characters!";
 				$this->server->api->chat->broadcast("[$sender] " . $s);
 				break;
 			case "me":
@@ -52,7 +53,9 @@ class ChatAPI{
 				}else{
 					$sender = $issuer->username;
 				}
-				$this->broadcast("* $sender " . implode(" ", $params));
+				$msg = implode(" ", $params);
+				if(Utils::hasEmoji($msg)) return "Your message contains illegal characters!";
+				$this->broadcast("* $sender $msg");
 				break;
 			case "tell":
 				if(!isset($params[0]) or !isset($params[1])){
@@ -80,6 +83,7 @@ class ChatAPI{
 					return "You can't send message to yourself.";
 				}
 				$mes = implode(" ", $params);
+				if(Utils::hasEmoji($mes)) return "Your message contains illegal characters!";
 				$output .= "You're whispering to " . $target . ": " . $mes . "\n";
 				if($target !== "Console" and $target !== "Rcon"){
 					$this->sendTo(false, $sender . " whispers to you: " . $mes, $target);
