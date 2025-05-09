@@ -168,18 +168,18 @@ class MobController
 		/* Some stuff for pathfinder - nc doesnt have it now
 		 * float var11 = MathHelper.wrapAngleTo180_float(this.entity.rotationYawHead - this.entity.renderYawOffset);
 
-        if (!this.entity.getNavigator().noPath())
-        {
-            if (var11 < -75.0F)
-            {
-                this.entity.rotationYawHead = this.entity.renderYawOffset - 75.0F;
-            }
+		if (!this.entity.getNavigator().noPath())
+		{
+			if (var11 < -75.0F)
+			{
+				this.entity.rotationYawHead = this.entity.renderYawOffset - 75.0F;
+			}
 
-            if (var11 > 75.0F)
-            {
-                this.entity.rotationYawHead = this.entity.renderYawOffset + 75.0F;
-            }
-        }
+			if (var11 > 75.0F)
+			{
+				this.entity.rotationYawHead = this.entity.renderYawOffset + 75.0F;
+			}
+		}
 		 */
 		
 		//$this->entity->lastHeadYaw = $this->entity->headYaw;

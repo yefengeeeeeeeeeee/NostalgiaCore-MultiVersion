@@ -43,9 +43,9 @@ class Painting extends Entity{
 	
 	public $counter = 0;
 	public function update($now){
-                if($this->closed === true){
-                        return false;
-                }
+		if($this->closed === true){
+			return false;
+		}
 		
 		if(++$this->counter >= 100){
 			$this->counter = 0;
