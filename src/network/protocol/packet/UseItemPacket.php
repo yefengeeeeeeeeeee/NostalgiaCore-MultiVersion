@@ -25,14 +25,14 @@ class UseItemPacket extends RakNetDataPacket{
 		$this->z = $this->getInt();
 		$this->face = $this->getInt();
 		$this->item = $this->getShort();
-		$this->meta = $this->getByte(); //Mojang: fix this
+		$this->meta = $this->getByte();
 		$this->eid = $this->getInt();
 		$this->fx = $this->getFloat();
 		$this->fy = $this->getFloat();
 		$this->fz = $this->getFloat();
 		$this->posX = $this->getFloat();
 		$this->posY = $this->getFloat();
-		$this->posZ = $this->getFloat();		
+		$this->posZ = $this->getFloat();
 	}
 	
 	public function encode(){

@@ -686,6 +686,7 @@ class Player{
 		$pk->hotbar = $hotbar;
 		$this->dataPacket($pk);
 	}
+
 	/**
 	 * @param $type
 	 * @param $damage
@@ -1947,6 +1948,20 @@ class Player{
 				$data["posX"] = $packet->posX;
 				$data["posY"] = $packet->posY;
 				$data["posZ"] = $packet->posZ;
+
+				//nc: check item desync
+				$heldItem = $this->getHeldItem();
+				if($heldItem->getID() != $packet->item || $heldItem->getMetadata() != $packet->meta){
+					ConsoleAPI::warn("{$this->username}'s heldItem doesnt match on clientside and serverside when using item. Resending inventory.");
+					$this->sendInventory();
+					if($packet->face >= 0 && $packet->face <= 5){
+						$target = $this->level->getBlock($blockVector);
+						$block = $target->getSide($packet->face);
+						$this->addBlockUpdateIntoQueue($target->x, $target->y, $target->z, $target->getID(), $target->getMetadata());
+						$this->addBlockUpdateIntoQueue($block->x, $block->y, $block->z, $block->getID(), $block->getMetadata());
+					}
+					break;
+				}
 
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
 					if($this->entity->inAction === true){
