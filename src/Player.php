@@ -70,6 +70,12 @@ class Player{
 	private $chunkCount = [];
 	private $received = [];
 	
+	/**
+	 * Stores packets that must be always received by clients.
+	 * @var array
+	 */
+	public $packetAlwaysRecoverQueue = [];
+	
 	public $slotCount = 7;
 	
 	public $entityMovementQueue;
@@ -372,6 +378,42 @@ class Player{
 		return [];
 	}
 
+	public function sendChunkDataPacket(RakNetDataPacket $pk){
+		if($this->connected === false) return false;
+		if(EventHandler::callEvent(new DataPacketSendEvent($this, $pk)) === BaseEvent::DENY) return;
+		
+		$pk->encode();
+		$sendtime = microtime(true);
+		$size = $this->MTU - 34;
+		if($size <= 0) return false;
+		$buffer = str_split($pk->buffer, $size);
+		$bigCnt = $this->bigCnt;
+		$this->bigCnt = ($this->bigCnt + 1) % 0x10000;
+		$cnts = [];
+		$bufCount = count($buffer);
+		foreach($buffer as $i => $buf){
+			$cnts[] = $count = $this->counter[0]++;
+			
+			$pk = new UnknownPacket;
+			$pk->packetID = $pk->pid();
+			$pk->reliability = 2;
+			$pk->hasSplit = true;
+			$pk->splitCount = $bufCount;
+			$pk->splitID = $bigCnt;
+			$pk->splitIndex = $i;
+			$pk->buffer = $buf;
+			$pk->messageIndex = $this->counter[3]++;
+			
+			$rk = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+			$rk->data[] = $pk;
+			$rk->seqNumber = $count;
+			$rk->sendtime = $sendtime;
+			$this->packetAlwaysRecoverQueue[$count] = $rk;
+			$this->send($rk);
+		}
+		return $cnts;
+	}
+	
 	private function directBigRawPacket(RakNetDataPacket $packet){
 		if($this->connected === false){
 			return false;
@@ -557,7 +599,7 @@ class Player{
 		$pk->chunkX = $X;
 		$pk->chunkZ = $Z;
 		$pk->data = $this->level->getOrderedChunk($X, $Z, $Yndex);
-		$cnt = $this->dataPacket($pk);
+		$cnt = $this->sendChunkDataPacket($pk);
 
 		$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '{$this->level->getName()}' AND x >= $minX AND x <= $maxX AND z >= $minZ AND z <= $maxZ;");
 		$this->lastChunk = false;
@@ -579,8 +621,9 @@ class Player{
 		if($this->connected === false or $world != $this->level){
 			return false;
 		}
+		
 		foreach($this->chunkCount as $count => $t){
-			if(isset($this->recoveryQueue[$count]) or isset($this->resendQueue[$count])){
+			if(isset($this->packetAlwaysRecoverQueue[$count])){
 				$this->server->schedule(MAX_CHUNK_RATE, [$this, "getNextChunk"], $world);
 				return;
 			}else{
@@ -634,7 +677,7 @@ class Player{
 		$pk->chunkX = $X;
 		$pk->chunkZ = $Z;
 		$pk->data = $this->level->getOrderedChunk($X, $Z, $Yndex);
-		$cnt = $this->dataPacket($pk);
+		$cnt = $this->sendChunkDataPacket($pk);
 		if($cnt === false){
 			return false;
 		}
@@ -1231,10 +1274,16 @@ class Player{
 		$limit = $time - 5; //max lag
 		foreach($this->recoveryQueue as $count => $data){
 			if($data->sendtime > $limit){
-				break;
+				continue;
 			}
 			unset($this->recoveryQueue[$count]);
 			$this->resendQueue[$count] = $data;
+		}
+		
+		foreach($this->packetAlwaysRecoverQueue as $cnt => $data){
+			if($time - $data->sendtime >= 5){
+				$this->resendQueue[$cnt] = $data;
+			}
 		}
 
 		if(($resendCnt = count($this->resendQueue)) > 0){
@@ -1243,13 +1292,7 @@ class Player{
 				$this->packetStats[1]++;
 				$this->lag[] = $time - $data->sendtime;
 				$data->sendtime = $time;
-
-				$cnt = $this->send($data);
-				if(isset($this->chunkCount[$count])){
-					unset($this->chunkCount[$count]);
-					if(!is_null($cnt) and !is_null($cnt[0]))
-						$this->chunkCount[$cnt[0]] = true;
-				}
+				$this->send($data);
 			}
 		}
 	}
@@ -2816,7 +2859,9 @@ class Player{
 			switch($packet->pid()){
 				case RakNetInfo::NACK:
 					foreach($packet->packets as $count){
-						if(isset($this->recoveryQueue[$count])){
+						if(isset($this->packetAlwaysRecoverQueue[$count])){
+							$this->packetAlwaysRecoverQueue[$count]->sendtime = 0; //forces resend next time it will be checked
+						}else if(isset($this->recoveryQueue[$count])){
 							$this->resendQueue[$count] =& $this->recoveryQueue[$count];
 							$this->lag[] = $time - $this->recoveryQueue[$count]->sendtime;
 							unset($this->recoveryQueue[$count]);
@@ -2828,7 +2873,11 @@ class Player{
 
 				case RakNetInfo::ACK:
 					foreach($packet->packets as $count){
-						if(isset($this->recoveryQueue[$count])){
+						if(isset($this->packetAlwaysRecoverQueue[$count])){
+							$this->lag[] = $time - $this->packetAlwaysRecoverQueue[$count]->sendtime;
+							unset($this->packetAlwaysRecoverQueue[$count]);
+							unset($this->chunkCount[$count]);
+						}else if(isset($this->recoveryQueue[$count])){
 							$this->lag[] = $time - $this->recoveryQueue[$count]->sendtime;
 							unset($this->recoveryQueue[$count]);
 							unset($this->resendQueue[$count]);
