@@ -1704,13 +1704,13 @@ class Player{
 				$pk = new StartGamePacket;
 				$pk->seed = $this->level->getSeed();
 				$pk->x = $this->data->get("position")["x"];
-				$pk->y = $this->data->get("position")["y"];
+				$pk->y = ceil($this->data->get("position")["y"]);
 				$pk->z = $this->data->get("position")["z"];
 				$pk->generator = 0;
 				$pk->gamemode = $this->gamemode & 0x01;
 				$pk->eid = 0;
 				$this->dataPacket($pk);
-
+				
 				if(($this->gamemode & 0x01) === 0x01){
 					$this->slot = 0;
 					$this->hotbar = [];
@@ -1734,9 +1734,9 @@ class Player{
 				$this->entity = $this->server->api->entity->add($this->level, ENTITY_PLAYER, 0, ["player" => $this]);
 				$this->eid = $this->entity->eid;
 				$this->server->query("UPDATE players SET EID = " . $this->eid . " WHERE CID = " . $this->CID . ";");
-				$this->entity->x = $this->data->get("position")["x"];
-				$this->entity->y = $this->data->get("position")["y"];
-				$this->entity->z = $this->data->get("position")["z"];
+				$this->entity->x = $pk->x;
+				$this->entity->y = $pk->y;
+				$this->entity->z = $pk->z;
 				if(($level = $this->server->api->level->get($this->data->get("spawn")["level"])) !== false){
 					$this->spawnPosition = new Position($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"], $level);
 
