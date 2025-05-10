@@ -2348,8 +2348,7 @@ class Player{
 							if($item->getID() == 0) goto inv_desync_on_drop;
 						}
 						
-						$this->toCraft[] = $prevItem; //vanilla drops only result?
-						$this->lastCraft = microtime(true);
+						$this->addCraftingResult(-1, $prevItem->getID(), $prevItem->getMetadata(), $prevItem->count);
 						break;
 					}else{
 						inv_desync_on_drop:
@@ -2698,6 +2697,8 @@ class Player{
 			}
 		}
 		
+		console("success");
+		
 		foreach($this->craftingItems as $i => $slotz){
 			$id = $i >> 8;
 			$meta = $i & 0xff;
@@ -2716,15 +2717,29 @@ class Player{
 			$id = $i >> 8;
 			$meta = $i & 0xff;
 			foreach($slotz as $slot => $count){
-				$slt = $this->getSlot($slot);
-				if($slt->getID() == $id && $slt->getMetadata() == $meta){
-					$slt->count += $count;
-				}else if($slt->getID() == 0){
-					$this->setSlot($slot, BlockAPI::getItem($id, $meta, $count), false);
+				if($slot < 0){ //drop item
+					$item = BlockAPI::getItem($id, $meta, $count);
+					$f1 = 0.3;
+					$sX = -sin(($this->entity->yaw / 180) * M_PI) * cos(($this->entity->pitch / 180) * M_PI) * $f1;
+					$sZ = cos(($this->entity->yaw / 180) * M_PI) * cos(($this->entity->pitch / 180) * M_PI) * $f1;
+					$sY = -sin(($this->entity->pitch / 180) * M_PI) * $f1 + 0.1;
+					$f1 = 0.02;
+					$f3 = $this->entity->random->nextFloat() * M_PI * 2.0;
+					$f1 *= $this->entity->random->nextFloat();
+					$sX += cos($f3) * $f1;
+					$sY += ($this->entity->random->nextFloat() - $this->entity->random->nextFloat()) * 0.1;
+					$sZ += sin($f3) * $f1;
+					$this->server->api->entity->dropRawPos($this->level, $this->entity->x, $this->entity->y - 0.3 + $this->entity->height - 0.12, $this->entity->z, $item, $sX, $sY, $sZ);
 				}else{
-					ConsoleAPI::warn("{$slt->getID()} != $id || 0 !!!");
+					$slt = $this->getSlot($slot);
+					if($slt->getID() == $id && $slt->getMetadata() == $meta){
+						$slt->count += $count;
+					}else if($slt->getID() == 0){
+						$this->setSlot($slot, BlockAPI::getItem($id, $meta, $count), false);
+					}else{
+						ConsoleAPI::warn("{$slt->getID()} != $id || 0 !!!");
+					}
 				}
-				//TODO actually check id/meta
 			}
 		}
 		
