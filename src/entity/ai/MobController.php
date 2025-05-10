@@ -106,8 +106,10 @@ class MobController
 				$v10 = (atan2($diffZ, $diffX) * 180 / M_PI) - 90;
 				$this->entity->yaw = self::limitAngle($this->entity->yaw, $v10, 30);
 				$this->entity->setAIMoveSpeed($this->speedMultiplier * $this->entity->getSpeed() * $this->entity->getSpeedModifer());
-
-				if($diffY > 0 && $diffX * $diffX + $diffZ * $diffZ < 1) $this->setJumping(true);
+				
+				if($diffY > 0 && $diffX*$diffX + $diffZ*$diffZ < 1 && $this->entity->isCollidedHorizontally){
+					 $this->setJumping(true);
+				}
 			}
 		}
 		//TODO handle jumps somewhere

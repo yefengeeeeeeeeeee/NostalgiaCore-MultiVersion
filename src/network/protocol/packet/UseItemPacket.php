@@ -39,7 +39,7 @@ class UseItemPacket extends RakNetDataPacket{
 		$this->z = $this->getInt();
 		$this->face = $this->getInt();
 		$this->item = $this->getShort();
-		$this->meta = $this->getByte(); //Mojang: fix this
+		$this->meta = $this->getByte();
 		$this->eid = $this->getInt();
         if ($this->PROTOCOL > ProtocolInfo9::CURRENT_PROTOCOL_9) {
             $this->unknownInt1 = $this->getInt();

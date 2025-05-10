@@ -53,12 +53,11 @@ class GenericBlock extends Block{
 		if($down == AIR || StaticBlock::getIsLiquid($down)){
 			$data = [
 				"x" => $x + 0.5,
-				"y" => $y - 0.5,
+				"y" => $y,
 				"z" => $z + 0.5,
 				"Tile" => $id,
 			];
 			$server = ServerAPI::request();
-			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 			$e = $server->api->entity->add($level, ENTITY_FALLING, FALLING_SAND, $data);
 			$server->api->entity->spawnToAll($e);
 		}

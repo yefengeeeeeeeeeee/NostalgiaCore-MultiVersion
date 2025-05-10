@@ -127,6 +127,7 @@ class RakNetParser{
 		$reliability = ($packetFlags & 0b11100000) >> 5;
 		$hasSplit = ($packetFlags & 0b00010000) > 0;
 		$length = (int) ceil($this->getShort() / 8);
+		
 		if($reliability === 2
 			or $reliability === 3
 			or $reliability === 4

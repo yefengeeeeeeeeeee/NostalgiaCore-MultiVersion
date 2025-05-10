@@ -9,7 +9,7 @@ class WorkbenchBlock extends SolidBlock{
 	}
 
 	public function onActivate(Item $item, Player $player){
-		$player->toCraft[-1] = 1;
+		$player->craftingType = CraftingRecipes::TYPE_CRAFTIGTABLE;
 		return true;
 	}
 

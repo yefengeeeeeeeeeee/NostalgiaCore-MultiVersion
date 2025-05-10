@@ -53,9 +53,7 @@ class ConsoleAPI{
 		if(!defined("NO_THREADS")){
 			self::$loop->stop();
 			self::$loop->notify();
-			//@fclose($this->loop->fp);
 			usleep(50000);
-			//$this->loop->join();
 		}
 	}
 
