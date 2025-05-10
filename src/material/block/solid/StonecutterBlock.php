@@ -8,7 +8,7 @@ class StonecutterBlock extends SolidBlock{
 	}
 	
 	public function onActivate(Item $item, Player $player){
-		$player->toCraft[-1] = 2;
+		$player->craftingType = CraftingRecipes::TYPE_STONECUTTER;
 		return true;
 	}
 

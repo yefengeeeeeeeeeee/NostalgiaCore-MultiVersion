@@ -56,6 +56,7 @@ class RakNetParser{
 			case RakNetInfo::DATA_PACKET_F:
 				$this->packet->seqNumber = $this->getLTriad();
 				$this->packet->data = [];
+				
 				while(!$this->feof() and ($pk = $this->parseDataPacket()) instanceof RakNetDataPacket){
 					$this->packet->data[] = $pk;
 				}
@@ -122,6 +123,7 @@ class RakNetParser{
 		$reliability = ($packetFlags & 0b11100000) >> 5;
 		$hasSplit = ($packetFlags & 0b00010000) > 0;
 		$length = (int) ceil($this->getShort() / 8);
+		
 		if($reliability === 2
 			or $reliability === 3
 			or $reliability === 4
