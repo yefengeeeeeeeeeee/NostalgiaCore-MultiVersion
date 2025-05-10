@@ -135,7 +135,7 @@ class CraftingRecipes{
 		"BEETROOT:?x4,BOWL:?x1=>BEETROOT_SOUP:0x1",
 		"WOODEN_PLANKS:?x3=>BOWL:0x4",
 		"WHEAT:?x3=>BREAD:0x1",
-		"WHEAT:?x3,BUCKET:1x3,EGG:?x1,SUGAR:?x2=>CAKE:0x1",
+		"WHEAT:?x3,BUCKET:1x3,EGG:?x1,SUGAR:?x2=>CAKE:0x1,BUCKET:0x3",
 		"DIAMOND:?x4=>DIAMOND_BOOTS:0x1",
 		"DIAMOND:?x8=>DIAMOND_CHESTPLATE:0x1",
 		"DIAMOND:?x5=>DIAMOND_HELMET:0x1",
@@ -200,6 +200,13 @@ class CraftingRecipes{
 		"COBBLESTONE:?x6=>COBBLESTONE_STAIRS:0x4",
 	];
 
+	/**
+	 * Each element structure:
+	 * * 0 - ingridients <br>
+	 * * 1 - results <br>
+	 * * 2 - recipe string <br>
+	 * @var array[]
+	 */
 	private static $recipes = [];
 
 	public static function init(){
@@ -230,9 +237,9 @@ class CraftingRecipes{
 	}
 
 	private static function parseRecipe($recipe){
-		$recipe = explode("=>", $recipe);
+		[$ingridients, $results] = explode("=>", $recipe);
 		$recipeItems = [];
-		foreach(explode(",", $recipe[0]) as $item){
+		foreach(explode(",", $ingridients) as $item){
 			$item = explode("x", $item);
 			$id = explode(":", $item[0]);
 			$meta = array_pop($id);
@@ -249,31 +256,53 @@ class CraftingRecipes{
 			}
 		}
 		ksort($recipeItems);
-		$item = explode("x", $recipe[1]);
-		$id = explode(":", $item[0]);
-		$meta = array_pop($id);
-		$id = $id[0];
-
-		$it = BlockAPI::fromString($id);
-
-		$craftItem = [$it->getID(), intval($meta) & 0xFFFF, intval($item[1])];
+		
+		$craftItems = [];
+		foreach(explode(",", $results) as $item){
+			$item = explode("x", $item);
+			$id = explode(":", $item[0]);
+			$meta = array_pop($id);
+			$id = $id[0];
+			$it = BlockAPI::fromString($id);
+			if(!isset($craftItems[$it->getID()])){
+				$craftItems[$it->getID()] = [$it->getID(), intval($meta) & 0xffff, intval($item[1])];
+			}else{
+				if($it->getMetadata() !== $craftItems[$it->getID()][1]){
+					$craftItems[$it->getID()][1] = false;
+				}
+				$craftItems[$it->getID()][2] += $it->count;
+			}
+		}
+		ksort($craftItems);
 
 		$recipeString = "";
+		$resultString = "";
 		foreach($recipeItems as $item){
-			$recipeString .= $item[0] . "x" . $item[2] . ",";
+			$recipeString .= "{$item[0]}x{$item[2]},";
 		}
-		$recipeString = substr($recipeString, 0, -1) . "=>" . $craftItem[0] . "x" . $craftItem[2];
+		foreach($craftItems as $item){
+			$resultString .= "{$item[0]}x{$item[2]},";
+		}
+		
+		$recipeString = substr($recipeString, 0, -1) . "=>" . substr($resultString, 0, -1);
 
-		return [$recipeItems, $craftItem, $recipeString];
+		return [$recipeItems, $craftItems, $recipeString];
 	}
 
-	public static function canCraft(array $craftItem, array $recipeItems, $type){
+	public static function canCraft(array $craftItems, array $recipeItems, $type){
 		ksort($recipeItems);
+		ksort($craftItems);
+		
 		$recipeString = "";
+		$resultString = "";
 		foreach($recipeItems as $item){
 			$recipeString .= $item[0] . "x" . $item[2] . ",";
 		}
-		$recipeString = substr($recipeString, 0, -1) . "=>" . $craftItem[0] . "x" . $craftItem[2];
+		foreach($craftItems as $item){
+			$resultString .= "{$item[0]}x{$item[2]},";
+		}
+		
+		$recipeString = substr($recipeString, 0, -1) . "=>" . substr($resultString, 0, -1);
 		$server = ServerAPI::request();
 		$result = $server->query("SELECT id FROM recipes WHERE type == " . $type . " AND recipe == '" . $recipeString . "';");
 		if($result instanceof SQLite3Result){
@@ -281,7 +310,7 @@ class CraftingRecipes{
 			while(($r = $result->fetchArray(SQLITE3_NUM)) !== false){
 				$continue = true;
 				$recipe = CraftingRecipes::$recipes[$r[0]];
-				foreach($recipe[0] as $item){
+				foreach($recipe[0] as $item){ //check ingridients
 					if(!isset($recipeItems[$item[0]])){
 						$continue = false;
 						break;
@@ -293,7 +322,23 @@ class CraftingRecipes{
 						break;
 					}
 				}
-				if($continue === false or $craftItem[0] !== $recipe[1][0]){
+				if($continue === false){
+					$continue = false;
+					continue;
+				}
+				foreach($recipe[1] as $item){ //check results
+					if(!isset($craftItems[$item[0]])){
+						$continue = false;
+						break;
+					}
+					$oitem = $craftItems[$item[0]];
+					
+					if(($oitem[1] !== $item[1] and $item[1] !== false) or $oitem[2] !== $item[2]){
+						$continue = false;
+						break;
+					}
+				}
+				if($continue === false){
 					$continue = false;
 					continue;
 				}

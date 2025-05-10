@@ -2707,25 +2707,19 @@ class Player{
 	public function tryCraft(){
 		if(count($this->toCraft) <= 0 || count($this->craftingItems) <= 0) return;
 		
-		if(count($this->toCraft) > 1){
-			$this->toCraft = [];
-			$this->craftingItems = [];
-			safe_var_dump($this->toCraft);
-			ConsoleAPI::warn("Trying to craft more than 1 item, not supported for now.");
-			return false;
-		}
+		$results = [];
 		foreach($this->toCraft as $i => $slotz){
-			$toCraft = [$i >> 8, $i & 0xff, array_sum($slotz)];
+			$results[$i >> 16] = [$i >> 16, $i & 0xffff, array_sum($slotz)];
 		}
 		$ingridients = [];
 		foreach($this->craftingItems as $i => $slotz){
-			$ingridients[$i >> 8] = [$i >> 8, $i & 0xff, array_sum($slotz)];
+			$ingridients[$i >> 16] = [$i >> 16, $i & 0xffff, array_sum($slotz)];
 		}
 
 		
-		$cc = CraftingRecipes::canCraft($toCraft, $ingridients, $this->craftingType);
+		$cc = CraftingRecipes::canCraft($results, $ingridients, $this->craftingType);
 		if(!is_array($cc) && $this->craftingType == CraftingRecipes::TYPE_CRAFTIGTABLE){
-			$cc = CraftingRecipes::canCraft($toCraft, $ingridients, CraftingRecipes::TYPE_INVENTORY);
+			$cc = CraftingRecipes::canCraft($results, $ingridients, CraftingRecipes::TYPE_INVENTORY);
 			if(!is_array($cc)){
 				return; //recipe not found
 			}
@@ -2738,8 +2732,8 @@ class Player{
 		}
 		
 		foreach($this->craftingItems as $i => $slotz){
-			$id = $i >> 8;
-			$meta = $i & 0xff;
+			$id = $i >> 16;
+			$meta = $i & 0xffff;
 			foreach($slotz as $slot => $count){
 				$slt = $this->getSlot($slot);
 				if($slt->getID() == $id && $slt->getMetadata() == $meta){
@@ -2752,8 +2746,8 @@ class Player{
 		}
 		
 		foreach($this->toCraft as $i => $slotz){
-			$id = $i >> 8;
-			$meta = $i & 0xff;
+			$id = $i >> 16;
+			$meta = $i & 0xffff;
 			$this->checkCraftAchievements($id);
 			foreach($slotz as $slot => $count){
 				if($slot < 0){ //drop item
@@ -2788,25 +2782,31 @@ class Player{
 	}
 	
 	public function addCraftingResult($slot, $id, $meta, $count){
-		$index = ($id << 8) | $meta;
+		$id &= 0xffff;
+		$meta &= 0xffff;
+		
+		$index = ($id << 16) | $meta;
 		
 		if(!isset($this->toCraft[$index])) $this->toCraft[$index] = [];
 		if(!isset($this->toCraft[$index][$slot])) $this->toCraft[$index][$slot] = 0;
 		$this->toCraft[$index][$slot] += $count;
 		
-		console("Result: $id, $meta, $count into $slot");
+		//console("Result: $id, $meta, $count into $slot");
 		if($this->tryCraft() === false){
 			$this->sendInventory();
 		}
 	}
 	
 	public function addCraftingIngridient($slot, $id, $meta, $count){
-		$index = ($id << 8) | $meta;
+		$id &= 0xffff;
+		$meta &= 0xffff;
+		
+		$index = ($id << 16) | $meta;
 		
 		if(!isset($this->craftingItems[$index])) $this->craftingItems[$index] = [];
 		if(!isset($this->craftingItems[$index][$slot])) $this->craftingItems[$index][$slot] = 0;
 		$this->craftingItems[$index][$slot] += $count;
-		console("Ingridient: $id, $meta, $count into $slot");
+		//console("Ingridient: $id, $meta, $count into $slot");
 		if($this->tryCraft() === false){
 			$this->sendInventory();
 		}
