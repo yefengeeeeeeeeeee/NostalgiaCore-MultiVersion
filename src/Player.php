@@ -2668,12 +2668,46 @@ class Player{
 		}
 	}
 
+	public function checkCraftAchievements($id){
+		switch($id){
+			case WORKBENCH:
+				AchievementAPI::grantAchievement($this, "buildWorkBench");
+				break;
+			case WOODEN_PICKAXE:
+				AchievementAPI::grantAchievement($this, "buildPickaxe");
+				break;
+			case FURNACE:
+				AchievementAPI::grantAchievement($this, "buildFurnace");
+				break;
+			case WOODEN_HOE:
+				AchievementAPI::grantAchievement($this, "buildHoe");
+				break;
+			case BREAD:
+				AchievementAPI::grantAchievement($this, "makeBread");
+				break;
+			case CAKE:
+				AchievementAPI::grantAchievement($this, "bakeCake");
+				break;
+			case STONE_PICKAXE:
+			case GOLDEN_PICKAXE:
+			case IRON_PICKAXE:
+			case DIAMOND_PICKAXE:
+				AchievementAPI::grantAchievement($this, "buildBetterPickaxe");
+				break;
+			case WOODEN_SWORD:
+				AchievementAPI::grantAchievement($this, "buildSword");
+				break;
+			case DIAMOND:
+				AchievementAPI::grantAchievement($this, "diamond");
+				break;
+		}
+	}
+	
 	public $craftingType = 0;
 	public function tryCraft(){
 		if(count($this->toCraft) <= 0 || count($this->craftingItems) <= 0) return;
 		
 		if(count($this->toCraft) > 1){
-			$this->sendInventory();
 			$this->toCraft = [];
 			$this->craftingItems = [];
 			safe_var_dump($this->toCraft);
@@ -2697,7 +2731,11 @@ class Player{
 			}
 		}
 		
-		console("success");
+		if($this->server->api->dhandle("player.craft", ["player" => $this, "ingridients" => $this->craftingItems, "results" => $this->toCraft, "type" => $this->craftingType]) === false){
+			$this->toCraft = [];
+			$this->craftingItems = [];
+			return false;
+		}
 		
 		foreach($this->craftingItems as $i => $slotz){
 			$id = $i >> 8;
@@ -2716,6 +2754,7 @@ class Player{
 		foreach($this->toCraft as $i => $slotz){
 			$id = $i >> 8;
 			$meta = $i & 0xff;
+			$this->checkCraftAchievements($id);
 			foreach($slotz as $slot => $count){
 				if($slot < 0){ //drop item
 					$item = BlockAPI::getItem($id, $meta, $count);
@@ -2807,127 +2846,6 @@ class Player{
 		return true;
 	}
 
-	/**
-	 * @param array $craft
-	 * @param array $recipe
-	 * @param $type
-	 *
-	 * @return array|bool
-	 */
-	public function craftItems(array $craft, array $recipe, $type){
-		$craftItem = [0, true, 0];
-		unset($craft[-1]);
-
-		if($type !== 0 && $type !== 1 && $type !== 2){ //allow only small(0), big(1) or stone(2)
-			return false;
-		}
-
-		foreach($craft as $slot => $item){
-			if($item instanceof Item){
-				$craftItem[0] = $item->getID();
-				if($item->getMetadata() !== $craftItem[1] and $craftItem[1] !== true){
-					$craftItem[1] = false;
-				}else{
-					$craftItem[1] = $item->getMetadata();
-				}
-				$craftItem[2] += $item->count;
-			}
-
-		}
-
-		$recipeItems = [];
-		foreach($recipe as $slot => $item){
-			if(!isset($recipeItems[$item->getID()])){
-				$recipeItems[$item->getID()] = [$item->getID(), $item->getMetadata(), $item->count];
-			}else{
-				if($item->getMetadata() !== $recipeItems[$item->getID()][1]){
-					$recipeItems[$item->getID()][1] = false;
-				}
-				$recipeItems[$item->getID()][2] += $item->count;
-			}
-		}
-
-		$res = CraftingRecipes::canCraft($craftItem, $recipeItems, $type);
-
-		if(!is_array($res) and $type === 1){
-			$res2 = CraftingRecipes::canCraft($craftItem, $recipeItems, 0);
-			if(is_array($res2)){
-				$res = $res2;
-			}
-		}
-
-		if(is_array($res)){
-			if($this->server->api->dhandle("player.craft", ["player" => $this, "recipe" => $recipe, "craft" => $craft, "type" => $type]) === false){
-				return false;
-			}
-			foreach($recipe as $slot => $item){
-				$s = $this->getSlot($slot);
-				$s->count -= $item->count;
-				if($s->count <= 0){
-					$this->setSlot($slot, BlockAPI::getItem(AIR, 0, 0), false);
-				}
-			}
-			foreach($craft as $slot => $item){
-				$s = $this->getSlot($slot);
-				if($s->count <= 0 or $s->getID() === AIR){
-					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $item->count), false);
-				}else if($s->getID() == $item->getID() && $s->getMetadata() == $item->getMetadata() && ($s->count + $item->count) <= $s->getMaxStackSize()){
-					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $s->count + $item->count), false);
-				}else{
-					$f1 = 0.3;
-					$sX = -sin(($this->entity->yaw / 180) * M_PI) * cos(($this->entity->pitch / 180) * M_PI) * $f1;
-					$sZ = cos(($this->entity->yaw / 180) * M_PI) * cos(($this->entity->pitch / 180) * M_PI) * $f1;
-					$sY = -sin(($this->entity->pitch / 180) * M_PI) * $f1 + 0.1;
-					$f1 = 0.02;
-					$f3 = $this->entity->random->nextFloat() * M_PI * 2.0;
-					$f1 *= $this->entity->random->nextFloat();
-					$sX += cos($f3) * $f1;
-					$sY += ($this->entity->random->nextFloat() - $this->entity->random->nextFloat()) * 0.1;
-					$sZ += sin($f3) * $f1;
-					$this->server->api->entity->dropRawPos($this->level, $this->entity->x, $this->entity->y - 0.3 + $this->entity->height - 0.12, $this->entity->z, $item, $sX, $sY, $sZ);
-				}
-				
-				$this->sendInventory(); //force send on crafting
-				
-				switch($item->getID()){
-					case WORKBENCH:
-						AchievementAPI::grantAchievement($this, "buildWorkBench");
-						break;
-					case WOODEN_PICKAXE:
-						AchievementAPI::grantAchievement($this, "buildPickaxe");
-						break;
-					case FURNACE:
-						AchievementAPI::grantAchievement($this, "buildFurnace");
-						break;
-					case WOODEN_HOE:
-						AchievementAPI::grantAchievement($this, "buildHoe");
-						break;
-					case BREAD:
-						AchievementAPI::grantAchievement($this, "makeBread");
-						break;
-					case CAKE:
-						AchievementAPI::grantAchievement($this, "bakeCake");
-						$this->addItem(BUCKET, 0, 3);
-						break;
-					case STONE_PICKAXE:
-					case GOLDEN_PICKAXE:
-					case IRON_PICKAXE:
-					case DIAMOND_PICKAXE:
-						AchievementAPI::grantAchievement($this, "buildBetterPickaxe");
-						break;
-					case WOODEN_SWORD:
-						AchievementAPI::grantAchievement($this, "buildSword");
-						break;
-					case DIAMOND:
-						AchievementAPI::grantAchievement($this, "diamond");
-						break;
-
-				}
-			}
-		}
-		return $res;
-	}
-
 	public function handlePacket(RakNetPacket $packet){
 		if($this->connected === true){
 			$time = microtime(true);
@@ -3005,6 +2923,19 @@ class Player{
 			return $this->username;
 		}
 		return $this->clientID;
+	}
+	
+	
+	/**
+	 * @deprecated craft system changed
+	 * @param array $craft
+	 * @param array $recipe
+	 * @param $type
+	 *
+	 * @return bool
+	 */
+	public function craftItems(array $craft, array $recipe, $type){
+		return false;
 	}
 
 }
