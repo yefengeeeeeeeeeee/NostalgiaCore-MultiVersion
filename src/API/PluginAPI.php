@@ -150,20 +150,20 @@ class PluginAPI extends stdClass{
 						}
 					}
 					console("[INFO] Loading PHAR plugin \"".FORMAT_GREEN.$pluginInfo["name"].FORMAT_RESET."\" ".FORMAT_AQUA.$pluginInfo["version"].FORMAT_RESET." by ".FORMAT_AQUA.$pluginInfo["author"].FORMAT_RESET);
-					
+
 					$aver = CURRENT_API_VERSION;
-					if(!in_array((string) CURRENT_API_VERSION, $pluginInfo["api"])){ 
+					if(!in_array((string) CURRENT_API_VERSION, $pluginInfo["api"])){
 						if(is_array($pluginInfo)) $s = implode(",",$pluginInfo["api"]);
 						else $s = $pluginInfo["api"];
 						console("[WARNING] API is not the same as Core, might cause bugs({$s} != {$aver})");
 					}
-					
+
 					$phr = "phar://$filePath/";
 					include($phr."/src/".$pluginInfo["classLoader"]);
 					$class = $pluginInfo["CLClass"];
 					$loader = new $class();
 					$loader->loadAll($phr);
-					
+
 					$pluginName = PharUtils::getNameSpaceClass($pluginInfo["mainFile"]);
 					include($phr."/src/".$pluginInfo["mainFile"]);
 					$plugin = new $pluginName($this->server->api, false);
@@ -268,7 +268,7 @@ class PluginAPI extends stdClass{
 			$names[] = $p[1]["name"];
 			$versions[] = $p[1]["version"];
 		}
-		
+
 		foreach($this->plugins as $p){
 			if($p[0] instanceof OtherPluginRequirement){
 				foreach($p[0]->getRequiredPlugins() as $required){
@@ -312,4 +312,3 @@ class RequiredPluginEntry{ //Use this as object of requirements array
 	}
 }
 
- 

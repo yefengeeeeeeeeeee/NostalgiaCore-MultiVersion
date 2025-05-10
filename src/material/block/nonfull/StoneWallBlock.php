@@ -15,45 +15,45 @@ class StoneWallBlock extends TransparentBlock{
 		}
 		return [];
 	}
-	
+
 	public static function connectsTo(Level $level, $x, $y, $z){
 		$id = $level->level->getBlockID($x, $y, $z);
-		
+
 		if($id == STONE_WALL || $id == FENCE_GATE) return true;
 		if($id == 0) return false;
-		
+
 		if(StaticBlock::getIsSolid($id) && !StaticBlock::getIsTransparent($id)){ //XXX in vanilla it uses Material->isSolidBlocking() and Tile->isCubeShaped()
 			return true; //XXX in vanilla it returns v7->material != Material::vegetable;
 		}
 		return false;
 	}
-	
+
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		return [static::getAABB($level, $x, $y, $z)];
 	}
-	
+
 	public static function getAABB(Level $level, $x, $y, $z){
 		static::updateShape($level, $x, $y, $z);
 		StaticBlock::$maxYs[$level->level->getBlockID($x, $y, $z)] = 1.5;
 		return parent::getAABB($level, $x, $y, $z);
 	}
-	
+
 	public static function updateShape(Level $level, $x, $y, $z){
 		$zNeg = self::connectsTo($level, $x, $y, $z - 1);
 		$zPos = self::connectsTo($level, $x, $y, $z + 1);
 		$xNeg = self::connectsTo($level, $x - 1, $y, $z);
 		$xPos = self::connectsTo($level, $x + 1, $y, $z);
-		
+
 		$minX = 0.25;
 		$maxY = 1.0;
 		$maxX = 0.75;
-		
+
 		$minZ = $zNeg ? 0 : 0.25;
 		$maxZ = $zPos ? 1.0 : 0.75;
-		
+
 		if($xNeg) $minX = 0;
 		if($xPos) $maxX = 1.0;
-		
+
 		if($zNeg){
 			if($zPos && !$xNeg){
 				if(!$xPos){
@@ -62,7 +62,7 @@ class StoneWallBlock extends TransparentBlock{
 					$minX = 0.3125;
 				}
 			}
-		}else if(!$zPos && $zNeg){
+		}elseif(!$zPos && $zNeg){
 			if($xPos){
 				$maxY = 0.8125;
 				$maxZ = 0.6875;

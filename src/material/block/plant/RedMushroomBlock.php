@@ -9,7 +9,7 @@ class RedMushroomBlock extends FlowableBlock{
 
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		if(StaticBlock::getIsTransparent($level->level->getBlockID($x, $y - 1, $z))){ //Replace with common break method
-			ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(RED_MUSHROOM));
+			ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(RED_MUSHROOM));
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
 	}
@@ -21,5 +21,5 @@ class RedMushroomBlock extends FlowableBlock{
 			return true;
 		}
 		return false;
-	}	
+	}
 }

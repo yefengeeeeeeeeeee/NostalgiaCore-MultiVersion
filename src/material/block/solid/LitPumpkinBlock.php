@@ -8,17 +8,16 @@ class LitPumpkinBlock extends SolidBlock implements LightingBlock{
 		2 => 3,
 		3 => 0,
 	];
-	
-	
+
 	public function __construct($meta = 0){
 		parent::__construct(LIT_PUMPKIN, $meta, "Jack o'Lantern");
 		$this->hardness = 5;
 	}
-	
+
 	public function getMaxLightValue(){
 		return 15;
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$id = $this->level->level->getBlockID($this->x, $this->y, $this->z);
 		if(($id == 0 || $id == SNOW_LAYER) && $this->level->isTopSolidBlocking($this->x, $this->y - 1, $this->z)){
@@ -28,12 +27,11 @@ class LitPumpkinBlock extends SolidBlock implements LightingBlock{
 		}
 		return false;
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		return [
 			[JACK_O_LANTERN, 0, 1]
 		];
 	}
-	
-	
-}
+
+	}

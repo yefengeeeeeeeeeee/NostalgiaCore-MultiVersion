@@ -1,7 +1,7 @@
 <?php
 
 class Explosion{
-	
+
 	public static $specialDrops = [
 		GRASS => DIRT,
 		STONE => COBBLESTONE,
@@ -18,7 +18,7 @@ class Explosion{
 	private $rays = 16;
 	private $air;
 	private $nullPlayer;
-	
+
 	public function __construct(Position $center, $size){
 		$this->level = $center->level;
 		$this->source = $center;
@@ -26,12 +26,12 @@ class Explosion{
 		$this->air = BlockAPI::getItem(AIR, 0, 1);
 		$this->nullPlayer = new PlayerNull();
 	}
-	
+
 	public function sub_expl($i, $mRays, $j, $k){
 		$vx = $i / $mRays * 2 - 1;
 		$vy = $j / $mRays * 2 - 1;
 		$vz = $k / $mRays * 2 - 1;
-		$vlen = sqrt($vx*$vx + $vy*$vy + $vz*$vz);
+		$vlen = sqrt($vx * $vx + $vy * $vy + $vz * $vz);
 		if($vlen != 0){
 			$vx = $vx / $vlen * $this->stepLen;
 			$vy = $vy / $vlen * $this->stepLen;
@@ -39,7 +39,7 @@ class Explosion{
 		}else{
 			$vx = $vy = $vz = 0;
 		}
-		
+
 		$px = $this->source->x;
 		$py = $this->source->y;
 		$pz = $this->source->z;
@@ -64,19 +64,19 @@ class Explosion{
 			$pz += $vz;
 		}
 	}
-	
+
 	public function explode(){
 		$radius = 2 * $this->size;
 		$server = ServerAPI::request();
 		if(!Explosion::$enableExplosions){ /*Disable Explosions*/
-			foreach($server->api->entity->getRadius($this->source, $radius+1) as $entity){
+			foreach($server->api->entity->getRadius($this->source, $radius + 1) as $entity){
 				$distance = $this->source->distance($entity);
 				$distByRad = $distance / $this->size;
 				if($distByRad <= 1 && $distance != 0){
 					$diffX = ($entity->x - $this->source->x) / $distance;
 					$diffY = ($entity->y + $entity->getEyeHeight() - $this->source->y) / $distance;
 					$diffZ = ($entity->z - $this->source->z) / $distance;
-					
+
 					$impact = (1 - $distByRad) * 0.5; //TODO calculate block density around the entity instead of 0.5
 					$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
 					if($damage > 0){
@@ -84,7 +84,7 @@ class Explosion{
 						$entity->speedX = $diffX * $impact;
 						$entity->speedY = $diffY * $impact;
 						$entity->speedZ = $diffZ * $impact;
-						
+
 						if($entity->isPlayer()){
 							$pk = new SetEntityMotionPacket();
 							$pk->eid = 0; //XXX change
@@ -112,7 +112,7 @@ class Explosion{
 		]) === false){
 			return false;
 		}
-		
+
 		$mRays = $this->rays - 1;
 		$i = 0;
 		for($j = 0; $j <= $mRays; ++$j){
@@ -126,21 +126,21 @@ class Explosion{
 				$this->sub_expl($i, $mRays, $j, $k);
 			}
 		}
-		
+
 		$j = 0;
 		for($i = 1; $i < $mRays; ++$i){
 			for($k = 0; $k <= $mRays; ++$k){
 				$this->sub_expl($i, $mRays, $j, $k);
 			}
 		}
-		
+
 		$j = $mRays;
 		for($i = 1; $i < $mRays; ++$i){
 			for($k = 0; $k <= $mRays; ++$k){
 				$this->sub_expl($i, $mRays, $j, $k);
 			}
 		}
-		
+
 		$k = 0;
 		for($i = 1; $i < $mRays; ++$i){
 			for($j = 1; $j < $mRays; ++$j){
@@ -154,8 +154,7 @@ class Explosion{
 			}
 		}
 		//if($i == 0 or $i == $mRays or $j == 0 or $j == $mRays or $k == 0 or $k == $mRays){
-		
-		
+
 		$send = [];
 		foreach($server->api->entity->getRadius($this->source, $radius) as $entity){
 			$distance = $this->source->distance($entity);
@@ -164,15 +163,15 @@ class Explosion{
 				$diffX = ($entity->x - $this->source->x) / $distance;
 				$diffY = ($entity->y + $entity->getEyeHeight() - $this->source->y) / $distance;
 				$diffZ = ($entity->z - $this->source->z) / $distance;
-					
-				$impact = (1 - $distByRad) * 0.5; //TODO calculate block density around the entity instead of 0.5 
+
+				$impact = (1 - $distByRad) * 0.5; //TODO calculate block density around the entity instead of 0.5
 				$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
 				if($damage > 0){
 					$entity->harm($damage, "explosion");
 					$entity->speedX = $diffX * $impact;
 					$entity->speedY = $diffY * $impact;
 					$entity->speedZ = $diffZ * $impact;
-					
+
 					if($entity->isPlayer()){
 						$pk = new SetEntityMotionPacket();
 						$pk->eid = 0; //XXX change
@@ -184,7 +183,7 @@ class Explosion{
 				}
 			}
 		}
-		
+
 		foreach($this->affectedBlocks as $xyz => $idm){
 			$id = $idm >> 8 & 0xff;
 			$meta = $idm & 0x0f;

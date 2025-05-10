@@ -6,13 +6,13 @@ class LiquidBlockStatic extends LiquidBlock{
 	}
 	public static $blockID = 0;
 	//TODO: tick: try spread fire if lava
-	
+
 	public static function setDynamic(Level $level, $x, $y, $z){
 		[$id, $meta] = $level->level->getBlock($x, $y, $z);
 		$dynamicID = $id - 1; //very unsafe
-		$level->fastSetBlockUpdate($x, $y, $z, $dynamicID, $meta);		
+		$level->fastSetBlockUpdate($x, $y, $z, $dynamicID, $meta);
 	}
-	
+
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		$oldID = $level->level->getBlockID($x, $y, $z);
 		static::updateLiquid($level, $x, $y, $z);
@@ -21,6 +21,5 @@ class LiquidBlockStatic extends LiquidBlock{
 			static::setDynamic($level, $x, $y, $z);
 		}
 	}
-	
-	
-}
+
+	}

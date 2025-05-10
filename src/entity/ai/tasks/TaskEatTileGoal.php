@@ -10,7 +10,7 @@ class TaskEatTileGoal extends TaskBase
 
 	public function onEnd(EntityAI $ai)
 	{
-		
+
 	}
 
 	public function onUpdate(EntityAI $ai)
@@ -18,7 +18,7 @@ class TaskEatTileGoal extends TaskBase
 		if($ai->isStarted("TaskPanic")){
 			$this->reset();
 			return false;
-		}		
+		}
 
 		if (--$this->selfCounter == 4)
 		{
@@ -27,7 +27,7 @@ class TaskEatTileGoal extends TaskBase
 			if($id === TALL_GRASS){
 				$ai->entity->level->fastSetBlockUpdate($ai->entity->x, $ai->entity->y, $ai->entity->z, AIR, 0);
 				$ai->entity->eatGrass();
-				
+
 			}elseif($idb === GRASS){
 				$ai->entity->level->fastSetBlockUpdate($ai->entity->x, $ai->entity->y - 1, $ai->entity->z, DIRT, 0);
 				$ai->entity->eatGrass();

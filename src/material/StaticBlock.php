@@ -6,7 +6,7 @@ class StaticBlock
 {
 	const DEFAULT_SLIPPERINESS = 0.6;
 	const DEFAULT_HARDNESS = 0;
-	
+
 	private static $NULL_BOUNDS;
 	public static $prealloc = [];
 	public static $isSolid = [];
@@ -17,18 +17,18 @@ class StaticBlock
 	public static $hasPhysics = [];
 	public static $isLiquid = [];
 	public static $isFullBlock = [];
-	
+
 	public static $hardness = [];
 	public static $slipperiness = [];
 	public static $boundingBoxes = [];
 	public static $minXs = [], $minYs = [], $minZs = [], $maxXs = [], $maxYs = [], $maxZs = [];
-	
+
 	public static function init(){
 		self::$NULL_BOUNDS = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		foreach(Block::$class as $nonstaticname){
 			/**@var Block $b*/
 			$b = new $nonstaticname();
-			
+
 			self::$isSolid[$b->getID()] = $b->isSolid;
 			self::$isTransparent[$b->getID()] = $b->isTransparent;
 			self::$isFlowable[$b->getID()] = $b->isFlowable;
@@ -45,7 +45,7 @@ class StaticBlock
 			FireBlock::setFlammabilityAndCatchingChance($b->getID(), 0, 0);
 			self::setBlockBounds($b->getID(), 0, 0, 0, 1, 1, 1);
 		}
-		
+
 		self::setBlockBounds(BED_BLOCK, 0, 0, 0, 1, 0.5625, 1);
 		//Cake: has bounds based on world state
 		//Chest: has bounds based on world state
@@ -68,16 +68,16 @@ class StaticBlock
 		self::setBlockBounds(SLAB, 0, 0, 0, 1, 0.5, 1);
 		self::setBlockBounds(RAIL, 0, 0, 0, 1, 0.125, 1);
 		self::setBlockBounds(POWERED_RAIL, 0, 0, 0, 1, 0.125, 1);
-		
+
 		self::setBlockBounds(DANDELION, 0.3, 0.0, 0.3, 0.7, 0.6, 0.7); //extends Bush
 		self::setBlockBounds(ROSE, 0.3, 0.0, 0.3, 0.7, 0.6, 0.7); //extends Bush
-		
+
 		self::setBlockBounds(SUGARCANE_BLOCK, 0.5 - 0.375, 0, 0.5 - 0.375, 0.5 + 0.375, 1, 0.5 + 0.375);
 		self::setBlockBounds(SNOW_LAYER, 0, 0, 0, 1, 0.125, 1);
 		self::setBlockBounds(CARPET, 0, 0, 0, 1, 0, 1);
 		//Stairs: based on different factors
 		//Stone wall: based on state
-		
+
 		//Fire related stuff
 		FireBlock::setFlammabilityAndCatchingChance(PLANKS, 5, 20);
 		FireBlock::setFlammabilityAndCatchingChance(DOUBLE_WOOD_SLAB, 5, 20);
@@ -101,29 +101,29 @@ class StaticBlock
 		FireBlock::setFlammabilityAndCatchingChance(HAY_BALE, 60, 20);
 		FireBlock::setFlammabilityAndCatchingChance(SPONGE, 30, 60);
 	}
-	
+
 	public static function setBlockBounds($blockID, $minX, $minY, $minZ, $maxX, $maxY, $maxZ){
 		self::$maxXs[$blockID] = $maxX;
 		self::$maxYs[$blockID] = $maxY;
 		self::$maxZs[$blockID] = $maxZ;
-		
+
 		self::$minXs[$blockID] = $minX;
 		self::$minYs[$blockID] = $minY;
 		self::$minZs[$blockID] = $minZ;
 	}
-	
+
 	public static function getAABB($id, $x, $y, $z){
 		return new AxisAlignedBB(self::$minXs[$id] + $x, self::$minYs[$id] + $y, self::$minZs[$id] + $z, self::$maxXs[$id] + $x, self::$maxYs[$id] + $y, self::$maxZs[$id] + $z); //TODO get bb from self::$boundingBoxes ?
 	}
-	
+
 	public static function getBlock($id){
 		return self::$prealloc[$id] ?? self::$prealloc[0]; //accessing preallocated instances is faster Block::$class[$id] ?? Block::$class[0];
 	}
-	
+
 	public static function getHardness($id){
-		return self::$hardness[$id] ??  StaticBlock::DEFAULT_HARDNESS;
+		return self::$hardness[$id] ?? StaticBlock::DEFAULT_HARDNESS;
 	}
-	
+
 	//TODO: use static block min/max
 	public static function getBoundingBoxForBlockCoords($id, $x, $y, $z){
 		/**@var AxisAlignedBB $bb*/
@@ -134,40 +134,39 @@ class StaticBlock
 		$bb = clone $bb;
 		return $bb->setBounds($x + $bb->minX, $y + $bb->minY, $z + $bb->minZ, $x + $bb->maxX, $y + $bb->maxY, $z + $bb->maxZ);
 	}
-	
-	
+
 	public static function getSlipperiness($id){
 		return self::$slipperiness[$id] ?? StaticBlock::DEFAULT_SLIPPERINESS;
 	}
-	
+
 	public static function getIsSolid($id){
 		return self::$isSolid[$id] ?? false;
 	}
-	
+
 	public static function getIsTransparent($id){
 		return self::$isTransparent[$id] ?? false;
 	}
-	
+
 	public static function getIsFlowable($id){
 		return self::$isFlowable[$id] ?? false;
 	}
-	
+
 	public static function getIsReplaceable($id){
 		return self::$isReplaceable[$id] ?? false;
 	}
-	
+
 	public static function getIsPlaceable($id){
 		return self::$isPlaceable[$id] ?? false;
 	}
-	
+
 	public static function getHasPhysics($id){
-		return self::$hasPhysics[$id] ??  false;
+		return self::$hasPhysics[$id] ?? false;
 	}
-	
+
 	public static function getIsLiquid($id){
 		return self::$isLiquid[$id] ?? false;
 	}
-	
+
 	public static function getIsFullBlock($id){
 		return self::$isFullBlock[$id] ?? false;
 	}

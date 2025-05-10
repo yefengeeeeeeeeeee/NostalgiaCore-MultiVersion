@@ -14,7 +14,7 @@ class BanAPI{
 	private $ops;
 	/** @var Config */
 	private $bannedIPs;
-	
+
 	public $cmdWhitelist = [];//Command WhiteList
 
 	function __construct(){

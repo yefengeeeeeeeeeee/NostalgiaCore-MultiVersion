@@ -18,14 +18,14 @@ class LapisBlock extends SolidBlock{
 			default => 15,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 3){
-			return array(
-				array(LAPIS_BLOCK, 0, 1),
-			);
+			return [
+				[LAPIS_BLOCK, 0, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
 

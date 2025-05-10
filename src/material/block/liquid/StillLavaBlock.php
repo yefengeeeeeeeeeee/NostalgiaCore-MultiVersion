@@ -1,4 +1,5 @@
 <?php
+
 require_once("LiquidBlockStatic.php"); //TODO class loader?
 
 class StillLavaBlock extends LiquidBlockStatic{
@@ -7,9 +8,9 @@ class StillLavaBlock extends LiquidBlockStatic{
 		parent::__construct(STILL_LAVA, $meta, "Still Lava");
 		$this->hardness = 500;
 	}
-	
+
 	public static function getTickDelay(){
 		return 30;
 	}
-	
+
 }

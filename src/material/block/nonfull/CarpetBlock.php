@@ -4,7 +4,7 @@ class CarpetBlock extends FlowableBlock{
 	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(CARPET, $meta, "Carpet");
-		$names = array(
+		$names = [
 			0 => "White Carpet",
 			1 => "Orange Carpet",
 			2 => "Magenta Carpet",
@@ -21,10 +21,10 @@ class CarpetBlock extends FlowableBlock{
 			13 => "Green Carpet",
 			14 => "Red Carpet",
 			15 => "Black Carpet",
-		);
+		];
 		$this->name = $names[$this->meta];
 		$this->hardness = 0;
-		$this->isFullBlock = false;		
+		$this->isFullBlock = false;
 		$this->isSolid = true;
 	}
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){

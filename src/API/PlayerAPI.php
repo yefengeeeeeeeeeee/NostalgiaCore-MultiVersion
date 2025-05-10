@@ -19,7 +19,7 @@ class PlayerAPI{
 		$this->registerCmd("ping");
 		$this->registerCmd("loc");
 		$this->registerCmd("hotbar", "<slotcount>");
-		
+
 		$this->server->api->console->alias("lag", "ping");
 		$this->server->api->console->alias("gm", "gamemode");
 		$this->server->api->console->alias("who", "list");
@@ -49,9 +49,9 @@ class PlayerAPI{
 							if($e->shotByEntity && isset($this->server->api->entity->entities[$e->shooterEID]) && $this->server->api->entity->entities[$e->shooterEID] instanceof Entity){
 								$message = " was shot by {$this->server->api->entity->entities[$e->shooterEID]->name}";
 							}else{
-								$message = " was shot";	
+								$message = " was shot";
 							}
-							
+
 						}else{
 							$message = " was killed by {$e->name}";
 						}
@@ -104,12 +104,12 @@ class PlayerAPI{
 			case "hotbar":
 				if(!($issuer instanceof Player)) return "Please run this command in-game.";
 				if(count($args) < 1) return "Slots in hotbar on server: {$issuer->slotCount}";
-				
+
 				$scrw = $args[0];
 				if(is_numeric($scrw)){
-					$sc = (int)$scrw;
+					$sc = (int) $scrw;
 					if($sc < 5 || $sc > 9) return "Slot count must be between 5 and 9.";
-					
+
 					$issuer->setSlotCount($sc);
 					$issuer->sendInventory();
 					return "Changed slot count to $sc";
@@ -235,10 +235,10 @@ class PlayerAPI{
 				$level = $issuer->entity->level->getName();
 				$compass = [0 => "X+", 1 => "Z+", 2 => "X-", 3 => "Z-", null => "null"];
 				$direction = $compass[$issuer->entity->getDirection()];
-				
+
 				$xChunk = $x >> 4;
 				$zChunk = $z >> 4;
-				
+
 				return "Your coordinates: X: $x ($xChunk), Y: $y, Z: $z ($zChunk), world: $level.\nDirection: $direction";
 		}
 		return $output;
@@ -325,6 +325,17 @@ class PlayerAPI{
 			}
 		}
 		return $o;
+	}
+
+	/**
+	 * @return int
+	 */
+	public static function decodeProtocol($ip){
+		foreach(ServerAPI::request()->clients as $p) {
+			if($p->ip == $ip){
+				return $p->PROTOCOL;
+			}
+		}
 	}
 
 	public function add($CID){
@@ -462,7 +473,7 @@ class PlayerAPI{
 				unset($player->entity->player);
 				//unset($player->entity);
 			}
-			
+
 			$player = null;
 			unset($player);
 		}

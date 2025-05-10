@@ -20,7 +20,7 @@ class DyeItem extends Item{
 			13 => "Magenta Dye",
 			14 => "Orange Dye",
 			15 => "Bone Meal",
-		);
+		];
 		$this->name = $names[$this->meta];
 	}
 }

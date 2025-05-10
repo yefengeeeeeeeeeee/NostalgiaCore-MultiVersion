@@ -20,37 +20,37 @@ class BedBlock extends TransparentBlock{
 		$this->isFullBlock = false;
 		$this->hardness = 1;
 	}
-	
+
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		return [static::getAABB($level, $x, $y, $z)];
 	}
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
-		
+
 		$meta = $level->level->getBlockDamage($x, $y, $z);
 		$dir = $meta & 3;
 		$isHead = ($meta >> 3) & 1;
-		
+
 		$offX = self::HEAD_DIRECTION_OFFSETS[$dir][0];
 		$offZ = self::HEAD_DIRECTION_OFFSETS[$dir][1];
-		
+
 		if($isHead){
 			if($level->level->getBlockID($x - $offX, $y, $z - $offZ) != BED_BLOCK){
 				$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 			}
-		}else if($level->level->getBlockID($x + $offX, $y, $z + $offZ) != BED_BLOCK){
+		}elseif($level->level->getBlockID($x + $offX, $y, $z + $offZ) != BED_BLOCK){
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
-			
+
 			ServerAPI::request()->api->entity->dropRawPos(
-				$level, 
-				$x + (lcg_value() * 0.7) + 0.15, 
-				$y + (lcg_value() * 0.7) + 0.15, 
-				$z + (lcg_value() * 0.7) + 0.15, 
-				BlockAPI::getItem(BED, 0, 1), 
+				$level,
+				$x + (lcg_value() * 0.7) + 0.15,
+				$y + (lcg_value() * 0.7) + 0.15,
+				$z + (lcg_value() * 0.7) + 0.15,
+				BlockAPI::getItem(BED, 0, 1),
 				lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1
 			);
-			
+
 		}
-		
+
 	}
 	public static function findStandUpPosition(Level $level, $x, $y, $z){
 		$blockMeta = $level->level->getBlockDamage($x, $y, $z);
@@ -60,7 +60,7 @@ class BedBlock extends TransparentBlock{
 			$minZ = $z - self::HEAD_DIRECTION_OFFSETS[$direction][1] * $v7 - 1;
 			$maxX = $minX + 2;
 			$maxZ = $minZ + 2;
-			
+
 			for($xCheck = $minX; $xCheck <= $maxX; ++$xCheck){
 				for($zCheck = $minZ; $zCheck <= $maxZ; ++$zCheck){
 					$idCheck = $level->level->getBlockID($xCheck, $y - 1, $zCheck);
@@ -70,10 +70,10 @@ class BedBlock extends TransparentBlock{
 				}
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public function onActivate(Item $item, Player $player){
 		if(ServerAPI::request()->api->time->getPhase($player->level) !== "night"){
 			$pk = new ChatPacket;
@@ -81,12 +81,12 @@ class BedBlock extends TransparentBlock{
 			$player->dataPacket($pk);
 			return true;
 		}
-		
+
 		$blockNorth = $this->getSide(2); //Gets the blocks around them
 		$blockSouth = $this->getSide(3);
 		$blockEast = $this->getSide(5);
 		$blockWest = $this->getSide(4);
-		if(($this->meta & 0x08) === 0x08){ //This is the Top part of bed	
+		if(($this->meta & 0x08) === 0x08){ //This is the Top part of bed
 			$b = $this;
 		}else{ //Bottom Part of Bed
 			if($blockNorth->getID() === $this->id and ($blockNorth->meta & 0x08) === 0x08){
@@ -112,11 +112,11 @@ class BedBlock extends TransparentBlock{
 		}
 		return true;
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->isTransparent === false){
-			
+
 			$d = $player->entity->getDirection();
 			$next = $this->getSide(self::$faces[(($d + 3) % 4)]);
 			$downNext = $next->getSide(0);
@@ -128,15 +128,15 @@ class BedBlock extends TransparentBlock{
 			}
 		}
 		return false;
-	}	
-	
+	}
+
 	public function onBreak(Item $item, Player $player){
 		$blockNorth = $this->getSide(2); //Gets the blocks around them
 		$blockSouth = $this->getSide(3);
 		$blockEast = $this->getSide(5);
 		$blockWest = $this->getSide(4);
-		
-		if(($this->meta & 0x08) === 0x08){ //This is the Top part of bed			
+
+		if(($this->meta & 0x08) === 0x08){ //This is the Top part of bed
 			switch($this->meta & 0x7){
 				case 0:
 					if($blockNorth->id === $this->id) $this->level->setBlock($blockNorth, new AirBlock(), true, false, true);
@@ -170,11 +170,11 @@ class BedBlock extends TransparentBlock{
 		$this->level->setBlock($this, new AirBlock(), true, false, true);
 		return true;
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array(BED, 0, 1),
-		);
+		return [
+			[BED, 0, 1],
+		];
 	}
-	
+
 }

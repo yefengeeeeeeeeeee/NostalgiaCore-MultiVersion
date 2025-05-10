@@ -3,12 +3,12 @@
 class TaskPanic extends TaskBase
 {
 	protected $randX = 2, $randZ = 2;
-	
+
 	public $speedMultiplier;
 	public function __construct($speedMultiplier){
 		$this->speedMultiplier = $speedMultiplier;
 	}
-	
+
 	public function onStart(EntityAI $ai)
 	{
 		$this->selfCounter = 60;
@@ -20,16 +20,16 @@ class TaskPanic extends TaskBase
 		$ai->entity->inPanic = false;
 		$this->reset();
 	}
-	
+
 	public function regenerateRandXZ(){
 		$this->randX = (mt_rand(0, 1) ? -1 : 1);
 		$this->randZ = (mt_rand(0, 1) ? -1 : 1);
 	}
-	
+
 	public function reset(){
 		$this->randX = $this->randZ = 2;
 	}
-	
+
 	public function onUpdate(EntityAI $ai)
 	{
 		--$this->selfCounter;
@@ -42,6 +42,5 @@ class TaskPanic extends TaskBase
 		return $ai->entity instanceof Animal && $ai->entity->inPanic && $ai->entity->knockbackTime <= 0;
 	}
 
-	
-}
+	}
 

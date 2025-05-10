@@ -40,7 +40,7 @@ class LevelAPI{
 			console("[ERROR] Could not load level \"" . $name . "\"");
 			return false;
 		}
-		
+
 		if(PocketMinecraftServer::$KEEP_CHUNKS_LOADED){
 			for($X = 0; $X < 16; ++$X){
 				for($Z = 0; $Z < 16; ++$Z){
@@ -48,8 +48,7 @@ class LevelAPI{
 				}
 			}
 		}
-		
-		
+
 		$entities = new Config($path . "entities.yml", CONFIG_YAML);
 		if(file_exists($path . "tileEntities.yml")){
 			@rename($path . "tileEntities.yml", $path . "tiles.yml");
@@ -61,13 +60,13 @@ class LevelAPI{
 			if(!isset($entity["id"])){
 				break;
 			}
-			
+
 			$entity["x"] = $entity["Pos"][0];
 			$entity["y"] = $entity["Pos"][1];
 			$entity["z"] = $entity["Pos"][2];
 			$entity["yaw"] = $entity["Rotation"][0];
 			$entity["pitch"] = $entity["Rotation"][1];
-			
+
 			if($entity["id"] === 64){ //Item Drop
 				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_ITEM, ENTITY_ITEM_TYPE, [
 					"meta" => $entity["Item"]["Damage"],
@@ -105,7 +104,7 @@ class LevelAPI{
 		foreach($blockUpdates->getAll() as $bupdate){
 			if($bupdate["type"] !== BLOCK_UPDATE_RANDOM) $this->server->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"], (int) $bupdate["y"], (int) $bupdate["z"], $this->levels[$name]), (float) $bupdate["delay"], (int) $bupdate["type"]);
 		}
-		
+
 		return true;
 	}
 	/**

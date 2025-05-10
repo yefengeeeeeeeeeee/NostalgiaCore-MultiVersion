@@ -7,11 +7,14 @@ class MoveEntityPacket_PosRot extends RakNetDataPacket{
 	public $z;
 	public $yaw;
 	public $pitch;
-	
+
 	public function pid(){
+		if($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+			return  ProtocolInfo4::MOVE_ENTITY_PACKET_POSROT;
+		}
 		return ProtocolInfo::MOVE_ENTITY_PACKET_POSROT;
 	}
-	
+
 	public function decode(){
 		$this->get(7);
 		$this->eid = $this->getInt();
@@ -21,7 +24,7 @@ class MoveEntityPacket_PosRot extends RakNetDataPacket{
 		$this->yaw = $this->getFloat();
 		$this->pitch = $this->getFloat();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

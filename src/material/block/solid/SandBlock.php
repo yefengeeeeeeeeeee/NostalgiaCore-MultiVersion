@@ -6,5 +6,5 @@ class SandBlock extends FallableBlock{
 		parent::__construct(SAND, 0, "Sand");
 		$this->hardness = 2.5;
 	}
-	
+
 }

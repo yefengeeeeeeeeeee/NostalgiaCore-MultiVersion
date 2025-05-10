@@ -2,20 +2,23 @@
 
 class PlayerArmorEquipmentPacket extends RakNetDataPacket{
 	public $eid;
-	public $slots = array();
-	
+	public $slots = [];
+
 	public function pid(){
+		if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+			return  ProtocolInfo12::PLAYER_ARMOR_EQUIPMENT_PACKET;
+		}
 		return ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET;
 	}
-	
+
 	public function decode(){
-		$this->eid = $this->getInt();		
+		$this->eid = $this->getInt();
 		$this->slots[0] = $this->getByte();
 		$this->slots[1] = $this->getByte();
 		$this->slots[2] = $this->getByte();
 		$this->slots[3] = $this->getByte();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

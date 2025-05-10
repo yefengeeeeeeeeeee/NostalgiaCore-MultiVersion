@@ -5,12 +5,12 @@ class Item{
 	const TOOL_PICKAXE = 1;
 	const TOOL_AXE = 2;
 	const TOOL_SHOVEL = 3;
-	const TOOL_HOE = 4;	
-	
+	const TOOL_HOE = 4;
+
 	const DEF_DAMAGE = 1;
-	
-	public static $class = array(
-	
+
+	public static $class = [
+
 		//armor
 		LEATHER_CAP => "LeatherCapItem",
 		LEATHER_TUNIC => "LeatherTunicItem",
@@ -32,7 +32,7 @@ class Item{
 		GOLDEN_CHESTPLATE => "GoldenChestplateItem",
 		GOLDEN_LEGGINGS => "GoldenLeggingsItem",
 		GOLDEN_BOOTS => "GoldenBootsItem",
-		
+
 		//food
 		APPLE => "AppleItem",
 		MUSHROOM_STEW => "MushroomStewItem",
@@ -51,7 +51,7 @@ class Item{
 		PUMPKIN_PIE => "PumpkinPieItem",
 		BEETROOT => "BeetrootItem",
 		BEETROOT_SOUP => "BeetrootSoupItem",
-	
+
 		//generic
 		ARROW => "ArrowItem",
 		COAL => "CoalItem",
@@ -95,7 +95,7 @@ class Item{
 		QUARTZ => "QuartzItem",
 		CAMERA => "CameraItem",
 		BEETROOT_SEEDS => "BeetrootSeedsItem",
-		
+
 		//tool
 		IRON_SHOVEL => "IronShovelItem",
 		IRON_PICKAXE => "IronPickaxeItem",
@@ -127,21 +127,21 @@ class Item{
 		COMPASS => "CompassItem",
 		CLOCK => "ClockItem",
 		SHEARS => "ShearsItem",
-		
-	);
+
+	];
 	public $block;
 	public $id;
 	public $meta;
 	public $count;
 	/**
-	 * @var int 
+	 * @var int
 	 * Max stack size of the item. Use Item::getMaxStackSize to get stack size for specific item.
 	 */
 	public $maxStackSize = 64;
 	public $durability = 0;
 	public $name;
 	public $isActivable = false;
-	
+
 	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown"){
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;
@@ -155,19 +155,19 @@ class Item{
 			$this->maxStackSize = 1;
 		}
 	}
-	
+
 	public function isPickaxe(){
 		return false;
 	}
-	
+
 	public function getName(){
 		return $this->name;
 	}
-	
+
 	public function isPlaceable(){
 		return (($this->block instanceof Block) and $this->block->isPlaceable === true);
 	}
-	
+
 	public function getBlock(){
 		if($this->block instanceof Block){
 			return $this->block;
@@ -175,23 +175,23 @@ class Item{
 			return BlockAPI::get(AIR);
 		}
 	}
-	
+
 	public function getID(){
 		return $this->id;
 	}
-	
+
 	public function getMetadata(){
 		return $this->meta;
-	}	
-	
+	}
+
 	public function isArmor(){
 		return false;
 	}
-	
+
 	public function getMaxStackSize(){
 		return $this->maxStackSize;
 	}
-	
+
 	public function getFuelTime(){
 		if(!isset(FuelData::$duration[$this->id])){
 			return false;
@@ -201,24 +201,24 @@ class Item{
 		}
 		return false;
 	}
-	
+
 	public function getSmeltItem(){
 		if(!isset(SmeltingData::$product[$this->id])){
 			return false;
 		}
-		
+
 		if(isset(SmeltingData::$product[$this->id][0]) and !is_array(SmeltingData::$product[$this->id][0])){
 			return BlockAPI::getItem(SmeltingData::$product[$this->id][0], SmeltingData::$product[$this->id][1]);
 		}
-		
+
 		if(!isset(SmeltingData::$product[$this->id][$this->meta])){
 			return false;
 		}
-		
+
 		return BlockAPI::getItem(SmeltingData::$product[$this->id][$this->meta][0], SmeltingData::$product[$this->id][$this->meta][1]);
-		
+
 	}
-	
+
 	public function useOn($object, $force = false){
 		if($force){
 			if(($object instanceof Entity) and !$this->isSword()){
@@ -230,16 +230,16 @@ class Item{
 		}
 		return false;
 	}
-	
+
 	public function isTool(){
 		return false;
 	}
-	
+
 	public function getMaxDurability(){
 		if(!$this->isTool() and $this->id !== BOW){
 			return false;
 		}
-		
+
 		$levels = [ //TODO rewrite(item usage too)
 			2 => 33, //GOLD
 			1 => 60, //WOODEN
@@ -256,14 +256,14 @@ class Item{
 		}
 		return $levels[$type];
 	}
-	
+
 	public function getLevel(){
 		return false;
 	}
-	
+
 	//TODO remove?
 	public function getPickaxeLevel(){ //Returns false or level of the pickaxe
- 	   return match ($this->id) {
+	   return match ($this->id) {
 			WOODEN_PICKAXE => 1,
 			GOLDEN_PICKAXE => 2,
 			STONE_PICKAXE => 3,
@@ -272,7 +272,7 @@ class Item{
 			default => false,
 		};
 	}
-	
+
 	public function isAxe(){
 		return false;
 	}
@@ -280,11 +280,11 @@ class Item{
 	public function isSword(){
 		return false;
 	}
-	
+
 	public function isShovel(){
 		return false;
 	}
-	
+
 	public function isHoe(){
 		return false;
 	}
@@ -292,23 +292,23 @@ class Item{
 	public function isShears(){
 		return ($this->id === SHEARS);
 	}
-	
+
 	public function __toString(){
 		return "Item ". $this->name ." (".$this->id.":".$this->meta.")";
 	}
-	
+
 	public function getDamageAgainstOf($e){
 		return Item::DEF_DAMAGE;
 	}
-	
+
 	public function getDestroySpeed(Block $block, Player $player){
 		return 1;
 	}
-	
+
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		return false;
 	}
-	
+
 	public static function getFoodHeal($id){
 		return match($id){
 			APPLE => 4,
@@ -328,9 +328,9 @@ class Item{
 			POTATO => 1,
 			BAKED_POTATO => 6,
 			BEETROOT => 1,
-			
+
 			default => 0
 		};
 	}
-	
+
 }

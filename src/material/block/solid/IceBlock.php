@@ -7,17 +7,17 @@ class IceBlock extends TransparentBlock{
 		$this->hardness = 2.5;
 		$this->slipperiness = 0.98;
 	}
-	
+
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 1, $z + 1)];
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$ret = $this->level->setBlock($this, $this, true, false, true);
 		$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 		return $ret;
 	}
-	
+
 	public function onBreak(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0){
 			$this->level->setBlock($this, new WaterBlock(), true, false, true);
@@ -27,20 +27,20 @@ class IceBlock extends TransparentBlock{
 		}
 		return true;
 	}
-	
-	private function scanForNearbyLightSources($offsetX, $offsetY, $offsetZ){ 
+
+	private function scanForNearbyLightSources($offsetX, $offsetY, $offsetZ){
 		for($x = -$offsetX; $x <= $offsetX; ++$x){ //i hope it is possible to optimize it
 			for($z = -$offsetZ; $z <= $offsetZ; ++$z){
 				for($y = -$offsetY; $y <= $offsetY; ++$y){
-					$pX = $this->x+$x;
-					$pY = $this->y+$y;
-					$pZ = $this->z+$z;
+					$pX = $this->x + $x;
+					$pY = $this->y + $y;
+					$pZ = $this->z + $z;
 					$block = $this->level->getBlock(new Vector3($pX, $pY, $pZ)); //D= slow what was u thinking of gameherobrine from 2022
 					if($block instanceof LightingBlock){ //idk is it possible to make it better
 						return $block;
 					}
-				}	
-			}	
+				}
+			}
 		}
 	}
 	//public static function onUpdate(Level $level, $x, $y, $z, $type){ /*Taken from https://github.com/PocketMine/PocketMine-MP/issues/3249*/
@@ -69,6 +69,6 @@ class IceBlock extends TransparentBlock{
 	}
 
 	public function getDrops(Item $item, Player $player){
-		return array();
+		return [];
 	}
 }

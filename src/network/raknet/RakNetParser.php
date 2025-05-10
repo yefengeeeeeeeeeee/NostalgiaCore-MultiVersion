@@ -4,10 +4,12 @@ class RakNetParser{
 
 	public $packet;
 	private $buffer;
+	private $source;
 	private $offset;
 
-	public function __construct(&$buffer){
-		$this->buffer =& $buffer;
+	public function __construct(&$buffer, $source){
+		$this->source = &$source;
+		$this->buffer = &$buffer;
 		$this->offset = 0;
 		if(strlen($this->buffer) > 0){
 			$this->parse();
@@ -18,7 +20,7 @@ class RakNetParser{
 
 	private function parse(){
 		$this->packet = new RakNetPacket(ord($this->get(1)));
-		$this->packet->buffer =& $this->buffer;
+		$this->packet->buffer = &$this->buffer;
 		$this->packet->length = strlen($this->buffer);
 		switch($this->packet->pid()){
 			case RakNetInfo::UNCONNECTED_PING:
@@ -56,8 +58,10 @@ class RakNetParser{
 			case RakNetInfo::DATA_PACKET_F:
 				$this->packet->seqNumber = $this->getLTriad();
 				$this->packet->data = [];
-				
-				while(!$this->feof() and ($pk = $this->parseDataPacket()) instanceof RakNetDataPacket){
+				$this->packet->ip = $this->source;
+				$PROTOCOL = PlayerAPI::decodeProtocol($this->packet->ip);
+
+				while(!$this->feof() and ($pk = $this->parseDataPacket($PROTOCOL)) instanceof RakNetDataPacket){
 					$this->packet->data[] = $pk;
 				}
 				break;
@@ -118,7 +122,7 @@ class RakNetParser{
 		return !isset($this->buffer[$this->offset]);
 	}
 
-	private function parseDataPacket(){
+	private function parseDataPacket($protocol = ProtocolInfo::CURRENT_PROTOCOL){
 		$packetFlags = $this->getByte();
 		$reliability = ($packetFlags & 0b11100000) >> 5;
 		$hasSplit = ($packetFlags & 0b00010000) > 0;
@@ -165,66 +169,8 @@ class RakNetParser{
 			if(strlen($buffer) < ($length - 1)){
 				return false;
 			}
-			
-			$data = match($pid){
-				ProtocolInfo::PING_PACKET => new PingPacket(),
-				ProtocolInfo::PONG_PACKET => new PongPacket(),
-				ProtocolInfo::CLIENT_CONNECT_PACKET => new ClientConnectPacket(),
-				ProtocolInfo::SERVER_HANDSHAKE_PACKET => new ServerHandshakePacket(),
-				ProtocolInfo::DISCONNECT_PACKET => new DisconnectPacket(),
-				ProtocolInfo::LOGIN_PACKET => new LoginPacket(),
-				ProtocolInfo::LOGIN_STATUS_PACKET => new LoginStatusPacket(),
-				ProtocolInfo::READY_PACKET => new ReadyPacket(),
-				ProtocolInfo::MESSAGE_PACKET => new MessagePacket(),
-				ProtocolInfo::SET_TIME_PACKET => new SetTimePacket(),
-				ProtocolInfo::START_GAME_PACKET => new StartGamePacket(),
-				ProtocolInfo::ADD_MOB_PACKET => new AddMobPacket(),
-				ProtocolInfo::ADD_PLAYER_PACKET => new AddPlayerPacket(),
-				ProtocolInfo::REMOVE_PLAYER_PACKET => new RemovePlayerPacket(),
-				ProtocolInfo::ADD_ENTITY_PACKET => new AddEntityPacket(),
-				ProtocolInfo::REMOVE_ENTITY_PACKET => new RemoveEntityPacket(),
-				ProtocolInfo::ADD_ITEM_ENTITY_PACKET => new AddItemEntityPacket(),
-				ProtocolInfo::TAKE_ITEM_ENTITY_PACKET => new TakeItemEntityPacket(),
-				ProtocolInfo::MOVE_ENTITY_PACKET => new MoveEntityPacket(),
-				ProtocolInfo::MOVE_ENTITY_PACKET_POSROT => new MoveEntityPacket_PosRot(),
-				ProtocolInfo::ROTATE_HEAD_PACKET => new RotateHeadPacket(),
-				ProtocolInfo::MOVE_PLAYER_PACKET => new MovePlayerPacket(),
-				ProtocolInfo::REMOVE_BLOCK_PACKET => new RemoveBlockPacket(),
-				ProtocolInfo::UPDATE_BLOCK_PACKET => new UpdateBlockPacket(),
-				ProtocolInfo::ADD_PAINTING_PACKET => new AddPaintingPacket(),
-				ProtocolInfo::EXPLODE_PACKET => new ExplodePacket(),
-				ProtocolInfo::LEVEL_EVENT_PACKET => new LevelEventPacket(),
-				ProtocolInfo::TILE_EVENT_PACKET => new TileEventPacket(),
-				ProtocolInfo::ENTITY_EVENT_PACKET => new EntityEventPacket(),
-				ProtocolInfo::REQUEST_CHUNK_PACKET => new RequestChunkPacket(),
-				ProtocolInfo::CHUNK_DATA_PACKET => new ChunkDataPacket(),
-				ProtocolInfo::PLAYER_EQUIPMENT_PACKET => new PlayerEquipmentPacket(),
-				ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET => new PlayerArmorEquipmentPacket(),
-				ProtocolInfo::INTERACT_PACKET => new InteractPacket(),
-				ProtocolInfo::USE_ITEM_PACKET => new UseItemPacket(),
-				ProtocolInfo::PLAYER_ACTION_PACKET => new PlayerActionPacket(),
-				ProtocolInfo::HURT_ARMOR_PACKET => new HurtArmorPacket(),
-				ProtocolInfo::SET_ENTITY_DATA_PACKET => new SetEntityDataPacket(),
-				ProtocolInfo::SET_ENTITY_MOTION_PACKET => new SetEntityMotionPacket(),
-				ProtocolInfo::SET_HEALTH_PACKET => new SetHealthPacket(),
-				ProtocolInfo::SET_SPAWN_POSITION_PACKET => new SetSpawnPositionPacket(),
-				ProtocolInfo::ANIMATE_PACKET => new AnimatePacket(),
-				ProtocolInfo::RESPAWN_PACKET => new RespawnPacket(),
-				ProtocolInfo::SEND_INVENTORY_PACKET => new SendInventoryPacket(),
-				ProtocolInfo::DROP_ITEM_PACKET => new DropItemPacket(),
-				ProtocolInfo::CONTAINER_OPEN_PACKET => new ContainerOpenPacket(),
-				ProtocolInfo::CONTAINER_CLOSE_PACKET => new ContainerClosePacket(),
-				ProtocolInfo::CONTAINER_SET_SLOT_PACKET => new ContainerSetSlotPacket(),
-				ProtocolInfo::CONTAINER_SET_DATA_PACKET => new ContainerSetDataPacket(),
-				ProtocolInfo::CONTAINER_SET_CONTENT_PACKET => new ContainerSetContentPacket(),
-				ProtocolInfo::CHAT_PACKET => new ChatPacket(),
-				ProtocolInfo::ADVENTURE_SETTINGS_PACKET => new AdventureSettingsPacket(),
-				ProtocolInfo::ENTITY_DATA_PACKET => new EntityDataPacket(),
-				ProtocolInfo::SET_ENTITY_LINK_PACKET => new SetEntityLinkPacket(),
-				ProtocolInfo::PLAYER_INPUT_PACKET => new PlayerInputPacket(),
-				default => new UnknownPacket($pid)
-			};
-			
+
+			$data = PacketPool::getPacket($pid, $protocol);
 			$data->reliability = $reliability;
 			$data->hasSplit = $hasSplit;
 			$data->messageIndex = $messageIndex;

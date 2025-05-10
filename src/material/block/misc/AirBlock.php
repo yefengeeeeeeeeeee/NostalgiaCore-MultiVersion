@@ -2,7 +2,7 @@
 
 class AirBlock extends TransparentBlock{
 	public static $blockID;
-	
+
 	public function __construct(){
 		parent::__construct(AIR, 0, "Air");
 		$this->isActivable = false;
@@ -15,7 +15,7 @@ class AirBlock extends TransparentBlock{
 		$this->isSolid = false;
 		$this->isFullBlock = true;
 		$this->hardness = 0;
-		
+
 	}
-	
+
 }

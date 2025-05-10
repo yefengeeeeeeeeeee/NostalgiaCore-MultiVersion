@@ -24,7 +24,7 @@ class MelonStemBlock extends FlowableBlock{
 				//$this->level->setBlock($this, $this, true, false, true);
 				$level->fastSetBlockUpdate($x, $y, $z, $block[0], $block[1] + 1);
 			}else{
-				
+
 				$position = new AirBlock(); //feke block
 				$position->x = $x;
 				$position->y = $y;
@@ -46,11 +46,11 @@ class MelonStemBlock extends FlowableBlock{
 	}
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		if($level->level->getBlockID($x, $y - 1, $z) != FARMLAND){
-			ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(MELON_SEEDS, 0, mt_rand(0, 2)));
+			ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(MELON_SEEDS, 0, mt_rand(0, 2)));
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
 	}
-	
+
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			$this->meta += mt_rand(0, 3) + 2;
@@ -65,7 +65,7 @@ class MelonStemBlock extends FlowableBlock{
 		}
 		return false;
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		$drops = [];
 		if($this->meta >= 0x07){

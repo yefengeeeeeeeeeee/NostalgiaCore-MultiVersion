@@ -7,5 +7,5 @@ class InfoUpdateBlock extends SolidBlock{
 		$this->breakable = true;
 		$this->hardness = 0;
 	}
-	
+
 }

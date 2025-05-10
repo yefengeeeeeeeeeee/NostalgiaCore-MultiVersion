@@ -7,16 +7,16 @@ class SaplingBlock extends FlowableBlock{
 	const BIRCH = 2;
 	const JUNGLE = 3;
 	const BURN_TIME = 5;
-	
+
 	public function __construct($meta = SaplingBlock::OAK){
 		parent::__construct(SAPLING, $meta, "Sapling");
 		$this->isActivable = true;
-		$names = array(
+		$names = [
 			0 => "Oak Sapling",
 			1 => "Spruce Sapling",
 			2 => "Birch Sapling",
 			3 => "Jungle Sapling",
-		);
+		];
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 0;
 	}
@@ -32,7 +32,7 @@ class SaplingBlock extends FlowableBlock{
 		}
 		return false;
 	}
-	
+
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			TreeObject::growTree($this->level, $this, new Random(), $this->meta & 0x03);
@@ -47,7 +47,7 @@ class SaplingBlock extends FlowableBlock{
 		$downID = $level->level->getBlockID($x, $y - 1, $z);
 		if(StaticBlock::getIsTransparent($downID) && $downID !== FARMLAND){ //Replace with common break method
 			[$id, $meta] = $level->level->getBlock($x, $y, $z);
-			ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem($id, $meta));
+			ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem($id, $meta));
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
 	}
@@ -64,8 +64,8 @@ class SaplingBlock extends FlowableBlock{
 		}
 	}
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array($this->id, $this->meta & 0x03, 1),
-		);
+		return [
+			[$this->id, $this->meta & 0x03, 1],
+		];
 	}
 }

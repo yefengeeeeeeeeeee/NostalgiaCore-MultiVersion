@@ -40,7 +40,7 @@ class PMFLevel extends PMF{
 		if(!is_dir($dirname)){
 			@mkdir($dirname , 0755);
 		}
-		
+
 		for($index = 0; $index < $cnt; ++$index){
 			$this->chunks[$index] = false;
 			$this->chunkChange[$index] = false;
@@ -94,14 +94,14 @@ class PMFLevel extends PMF{
 
 		$this->backupLocTable();
 	}
-	
+
 	public function backupLocTable(){
 		$dir = dirname($this->file);
 		if(is_file("$dir/loctable.pmf")){
 			$val = copy("$dir/loctable.pmf", "$dir/loctable.pmf.old");
 			if($val === false) ConsoleAPI::warn("Failed to backup loctable data!");
 		}
-		
+
 		$file = fopen("$dir/loctable.pmf", "wb");
 		try{
 			$cnt = pow($this->levelData["width"], 2);
@@ -111,7 +111,7 @@ class PMFLevel extends PMF{
 		}finally{
 			fclose($file);
 		}
-		
+
 	}
 
 	public function getXZ($index, &$X = null, &$Z = null){
@@ -212,7 +212,7 @@ class PMFLevel extends PMF{
 		unset($this->chunks[$index], $this->chunkChange[$index]);
 		return true;
 	}
-	
+
 	public function isChunkLoaded($X, $Z){
 		$index = self::getIndex($X, $Z);
 		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
@@ -351,16 +351,16 @@ class PMFLevel extends PMF{
 	public function fastGetBlockID($chunkX, $chunkY, $chunkZ, $blockX, $blockY, $blockZ, $index){
 		return ($this->chunks[$index][$chunkY] === false) ? 0 : ord($this->chunks[$index][$chunkY][$blockY + ($blockX << 5) + ($blockZ << 9)]);
 	}
-	
+
 	public function getBlockID($x, $y, $z){
 		if($y > 127 || $y < 0){
 			return 0;
 		}
-		
+
 		if($x < 0 || $x > 255 || $z < 0 || $z > 255){
 			return INVISIBLE_BEDROCK;
 		}
-		
+
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
@@ -371,9 +371,9 @@ class PMFLevel extends PMF{
 		$aX = $x & 0xf;
 		$aZ = $z & 0xf;
 		$aY = $y & 0xf;
-		
+
 		$b = ord($this->chunks[$index][$Y][($aY + ($aX << 5) + ($aZ << 9))]);
-		
+
 		return $b;
 	}
 
@@ -381,12 +381,12 @@ class PMFLevel extends PMF{
 		if($x < 0 || $x > 255 || $z < 0 || $z > 255 || $y < 0 || $y > 127){
 			return false;
 		}
-		
+
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		$block &= 0xFF;
-		
+
 		$index = self::getIndex($X, $Z);
 		$aX = $x & 0xf;
 		$aZ = $z & 0xf;
@@ -398,7 +398,7 @@ class PMFLevel extends PMF{
 			$this->chunks[$index][$Y][$bind] = chr($block);
 			if($block > 0) StaticBlock::getBlock($block)::onPlace($this->level, $x, $y, $z);
 		}
-		
+
 		if(!isset($this->chunkChange[$index][$Y])){
 			$this->chunkChange[$index][$Y] = 1;
 		}else{
@@ -434,7 +434,7 @@ class PMFLevel extends PMF{
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		$damage &= 0x0F;
-		
+
 		$index = self::getIndex($X, $Z);
 		$aX = $x & 0xf;
 		$aZ = $z & 0xf;
@@ -467,11 +467,11 @@ class PMFLevel extends PMF{
 		if($x < 0 || $x > 255 || $z < 0 || $z > 255){
 			return [INVISIBLE_BEDROCK, 0];
 		}
-		
+
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
-		
+
 		$index = self::getIndex($X, $Z);
 		if(!isset($this->chunks[$index]) || $this->chunks[$index] === false){
 			if($this->loadChunk($X, $Z) === false){
@@ -484,12 +484,12 @@ class PMFLevel extends PMF{
 		$aX = $x & 0xf;
 		$aZ = $z & 0xf;
 		$aY = $y & 0xf;
-		
+
 		$b = ord($this->chunks[$index][$Y][($aY + ($aX << 5) + ($aZ << 9))]);
-		
+
 		$m = ord($this->chunks[$index][$Y][(($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9))]);
 		$m = ($y & 1) ? $m >> 4 : $m & 0xf;
-		
+
 		return [$b, $m];
 	}
 
@@ -517,7 +517,7 @@ class PMFLevel extends PMF{
 		$mindex = (int) (($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9));
 		$old_b = ord($this->chunks[$index][$Y][$bindex]);
 		$old_m = ord($this->chunks[$index][$Y][$mindex]);
-		
+
 		$m = ($y & 1) ? (($meta << 4) | ($old_m & 0x0F)) : (($old_m & 0xF0) | $meta);
 
 		if($old_b !== $block or $old_m !== $m){
@@ -529,7 +529,7 @@ class PMFLevel extends PMF{
 				++$this->chunkChange[$index][$Y];
 			}
 			$this->chunkChange[$index][-1] = true;
-			
+
 			if($block > 0) StaticBlock::getBlock($block)::onPlace($this->level, $x, $y, $z);
 			return true;
 		}

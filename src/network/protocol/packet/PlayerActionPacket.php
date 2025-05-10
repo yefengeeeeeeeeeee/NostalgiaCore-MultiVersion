@@ -7,12 +7,20 @@ class PlayerActionPacket extends RakNetDataPacket{
 	public $z;
 	public $face;
 	public $eid;
-	
+
 	public function pid(){
+		if($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
+			return  ProtocolInfo6::PLAYER_ACTION_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
+			return  ProtocolInfo8::PLAYER_ACTION_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+			return  ProtocolInfo12::PLAYER_ACTION_PACKET;
+		}
 		return ProtocolInfo::PLAYER_ACTION_PACKET;
 	}
-	
+
 	public function decode(){
+        //if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9)$this->reset();
 		$this->action = $this->getInt();
 		$this->x = $this->getInt();
 		$this->y = $this->getInt();
@@ -20,9 +28,15 @@ class PlayerActionPacket extends RakNetDataPacket{
 		$this->face = $this->getInt();
 		$this->eid = $this->getInt();
 	}
-	
-	public function encode(){
 
+	public function encode(){
+        /*$this->reset();
+        $this->putInt($this->action);
+        $this->putInt($this->x);
+        $this->putInt($this->y);
+        $this->putInt($this->z);
+        $this->putInt($this->face);
+        $this->putInt($this->eid);*/
 	}
 
 }

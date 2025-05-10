@@ -20,14 +20,14 @@ class BricksBlock extends SolidBlock{
 			default => 10,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 1){
-			return array(
-				array(BRICKS_BLOCK, 0, 1),
-			);
+			return [
+				[BRICKS_BLOCK, 0, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

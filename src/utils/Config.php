@@ -168,9 +168,6 @@ class Config{
 		return $content;
 	}
 
-	/**
-	 * @param $content
-	 */
 	private function parseProperties($content){
 		if(preg_match_all('/([a-zA-Z0-9\-_\.]*)=([^\r\n]*)/u', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
@@ -199,9 +196,6 @@ class Config{
 		return preg_replace("#^([ ]*)([a-zA-Z_]{1}[^\:]*)\:#m", "$1\"$2\":", $str);
 	}
 
-	/**
-	 * @param $content
-	 */
 	private function parseList($content){
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
@@ -213,8 +207,6 @@ class Config{
 	}
 
 	/**
-	 * @param $default
-	 * @param $data
 	 *
 	 * @return integer
 	 */
@@ -250,7 +242,6 @@ class Config{
 	}
 
 	/**
-	 * @param $k
 	 *
 	 * @return boolean|mixed
 	 */
@@ -258,16 +249,11 @@ class Config{
 		return $this->get($k);
 	}
 
-	/**
-	 * @param $k
-	 * @param $v
-	 */
 	public function __set($k, $v){
 		$this->set($k, $v);
 	}
 
 	/**
-	 * @param $k
 	 *
 	 * @return boolean|mixed
 	 */
@@ -280,7 +266,6 @@ class Config{
 	}
 
 	/**
-	 * @param $k
 	 * @param bool $v
 	 */
 	public function set($k, $v = true){
@@ -288,7 +273,6 @@ class Config{
 	}
 
 	/**
-	 * @param $k
 	 *
 	 * @return boolean
 	 */
@@ -297,7 +281,6 @@ class Config{
 	}
 
 	/**
-	 * @param $k
 	 * @param bool $lowercase If set, searches Config in single-case / lowercase.
 	 *
 	 * @return boolean
@@ -312,16 +295,10 @@ class Config{
 		}
 	}
 
-	/**
-	 * @param $k
-	 */
 	public function __unset($k){
 		$this->remove($k);
 	}
 
-	/**
-	 * @param $k
-	 */
 	public function remove($k){
 		unset($this->config[$k]);
 	}

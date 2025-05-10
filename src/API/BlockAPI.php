@@ -259,7 +259,7 @@ class BlockAPI{
 						$output .= "Usage: /setblock <x> <y> <z> <block[:damage]>";
 						break;
 					}
-					
+
 					$level = $issuer->entity->level;
 					$block = self::fromString($args[3])->getBlock();
 				}
@@ -294,8 +294,8 @@ class BlockAPI{
 				break;
 			case "give":
 				$player = $this->server->api->player->get($args[0] ?? "");
-				
-				if($player instanceof Player){			
+
+				if($player instanceof Player){
 					$item = self::fromString($args[1] ?? "");
 					if(($player->gamemode & 0x01) === 0x01){
 						return "Player is in creative mode.";
@@ -303,18 +303,18 @@ class BlockAPI{
 					if($item->getID() === 0){
 						return "You cannot give an air block to a player.";
 					}
-					
+
 					if(!isset($args[2])){
 						$item->count = $item->getMaxStackSize();
 					}else{
 						$item->count = (int) $args[2];
 					}
-					
+
 					$player->addItem($item->getID(), $item->getMetadata(), $item->count);
 					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$player->username;
 					break;
 				}else{
-					$item = self::fromString($args[0] ?? "");	
+					$item = self::fromString($args[0] ?? "");
 					if(!($issuer instanceof Player)){
 						return "You cant give an item to a non-player.";
 					}
@@ -412,7 +412,6 @@ class BlockAPI{
 			return $this->cancelAction($target, $player, false);
 		}
 
-
 		if(is_array($drops) && ($player->gamemode & 0x01) === 0x00 and count($drops) > 0){
 			foreach($drops as $drop){
 				$this->server->api->entity->drop(new Position($target->x + 0.5, $target->y, $target->z + 0.5, $target->level), BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2]));
@@ -456,7 +455,7 @@ class BlockAPI{
 				return $this->cancelAction($block, $player);
 			}
 		}
-		
+
 		StaticBlock::getBlock($target->getID())::interact($target->level, $target->x, $target->y, $target->z, $player);
 
 		if($target->isActivable === true){
@@ -501,14 +500,14 @@ class BlockAPI{
 			$hand->position($block);
 			//$face = -1;
 		}
-		
+
 		if($hand->isSolid === true && ($hand->getID() != BED_BLOCK && $hand->getID() != CARPET)){
 			$aabb = $hand->getAABB($block->level, $block->x, $block->y, $block->z);
 			$playerbb = $player->entity->boundingBox;
-			if(($aabb->maxX > $playerbb->minX && $aabb->minX < $playerbb->maxX) && ($aabb->maxY > ($playerbb->minY+0.21) && $aabb->minY < $playerbb->maxY) && ($aabb->maxZ > $playerbb->minZ && $aabb->minZ < $playerbb->maxZ)){
+			if(($aabb->maxX > $playerbb->minX && $aabb->minX < $playerbb->maxX) && ($aabb->maxY > ($playerbb->minY + 0.21) && $aabb->minY < $playerbb->maxY) && ($aabb->maxZ > $playerbb->minZ && $aabb->minZ < $playerbb->maxZ)){
 				return $this->cancelAction($block, $player, false); //Entity in block
 			}
-			
+
 		}
 
 		if($this->server->api->dhandle("player.block.place", ["player" => $player, "block" => $block, "target" => $target, "item" => $item]) === false){
@@ -537,14 +536,12 @@ class BlockAPI{
 			return false;
 		}
 		$level = $block::onUpdate($pos->level, $pos->x, $pos->y, $pos->z, $type);
-		
+
 		return $level;
 	}
-	
 
-	
 	public function blockUpdateAround(Position $pos, $type = BLOCK_UPDATE_NORMAL, $delay = false){
-		
+
 		if($type == BLOCK_UPDATE_NORMAL){
 			try{
 				throw new Exception("Deprecated: tried updating $pos using BLOCK_UPDATE_NORMAL.");
@@ -554,7 +551,7 @@ class BlockAPI{
 			}
 			return;
 		}
-		
+
 		if($delay !== false){
 			$this->scheduleBlockUpdate($pos->getSide(0), $delay, $type);
 			$this->scheduleBlockUpdate($pos->getSide(1), $delay, $type);
@@ -576,7 +573,7 @@ class BlockAPI{
 		if($delay < 0){
 			return false;
 		}
-		
+
 		$index = $x . "." . $y . "." . $z . "." . $level->getName() . "." . $type;
 		$delay = microtime(true) + $delay * 0.05;
 		if(!isset($this->scheduledUpdates[$index])){
@@ -586,7 +583,7 @@ class BlockAPI{
 		}
 		return false;
 	}
-	
+
 	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
 		$type = (int) $type;
 		if($delay < 0){
@@ -643,5 +640,32 @@ class BlockAPI{
 				}
 			}
 		}
+	}
+
+	/**
+	 * 方块/物品id转换，防止新版本影响旧版本视觉效果
+	 */
+	public static function convertHighItemIdsToOldItemIds(int $protocolId, int $itemId) : int{
+		if ($protocolId >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
+			return $itemId;
+		}
+
+		$idMap = [ //default for protocol < 12
+			LIT_PUMPKIN => MELON_BLOCK, //block
+			PUMPKIN_SEEDS => MELON_SEEDS, //item
+			PUMPKIN_PIE => BREAD, //item
+			BEETROOT => BREAD, //item
+			BEETROOT_SEEDS => SEEDS, //item
+		];
+
+		if ($protocolId < ProtocolInfo9::CURRENT_PROTOCOL_9) {
+			$idMap += [
+				NETHERRACK => OBSIDIAN, //block
+				NETHER_BRICK => BRICK, //item
+				NETHER_QUARTZ => BRICK, //item
+			];
+		}
+
+		return $idMap[$itemId] ?? $itemId;
 	}
 }

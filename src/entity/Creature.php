@@ -2,12 +2,11 @@
 
 abstract class Creature extends Living{
 	const CLASS_TYPE = ENTITY_MOB;
-	
+
 	public $inPanic;
 	public $closestPlayerEID = false;
 	public $closestPlayerDist = INF;
-	
-	
+
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		$this->inPanic = false; //force for now
 		parent::__construct($level, $eid, $class, $type, $data);
@@ -15,13 +14,12 @@ abstract class Creature extends Living{
 		$this->enableAutojump = true;
 		$this->searchForClosestPlayers = true;
 	}
-	
+
 	public function update($now){
 		$this->handlePrePlayerSearcher();
 		return parent::update($now);
 	}
-	
-	
+
 	public function handlePrePlayerSearcher(){
 		parent::handlePrePlayerSearcher();
 		if($this->closestPlayerEID !== false){
@@ -30,12 +28,12 @@ abstract class Creature extends Living{
 				$this->closestPlayerEID = false;
 				$this->closestPlayerDist = INF;
 			}else{
-				$dist = ($this->x - $player->x)*($this->x - $player->x) + ($this->y - $player->y)*($this->y - $player->y) + ($this->z - $player->z)*($this->z - $player->z);
+				$dist = ($this->x - $player->x) * ($this->x - $player->x) + ($this->y - $player->y) * ($this->y - $player->y) + ($this->z - $player->z) * ($this->z - $player->z);
 				$this->closestPlayerDist = $dist;
 			}
 		}
 	}
-	
+
 	public function handlePlayerSearcher(Player $player, $dist){
 		parent::handlePlayerSearcher($player, $dist);
 		if($this->closestPlayerDist >= $dist){
@@ -43,13 +41,13 @@ abstract class Creature extends Living{
 			$this->closestPlayerDist = $dist;
 		}
 	}
-	
+
 	public function createSaveData(){
 		$data = parent::createSaveData();
 		$data["State"] = @$this->getState();
 		return $data;
 	}
-	
+
 	public function getSpeedModifer(){
 		return 0.7;
 	}
@@ -71,19 +69,19 @@ abstract class Creature extends Living{
 		$pk->z = $this->z;
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->getMetadata();				
+		$pk->metadata = $this->getMetadata();
 		$player->dataPacket($pk);
-				
+
 		$pk = new SetEntityMotionPacket;
 		$pk->eid = $this->eid;
 		$pk->speedX = $this->speedX;
 		$pk->speedY = $this->speedY;
 		$pk->speedZ = $this->speedZ;
 		$player->dataPacket($pk);
-		
+
 		if($this->linkedEntity != 0 && $this->isRider){
 			$player->eventHandler(["rider" => $this->eid, "riding" => $this->linkedEntity, "type" => 0], "entity.link");
 		}
 	}
-	
+
 }
