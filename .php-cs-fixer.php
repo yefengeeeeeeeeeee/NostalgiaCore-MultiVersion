@@ -9,9 +9,6 @@ return (new PhpCsFixer\Config)
 		'array_syntax' => [
 			'syntax' => 'short'
 		],
-		'binary_operator_spaces' => [
-			'default' => 'single_space'
-		],
 		'blank_line_after_namespace' => true,
 		'blank_line_after_opening_tag' => true,
 		'cast_spaces' => [
@@ -21,7 +18,6 @@ return (new PhpCsFixer\Config)
 		'indentation_type' => true,
 		'no_closing_tag' => true,
 		'no_empty_phpdoc' => true,
-		'no_extra_blank_lines' => true,
 		'no_superfluous_phpdoc_tags' => [
 			'allow_mixed' => true,
 		],
