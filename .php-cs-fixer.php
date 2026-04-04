@@ -9,18 +9,15 @@ return (new PhpCsFixer\Config)
 		'array_syntax' => [
 			'syntax' => 'short'
 		],
-		'blank_line_after_namespace' => true,
 		'blank_line_after_opening_tag' => true,
 		'cast_spaces' => [
 			'space' => 'single'
 		],
-		'elseif' => true,
 		'no_closing_tag' => true,
 		'no_empty_phpdoc' => true,
 		'no_trailing_whitespace' => true,
 		'no_trailing_whitespace_in_comment' => true,
 		'no_whitespace_in_blank_line' => true,
-		'unary_operator_spaces' => true
 	])
 	->setFinder($finder)
 	->setIndent("\t")
