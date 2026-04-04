@@ -9,12 +9,6 @@ return (new PhpCsFixer\Config)
 		'array_syntax' => [
 			'syntax' => 'short'
 		],
-		'blank_line_after_opening_tag' => true,
-		'cast_spaces' => [
-			'space' => 'single'
-		],
-		'no_closing_tag' => true,
-		'no_empty_phpdoc' => true,
 	])
 	->setFinder($finder)
 	->setIndent("\t")
