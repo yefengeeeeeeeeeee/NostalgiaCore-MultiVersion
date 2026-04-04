@@ -15,9 +15,6 @@ return (new PhpCsFixer\Config)
 		],
 		'no_closing_tag' => true,
 		'no_empty_phpdoc' => true,
-		'no_trailing_whitespace' => true,
-		'no_trailing_whitespace_in_comment' => true,
-		'no_whitespace_in_blank_line' => true,
 	])
 	->setFinder($finder)
 	->setIndent("\t")
