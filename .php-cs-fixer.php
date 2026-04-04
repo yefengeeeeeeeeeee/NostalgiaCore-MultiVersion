@@ -15,12 +15,8 @@ return (new PhpCsFixer\Config)
 			'space' => 'single'
 		],
 		'elseif' => true,
-		'indentation_type' => true,
 		'no_closing_tag' => true,
 		'no_empty_phpdoc' => true,
-		'no_superfluous_phpdoc_tags' => [
-			'allow_mixed' => true,
-		],
 		'no_trailing_whitespace' => true,
 		'no_trailing_whitespace_in_comment' => true,
 		'no_whitespace_in_blank_line' => true,
