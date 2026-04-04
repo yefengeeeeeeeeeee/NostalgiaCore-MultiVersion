@@ -4,7 +4,6 @@
 require_once("BurningFurnaceBlock.php");
 /***REM_END***/
 
-
 class FurnaceBlock extends BurningFurnaceBlock{
 	public static $blockID;
 	public function __construct($meta = 0){

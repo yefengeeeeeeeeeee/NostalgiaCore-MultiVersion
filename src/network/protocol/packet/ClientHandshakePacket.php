@@ -13,7 +13,7 @@ class ClientHandshakePacket extends RakNetDataPacket{
 	public function pid(){
 		return ProtocolInfo::CLIENT_HANDSHAKE_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->cookie = $this->get(4);
 		$this->security = $this->get(1);
@@ -23,10 +23,10 @@ class ClientHandshakePacket extends RakNetDataPacket{
 		$this->timestamp = $this->get(2);
 		$this->session2 = $this->getLong();
 		$this->session = $this->getLong();
-	}	
-	
+	}
+
 	public function encode(){
-	
+
 	}
 
 }

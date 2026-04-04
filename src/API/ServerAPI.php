@@ -4,7 +4,7 @@ class ServerAPI{
 
 	private static $serverRequest = false;
 	public $restart = false;
-	
+
 	/**
 	 * @var QueryAPI
 	 */
@@ -59,7 +59,7 @@ class ServerAPI{
 	 * @var QueryHandler
 	 */
 	public $query;
-	
+
 	private $asyncCalls = [];
 	private $server;
 	private $config;

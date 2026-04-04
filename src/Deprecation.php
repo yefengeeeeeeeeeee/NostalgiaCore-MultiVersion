@@ -1,6 +1,5 @@
 <?php
 
-
 class Deprecation{
 
 	public static $events = [

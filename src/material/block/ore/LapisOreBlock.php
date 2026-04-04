@@ -9,7 +9,7 @@ class LapisOreBlock extends SolidBlock{
 		$this->material = Material::$stone;
 		$this->lightBlock = 255;
 	}
-	
+
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
@@ -24,12 +24,12 @@ class LapisOreBlock extends SolidBlock{
 
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 3){
-			return array(
-				array(DYE, 4, mt_rand(4, 8)),
-			);
+			return [
+				[DYE, 4, mt_rand(4, 8)],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
-	
+
 }

@@ -11,18 +11,18 @@ class CakeBlock extends TransparentBlock{
 		$this->breakTime = 0.5;
 		$this->material = Material::$cake;
 	}
-	
+
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		$data = $level->level->getBlockDamage($x, $y, $z);
-		return [new AxisAlignedBB($x + (2*$data + 1) * 0.0625, $y, $z + 0.0625, $x + 0.9375, $y + 0.5, $z + 0.9375)];
+		return [new AxisAlignedBB($x + (2 * $data + 1) * 0.0625, $y, $z + 0.0625, $x + 0.9375, $y + 0.5, $z + 0.9375)];
 	}
-	
+
 	public static function updateShape(Level $level, $x, $y, $z){
 		[$id, $data] = $level->level->getBlock($x, $y, $z);
-		
+
 		StaticBlock::setBlockBounds($id, (2 * $data + 1) * 0.0625, 0.0, 0.0625, 0.9375, 0.5, 0.9375);
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() !== AIR){
@@ -31,17 +31,17 @@ class CakeBlock extends TransparentBlock{
 		}
 		return false;
 	}
-	
+
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		if($level->level->getBlockID($x, $y - 1, $z) == AIR){ //Replace with common break method
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 		}
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
-		return array();
+		return [];
 	}
-	
+
 	public function onActivate(Item $item, Player $player){
 		if($player->entity->getHealth() < 20){
 			++$this->meta;
@@ -55,5 +55,5 @@ class CakeBlock extends TransparentBlock{
 		}
 		return false;
 	}
-	
+
 }

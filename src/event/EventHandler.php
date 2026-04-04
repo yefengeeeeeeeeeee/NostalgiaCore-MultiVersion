@@ -16,7 +16,7 @@ abstract class EventHandler{
 					}else{
 						return BaseEvent::ALLOW;
 					}
-				}			
+				}
 			}
 		}
 

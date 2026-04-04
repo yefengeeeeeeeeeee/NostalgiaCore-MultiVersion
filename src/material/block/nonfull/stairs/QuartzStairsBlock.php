@@ -8,5 +8,5 @@ class QuartzStairsBlock extends StairBlock{
 		$this->hardness = 4;
 		$this->material = Material::$stone;
 	}
-	
+
 }

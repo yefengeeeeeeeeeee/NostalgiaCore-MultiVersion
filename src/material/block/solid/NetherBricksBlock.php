@@ -23,14 +23,14 @@ class NetherBricksBlock extends SolidBlock{
 			default => 10,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 1){
-			return array(
-				array(NETHER_BRICKS, 0, 1),
-			);
+			return [
+				[NETHER_BRICKS, 0, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

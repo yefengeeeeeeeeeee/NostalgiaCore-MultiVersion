@@ -1,6 +1,5 @@
 <?php
 
-
 /***REM_START***/
 require_once("WaterBlock.php"); //TODO class loader?
 require_once("LiquidBlockStatic.php"); //TODO class loader?
@@ -16,7 +15,7 @@ class StillWaterBlock extends LiquidBlockStatic{
 		$this->material = Material::$water;
 		$this->lightBlock = 3;
 	}
-	
+
 	public static function getTickDelay(){
 		return 5;
 	}

@@ -9,5 +9,5 @@ class BookshelfBlock extends SolidBlock{
 		$this->material = Material::$wood;
 		$this->lightBlock = 255;
 	}
-	
+
 }

@@ -11,7 +11,7 @@ abstract class Structure{
 	private $structure;
 	public $api, $pm;
 	public $mapSymToID, $width, $radius;
-	
+
 	public function __construct($struct, $width, $symToID = []){
 		$this->structure = $struct;
 		$this->mapSymToID = $symToID;
@@ -19,16 +19,16 @@ abstract class Structure{
 		$this->api = $this->pm->api;
 		$this->width = $width;
 		$this->radius = $width / 2;
-		
+
 	}
-	
+
 	public function addMapping($sym, $id){
 		$this->mapSymToID[$sym] = $id;
 	}
 	public function getMappingFor($sym){
 		return $this->mapSymToID[$sym] ?? Structure::MAP_NO_KEY;
 	}
-	
+
 	protected function placeBlock($level, $sym, $tv){
 		if($level instanceof Level){
 			$idm = $this->getMappingFor($sym);
@@ -39,9 +39,9 @@ abstract class Structure{
 			$block = $this->api->block->get($idm[0], $idm[1], $tv);
 			$level->setBlock($tv, $block, true, false, true);
 		}
-		
+
 	}
-	
+
 	public function build($level, $centerX, $centerY, $centerZ){
 		$tempVector = new Vector3(0,0,0);
 		$x = $centerX - $this->radius;
@@ -56,8 +56,8 @@ abstract class Structure{
 				++$z;
 				$x = $centerX - $this->radius;
 			}
-			$z = $centerZ - $this->radius;	
+			$z = $centerZ - $this->radius;
 		}
 	}
-	
+
 }

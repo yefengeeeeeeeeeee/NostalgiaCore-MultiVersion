@@ -1,4 +1,5 @@
 <?php
+
 class MovingObjectPosition{
 
 	/** 0 = block, 1 = entity, 2 = none*/
@@ -23,17 +24,16 @@ class MovingObjectPosition{
 	protected function __construct(){
 
 	}
-	
+
 	public function __toString(){
 		return "MovingObjectPosition: {blockXYZ: {$this->blockX} {$this->blockY} {$this->blockZ}, side: {$this->sideHit} hitVec: {$this->hitVector} entityHit: {$this->entityHit}}";
 	}
-	
+
 	/**
 	 * @param int	 $x
 	 * @param int	 $y
 	 * @param int	 $z
 	 * @param int	 $side
-	 * @param Vector3 $hitVector
 	 *
 	 * @return MovingObjectPosition
 	 */
@@ -49,7 +49,6 @@ class MovingObjectPosition{
 	}
 
 	/**
-	 * @param Entity $entity
 	 *
 	 * @return MovingObjectPosition
 	 */

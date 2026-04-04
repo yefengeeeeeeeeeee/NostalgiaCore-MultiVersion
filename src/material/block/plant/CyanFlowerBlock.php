@@ -9,7 +9,7 @@ class CyanFlowerBlock extends FlowableBlock{
 		$this->breakTime = 0;
 		$this->material = Material::$plant;
 	}
-	
+
 	public static function getAABB(Level $level, $x, $y, $z){
 		return null;
 	}
@@ -23,17 +23,14 @@ class CyanFlowerBlock extends FlowableBlock{
 		return false;
 	}
 
-
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		$downId = $level->level->getBlockID($x, $y - 1, $z);
 		if(StaticBlock::getIsTransparent($downId) and $downId !== FARMLAND){ //Replace with common break method
-			ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(CYAN_FLOWER));
+			ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(CYAN_FLOWER));
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
 	}
 
-	
-	
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){
 			$random = new Random();

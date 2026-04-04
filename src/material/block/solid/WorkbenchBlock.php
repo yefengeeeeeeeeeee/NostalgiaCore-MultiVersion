@@ -10,15 +10,15 @@ class WorkbenchBlock extends SolidBlock{
 		$this->material = Material::$wood;
 		$this->lightBlock = 255;
 	}
-	
+
 	public function onActivate(Item $item, Player $player){
 		$player->craftingType = CraftingRecipes::TYPE_CRAFTIGTABLE;
 		return true;
 	}
 
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array($this->id, 0, 1),
-		);
+		return [
+			[$this->id, 0, 1],
+		];
 	}
 }

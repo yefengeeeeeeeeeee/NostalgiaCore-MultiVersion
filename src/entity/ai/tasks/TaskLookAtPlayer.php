@@ -6,13 +6,13 @@ class TaskLookAtPlayer extends TaskBase{
 	public function __construct($distance){
 		$this->distance = $distance;
 	}
-	
+
 	public function canBeExecuted(EntityAI $ai){
-		return !$ai->entity->inPanic && lcg_value() < 0.02 && !$ai->entity->isMovingHorizontally() && !$ai->isStarted("TaskMate") && !$ai->isStarted("TaskLookAround") && !$ai->isStarted("TaskTempt")  && !$ai->isStarted("TaskPanic") && !$ai->entity->hasPath();
+		return !$ai->entity->inPanic && lcg_value() < 0.02 && !$ai->entity->isMovingHorizontally() && !$ai->isStarted("TaskMate") && !$ai->isStarted("TaskLookAround") && !$ai->isStarted("TaskTempt") && !$ai->isStarted("TaskPanic") && !$ai->entity->hasPath();
 	}
 
 	protected function findTarget(Creature $e, $r){
-		return $e->closestPlayerDist > $r*$r ? null : $e->level->entityList[$e->closestPlayerEID];
+		return $e->closestPlayerDist > $r * $r ? null : $e->level->entityList[$e->closestPlayerEID];
 	}
 
 	public function onStart(EntityAI $ai){
@@ -22,7 +22,7 @@ class TaskLookAtPlayer extends TaskBase{
 			$this->onEnd($ai);
 			return;
 		}
-		
+
 		$this->selfCounter = mt_rand(20, 60);
 	}
 
@@ -35,7 +35,7 @@ class TaskLookAtPlayer extends TaskBase{
 		$ai->mobController->setLookPosition($this->target->x, $this->target->y + $this->target->getEyeHeight(), $this->target->z, 10, $ai->entity->getVerticalFaceSpeed());
 		$this->selfCounter--;
 	}
-	
+
 	public function onEnd(EntityAI $ai){
 		unset($this->target);
 		$ai->entity->pitch = 0;

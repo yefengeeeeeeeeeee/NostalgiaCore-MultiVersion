@@ -12,21 +12,21 @@ class SlabBlock extends TransparentBlock{
 		6 => "Quartz",
 		7 => "",
 	];
-	
+
 	public function __construct($meta = 0){
 		parent::__construct(SLAB, $meta, "Slab");
-		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper ":"") . self::$NAMES[$this->meta & 0x07] . " Slab";	
+		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper ":"") . self::$NAMES[$this->meta & 0x07] . " Slab";
 		if(($this->meta & 0x08) === 0x08){
 			$this->isFullBlock = true;
 		}else{
 			$this->isFullBlock = false;
-		}		
+		}
 		$this->hardness = 30;
 		$this->breakTime = 2;
 		$this->material = Material::$stone;
 	}
 	public static function updateShape(Level $level, $x, $y, $z){
-		
+
 		[$id, $meta] = $level->level->getBlock($x, $y, $z);
 
 		if($meta & 0x08 == 0x08){
@@ -37,11 +37,11 @@ class SlabBlock extends TransparentBlock{
 			else StaticBlock::setBlockBounds($id, 0, 0.5, 0, 1, 1, 1);
 		}
 	}
-	
+
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		self::updateShape($level, $x, $y, $z);
 		$id = $level->level->getBlockID($x, $y, $z);
-		
+
 		return [
 			new AxisAlignedBB(
 				$x + StaticBlock::$minXs[$id], $y + StaticBlock::$minYs[$id], $z + StaticBlock::$minZs[$id],
@@ -49,7 +49,7 @@ class SlabBlock extends TransparentBlock{
 				)
 		];
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$this->meta &= 0x07;
 		if($face === 0){
@@ -105,14 +105,14 @@ class SlabBlock extends TransparentBlock{
 			default => 10,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 1){
-			return array(
-				array($this->id, $this->meta & 0x07, 1),
-			);
+			return [
+				[$this->id, $this->meta & 0x07, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

@@ -8,5 +8,5 @@ class NetherBricksStairsBlock extends StairBlock{
 		$this->breakTime = 2;
 		$this->material = Material::$stone;
 	}
-	
+
 }

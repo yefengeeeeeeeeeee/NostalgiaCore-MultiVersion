@@ -9,5 +9,5 @@ class SpongeBlock extends SolidBlock{
 		$this->material = Material::$dirt;
 		$this->lightBlock = 255;
 	}
-	
+
 }

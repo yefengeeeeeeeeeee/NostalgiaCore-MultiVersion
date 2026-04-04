@@ -26,10 +26,10 @@ define("ENTITY_OBJECT", 3);
 
 define("ENTITY_ITEM", 4);
 	define("ENTITY_ITEM_TYPE", 64);
-	
+
 define("ENTITY_FALLING", 5);
 	define("FALLING_SAND", 66);
-	
+
 //TileEntities
 define("TILE_SIGN", "Sign");
 define("TILE_CHEST", "Chest");
@@ -44,7 +44,7 @@ const CORRECT_ENTITY_CLASSES = [
 		MOB_COW => true,
 		MOB_PIG => true,
 		MOB_SHEEP => true,
-			
+
 		MOB_ZOMBIE => true,
 		MOB_SKELETON => true,
 		MOB_SPIDER => true,
@@ -64,5 +64,5 @@ const CORRECT_ENTITY_CLASSES = [
 	ENTITY_FALLING => [
 		FALLING_SAND => true
 	]
-	
+
 ];

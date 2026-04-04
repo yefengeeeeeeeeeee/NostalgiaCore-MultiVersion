@@ -13,7 +13,7 @@ class LightUtils{
 		$diffX = ($source->x - $block->x);
 		$diffY = ($source->y - $block->y);
 		$diffZ = ($source->z - $block->z);
-		$distance = $diffX*$diffX + $diffY*$diffY + $diffZ*$diffZ;
+		$distance = $diffX * $diffX + $diffY * $diffY + $diffZ * $diffZ;
 		$result = floor($source->getMaxLightValue() - $distance);
 		return max($result, 0);
 	}

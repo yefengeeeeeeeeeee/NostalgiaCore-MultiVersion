@@ -5,5 +5,5 @@ class CompassItem extends Item{
 		parent::__construct(COMPASS, 0, $count, "Compass");
 		$this->maxStackSize = 1;
 	}
-	
+
 }

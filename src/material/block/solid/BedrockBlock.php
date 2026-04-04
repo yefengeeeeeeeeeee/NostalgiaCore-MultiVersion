@@ -10,12 +10,12 @@ class BedrockBlock extends SolidBlock{
 		$this->material = Material::$stone;
 		$this->lightBlock = 255;
 	}
-	
+
 	public function isBreakable(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return true;
 		}
 		return false;
 	}
-	
+
 }

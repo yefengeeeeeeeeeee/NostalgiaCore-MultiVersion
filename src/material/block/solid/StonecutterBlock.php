@@ -10,7 +10,7 @@ class StonecutterBlock extends SolidBlock{
 		$this->material = Material::$stone;
 		$this->lightBlock = 255;
 	}
-	
+
 	public function onActivate(Item $item, Player $player){
 		$player->craftingType = CraftingRecipes::TYPE_STONECUTTER;
 		return true;
@@ -24,6 +24,6 @@ class StonecutterBlock extends SolidBlock{
 		}else{
 			return [];
 		}
-		
-	}	
+
+	}
 }

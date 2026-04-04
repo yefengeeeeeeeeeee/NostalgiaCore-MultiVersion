@@ -10,9 +10,9 @@ class GlowingObsidianBlock extends SolidBlock implements LightingBlock{
 		$this->lightBlock = 255;
 		$this->lightEmission = 13;
 	}
-	
+
 	public function getMaxLightValue(){
 		return 12;
 	}
-	
+
 }

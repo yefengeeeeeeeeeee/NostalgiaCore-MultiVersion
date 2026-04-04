@@ -17,11 +17,11 @@ class Cow extends Animal{
 		$this->ai->addTask(new TaskMate(1.0));
 		$this->ai->addTask(new TaskFollowParent(1.1));
 	}
-	
+
 	public function isFood($id){
 		return $id === WHEAT;
 	}
-	
+
 	public function interactWith(Entity $e, $action){
 		if($e->isPlayer() && $action === InteractPacket::ACTION_HOLD){
 			$slot = $e->player->getHeldItem();
@@ -33,9 +33,9 @@ class Cow extends Animal{
 		}
 		parent::interactWith($e, $action);
 	}
-	
+
 	public function getDrops(){
-		return $this->isBaby() ? parent::getDrops() : [	
+		return $this->isBaby() ? parent::getDrops() : [
 			[LEATHER, 0, mt_rand(0,2)],
 			[($this->fire > 0 ? STEAK : BEEF), 0, mt_rand(0, 3)]
 		];

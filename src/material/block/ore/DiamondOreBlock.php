@@ -9,7 +9,7 @@ class DiamondOreBlock extends SolidBlock{
 		$this->material = Material::$stone;
 		$this->lightBlock = 255;
 	}
-	
+
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
@@ -20,14 +20,14 @@ class DiamondOreBlock extends SolidBlock{
 			default => 15,
 		};
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->getPickaxeLevel() >= 4){
-			return array(
-				array(DIAMOND, 0, 1),
-			);
+			return [
+				[DIAMOND, 0, 1],
+			];
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

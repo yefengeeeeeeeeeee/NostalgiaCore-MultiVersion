@@ -1,4 +1,5 @@
 <?php
+
 require_once("LiquidBlockStatic.php"); //TODO class loader?
 
 class StillLavaBlock extends LiquidBlockStatic{
@@ -11,9 +12,9 @@ class StillLavaBlock extends LiquidBlockStatic{
 		$this->lightEmission = 15;
 		$this->lightBlock = 255;
 	}
-	
+
 	public static function getTickDelay(){
 		return 30;
 	}
-	
+
 }

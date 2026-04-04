@@ -9,5 +9,5 @@ class SandBlock extends FallableBlock{
 		$this->material = Material::$sand;
 		$this->lightBlock = 255;
 	}
-	
+
 }

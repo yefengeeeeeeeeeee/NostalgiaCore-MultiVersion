@@ -1,4 +1,5 @@
 <?php
+
 class TreeFeature extends Feature
 {
 	public function place(Level $level, MTRandom $rand, $x, $y, $z){
@@ -8,7 +9,7 @@ class TreeFeature extends Feature
 		for($i = $y; $i <= $y + 1 + $nextInt; ++$i){
 			$i2 = ($i == $y) ? 0 : 1;
 			if($i >= (($y + 1) + $nextInt) - 2) $i2 = 2;
-			
+
 			for($i3 = $x - $i2; $i3 <= $x + $i2 && $z2; ++$i3){
 				for($i4 = $z - $i2; $i4 <= $z + $i2 && $z2; ++$i4){
 					if($i >= 0 && $i < 128){
@@ -29,7 +30,7 @@ class TreeFeature extends Feature
 			}
 			for($i5 = ($y - 3) + $nextInt; $i5 <= $y + $nextInt; ++$i5){
 				$i6 = $i5 - ($y + $nextInt);
-				$i7 = (int)(1 - ($i6 / 2));
+				$i7 = (int) (1 - ($i6 / 2));
 				for($i8 = $x - $i7; $i8 <= $x + $i7; ++$i8){
 					$i9 = $i8 - $x;
 					for($i10 = $z - $i7; $i10 <= $z + $i7; ++$i10){

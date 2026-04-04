@@ -8,5 +8,5 @@ class StoneBrickStairsBlock extends StairBlock{
 		$this->breakTime = 1.5;
 		$this->material = Material::$stone;
 	}
-	
+
 }
