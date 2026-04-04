@@ -4,13 +4,17 @@ class WoodStairsBlock extends StairBlock{
 	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(WOOD_STAIRS, $meta, "Wood Stairs");
+		$this->breakTime = 2;
+		$this->material = Material::$wood;
 	}
 
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
-		return match ($item->isAxe()) {
+		if(!$item->isAxe()) return 3;
+		
+		return match ($item->getLevel()) {
 			5 => 0.4,
 			4 => 0.5,
 			3 => 0.75,

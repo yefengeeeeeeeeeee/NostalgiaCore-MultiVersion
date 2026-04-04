@@ -6,7 +6,7 @@ class Pig extends Animal implements Rideable{
 	public function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		$this->setSize(0.9, 0.9);
 		parent::__construct($level, $eid, $class, $type, $data);
-		$this->setHealth($this->data["Health"] ?? 10, "generic");
+		$this->setHealth($this->data["Health"] ?? 10, "generic", allowHarm: false);
 		$this->server = ServerAPI::request();
 		$this->setName("Pig");
 		$this->setSpeed(0.25);
@@ -35,7 +35,7 @@ class Pig extends Animal implements Rideable{
 	}
 
 	public function canRide($e){
-		return $this->isSaddled() && $this->linkedEntity == 0 && $e->linkedEntity == 0;
+		return $this->isSaddled() && $this->rider == 0;
 	}
 
 	public function updateEntityMovement(){
@@ -63,7 +63,7 @@ class Pig extends Animal implements Rideable{
 
 			if($slot->getID() === SADDLE){
 				if(!$this->isSaddled()){
-					$e->player->removeItem($slot->getID(), 0, 1);
+					$e->player->consumeSingleItem(send: true);
 					$this->setSaddled(1);
 				}
 				return true; //avoid further interactions

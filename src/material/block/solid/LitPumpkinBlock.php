@@ -12,6 +12,10 @@ class LitPumpkinBlock extends SolidBlock implements LightingBlock{
 	public function __construct($meta = 0){
 		parent::__construct(LIT_PUMPKIN, $meta, "Jack o'Lantern");
 		$this->hardness = 5;
+		$this->breakTime = 1.0;
+		$this->material = Material::$vegetable;
+		$this->lightBlock = 255;
+		$this->lightEmission = 15;
 	}
 
 	public function getMaxLightValue(){

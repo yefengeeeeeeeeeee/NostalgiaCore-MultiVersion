@@ -5,6 +5,9 @@ class MelonBlock extends TransparentBlock{
 	public function __construct(){
 		parent::__construct(MELON_BLOCK, 0, "Melon Block");
 		$this->hardness = 5;
+		$this->breakTime = 1;
+		$this->material = Material::$vegetable;
+		$this->lightBlock = 255;
 	}
 	public function getDrops(Item $item, Player $player){
 		return [

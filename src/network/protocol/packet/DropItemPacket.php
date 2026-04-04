@@ -2,7 +2,7 @@
 
 class DropItemPacket extends RakNetDataPacket{
 	public $eid;
-	public $unknown;
+	public $randomly;
 	public $item;
 
 	public function pid(){
@@ -25,7 +25,7 @@ class DropItemPacket extends RakNetDataPacket{
 	public function decode(){
         //if($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8)$this->reset();
 		$this->eid = $this->getInt();
-		$this->unknown = $this->getByte();
+		$this->randomly = $this->getByte();
 		$this->item = $this->getSlot();
 	}
 
@@ -35,5 +35,13 @@ class DropItemPacket extends RakNetDataPacket{
         $this->putByte($this->unknown);
         $this->putSlot($this->item);*/
 	}
-
+	
+	public function eidsToGlobal(Player $p){
+		if($this->localEids){
+			$this->localEids = false;
+			$this->eid = $p->local2GlobalEID[$this->eid] ?? false;
+			if($this->eid === false) return false;
+		}
+		return true;
+	}
 }

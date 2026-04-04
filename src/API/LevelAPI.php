@@ -18,6 +18,7 @@ class LevelAPI{
 		$this->server->api->console->register("save-on", "", [$this, "commandHandler"]);
 		$this->server->api->console->register("save-off", "", [$this, "commandHandler"]);
 		$this->server->api->console->register("setwspawn", "Set the spawn position for your current world. ", [$this, "commandHandler"]);
+		
 		$this->default = $this->server->api->getProperty("level-name");
 		if($this->loadLevel($this->default) === false){
 			$this->generateLevel($this->default, $this->server->seed);
@@ -108,8 +109,9 @@ class LevelAPI{
 		return true;
 	}
 	/**
+	 * Gets a level by name. Returns false if no level with such name exists.
 	 * @param string $name
-	 * @return Level|boolean
+	 * @return Level|false
 	 */
 	public function get($name){
 		if(isset($this->levels[$name])){
@@ -224,19 +226,6 @@ class LevelAPI{
 			return false;
 		}
 		console("[INFO] Unloading level \"" . $name . "\"");
-		$level->nextSave = PHP_INT_MAX;
-		$level->save();
-		foreach($this->server->api->player->getAll($level) as $player){
-			$player->teleport($this->server->spawn);
-		}
-		foreach($this->server->api->entity->getAll($level) as $entity){
-			if($entity->class !== ENTITY_PLAYER){
-				$entity->close();
-			}
-		}
-		foreach($this->server->api->tile->getAll($level) as $tile){
-			$tile->close();
-		}
 		$level->close();
 		unset($this->levels[$name]);
 		return true;

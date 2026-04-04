@@ -2,9 +2,9 @@
 
 class ContainerSetContentPacket extends RakNetDataPacket{
 	public $windowid;
-	public $slots = [];
-	public $hotbar = [];
-
+	public $slots = array();
+	public $hotbar = array();
+	
 	public function pid(){
 		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
 			return  ProtocolInfo3::CONTAINER_SET_CONTENT_PACKET;
@@ -21,7 +21,7 @@ class ContainerSetContentPacket extends RakNetDataPacket{
 		}
 		return ProtocolInfo::CONTAINER_SET_CONTENT_PACKET;
 	}
-
+	
 	public function decode(){
 		$this->windowid = $this->getByte();
 		$count = $this->getShort();
@@ -31,14 +31,12 @@ class ContainerSetContentPacket extends RakNetDataPacket{
         if($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
             return;
         }
-		if($this->windowid === 0){
-			$count = $this->getShort();
-			for($s = 0; $s < $count and !$this->feof(); ++$s){
-				$this->hotbar[$s] = $this->getInt();
-			}
-		}
+        $count = $this->getShort();
+        for($s = 0; $s < $count and !$this->feof(); ++$s){
+            $this->hotbar[$s] = $this->getInt();
+        }
 	}
-
+	
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->windowid);
@@ -54,6 +52,8 @@ class ContainerSetContentPacket extends RakNetDataPacket{
 			foreach($this->hotbar as $slot){
 				$this->putInt($slot);
 			}
+		}else{
+			$this->putShort(0);
 		}
 	}
 

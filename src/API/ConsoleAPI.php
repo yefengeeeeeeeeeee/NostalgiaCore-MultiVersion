@@ -1,7 +1,7 @@
 <?php
 
 class ConsoleAPI{
-	private static $loop; //why no Thread::kill in pthreads3
+	private $loop; //why no Thread::kill in pthreads3. Making it static causes crashes of other threads on some servers(hi nper)
 	private $server, $event, $help, $cmds, $alias;
 	public $last;
 	function __construct(){
@@ -15,7 +15,7 @@ class ConsoleAPI{
 	public function init(){
 		$this->server->schedule(2, [$this, "handle"], [], true);
 		if(!defined("NO_THREADS")){
-			self::$loop = new ConsoleLoop();
+			$this->loop = new ConsoleLoop();
 		}
 		$this->register("help", "[page|command name]", [$this, "defaultCommands"]);
 		$this->register("status", "", [$this, "defaultCommands"]);
@@ -51,8 +51,8 @@ class ConsoleAPI{
 	function __destruct(){
 		$this->server->deleteEvent($this->event);
 		if(!defined("NO_THREADS")){
-			self::$loop->stop();
-			self::$loop->notify();
+			$this->loop->stop();
+			$this->loop->notify();
 			usleep(50000);
 		}
 	}
@@ -66,10 +66,10 @@ class ConsoleAPI{
 		if(defined("NO_THREADS")){
 			return;
 		}
-		$line = self::$loop->line;
+		$line = $this->loop->line;
 		if($line !== false){
 			$line = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", trim($line));
-			self::$loop->line = false;
+			$this->loop->line = false;
 			$output = $this->run($line, "console");
 			if($output != ""){
 				$mes = explode("\n", trim($output));
@@ -78,7 +78,7 @@ class ConsoleAPI{
 				}
 			}
 		}else{
-			self::$loop->notify();
+			$this->loop->notify();
 		}
 	}
 
@@ -202,24 +202,25 @@ class ConsoleAPI{
 					"v" => VIEW,
 				];
 				if(!isset($params[0]) or !isset($gms[strtolower($params[0])])){
-					$output .= "Usage: /$cmd <mode>\n";
-					break;
+					return "Usage: /$cmd <mode>";
 				}
 				$this->server->api->setProperty("gamemode", $gms[strtolower($params[0])]);
 				$output .= "Default Gamemode is now " . strtoupper($this->server->getGamemode()) . ".\n";
 				break;
 			case "status":
-				if(!($issuer instanceof Player) and $issuer === "console"){
-					$info = $this->server->debugInfo(true);
-				}else{
-					$info = $this->server->debugInfo();
+				$info = $this->server->debugInfo();
+				if(!($issuer instanceof Player) && $issuer === "console"){
+					$lightUpdates = 0;
+					foreach($this->server->api->level->levels as $level){
+						$lightUpdates += count($level->lightUpdates);
+					}
+					return "TPS: {$info["tps"]}, Memory usage: {$info["memory_usage"]} (Peak {$info["memory_peak_usage"]}), Entities: {$info["entities"]}, Events: {$info["events"]}, Handlers: {$info["handlers"]}, Actions: {$info["actions"]}, Garbage: {$info["garbage"]}, Light updates: {$lightUpdates}";
 				}
-				return "TPS: " . $info["tps"] . ", Memory usage: " . $info["memory_usage"] . " (Peak " . $info["memory_peak_usage"] . ")";
+				return "TPS: {$info["tps"]}, Memory usage: {$info["memory_usage"]} (Peak {$info["memory_peak_usage"]})";
 			case "stop":
-				self::$loop->stop = true;
-				$output .= "Stopping the server\n";
+				$this->loop->stop = true;
 				$this->server->close();
-				break;
+				return "Stopping the server\n";
 			case "difficulty":
 				$s = trim(array_shift($params));
 				if($s === "" or (((int) $s) > 3 and ((int) $s) < 0)){

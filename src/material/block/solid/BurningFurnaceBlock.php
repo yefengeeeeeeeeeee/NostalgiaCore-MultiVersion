@@ -6,6 +6,10 @@ class BurningFurnaceBlock extends SolidBlock implements LightingBlock{
 		parent::__construct(BURNING_FURNACE, $meta, "Burning Furnace");
 		$this->isActivable = true;
 		$this->hardness = 17.5;
+		$this->breakTime = 3.5;
+		$this->material = Material::$stone;
+		$this->lightBlock = 255;
+		$this->lightEmission = 13;
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

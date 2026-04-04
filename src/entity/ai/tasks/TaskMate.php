@@ -2,6 +2,7 @@
 
 class TaskMate extends TaskBase
 {
+	public $speedMultiplier;
 	public function __construct($speed){
 		$this->speedMultiplier = $speed;
 	}
@@ -41,7 +42,7 @@ class TaskMate extends TaskBase
 		/**
 		 * @var Animal $baby
 		 */
-		$baby = $ai->entity->breed();
+		$baby = $ai->entity->breed($entpar2);
 		//this.theAnimal.setGrowingAge(6000); TODO growing age?
 		//this.targetMate.setGrowingAge(6000);
 

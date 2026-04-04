@@ -11,6 +11,10 @@ class QuartzBlock extends SolidBlock{
 			3 => "Quartz Pillar",
 		];
 		$this->name = $names[$this->meta & 0x03];
+		$this->breakTime = 0.8;
+		$this->hardness = 4;
+		$this->material = Material::$stone;
+		$this->lightBlock = 255;
 	}
 
 	public function getBreakTime(Item $item, Player $player){

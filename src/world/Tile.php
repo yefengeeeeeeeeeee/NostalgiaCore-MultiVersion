@@ -254,7 +254,7 @@ class Tile extends Position{
 			$pk->x = $this->x;
 			$pk->y = $this->y;
 			$pk->z = $this->z;
-			$player->dataPacket($pk);
+			$player->blockQueueDataPacket($pk);
 			$slots = [];
 
 			if(is_array($player->windows[$id])){
@@ -266,7 +266,9 @@ class Tile extends Position{
 					$pk->z = $ob->z;
 					$pk->case1 = 1;
 					$pk->case2 = 2;
-					$this->server->api->player->broadcastPacket($all, $pk);
+					foreach($this->level->players as $pl){
+						$pl->blockQueueDataPacket(clone $pk);
+					}
 					for($s = 0; $s < CHEST_SLOTS; ++$s){
 						$slot = $ob->getSlot($s);
 						if($slot->getID() > AIR and $slot->count > 0){
@@ -283,7 +285,10 @@ class Tile extends Position{
 				$pk->z = $this->z;
 				$pk->case1 = 1;
 				$pk->case2 = 2;
-				$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), $pk);
+				foreach($this->level->players as $pl){
+					$pl->blockQueueDataPacket(clone $pk);
+				}
+				
 				for($s = 0; $s < CHEST_SLOTS; ++$s){
 					$slot = $this->getSlot($s);
 					if($slot->getID() > AIR and $slot->count > 0){
@@ -297,7 +302,7 @@ class Tile extends Position{
 			$pk = new ContainerSetContentPacket;
 			$pk->windowid = $id;
 			$pk->slots = $slots;
-			$player->dataPacket($pk);
+			$player->blockQueueDataPacket($pk);
 			return true;
 		}elseif($this->class === TILE_FURNACE){
 			$player->windowCnt++;
@@ -311,7 +316,7 @@ class Tile extends Position{
 			$pk->x = $this->x;
 			$pk->y = $this->y;
 			$pk->z = $this->z;
-			$player->dataPacket($pk);
+			$player->blockQueueDataPacket($pk);
 
 			$slots = [];
 			for($s = 0; $s < FURNACE_SLOTS; ++$s){
@@ -325,7 +330,7 @@ class Tile extends Position{
 			$pk = new ContainerSetContentPacket;
 			$pk->windowid = $id;
 			$pk->slots = $slots;
-			$player->dataPacket($pk);
+			$player->blockQueueDataPacket($pk);
 			return true;
 		}
 	}
@@ -341,10 +346,6 @@ class Tile extends Position{
 			case TILE_CHEST:
 				$nbt = new NBT();
 				$nbt->write(chr(NBT::TAG_COMPOUND) . "\x00\x00");
-
-				$nbt->write(chr(NBT::TAG_STRING));
-				$nbt->writeTAG_String("id");
-				$nbt->writeTAG_String($this->class);
 
 				$nbt->write(chr(NBT::TAG_INT));
 				$nbt->writeTAG_String("x");
@@ -375,7 +376,7 @@ class Tile extends Position{
 				$pk->y = $this->y;
 				$pk->z = $this->z;
 				$pk->namedtag = $nbt->binary;
-				$player->dataPacket($pk);
+				$player->blockQueueDataPacket($pk);
 				break;
 			case TILE_SIGN:
 				$nbt = new NBT();
@@ -383,23 +384,19 @@ class Tile extends Position{
 
 				$nbt->write(chr(NBT::TAG_STRING));
 				$nbt->writeTAG_String("Text1");
-				$nbt->writeTAG_String($this->data["Text1"]);
+				$nbt->writeTAG_String(mb_substr($this->data["Text1"], 0, 15));
 
 				$nbt->write(chr(NBT::TAG_STRING));
 				$nbt->writeTAG_String("Text2");
-				$nbt->writeTAG_String($this->data["Text2"]);
+				$nbt->writeTAG_String(mb_substr($this->data["Text2"], 0, 15));
 
 				$nbt->write(chr(NBT::TAG_STRING));
 				$nbt->writeTAG_String("Text3");
-				$nbt->writeTAG_String($this->data["Text3"]);
+				$nbt->writeTAG_String(mb_substr($this->data["Text3"], 0, 15));
 
 				$nbt->write(chr(NBT::TAG_STRING));
 				$nbt->writeTAG_String("Text4");
-				$nbt->writeTAG_String($this->data["Text4"]);
-
-				$nbt->write(chr(NBT::TAG_STRING));
-				$nbt->writeTAG_String("id");
-				$nbt->writeTAG_String($this->class);
+				$nbt->writeTAG_String(mb_substr($this->data["Text4"], 0, 15));
 
 				$nbt->write(chr(NBT::TAG_INT));
 				$nbt->writeTAG_String("x");
@@ -420,7 +417,7 @@ class Tile extends Position{
 				$pk->y = $this->y;
 				$pk->z = $this->z;
 				$pk->namedtag = $nbt->binary;
-				$player->dataPacket($pk);
+				$player->blockQueueDataPacket($pk);
 				break;
 		}
 	}
@@ -428,6 +425,13 @@ class Tile extends Position{
 	public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
 		if($this->class !== TILE_SIGN){
 			return false;
+		}
+		if(Level::$disableEmojisOnSigns){
+			$line1 = Utils::replaceEmoji($line1);
+			$line2 = Utils::replaceEmoji($line2);
+			$line3 = Utils::replaceEmoji($line3);
+			$line4 = Utils::replaceEmoji($line4);
+			
 		}
 		$this->data["Text1"] = $line1;
 		$this->data["Text2"] = $line2;

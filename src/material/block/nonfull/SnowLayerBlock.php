@@ -8,6 +8,8 @@ class SnowLayerBlock extends FlowableBlock{
 		$this->isSolid = false;
 		$this->isFullBlock = false;
 		$this->hardness = 0.5;
+		$this->breakTime = 0.1;
+		$this->material = Material::$topSnow;
 	}
 	public static function getAABB(Level $level, $x, $y, $z){
 		return null;
@@ -20,20 +22,26 @@ class SnowLayerBlock extends FlowableBlock{
 		}
 		return false;
 	}
-
+	
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		if($level->level->getBlockID($x, $y - 1, $z) == AIR){ //Replace with common break method
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 		}
 	}
 
+	public static function onRandomTick(Level $level, $x, $y, $z){
+		if($level->level->getBlockLight($x, $y, $z) > 11){
+			$level->fastSetBlockUpdate($x, $y, $z, 0, true);
+		}
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		if($item->isShovel() !== false){
-			return [
-				[SNOWBALL, 0, 1],
-			];
+			return array(
+				array(SNOWBALL, 0, 1),
+			);
 		}
-
-		return [];
+		
+		return array();
 	}
 }

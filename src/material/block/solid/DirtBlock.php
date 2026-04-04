@@ -6,16 +6,15 @@ class DirtBlock extends SolidBlock{
 		parent::__construct(DIRT, 0, "Dirt");
 		$this->isActivable = true;
 		$this->hardness = 2.5;
+		$this->breakTime = 0.5;
+		$this->material = Material::$dirt;
+		$this->lightBlock = 255;
 	}
 
 	public function onActivate(Item $item, Player $player){
 		if($item->isHoe()){
 			if($this->getSide(1)->isTransparent === false) return false;
-			if(($player->gamemode & 0x01) === 0){
-				$item->useOn($this);
-				if($item->getMetadata() >= $item->getMaxDurability()) $player->setSlot($player->slot, new Item(AIR, 0, 0), false);
-				else $player->setSlot($player->slot, $item, true);
-			}
+			$item->hurtAndBreak(1, $player); //TODO move to ItemHoe
 			$this->level->fastSetBlockUpdate($this->x, $this->y, $this->z, FARMLAND, 0, true);
 			return true;
 		}

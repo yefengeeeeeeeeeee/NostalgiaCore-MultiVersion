@@ -136,8 +136,55 @@ class ServerAPI{
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
 			"auto-save" => true,
 			"enable-mob-ai" => true,
-			"abort-reading-after-N-packets" => PocketMinecraftServer::$PACKET_READING_LIMIT
+			"abort-reading-after-N-packets" => PocketMinecraftServer::$PACKET_READING_LIMIT,
+			"ticking-mode" => "legacy",
+			"mushroom-spread" => Block::$mushroomSpread
+		], comments: [
+			"level-type" => [
+				"Alowed types:",
+				"FLAT - flat world",
+				"DEFAULT - use one of the 4 pregenerated worlds from pocketmine",
+				"VANILLA - unfinished, attempts to generate vanilla 0.8.1 world. This geneeator is very slow."
+			],
+			"abort-reading-after-N-packets" => [
+				"Sets max amount of packets the server can read before forcing tick check."
+			],
+			"ticking-mode" => [
+				"Sets ticking mode. Allowed modes:",
+				"legacy - sleep while waiting for the next tick. same ticking as in old PocketMine. The server won't use a lot of cpu, but tps may be not stable(causes 16 TPS on Windows)",
+				"nodelay - unused time is not used for anything.. May cause to use 100% of CPU.",
+				"netwait - uses unused time to wait for packets. Should always give max tps. Untested on windows."
+			],
+			"server-type" => [
+				"Changes server type. Does not affect anything in 0.8.1. Allowed types:",
+				"normal - changes unconnected_pong reply to use MCCPP;Demo;",
+				"demo - same as normal",
+				"minecon - changes unconnected_pong reply to use MCCPP;MINECON;",
+			],
+			"generator-settings" => [
+				"Used to set level settings when generating a world. Currently affects only FLAT world.",
+				"FLAT world preset format: VERSION;LAYERS;STARTY;PARAMS",
+				"The string contains multiple parameters split by ;",
+				"VERSION - preset version (2)",
+				"LAYERS - defines layers and their sizes",
+				"	each layer is formatted as <ID>x<CNT>",
+				"	<ID> - block id to fill the layer",
+				"	<CNT> - layer height",
+				"Multiple layers are separated by ,",
+				"STARTY - start y level. Must be more than 0",
+				"PARAMS - additional patamaters",
+				"	spawn(radius=<N> block=<ID>) - sets spawn parameters",
+				"		radius=<N> - sets spawn radius to <N>",
+				"		block=<ID> - sets block to fill spawn area with",
+				"	decoration(treecount=<N> grasscount=<M>) - sets amount of decorations",
+				"Preset example:",
+				"2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)"
+			],
+			"mushroom-spread" => [
+				"Enable or disable mushroom spreading"
+			]
 		]);
+		Block::$mushroomSpread = $this->getProperty("mushroom-spread", Block::$mushroomSpread);
 		Entity::$allowFly = $this->getProperty("allow-flight", true);
 		if(!Entity::$allowFly){
 			ConsoleAPI::warn("Fly checking is enabled! Players may experience issues with kicking while not flying!");
@@ -146,6 +193,11 @@ class ServerAPI{
 		MobSpawner::$MOB_LIMIT = $this->getProperty("mobs-amount", 50);
 		Entity::$allowedAI = $this->getProperty("enable-mob-ai", true);
 		PocketMinecraftServer::$PACKET_READING_LIMIT = $this->getProperty("abort-reading-after-N-packets", PocketMinecraftServer::$PACKET_READING_LIMIT);
+		PocketMinecraftServer::$TICKING_MODE = match(strtolower($this->getProperty("ticking-mode"))){
+			default => PocketMinecraftServer::TICK_LEGACY,
+			"nodelay" => PocketMinecraftServer::TICK_F20TPS,
+			"netwait" => PocketMinecraftServer::TICK_NETWAIT
+		};
 		//Load advanced properties
 		define("DEBUG", $this->getProperty("debug", 1));
 		define("ADVANCED_CACHE", false);

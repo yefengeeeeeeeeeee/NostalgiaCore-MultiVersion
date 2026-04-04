@@ -3,7 +3,7 @@
 abstract class RakNetDataPacket extends stdClass{
 
 	public $buffer = b"";
-	public $reliability = 0;
+	public $reliability = RakNetInfo::RELIABILITY_UNRELIABLE;
 	public $hasSplit = false;
 	public $messageIndex;
 	public $orderIndex;
@@ -11,23 +11,31 @@ abstract class RakNetDataPacket extends stdClass{
 	public $splitCount;
 	public $splitID;
 	public $splitIndex;
+	public $seqIndex;
+    public $PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
 
 	private $offset = 0;
 
-  public $PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
+	public abstract function encode();
 
-	abstract public function encode();
+	public abstract function decode();
 
-	abstract public function decode();
+	public $localEids = false;
+	public function eidsToLocal(Player $p){
+		return true;
+	}
+	public function eidsToGlobal(Player $p){
+		return true;
+	}
 
 	public function getBuffer(){
 		return $this->buffer;
 	}
-
+	
 	public function getOffset(){
 		return $this->offset;
 	}
-
+	
 	public function setBuffer($buffer = ""){
 		$this->buffer = $buffer;
 		$this->offset = 0;
@@ -134,12 +142,12 @@ abstract class RakNetDataPacket extends stdClass{
 	protected function getShort($unsigned = false){
 		return Utils::readShort($this->get(2), $unsigned);
 	}
-
+	
 	public function getSignedByte(){
 		$b = ord($this->get(1));
-		return $b >= 0x80 ? ($b - 256) : $b;
+		return $b >= 0x80 ? ($b-256) : $b;
 	}
-
+	
 	protected function getByte(){
 		return ord($this->get(1));
 	}
@@ -155,7 +163,7 @@ abstract class RakNetDataPacket extends stdClass{
 	}
 
 	protected function putByte($v){
-		$this->buffer .= chr((int) $v);
+		$this->buffer .= chr((int)$v);
 	}
 
 	protected function getString(){

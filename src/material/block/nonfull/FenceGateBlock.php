@@ -31,6 +31,8 @@ class FenceGateBlock extends TransparentBlock{
 			$this->isFullBlock = false;
 		}
 		$this->hardness = 15;
+		$this->breakTime = 2;
+		$this->material = Material::$wood;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = [
@@ -73,7 +75,7 @@ class FenceGateBlock extends TransparentBlock{
 		$pk->z = $this->z;
 		$pk->evid = 1003;
 		$pk->data = 0;
-		ServerAPI::request()->api->player->broadcastPacket($players, $pk);
+		ServerAPI::request()->api->player->broadcastPacket($players, $pk); //TODO use blok queue?
 		return true;
 	}
 }

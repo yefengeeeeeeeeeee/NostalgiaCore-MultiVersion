@@ -5,6 +5,8 @@ class FarmlandBlock extends TransparentBlock{
 	public function __construct($meta = 0){
 		parent::__construct(FARMLAND, $meta, "Farmland");
 		$this->hardness = 3;
+		$this->breakTime = 0.6;
+		$this->material = Material::$dirt;
 	}
 	public function getDrops(Item $item, Player $player){
 		return [
@@ -24,7 +26,7 @@ class FarmlandBlock extends TransparentBlock{
 	public static function fallOn(Level $level, $x, $y, $z, Entity $entity, $fallDistance){
 		$rv = lcg_value();
 		if($rv < ($fallDistance - 0.5)){
-			$level->fastSetBlockUpdate($x, $y, $z, DIRT, 0);
+			$level->fastSetBlockUpdate($x, $y, $z, DIRT, 0, true);
 		}
 	}
 

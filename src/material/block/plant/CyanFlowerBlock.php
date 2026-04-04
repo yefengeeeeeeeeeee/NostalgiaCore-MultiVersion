@@ -6,6 +6,8 @@ class CyanFlowerBlock extends FlowableBlock{
 		parent::__construct(CYAN_FLOWER, 0, "Cyan Flower");
 		$this->isActivable = true;
 		$this->hardness = 0;
+		$this->breakTime = 0;
+		$this->material = Material::$plant;
 	}
 
 	public static function getAABB(Level $level, $x, $y, $z){
@@ -31,11 +33,9 @@ class CyanFlowerBlock extends FlowableBlock{
 
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){
-			if(($player->gamemode & 0x01) === 0){
-				$player->removeItem(DYE,0x0F,1);
-			}
 			$random = new Random();
 			self::placeFlowers($this->level, new Vector3($this->x, $this->y, $this->z), $random, $random->nextRange(2, 5), 2);
+			$player->consumeSingleItem(send:true);
 			return true;
 		}
 		return false;

@@ -6,8 +6,10 @@ class SugarcaneBlock extends FlowableBlock{
 		parent::__construct(SUGARCANE_BLOCK, $meta, "Sugarcane");
 		$this->isActivable = true;
 		$this->hardness = 0;
+		$this->breakTime = 0;
+		$this->material = Material::$plant;
 	}
-
+	
 	public function getDrops(Item $item, Player $player){
 		return [
 			[SUGARCANE, 0, 1],
@@ -28,10 +30,8 @@ class SugarcaneBlock extends FlowableBlock{
 				$this->meta = 0;
 				$this->level->fastSetBlockUpdateMeta($this->x, $this->y, $this->z, $this->meta, true);
 			}
-
-			if(($player->gamemode & 0x01) === 0){
-				$player->removeItem(DYE,0x0F,1);
-			}
+			
+			$player->consumeSingleItem(send:true);
 			return true;
 		}
 		return false;
@@ -50,7 +50,7 @@ class SugarcaneBlock extends FlowableBlock{
 			}
 		}
 		if(StaticBlock::getIsTransparent($down) && $down != SUGARCANE_BLOCK){ //Replace with common break method
-			ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(SUGARCANE));
+			ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(SUGARCANE));
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0, true);
 		}
 	}
@@ -80,7 +80,7 @@ class SugarcaneBlock extends FlowableBlock{
 				$x = $this->x;
 				$y = $this->y;
 				$z = $this->z;
-
+				
 				$b0 = $level->level->getBlockID($x, $y - 1, $z - 1);
 				$b1 = $level->level->getBlockID($x, $y - 1, $z + 1);
 				$b2 = $level->level->getBlockID($x - 1, $y - 1, $z);

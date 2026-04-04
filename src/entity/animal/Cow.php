@@ -5,7 +5,7 @@ class Cow extends Animal{
 	function __construct(Level $level, $eid, $class, $type = 0, $data = []){
 		$this->setSize(0.9, 1.3);
 		parent::__construct($level, $eid, $class, $type, $data);
-		$this->setHealth($this->data["Health"] ?? 10, "generic");
+		$this->setHealth($this->data["Health"] ?? 10, "generic", allowHarm: false);
 		$this->setName("Cow");
 		$this->setSpeed(0.2);
 		$this->ai->addTask(new TaskRandomWalk(0.8));
@@ -26,7 +26,7 @@ class Cow extends Animal{
 		if($e->isPlayer() && $action === InteractPacket::ACTION_HOLD){
 			$slot = $e->player->getHeldItem();
 			if($slot->getID() === BUCKET && $slot->getMetadata() === 0){
-				$e->player->removeItem($slot->getID(), $slot->getMetadata(), 1, true); //remove only 1 bucket
+				$e->player->consumeSingleItem();
 				$e->player->addItem(BUCKET, 1, 1, true);
 				return true;
 			}

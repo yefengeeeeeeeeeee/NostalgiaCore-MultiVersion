@@ -11,14 +11,19 @@ class DoubleWoodSlabBlock extends SolidBlock{
 			3 => "Jungle",
 		];
 		$this->name = "Double " . $names[$this->meta & 0x07] . " Wooden Slab";
-		$this->hardness = 15;
+		$this->hardness = 30;
+		$this->breakTime = 2;
+		$this->material = Material::$wood;
+		$this->lightBlock = 255;
 	}
 
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
-		return match ($item->isAxe()) {
+		if(!$item->isAxe()) return 3;
+		
+		return match ($item->getLevel()) {
 			5 => 0.4,
 			4 => 0.5,
 			3 => 0.75,

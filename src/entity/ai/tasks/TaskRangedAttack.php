@@ -5,6 +5,7 @@ class TaskRangedAttack extends \TaskBase
 	public $server;
 	public $attackCounter = 0;
 	public $seenTicks = 0;
+	public $rangeSquared = 0;
 	public function __construct($speed, $range){
 		$this->speedMultiplier = $speed;
 		$this->rangeSquared = $range * $range;
@@ -14,7 +15,6 @@ class TaskRangedAttack extends \TaskBase
 	public function onStart(EntityAI $ai)
 	{
 		$this->selfCounter = 1;
-		$this->ticksNoSeen = 0;
 	}
 
 	public function onEnd(EntityAI $ai)
@@ -67,7 +67,7 @@ class TaskRangedAttack extends \TaskBase
 		$arrow = $this->server->api->entity->add($selfEntity->level, ENTITY_OBJECT, OBJECT_ARROW, $d);
 		$arrow->shotByEntity = true;
 		$arrow->shooterEID = $selfEntity->eid;
-		$posY = ($target->y + $target->getEyeHeight() - 0.1);
+		$posY = ($selfEntity->y + $selfEntity->getEyeHeight() - 0.1);
 		$diffX = $target->x - $selfEntity->x;
 		$diffY = ($target->boundingBox->minY + ($target->height / 3)) - $posY;
 		$diffZ = $target->z - $selfEntity->z;

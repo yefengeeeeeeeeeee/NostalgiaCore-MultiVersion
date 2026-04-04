@@ -78,7 +78,7 @@ abstract class Projectile extends Entity{
 		$this->lastSpeedY = $this->speedY;
 		$this->lastSpeedZ = $this->speedZ;
 		$this->needsUpdate = true;
-		$this->handleWaterMovement(); //TODO: maybe just call parent::update(); ?
+		$this->handleWaterMovement();
 		if($this->fire > 0){
 			if(!$this->isImmuneToFire){
 				if(($this->fire % 20) == 0){
@@ -199,19 +199,26 @@ abstract class Projectile extends Entity{
 
 		return $data;
 	}
-	public function spawn($player)
+	
+	public function spawn(Player $player)
 	{
-		$pk = new AddEntityPacket();
-		$pk->eid = $this->eid;
-		$pk->type = $this->type;
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->speedX;
-		$pk->speedY = $this->speedY;
-		$pk->speedZ = $this->speedZ;
-		$pk->did = 0;
-		$player->dataPacket($pk);
+		if(!$player->hasEntity($this)){
+			$player->addEntity($this);
+			$pk = new AddEntityPacket();
+			$pk->eid = $this->eid;
+			$pk->type = $this->type;
+			$pk->x = $this->x;
+			$pk->y = $this->y;
+			$pk->z = $this->z;
+			$pk->speedX = $this->speedX;
+			$pk->speedY = $this->speedY;
+			$pk->speedZ = $this->speedZ;
+			$pk->did = 0;
+			$player->entityQueueDataPacket($pk);
+			$this->sendLinkPackets($player);
+			return true;
+		}
+		return false;
 	}
 
 }

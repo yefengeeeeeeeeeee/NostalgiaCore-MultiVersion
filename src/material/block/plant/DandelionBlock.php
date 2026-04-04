@@ -6,6 +6,8 @@ class DandelionBlock extends FlowableBlock{
 		parent::__construct(DANDELION, 0, "Dandelion");
 		$this->isActivable = true;
 		$this->hardness = 0;
+		$this->breakTime = 0;
+		$this->material = Material::$plant;
 	}
 	public static function getAABB(Level $level, $x, $y, $z){
 		return null;
@@ -22,18 +24,16 @@ class DandelionBlock extends FlowableBlock{
 	public static function neighborChanged(Level $level, $x, $y, $z, $nX, $nY, $nZ, $oldID){
 		$downId = $level->level->getBlockID($x, $y - 1, $z);
 		if(StaticBlock::getIsTransparent($downId) and $downId !== FARMLAND){ //Replace with common break method
-			ServerAPI::request()->api->entity->drop(new Position($x + 0.5, $y, $z + 0.5, $level), BlockAPI::getItem(CYAN_FLOWER));
+			ServerAPI::request()->api->entity->drop(new Position($x+0.5, $y, $z+0.5, $level), BlockAPI::getItem(DANDELION));
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
 	}
 
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){
-			if(($player->gamemode & 0x01) === 0){
-				$player->removeItem(DYE,0x0F,1);
-			}
 			$random = new Random();
 			self::placeFlowers($this->level, new Vector3($this->x, $this->y, $this->z), $random, $random->nextRange(2, 5), 2);
+			$player->consumeSingleItem(send:true);
 			return true;
 		}
 		return false;

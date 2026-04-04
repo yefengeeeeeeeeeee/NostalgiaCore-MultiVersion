@@ -6,13 +6,14 @@ class BeetrootBlock extends FlowableBlock{
 		parent::__construct(BEETROOT_BLOCK, $meta, "Beetroot Block");
 		$this->isActivable = true;
 		$this->hardness = 0;
+		$this->breakTime = 0;
+		$this->material = Material::$plant;
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === FARMLAND){
 			$this->level->setBlock($block, $this, true, false, true);
-			$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 			return true;
 		}
 		return false;
@@ -32,9 +33,7 @@ class BeetrootBlock extends FlowableBlock{
 				$this->meta = 7;
 			}
 			$this->level->setBlock($this, $this, true, false, true);
-			if(($player->gamemode & 0x01) === 0){
-				$player->removeItem(DYE,0x0F,1);
-			}
+			$player->consumeSingleItem(send:true);
 			return true;
 		}
 		return false;

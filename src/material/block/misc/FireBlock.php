@@ -11,6 +11,9 @@ class FireBlock extends FlowableBlock implements LightingBlock{
 		$this->breakable = false;
 		$this->isFullBlock = true;
 		$this->hardness = 0;
+		$this->breakTime = 0;
+		$this->material = Material::$fire;
+		$this->lightEmission = 15;
 	}
 	public static function getAABB(Level $level, $x, $y, $z){
 		return null;

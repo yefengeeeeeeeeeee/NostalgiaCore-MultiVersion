@@ -38,5 +38,13 @@ class PlayerActionPacket extends RakNetDataPacket{
         $this->putInt($this->face);
         $this->putInt($this->eid);*/
 	}
-
+	
+	public function eidsToGlobal(Player $p){
+		if($this->localEids){
+			$this->localEids = false;
+			$this->eid = $p->local2GlobalEID[$this->eid] ?? false;
+			if($this->eid === false) return false;
+		}
+		return true;
+	}
 }

@@ -5,7 +5,10 @@ class WorkbenchBlock extends SolidBlock{
 	public function __construct($meta = 0){
 		parent::__construct(WORKBENCH, $meta, "Crafting Table");
 		$this->isActivable = true;
-		$this->hardness = 15;
+		$this->hardness = 12.5;
+		$this->breakTime = 2.5;
+		$this->material = Material::$wood;
+		$this->lightBlock = 255;
 	}
 
 	public function onActivate(Item $item, Player $player){

@@ -5,6 +5,9 @@ class IronOreBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(IRON_ORE, 0, "Iron Ore");
 		$this->hardness = 15;
+		$this->breakTime = 3.0;
+		$this->material = Material::$stone;
+		$this->lightBlock = 255;
 	}
 
 	public function getBreakTime(Item $item, Player $player){

@@ -5,6 +5,9 @@ class BricksBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(BRICKS_BLOCK, 0, "Bricks");
 		$this->hardness = 30;
+		$this->breakTime = 2;
+		$this->material = Material::$stone;
+		$this->lightBlock = 255;
 	}
 
 	public function getBreakTime(Item $item, Player $player){

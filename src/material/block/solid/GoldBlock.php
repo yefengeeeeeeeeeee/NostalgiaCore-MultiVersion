@@ -5,6 +5,9 @@ class GoldBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(GOLD_BLOCK, 0, "Gold Block");
 		$this->hardness = 30;
+		$this->breakTime = 3;
+		$this->material = Material::$metal;
+		$this->lightBlock = 255;
 	}
 
 	public function getBreakTime(Item $item, Player $player){

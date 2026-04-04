@@ -5,6 +5,9 @@ class IronBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(IRON_BLOCK, 0, "Iron Block");
 		$this->hardness = 30;
+		$this->breakTime = 5;
+		$this->material = Material::$metal;
+		$this->lightBlock = 255;
 	}
 
 	public function getBreakTime(Item $item, Player $player){

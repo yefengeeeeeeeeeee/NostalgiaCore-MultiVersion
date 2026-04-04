@@ -1,18 +1,28 @@
 <?php
 
 class PocketMinecraftServer{
-
+	const TICK_LEGACY = 0;
+	const TICK_F20TPS = 1;
+	const TICK_NETWAIT = 2;
 	public $tCnt, $ticks;
-	public $extraprops, $serverID, $interface, $database, $version, $invisible, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
+	public $extraprops, $serverID, $interface, $database, $version, $invisible, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
 	/**
 	 * @var ServerAPI
 	 */
 	public $api;
-	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $memoryStats, $async = [], $asyncID = 0;
-
-	public $doTick, $levelData, $tiles, $entities, $schedule, $scheduleCnt, $whitelist, $spawn, $difficulty, $stop, $asyncThread;
-	public static $FORCE_20_TPS = false, $KEEP_CHUNKS_LOADED = true, $PACKET_READING_LIMIT = 100;
+	/**
+	 * @var Player[]
+	 */
+	public $clients;
 	
+	public $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $memoryStats, $async = [], $asyncID = 0;
+	
+	public static $TICKING_MODE = PocketMinecraftServer::TICK_LEGACY;
+	
+	public $doTick, $levelData, $tiles, $entities, $schedule, $scheduleCnt, $whitelist, $spawn, $difficulty, $stop, $asyncThread;
+	public static $KEEP_CHUNKS_LOADED = true, $PACKET_READING_LIMIT = 100;
+	public static $BLOCK_BREAKING_PROGRESS = 0.8;
+	public static $ENABLE_LIGHT_UPDATES = true;
 	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverip = "0.0.0.0"){
 		$this->port = (int) $port;
 		$this->doTick = true;
@@ -24,15 +34,17 @@ class PocketMinecraftServer{
 		$this->serverip = $serverip;
 		$this->load();
 	}
-
+	
 	public static $SAVE_PLAYER_DATA = true;
-
+	
+	
 	private function load(){
 		global $dolog;
 		/*if(defined("DEBUG") and DEBUG >= 0){
 			@cli_set_process_title("NostalgiaCore ".MAJOR_VERSION);
 		}*/
 		console("[INFO] Starting Minecraft PE server on " . ($this->serverip === "0.0.0.0" ? "*" : $this->serverip) . ":" . $this->port);
+		Material::init();
 		EntityRegistry::registerEntities();
 		PlayerNull::$INSTANCE = new PlayerNull();
 		Feature::init();
@@ -67,7 +79,6 @@ class PocketMinecraftServer{
 		$this->saveEnabled = true;
 		$this->tickMeasure = array_fill(0, 40, 0);
 		$this->setType("normal");
-		PacketPool::init();
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, $this->serverip);
 		$this->stop = false;
 		$this->ticks = 0;
@@ -86,30 +97,74 @@ class PocketMinecraftServer{
 			"discord-ru-smiles" => false,
 			"discord-webhook-url" => "none",
 			"discord-bot-name" => "NostalgiaCore Logger",
-			"despawn-mobs" => true,
+			"despawn-mobs" => true, 
 			"mob-despawn-ticks" => 18000,
-			"16x16x16_chunk_sending" => false,
-			"experimental-mob-ai" => false,
-			"force-20-tps" => false,
 			"enable-mob-pushing" => Living::$entityPushing,
 			"keep-chunks-loaded" => self::$KEEP_CHUNKS_LOADED,
 			"use-experimental-hotbar" => Player::$experimentalHotbar,
-			"keep-items-on-death" => Entity::$keepInventory
+			"keep-items-on-death" => Entity::$keepInventory,
+			"disable-emojis-in-chat" => Player::$disableEmojisInChat,
+			"disable-emojis-on-signs" => Level::$disableEmojisOnSigns,
+			"allow-dropping-single-items" => Player::$allowDroppingSingleItems,
+			"enable-light-updates" => self::$ENABLE_LIGHT_UPDATES,
+			"min-block-breaking-progress" => self::$BLOCK_BREAKING_PROGRESS,
+		], comments: [
+			"min-block-breaking-progress" => [
+				"Affects how strict block breaking speed check is.",
+				"0 - allow blocks to be mined instantly",
+				"0.8 - allow breaking blocks after 80% of vanilla block break time.",
+				"The value should be in range from 0 to 1."
+			],
+			"enable-light-updates" => [
+				"Enabling light updates may affects performance and will increase world generation time.",
+				"Disabling light updates will disable all light-related features(like light-based mob spawning)"
+			],
+			"allow-dropping-single-items" => [
+				"Allows players to drop any amount of items from stack in the slot.",
+				"While it is not possible using vanilla client, some custom clients(like Ninecraft) have this feature"
+			],
+			"disable-emojis-in-chat" => [
+				"Disallows players to send certain symbols in chat to prevent client lags"
+			],
+			"use-experimental-hotbar" => [
+				"Changes serverside hotbar behavior to be more like in 0.8 rather than 0.7(when disabled)",
+				"May cause more problems than old hotbar"
+			],
+			"enable-mob-pushing" => [
+				"Enables or disables serverside mob pushing",
+				"If enabled it may cause performance issues when there are a lot of mobs in a small enclosed area",
+				"If disabled it will cause small entity position desync(that should be fixed every time a server sends a new movement packet to the client)"
+			],
+			"discord-ru-smiles" => [
+				"Replaces cyrillic symbols Ы Ь Ъ Ё with emojis when sending a message using discord webhook(as it is done in some custom clients)"
+			],
+			"keep-chunks-loaded" => [
+				"If disabled chunks won't be loaded into memory until the player(or something else) loads them"
+			]
 		]);
+		self::$BLOCK_BREAKING_PROGRESS = $this->extraprops->get("min-block-breaking-progress");
+		Player::$disableEmojisInChat = $this->extraprops->get("disable-emojis-in-chat");
+		Level::$disableEmojisOnSigns = $this->extraprops->get("disable-emojis-on-signs");
 		Entity::$keepInventory = $this->extraprops->get("keep-items-on-death");
 		Player::$experimentalHotbar = $this->extraprops->get("use-experimental-hotbar");
-		Player::$smallChunks = $this->extraprops->get("16x16x16_chunk_sending");
+		Player::$allowDroppingSingleItems = $this->extraprops->get("allow-dropping-single-items");
 		Living::$despawnMobs = $this->extraprops->get("despawn-mobs");
 		Living::$despawnTimer = $this->extraprops->get("mob-despawn-ticks");
 		Living::$entityPushing = $this->extraprops->get("enable-mob-pushing");
-		self::$FORCE_20_TPS = $this->extraprops->get("force-20-tps");
+		
 		self::$KEEP_CHUNKS_LOADED = $this->extraprops->get("keep-chunks-loaded");
+		self::$ENABLE_LIGHT_UPDATES = $this->extraprops->get("enable-light-updates");
 		PocketMinecraftServer::$SAVE_PLAYER_DATA = $this->extraprops->get("save-player-data");
-		MobController::$ADVANCED = $this->extraprops->get("experimental-mob-ai");
 		Explosion::$enableExplosions = $this->extraprops->get("enable-explosions");
 		NetherReactorBlock::$enableReactor = $this->extraprops->get("enable-nether-reactor");
-		if(self::$FORCE_20_TPS){
+		if(self::$TICKING_MODE == self::TICK_F20TPS){
 			ConsoleAPI::warn("Forcing 20 tps. This may result in higher CPU usage!");
+		}
+		if(self::$BLOCK_BREAKING_PROGRESS > 1){
+			ConsoleAPI::warn("Minimal block breaking progress is more than 1, may cause ghost blocks to appear even for players with extremely low ping!");
+		}
+		if(!self::$ENABLE_LIGHT_UPDATES){
+			ConsoleAPI::warn("Light updates are disabled: this should decrease memory consumption and increase performance, but will prevent all existing light from updating and disable some light-dependant features.");
 		}
 		if($this->extraprops->get("discord-msg")){
 			if($this->extraprops->get("discord-webhook-url") !== "none"){
@@ -136,6 +191,8 @@ class PocketMinecraftServer{
 	public function startDatabase(){
 		$this->preparedSQL = new stdClass();
 		$this->preparedSQL->entity = new stdClass();
+		$this->preparedSQL->player = new stdClass();
+		
 		$this->database = new SQLite3(":memory:");
 		$this->query("PRAGMA journal_mode = OFF;");
 		$this->query("PRAGMA encoding = \"UTF-8\";");
@@ -146,13 +203,17 @@ class PocketMinecraftServer{
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
 		$this->query("CREATE TABLE blockUpdates (level TEXT, x INTEGER, y INTEGER, z INTEGER, type INTEGER, delay NUMERIC);");
-		$this->query("CREATE TABLE recipes (id INTEGER PRIMARY KEY, type NUMERIC, recipe TEXT);");
 		$this->query("PRAGMA synchronous = OFF;");
 		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT DISTINCT ID FROM handlers WHERE name = :name ORDER BY priority DESC;");
 		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (:time - interval);");
 		$this->preparedSQL->updateAction = $this->database->prepare("UPDATE actions SET last = :time WHERE ID = :id;");
 		$this->preparedSQL->entity->setPosition = $this->database->prepare("UPDATE entities SET x = :x, y = :y, z = :z, pitch = :pitch, yaw = :yaw WHERE EID = :eid ;");
 		$this->preparedSQL->entity->setLevel = $this->database->prepare("UPDATE entities SET level = :level WHERE EID = :eid ;");
+		
+		$this->preparedSQL->player->deleteCID = $this->database->prepare("DELETE FROM players WHERE CID = :CID;");
+		$this->preparedSQL->player->getEq = $this->database->prepare("SELECT ip,port,name FROM players WHERE name = :name;"); //'$name'
+		$this->preparedSQL->player->getLike = $this->database->prepare("SELECT ip,port,name FROM players WHERE name LIKE :name;"); //'$name'
+		
 	}
 
 	public function query($sql, $fetch = false){
@@ -230,7 +291,7 @@ class PocketMinecraftServer{
 		}
 		release_lock();
 	}
-
+	
 	public function send2Discord($msg){
 		if($this->extraprops->get("discord-msg") and $this->extraprops->get("discord-webhook-url") !== "none"){
 			$url = $this->extraprops->get("discord-webhook-url");
@@ -244,7 +305,7 @@ class PocketMinecraftServer{
 			], null);
 		}
 	}
-
+	
 	public function asyncOperation($type, array $data, callable $callable = null){
 		if(defined("NO_THREADS")){
 			return false;
@@ -348,6 +409,7 @@ class PocketMinecraftServer{
 
 	/**
 	 * @param string $event
+	 * @param callable $callable
 	 * @param integer $priority
 	 *
 	 * @return boolean
@@ -432,7 +494,7 @@ class PocketMinecraftServer{
 			pcntl_signal(SIGINT, [$this, "close"]);
 			pcntl_signal(SIGHUP, [$this, "close"]);
 		}
-
+		
 		console("[INFO] Default game type: " . strtoupper($this->getGamemode()));
 		$this->trigger("server.start", microtime(true));
 		console('[INFO] Done (' . round(microtime(true) - START_TIME, 3) . 's)! For help, type "help" or "?"');
@@ -452,7 +514,7 @@ class PocketMinecraftServer{
 		if(!is_callable($callback)){
 			return false;
 		}
-
+		
 		$chcnt = $this->scheduleCnt++;
 		$this->schedule[$chcnt] = [$callback, $data, $eventName];
 		$this->query("INSERT INTO actions (ID, interval, last, repeat) VALUES(" . $chcnt . ", " . ($ticks / 20) . ", " . microtime(true) . ", " . (((bool) $repeat) === true ? 1 : 0) . ");");
@@ -478,7 +540,7 @@ class PocketMinecraftServer{
 	public function process()
 	{
 		$lastLoop = 0;
-		if(self::$FORCE_20_TPS){
+		if(self::$TICKING_MODE != self::TICK_LEGACY){
 			while($this->stop === false){
 				$packetcnt = 0;
 				while($packet = $this->interface->readPacket()){
@@ -490,7 +552,7 @@ class PocketMinecraftServer{
 						}
 					}
 				}
-
+				
 				$this->tick();
 			}
 		}else{
@@ -523,11 +585,12 @@ class PocketMinecraftServer{
 				$this->tick();
 			}
 		}
-
+		
+		
 	}
 
 	public function packetHandler(Packet $packet){
-		$data = &$packet;
+		$data =& $packet;
 		$CID = PocketMinecraftServer::clientID($packet->ip, $packet->port);
 		if(isset($this->clients[$CID])){
 			$this->clients[$CID]->handlePacket($packet);
@@ -587,7 +650,10 @@ class PocketMinecraftServer{
 					if($this->invisible === true){
 						break;
 					}
-
+					
+					if($packet->mtuSize > 2048) $packet->mtuSize = 2048;
+					if($packet->mtuSize <= 512) $packet->mtuSize = 512;
+					
 					$this->clients[$CID] = $c = new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
 					$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_2);
 					$pk->serverID = $this->serverID;
@@ -602,7 +668,6 @@ class PocketMinecraftServer{
 
 	public static function clientID($ip, $port){
 		return crc32($ip . $port) ^ crc32($port . $ip . BOOTUP_RANDOM);
-		//return $ip . ":" . $port;
 	}
 
 	public function send(Packet $packet){
@@ -615,14 +680,11 @@ class PocketMinecraftServer{
 			$this->tickMeasure[] = $this->lastTick = $time;
 			unset($this->tickMeasure[key($this->tickMeasure)]);
 			++$this->ticks;
-
+			
 			foreach($this->clients as $client){
 				$client->handlePacketQueues();
-				if($this->ticks % 40 == 0){ //2s
-					$client->sendPing();
-				}
 			}
-
+			
 			foreach($this->api->level->levels as $l){
 				$l->onTick($this, $time);
 			}
@@ -773,7 +835,7 @@ class PocketMinecraftServer{
 		$info["garbage"] = gc_collect_cycles();
 		$this->handle("server.debug", $info);
 		if($console === true){
-			console("[INFO] TPS: " . $info["tps"] . ", Memory usage: " . $info["memory_usage"] . " (Peak " . $info["memory_peak_usage"] . "), Entities: " . $info["entities"] . ", Events: " . $info["events"] . ", Handlers: " . $info["handlers"] . ", Actions: " . $info["actions"] . ", Garbage: " . $info["garbage"], true, true);
+			console("[INFO] TPS: {$info["tps"]}, Memory usage: {$info["memory_usage"]} (Peak {$info["memory_peak_usage"]}), Entities: {$info["entities"]}, Events: {$info["events"]}, Handlers: {$info["handlers"]}, Actions: {$info["actions"]}, Garbage: {$info["garbage"]}", true, true);
 		}
 		return $info;
 	}

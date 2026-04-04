@@ -4,7 +4,10 @@ class HayBaleBlock extends SolidBlock{
 	public static $blockID;
 	public function __construct($meta = 0){
 		parent::__construct(HAY_BALE, $meta, "Hay Bale");
-		$this->hardness = 10;
+		$this->hardness = 2.5;
+		$this->breakTime = 0.5;
+		$this->material = Material::$dirt;
+		$this->lightBlock = 255;
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

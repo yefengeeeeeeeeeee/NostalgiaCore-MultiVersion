@@ -5,6 +5,9 @@ class GoldOreBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(GOLD_ORE, 0, "Gold Ore");
 		$this->hardness = 15;
+		$this->breakTime = 3.0;
+		$this->material = Material::$stone;
+		$this->lightBlock = 255;
 	}
 
 	public function getBreakTime(Item $item, Player $player){

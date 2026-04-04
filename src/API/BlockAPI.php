@@ -1,9 +1,9 @@
 <?php
 
 class BlockAPI{
-
+	public static $creativeHotbarSlots = [];
+	public static $reverseCreativeLookup = [];
 	public static $creative = [
-
 		//Building
 		[STONE, 0],
 		[COBBLESTONE, 0],
@@ -201,8 +201,33 @@ class BlockAPI{
 	private $scheduledUpdates = [];
 	private $randomUpdates = [];
 
+	/**
+	 * @param int $id item id
+	 * @param int $meta item metadata
+	 * @return false|int false if item is not accessible from creative mode, otherwise slot id in BlockAPI::$creative
+	 */
+	public static function hasCreativeItem($id, $meta){
+		$rind = ($id << 24) | ($meta);
+		return static::$reverseCreativeLookup[$rind] ?? false;
+	}
+	
 	function __construct(){
 		$this->server = ServerAPI::request();
+		foreach(static::$creative as $slot => [$id, $meta]){
+			$rind = ($id << 24) | ($meta);
+			static::$reverseCreativeLookup[$rind] = $slot;
+		}
+		
+		self::$creativeHotbarSlots[0] = static::hasCreativeItem(STONE, 0);
+		self::$creativeHotbarSlots[1] = static::hasCreativeItem(COBBLESTONE, 0);
+		self::$creativeHotbarSlots[2] = static::hasCreativeItem(DIRT, 0);
+		self::$creativeHotbarSlots[3] = static::hasCreativeItem(PLANKS, 0);
+		self::$creativeHotbarSlots[4] = static::hasCreativeItem(PLANKS, 1);
+		self::$creativeHotbarSlots[5] = static::hasCreativeItem(TORCH, 0);
+		self::$creativeHotbarSlots[6] = static::hasCreativeItem(BRICK_STAIRS, 0);
+		self::$creativeHotbarSlots[7] = static::hasCreativeItem(COBBLE_WALL, 0);
+		self::$creativeHotbarSlots[8] = static::hasCreativeItem(SAPLING, 0);
+		
 	}
 
 	public static function get($id, $meta = 0, $v = false){
@@ -259,7 +284,7 @@ class BlockAPI{
 						$output .= "Usage: /setblock <x> <y> <z> <block[:damage]>";
 						break;
 					}
-
+					
 					$level = $issuer->entity->level;
 					$block = self::fromString($args[3])->getBlock();
 				}
@@ -294,8 +319,8 @@ class BlockAPI{
 				break;
 			case "give":
 				$player = $this->server->api->player->get($args[0] ?? "");
-
-				if($player instanceof Player){
+				
+				if($player instanceof Player){			
 					$item = self::fromString($args[1] ?? "");
 					if(($player->gamemode & 0x01) === 0x01){
 						return "Player is in creative mode.";
@@ -303,18 +328,18 @@ class BlockAPI{
 					if($item->getID() === 0){
 						return "You cannot give an air block to a player.";
 					}
-
+					
 					if(!isset($args[2])){
 						$item->count = $item->getMaxStackSize();
 					}else{
 						$item->count = (int) $args[2];
 					}
-
+					
 					$player->addItem($item->getID(), $item->getMetadata(), $item->count);
 					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$player->username;
 					break;
 				}else{
-					$item = self::fromString($args[0] ?? "");
+					$item = self::fromString($args[0] ?? "");	
 					if(!($issuer instanceof Player)){
 						return "You cant give an item to a non-player.";
 					}
@@ -341,6 +366,16 @@ class BlockAPI{
 		return $output;
 	}
 
+	public static function blockIDFromString($str){
+		if(defined(strtoupper($str))){
+			$ida = explode(":", constant(strtoupper($str)));
+			if(count($ida) === 2){}
+			return (int) $ida[0];
+		}else if(is_numeric($str)){
+			return (int) $str;
+		}
+	}
+	
 	public static function fromString($str, $multiple = false){
 		if($multiple === true){
 			$blocks = [];
@@ -392,25 +427,49 @@ class BlockAPI{
 				return $this->cancelAction($target, $player, false);
 			}
 		}
-
-		if((!$target->isBreakable($item, $player) and $this->server->api->dhandle("player.block.break.invalid", ["player" => $player, "target" => $target, "item" => $item]) !== true) or ($player->gamemode & 0x02) === 0x02 or (($player->lastBreak - $player->getLag() / 1000) + $target->getBreakTime($item, $player) - 0.2) >= microtime(true)){
+		
+		$currentTime = microtime(true);
+		$isIndestructible = (!$target->isBreakable($item, $player) && $this->server->api->dhandle("player.block.break.invalid", ["player" => $player, "target" => $target, "item" => $item]) !== true);
+		$isAdventure = ($player->gamemode & 0x02) === 0x02;
+		$progress = $target->getDestroyProgress($player);
+		
+		$tooFast = false;
+		if($progress == 0 || is_nan($progress)){
+			$exceptedTimeMS = INF;
+			$tooFast = true;
+		}else{
+			$exceptedTimeMS = ceil(PocketMinecraftServer::$BLOCK_BREAKING_PROGRESS / $progress)*0.05;
+			
+		}
+		
+		if($player->gamemode == 1){ //creative
+			$exceptedTimeMS = 0.05; //1 block/tick
+			$tooFast = false;
+		}
+		
+		$exceptedTimeAfter = $player->lastBreak + $exceptedTimeMS;
+		if($currentTime < $exceptedTimeAfter) $tooFast = true;
+		if($isIndestructible || $isAdventure || $tooFast){
 			if($this->server->api->dhandle("player.block.break.bypass", ["player" => $player, "target" => $target, "item" => $item]) !== true){
+				if($tooFast){
+					ConsoleAPI::warn("{$player->username} tried destroying block({$target->getID()} {$target->getMetadata()}) too fast($currentTime < $exceptedTimeAfter)");
+				}
 				return $this->cancelAction($target, $player, false);
 			}
 		}
-		$player->lastBreak = microtime(true);
+		$player->lastBreak = $currentTime;
 
 		if($this->server->api->dhandle("player.block.break", ["player" => $player, "target" => $target, "item" => $item]) !== false){
 			$drops = $target->getDrops($item, $player);
 			if($target->onBreak($item, $player) === false){
 				return $this->cancelAction($target, $player, false);
 			}
-			if(($player->gamemode & 0x01) === 0 and $item->useOn($target) and $item->getMetadata() >= $item->getMaxDurability()){
-				$player->setSlot($player->slot, new Item(AIR, 0, 0), false);
-			}
+			
+			$item->mineBlock($target, $player);
 		}else{
 			return $this->cancelAction($target, $player, false);
 		}
+
 
 		if(is_array($drops) && ($player->gamemode & 0x01) === 0x00 and count($drops) > 0){
 			foreach($drops as $drop){
@@ -421,15 +480,9 @@ class BlockAPI{
 	}
 
 	private function cancelAction(Block $block, Player $player, $send = true){
-		$pk = new UpdateBlockPacket;
-		$pk->x = $block->x;
-		$pk->y = $block->y;
-		$pk->z = $block->z;
-		$pk->block = $block->getID();
-		$pk->meta = $block->getMetadata();
-		$player->dataPacket($pk);
+		$player->addBlockUpdateIntoQueue($block->x, $block->y, $block->z, $block->getID(), $block->getMetadata());
 		if($send === true){
-			$player->sendInventorySlot($player->slot);
+			$player->sendInventory();
 		}
 		return false;
 	}
@@ -441,7 +494,7 @@ class BlockAPI{
 
 		$target = $player->level->getBlock($vector);
 		$block = $target->getSide($face);
-		$item = $player->getSlot($player->slot);
+		$item = $player->getHeldItem();
 
 		if($target->getID() === AIR and $this->server->api->dhandle("player.block.place.invalid", ["player" => $player, "block" => $block, "target" => $target, "item" => $item]) !== true){ //If no block exists or not allowed in CREATIVE
 			if($this->server->api->dhandle("player.block.place.bypass", ["player" => $player, "block" => $block, "target" => $target, "item" => $item]) !== true){
@@ -455,7 +508,7 @@ class BlockAPI{
 				return $this->cancelAction($block, $player);
 			}
 		}
-
+		
 		StaticBlock::getBlock($target->getID())::interact($target->level, $target->x, $target->y, $target->z, $player);
 
 		if($target->isActivable === true){
@@ -466,7 +519,7 @@ class BlockAPI{
 
 		if(($player->gamemode & 0x02) === 0x02){ //Adventure mode!!
 			if($this->server->api->dhandle("player.block.place.bypass", ["player" => $player, "block" => $block, "target" => $target, "item" => $item]) !== true){
-				return $this->cancelAction($block, $player, false);
+				return $this->cancelAction($block, $player);
 			}
 		}
 
@@ -474,10 +527,7 @@ class BlockAPI{
 			return false;
 		}
 
-		if($item->isActivable === true and $item->onActivate($player->level, $player, $block, $target, $face, $fx, $fy, $fz) === true){
-			if($item->count <= 0){
-				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0), false);
-			}
+		if($item->isActivable === true && $item->onActivate($player->level, $player, $block, $target, $face, $fx, $fy, $fz) === true){
 			return false;
 		}
 
@@ -485,14 +535,14 @@ class BlockAPI{
 			$hand = $item->getBlock();
 			$hand->position($block);
 		}elseif($block->getID() === FIRE){
-			$player->level->setBlock($block, new AirBlock(), true, false, true);
+			$player->level->fastSetBlockUpdate($block->x, $block->y, $block->z, 0, 0, true, false);
 			return false;
 		}else{
 			return $this->cancelAction($block, $player, false);
 		}
 
 		if(!($block->isReplaceable === true or ($hand->getID() === SLAB and $block->getID() === SLAB))){
-			return $this->cancelAction($block, $player, false);
+			return $this->cancelAction($block, $player);
 		}
 
 		if($target->isReplaceable === true){
@@ -500,32 +550,32 @@ class BlockAPI{
 			$hand->position($block);
 			//$face = -1;
 		}
-
+		
 		if($hand->isSolid === true && ($hand->getID() != BED_BLOCK && $hand->getID() != CARPET)){
-			$aabb = $hand->getAABB($block->level, $block->x, $block->y, $block->z);
-			$playerbb = $player->entity->boundingBox;
-			if(($aabb->maxX > $playerbb->minX && $aabb->minX < $playerbb->maxX) && ($aabb->maxY > ($playerbb->minY + 0.21) && $aabb->minY < $playerbb->maxY) && ($aabb->maxZ > $playerbb->minZ && $aabb->minZ < $playerbb->maxZ)){
-				return $this->cancelAction($block, $player, false); //Entity in block
+			foreach($block->level->players as $pl){
+				$aabbs = $hand->getCollisionBoundingBoxes($block->level, $block->x, $block->y, $block->z, $pl->entity);
+				foreach($aabbs as $aabb){
+					$playerbb = $pl->entity->boundingBox;
+					if(($aabb->maxX > $playerbb->minX && $aabb->minX < $playerbb->maxX) && ($aabb->maxY > ($playerbb->minY+0.21) && $aabb->minY < $playerbb->maxY) && ($aabb->maxZ > $playerbb->minZ && $aabb->minZ < $playerbb->maxZ)){
+						return $this->cancelAction($block, $player); //Entity in block
+					}
+				}
 			}
-
+			
+			
 		}
 
 		if($this->server->api->dhandle("player.block.place", ["player" => $player, "block" => $block, "target" => $target, "item" => $item]) === false){
 			return $this->cancelAction($block, $player);
 		}elseif($hand->place($item, $player, $block, $target, $face, $fx, $fy, $fz) === false){
-			return $this->cancelAction($block, $player, false);
+			return $this->cancelAction($block, $player);
 		}
 		if($hand->getID() === SIGN_POST or $hand->getID() === WALL_SIGN){
 			$t = $this->server->api->tile->addSign($player->level, $block->x, $block->y, $block->z);
 			$t->data["creator"] = $player->username;
 		}
 
-		if(($player->gamemode & 0x01) === 0x00){
-			--$item->count;
-			if($item->count <= 0){
-				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0), false);
-			}
-		}
+		$player->consumeSingleItem();
 
 		return false;
 	}
@@ -536,12 +586,14 @@ class BlockAPI{
 			return false;
 		}
 		$level = $block::onUpdate($pos->level, $pos->x, $pos->y, $pos->z, $type);
-
+		
 		return $level;
 	}
+	
 
+	
 	public function blockUpdateAround(Position $pos, $type = BLOCK_UPDATE_NORMAL, $delay = false){
-
+		
 		if($type == BLOCK_UPDATE_NORMAL){
 			try{
 				throw new Exception("Deprecated: tried updating $pos using BLOCK_UPDATE_NORMAL.");
@@ -551,7 +603,7 @@ class BlockAPI{
 			}
 			return;
 		}
-
+		
 		if($delay !== false){
 			$this->scheduleBlockUpdate($pos->getSide(0), $delay, $type);
 			$this->scheduleBlockUpdate($pos->getSide(1), $delay, $type);
@@ -568,12 +620,24 @@ class BlockAPI{
 			$this->blockUpdate($pos->getSide(5), $type);
 		}
 	}
+	
+	public function removeAllBlockUpdates(Level $level){
+		$update = $this->server->query("SELECT x,y,z,level,type FROM blockUpdates WHERE level = '{$level->getName()}';");
+		if($update instanceof SQLite3Result){
+			while(($up = $update->fetchArray(SQLITE3_ASSOC)) !== false){
+				$index = $up["x"] . "." . $up["y"] . "." . $up["z"] . "." . $up["level"] . "." . $up["type"];
+				unset($this->scheduledUpdates[$index]);
+			}
+			$this->server->query("DELETE FROM blockUpdates WHERE level = '{$level->getName()}';");
+		}
+	}
+	
 	public function scheduleBlockUpdateXYZ(Level $level, $x, $y, $z, $type = BLOCK_UPDATE_SCHEDULED, $delay = false){
 		$type = (int) $type;
 		if($delay < 0){
 			return false;
 		}
-
+		
 		$index = $x . "." . $y . "." . $z . "." . $level->getName() . "." . $type;
 		$delay = microtime(true) + $delay * 0.05;
 		if(!isset($this->scheduledUpdates[$index])){
@@ -583,43 +647,11 @@ class BlockAPI{
 		}
 		return false;
 	}
-
+	
 	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
-		$type = (int) $type;
-		if($delay < 0){
-			return false;
-		}
-
-		$index = $pos->x . "." . $pos->y . "." . $pos->z . "." . $pos->level->getName() . "." . $type;
-		$delay = microtime(true) + $delay * 0.05;
-		if(!isset($this->scheduledUpdates[$index])){
-			$this->scheduledUpdates[$index] = $pos;
-			$this->server->query("INSERT INTO blockUpdates (x, y, z, level, type, delay) VALUES (" . $pos->x . ", " . $pos->y . ", " . $pos->z . ", '" . $pos->level->getName() . "', " . $type . ", " . $delay . ");");
-			return true;
-		}
-		return false;
+		return $this->scheduleBlockUpdateXYZ($pos->level, $pos->x, $pos->y, $pos->z, $type, $delay);
 	}
 
-	public function nextRandomUpdate(Position $pos){
-		if(!isset($this->scheduledUpdates[$pos->x . "." . $pos->y . "." . $pos->z . "." . $pos->level->getName() . "." . BLOCK_UPDATE_RANDOM])){
-			$time = microtime(true);
-			$offset = 0;
-			while(true){
-				$t = $offset + Utils::getRandomUpdateTicks() * 0.05;
-				$update = $this->server->query("SELECT COUNT(*) FROM blockUpdates WHERE level = '" . $pos->level->getName() . "' AND type = " . BLOCK_UPDATE_RANDOM . " AND delay >= " . ($time + $t - 1) . " AND delay <= " . ($time + $t + 1) . ";");
-				if($update instanceof SQLite3Result){
-					$update = $update->fetchArray(SQLITE3_NUM);
-					if($update[0] < 3){
-						break;
-					}
-				}else{
-					break;
-				}
-				$offset += mt_rand(25, 75);
-			}
-			$this->scheduleBlockUpdate($pos, $t / 0.05, BLOCK_UPDATE_RANDOM);
-		}
-	}
 
 	public function blockUpdateTick(){
 		$time = microtime(true);
@@ -641,31 +673,11 @@ class BlockAPI{
 			}
 		}
 	}
-
+	
 	/**
-	 * 方块/物品id转换，防止新版本影响旧版本视觉效果
+	 * @deprecated random updates are handled differently now.
 	 */
-	public static function convertHighItemIdsToOldItemIds(int $protocolId, int $itemId) : int{
-		if ($protocolId >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
-			return $itemId;
-		}
-
-		$idMap = [ //default for protocol < 12
-			LIT_PUMPKIN => MELON_BLOCK, //block
-			PUMPKIN_SEEDS => MELON_SEEDS, //item
-			PUMPKIN_PIE => BREAD, //item
-			BEETROOT => BREAD, //item
-			BEETROOT_SEEDS => SEEDS, //item
-		];
-
-		if ($protocolId < ProtocolInfo9::CURRENT_PROTOCOL_9) {
-			$idMap += [
-				NETHERRACK => OBSIDIAN, //block
-				NETHER_BRICK => BRICK, //item
-				NETHER_QUARTZ => BRICK, //item
-			];
-		}
-
-		return $idMap[$itemId] ?? $itemId;
+	public function nextRandomUpdate(Position $pos){
+		
 	}
 }

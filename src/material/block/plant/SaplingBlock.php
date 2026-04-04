@@ -19,6 +19,8 @@ class SaplingBlock extends FlowableBlock{
 		];
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 0;
+		$this->breakTime = 0;
+		$this->material = Material::$plant;
 	}
 	public static function getAABB(Level $level, $x, $y, $z){
 		return null;
@@ -27,7 +29,6 @@ class SaplingBlock extends FlowableBlock{
 		$down = $this->getSide(0);
 		if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){
 			$this->level->setBlock($block, $this, true, false, true);
-			$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 			return true;
 		}
 		return false;
@@ -36,9 +37,7 @@ class SaplingBlock extends FlowableBlock{
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			TreeObject::growTree($this->level, $this, new Random(), $this->meta & 0x03);
-			if(($player->gamemode & 0x01) === 0){
-				$player->removeItem(DYE,0x0F,1);
-			}
+			$player->consumeSingleItem(send:true);
 			return true;
 		}
 		return false;
