@@ -5,10 +5,6 @@ $finder = PhpCsFixer\Finder::create()
 
 return (new PhpCsFixer\Config)
 	->setRules([
-		'array_indentation' => true,
-		'array_syntax' => [
-			'syntax' => 'short'
-		],
 	])
 	->setFinder($finder)
 	->setIndent("\t")
