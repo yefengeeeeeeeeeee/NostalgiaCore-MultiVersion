@@ -676,7 +676,8 @@ class Player{
 	public function sendBigPacketAlwaysRecover(RakNetDataPacket $pk){
 		if($this->connected === false) return false;
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $pk)) === BaseEvent::DENY) return;
-		
+
+        $pk->PROTOCOL = $this->PROTOCOL;
 		$pk->encode();
 		$sendtime = microtime(true);
 		$size = $this->MTU - 34;
@@ -1105,6 +1106,9 @@ class Player{
 	public function eventHandler($data, $event){
 		switch($event){
 			case "entity.link":
+                if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+                    break;
+                }
 				$pk = new SetEntityLinkPacket();
 				$pk->rider = $data["rider"];
 				$pk->riding = $data["riding"];
@@ -1797,6 +1801,7 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $pk)) === BaseEvent::DENY) return;
 		if(!$this->convertToLocalEIDPacket($pk)) return false;
 
+        $pk->PROTOCOL = $this->PROTOCOL;
 		$pk->encode();
 
 		$len = 1 + strlen($pk->buffer);
@@ -1842,7 +1847,6 @@ class Player{
 		if(!$this->convertToLocalEIDPacket($pk)) return false;
         $pk->PROTOCOL = $this->PROTOCOL;
 		$pk->encode();
-
 		$len = 1 + strlen($pk->buffer);
 		$MTU = $this->MTU - 24;
 		if($len > $MTU) return $this->entityQueueDataPacket_big($pk);
@@ -2097,6 +2101,7 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY) return false;
 		if(!$this->convertToLocalEIDPacket($packet)) return false;
 
+        $packet->PROTOCOL = $this->PROTOCOL;
 		$packet->encode();
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;

@@ -69,7 +69,7 @@ class PacketPool{
 		self::registerPacket(DisconnectPacket::class);
 		self::registerPacket(DropItemPacket::class);
 
-		self::registerPacket(EntityDataPacket::class, [8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(EntityDataPacket::class, [12, 13, 14]);
 		self::registerPacket(EntityEventPacket::class);
 		self::registerPacket(ExplodePacket::class);
 
@@ -91,7 +91,7 @@ class PacketPool{
 		self::registerPacket(PlayerActionPacket::class, [6, 7, 8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(PlayerArmorEquipmentPacket::class, [9, 10, 11, 12, 13, 14]);
 		self::registerPacket(PlayerEquipmentPacket::class);
-		self::registerPacket(PlayerInputPacket::class, [8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(PlayerInputPacket::class, [12, 13, 14]);
 		self::registerPacket(PongPacket::class);
 
 		self::registerPacket(ReadyPacket::class);

@@ -8,9 +8,7 @@ class PlayerInputPacket extends RakNetDataPacket{
 	}
 
 	public function pid(){
-		if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
-			return  ProtocolInfo9::PLAYER_INPUT_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+		if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
 			return  ProtocolInfo12::PLAYER_INPUT_PACKET;
 		}
 		return ProtocolInfo::PLAYER_INPUT_PACKET;

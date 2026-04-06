@@ -527,7 +527,6 @@ class PlayerAPI{
      */
     public static function decodeProtocol($ip, $port){
         foreach(ServerAPI::request()->clients as $p) {
-            ConsoleAPI::info($p->ip);
             if($p->ip == $ip && $p->port == $port){
                 return $p->PROTOCOL;
             }

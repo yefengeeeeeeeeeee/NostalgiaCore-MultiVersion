@@ -212,8 +212,6 @@ abstract class ProtocolInfo9{
 	const CHAT_PACKET = 0xb4;
     const SIGN_UPDATE_PACKET = 0xb5;
 	const ADVENTURE_SETTINGS_PACKET = 0xb6;
-	const ENTITY_DATA_PACKET = 0xb7;
-	const PLAYER_INPUT_PACKET = 0xb9;
 
 }
 abstract class ProtocolInfo8{
@@ -281,8 +279,6 @@ abstract class ProtocolInfo8{
 	const CHAT_PACKET = 0xb1;
     const SIGN_UPDATE_PACKET = 0xb2;
 	const ADVENTURE_SETTINGS_PACKET = 0xb3;
-	const ENTITY_DATA_PACKET = 0xb2;
-	const PLAYER_INPUT_PACKET = 0xb9;
 }
 abstract class ProtocolInfo6{
 
@@ -349,8 +345,6 @@ abstract class ProtocolInfo6{
 	const CHAT_PACKET = 0xaf;
     const SIGN_UPDATE_PACKET = 0xb0;
 	//const ADVENTURE_SETTINGS_PACKET = 0xb3;
-	//const ENTITY_DATA_PACKET = 0xb2;
-	//const PLAYER_INPUT_PACKET = 0xb9;
 }
 abstract class ProtocolInfo4{
 
@@ -416,8 +410,6 @@ abstract class ProtocolInfo4{
 	const CONTAINER_ACK_PACKET = 0xac;
 	//const CHAT_PACKET = 0xaf;
 	//const ADVENTURE_SETTINGS_PACKET = 0xb3;
-	//const ENTITY_DATA_PACKET = 0xb2;
-	//const PLAYER_INPUT_PACKET = 0xb9;
 }
 abstract class ProtocolInfo3{
 
@@ -483,8 +475,6 @@ abstract class ProtocolInfo3{
 	const CONTAINER_ACK_PACKET = 0xac;
 	//const CHAT_PACKET = 0xaf;
 	//const ADVENTURE_SETTINGS_PACKET = 0xb3;
-	//const ENTITY_DATA_PACKET = 0xb2;
-	//const PLAYER_INPUT_PACKET = 0xb9;
 }
 /***REM_START***/
 require_once(FILE_PATH . "src/network/raknet/RakNetDataPacket.php");
