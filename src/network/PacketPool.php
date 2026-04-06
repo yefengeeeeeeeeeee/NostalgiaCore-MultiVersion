@@ -69,7 +69,7 @@ class PacketPool{
 		self::registerPacket(DisconnectPacket::class);
 		self::registerPacket(DropItemPacket::class);
 
-		self::registerPacket(EntityDataPacket::class, [12, 13, 14]);
+		self::registerPacket(EntityDataPacket::class, [6, 7, 8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(EntityEventPacket::class);
 		self::registerPacket(ExplodePacket::class);
 
@@ -110,7 +110,6 @@ class PacketPool{
 		self::registerPacket(SetHealthPacket::class);
 		self::registerPacket(SetSpawnPositionPacket::class, [8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(SetTimePacket::class);
-        self::registerPacket(SignUpdatePacket::class, [6, 7, 8, 9]);
 		self::registerPacket(StartGamePacket::class);
 
 		self::registerPacket(TakeItemEntityPacket::class);

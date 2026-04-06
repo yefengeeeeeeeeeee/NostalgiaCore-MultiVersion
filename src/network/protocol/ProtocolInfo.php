@@ -210,9 +210,8 @@ abstract class ProtocolInfo9{
 	const CONTAINER_SET_CONTENT_PACKET = 0xb2;
 	const CONTAINER_ACK_PACKET = 0xb3;
 	const CHAT_PACKET = 0xb4;
-    const SIGN_UPDATE_PACKET = 0xb5;
+    const ENTITY_DATA_PACKET = 0xb5;
 	const ADVENTURE_SETTINGS_PACKET = 0xb6;
-
 }
 abstract class ProtocolInfo8{
 
@@ -277,7 +276,7 @@ abstract class ProtocolInfo8{
 	const CONTAINER_SET_CONTENT_PACKET = 0xaf;
 	const CONTAINER_ACK_PACKET = 0xb;
 	const CHAT_PACKET = 0xb1;
-    const SIGN_UPDATE_PACKET = 0xb2;
+    const ENTITY_DATA_PACKET = 0xb2;
 	const ADVENTURE_SETTINGS_PACKET = 0xb3;
 }
 abstract class ProtocolInfo6{
@@ -343,7 +342,7 @@ abstract class ProtocolInfo6{
 	const CONTAINER_SET_CONTENT_PACKET = 0xad;
 	const CONTAINER_ACK_PACKET = 0xae;
 	const CHAT_PACKET = 0xaf;
-    const SIGN_UPDATE_PACKET = 0xb0;
+    const ENTITY_DATA_PACKET = 0xb0;
 	//const ADVENTURE_SETTINGS_PACKET = 0xb3;
 }
 abstract class ProtocolInfo4{

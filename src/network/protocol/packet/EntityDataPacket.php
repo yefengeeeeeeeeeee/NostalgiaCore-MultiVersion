@@ -7,7 +7,13 @@ class EntityDataPacket extends RakNetDataPacket{
 	public $namedtag;
 
 	public function pid(){
-		if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+        if($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
+            return  ProtocolInfo6::ENTITY_DATA_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9) {
+            return ProtocolInfo8::ENTITY_DATA_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12) {
+            return ProtocolInfo9::ENTITY_DATA_PACKET;
+        }elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
 			return  ProtocolInfo12::ENTITY_DATA_PACKET;
 		}
 		return ProtocolInfo::ENTITY_DATA_PACKET;
@@ -26,6 +32,7 @@ class EntityDataPacket extends RakNetDataPacket{
 		$this->putByte($this->y);
 		$this->putShort($this->z);
 		$this->put($this->namedtag);
+        console($this->namedtag);
 	}
 
 }
