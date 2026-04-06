@@ -673,6 +673,30 @@ class BlockAPI{
 			}
 		}
 	}
+
+    public static function convertHighItemIdsToOldItemIds(int $protocolId, int $itemId) : int{
+        if ($protocolId >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
+            return $itemId;
+        }
+
+        $idMap = [ //default for protocol < 12
+            LIT_PUMPKIN => MELON_BLOCK, //block
+            PUMPKIN_SEEDS => MELON_SEEDS, //item
+            PUMPKIN_PIE => BREAD, //item
+            BEETROOT => BREAD, //item
+            BEETROOT_SEEDS => SEEDS, //item
+        ];
+
+        if ($protocolId < ProtocolInfo9::CURRENT_PROTOCOL_9) {
+            $idMap += [
+                NETHERRACK => OBSIDIAN, //block
+                NETHER_BRICK => BRICK, //item
+                NETHER_QUARTZ => BRICK, //item
+            ];
+        }
+
+        return $idMap[$itemId] ?? $itemId;
+    }
 	
 	/**
 	 * @deprecated random updates are handled differently now.

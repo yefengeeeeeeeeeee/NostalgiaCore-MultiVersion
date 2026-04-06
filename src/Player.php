@@ -45,6 +45,7 @@ class Player{
 	public $CID;
 	public $MTU;
 	public $spawned = false;
+    public $PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
 	/**
 	 * Stores player inventory. Should not be accessed directly: use Player::addItem/Player::removeItem/Player::setSlot for setting and Player::getSlot for getting.
 	 * @var array
@@ -481,6 +482,7 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY) return [];
 		if(!$this->convertToLocalEIDPacket($packet)) return false;
 
+        $packet->PROTOCOL = $this->PROTOCOL;
 		$packet->encode();
 		$pk = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$pk->data[] = $packet;
@@ -508,7 +510,6 @@ class Player{
         }
 
         $packet->PROTOCOL = $this->PROTOCOL;
-
 		$packet->encode();
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;
@@ -541,6 +542,7 @@ class Player{
 		$pk->seqNumber = $this->counter[0]++;
 		$pk->sendtime = microtime(true);
 
+        $packet->PROTOCOL = $this->PROTOCOL;
 		$packet->encode();
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;
@@ -570,6 +572,7 @@ class Player{
 			$cnts[] = $count = $this->counter[0]++;
 
 			$pk = new UnknownPacket;
+            $pk->PROTOCOL = $this->PROTOCOL;
 			$pk->packetID = $pk->pid();
 			$pk->reliability = RakNetInfo::RELIABILITY_RELIABLE_ORDERED;
 
@@ -607,6 +610,7 @@ class Player{
 			$cnts[] = $count = $this->counter[0]++;
 
 			$pk = new UnknownPacket;
+            $pk->PROTOCOL = $this->PROTOCOL;
 			$pk->packetID = $pk->pid();
 			$pk->reliability = RakNetInfo::RELIABILITY_RELIABLE_ORDERED;
 
@@ -645,6 +649,7 @@ class Player{
 			$cnts[] = $count = $this->counter[0]++;
 
 			$pk = new UnknownPacket;
+            $pk->PROTOCOL = $this->PROTOCOL;
 			$pk->packetID = $pk->pid();
 			$pk->reliability = RakNetInfo::RELIABILITY_RELIABLE_ORDERED;
 
@@ -685,6 +690,7 @@ class Player{
 			$cnts[] = $count = $this->counter[0]++;
 			
 			$pk = new UnknownPacket;
+            $pk->PROTOCOL = $this->PROTOCOL;
 			$pk->packetID = $pk->pid();
 			$pk->reliability = RakNetInfo::RELIABILITY_RELIABLE;
 			$pk->hasSplit = true;
@@ -722,6 +728,7 @@ class Player{
 			$cnts[] = $count = $this->counter[0]++;
 
 			$pk = new UnknownPacket;
+            $pk->PROTOCOL = $this->PROTOCOL;
 			$pk->packetID = $packet->pid();
 			$pk->reliability = RakNetInfo::RELIABILITY_RELIABLE;
 			$pk->hasSplit = true;
@@ -743,6 +750,8 @@ class Player{
 
 	public function send(RakNetPacket $packet){
 		if($this->connected === true){
+            $packet->PROTOCOL = $this->PROTOCOL;
+            $packet->packetID = $packet->pid();
 			$packet->ip = $this->ip;
 			$packet->port = $this->port;
 			$len = $this->server->send($packet);
@@ -1831,6 +1840,7 @@ class Player{
 		if($this->connected === false) return false;
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $pk)) === BaseEvent::DENY) return;
 		if(!$this->convertToLocalEIDPacket($pk)) return false;
+        $pk->PROTOCOL = $this->PROTOCOL;
 		$pk->encode();
 
 		$len = 1 + strlen($pk->buffer);
@@ -2144,178 +2154,200 @@ class Player{
 		}
 
 		if ($packet->pid() == ProtocolInfo::LOGIN_PACKET) {
-			if ($this->loggedIn === true) {
-				return;
-			}
-			$this->username = $packet->username;
-			$this->iusername = strtolower($this->username);
-			$this->loginData = ["clientId" => $packet->clientId, "loginData" => $packet->loginData];
-			$this->PROTOCOL = $packet->PROTOCOL;
-			if (count($this->server->clients) > $this->server->maxClients and !$this->server->api->ban->isOp($this->iusername)) {
-				$this->close("server is full!", false);
-				return;
-			}
-			if ($packet->protocol1 < ProtocolInfo3::CURRENT_PROTOCOL_3 && $packet->protocol1 > ProtocolInfo::CURRENT_PROTOCOL) {
-				if ($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL) {
-					$pk = new LoginStatusPacket;
-					$pk->status = 1;
-					$this->directDataPacket($pk);
-				} else {
-					$pk = new LoginStatusPacket;
-					$pk->status = 2;
-					$this->directDataPacket($pk);
-				}
-				$this->close("Incorrect protocol #" . $packet->protocol1, false);
-				return;
-			}
-			if (preg_match('#[^a-zA-Z0-9_]#', $this->username) > 0 || $this->username === "" || $this->iusername === "rcon" || $this->iusername === "console" || $this->iusername === "server" || strlen($this->iusername) > 16) {
-				$this->close("Bad username", false);
-				return;
-			}
-			if ($this->server->api->handle("player.connect", $this) === false) {
-				$this->close("Unknown reason", false);
-				return;
-			}
+            if($this->loggedIn === true){
+                return;
+            }
+            $this->username = $packet->username;
+            $this->iusername = strtolower($this->username);
+            $this->loginData = ["clientId" => $packet->clientId, "loginData" => $packet->loginData];
+            $this->PROTOCOL = $packet->PROTOCOL;
+            if(count($this->server->clients) > $this->server->maxClients and !$this->server->api->ban->isOp($this->iusername)){
+                $this->close("server is full!", false);
+                return;
+            }
+            if($packet->protocol1 < ProtocolInfo3::CURRENT_PROTOCOL_3 && $packet->protocol1 > ProtocolInfo::CURRENT_PROTOCOL){
+                if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
+                    $pk = new LoginStatusPacket;
+                    $pk->status = 1;
+                    $this->directDataPacket($pk);
+                }else{
+                    $pk = new LoginStatusPacket;
+                    $pk->status = 2;
+                    $this->directDataPacket($pk);
+                }
+                $this->close("Incorrect protocol #" . $packet->protocol1, false);
+                return;
+            }
+            if(preg_match('#[^a-zA-Z0-9_]#', $this->username) > 0 || $this->username === "" || isset(Player::$blacklistedUsernames[$this->iusername]) || strlen($this->iusername) > 16){
+                $this->close("Bad username", false);
+                return;
+            }
+            if($this->server->api->handle("player.connect", $this) === false){
+                $this->close("Unknown reason", false);
+                return;
+            }
 
-			if ($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->iusername)) {
-				$this->close("Server is white-listed", false);
-				return;
-			} elseif ($this->server->api->ban->isBanned($this->iusername) or $this->server->api->ban->isIPBanned($this->ip)) {
-				$this->close("You are banned!", false);
-				return;
-			}
-			$this->loggedIn = true;
+            if($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->iusername)){
+                $this->close("Server is white-listed", false);
+                return;
+            }elseif($this->server->api->ban->isBanned($this->iusername) or $this->server->api->ban->isIPBanned($this->ip)){
+                $this->close("You are banned!", false);
+                return;
+            }
+            $this->loggedIn = true;
 
-			if (!isset($this->CID) or $this->CID == null) {
-				console("[DEBUG] Player " . $this->username . " does not have a CID", true, true, 2);
-				$this->CID = Utils::readLong(Utils::getRandomBytes(8, false));
-			}
-			$u = $this->server->api->player->get($this->iusername, false);
-			if ($u !== false) {
-				$u = $this->server->clients[$this->CID];
-				$u->close("this player already in game");
-			}
+            if(!isset($this->CID) or $this->CID == null){
+                console("[DEBUG] Player " . $this->username . " does not have a CID", true, true, 2);
+                $this->CID = Utils::readLong(Utils::getRandomBytes(8, false));
+            }
+            $u = $this->server->api->player->get($this->iusername, false);
+            if($u !== false){
+                $this->close("this player already in game");
+                return;
+            }
 
-			$this->server->api->player->add($this->CID);
-			if ($this->server->api->handle("player.join", $this) === false) {
-				$this->close("join cancelled", false);
-				return;
-			}
+            $this->server->api->player->add($this->CID);
+            if($this->server->api->handle("player.join", $this) === false){
+                $this->close("join cancelled", false);
+                return;
+            }
 
-			if (!($this->data instanceof Config)) {
-				$this->close("no config created", false);
-				return;
-			}
+            if(!($this->data instanceof Config)){
+                $this->close("no config created", false);
+                return;
+            }
 
-			$this->auth = true;
-			if (!$this->data->exists("inventory") or ($this->gamemode & 0x01) === 0x01) {
-				if (($this->gamemode & 0x01) === 0x01) {
-					$inv = [];
-					if (($this->gamemode & 0x02) === 0x02) {
-						foreach (BlockAPI::$creative as $item) {
-							$inv[] = [0, 0, 1];
-						}
-					} else {
-						foreach (BlockAPI::$creative as $item) {
-							$inv[] = [$item[0], $item[1], 1];
-						}
-					}
-				}
-				$this->data->set("inventory", $inv);
-			}
-			$this->achievements = $this->data->get("achievements");
-			$this->data->set("caseusername", $this->username);
-			$this->inventory = [];
-			foreach ($this->data->get("inventory") as $slot => $item) {
-				if (!is_array($item) or count($item) < 3) {
-					$item = [AIR, 0, 0];
-				}
-				$this->inventory[$slot] = BlockAPI::getItem($item[0], $item[1], $item[2]);
-			}
+            $this->auth = true;
 
-			$this->armor = [];
-			foreach ($this->data->get("armor") as $slot => $item) {
-				$this->armor[$slot] = BlockAPI::getItem($item[0], $item[1], $item[0] === 0 ? 0 : 1);
-			}
+            $inv = [];
+            if(!$this->data->exists("inventory") || ($this->gamemode & 0x01) === 0x01){
+                if(($this->gamemode & 0x01) === 0x01){
+                    if(($this->gamemode & 0x02) === 0x02){
+                        foreach(BlockAPI::$creative as $item){
+                            $inv[] = [0, 0, 1];
+                        }
+                    }else{
+                        foreach(BlockAPI::$creative as $item){
+                            $inv[] = [$item[0], $item[1], 1];
+                        }
+                    }
+                }
+            }else{
+                $inv = [];
+                foreach($this->data->get("inventory") as $slot => $item){
+                    $inv[$slot] = [$item[0], $item[1], $item[2]];
+                }
+            }
 
-			$this->data->set("lastIP", $this->ip);
-			$this->data->set("lastID", $this->clientID);
+            $this->achievements = $this->data->get("achievements");
+            $this->data->set("caseusername", $this->username);
+            $this->inventory = [];
+            foreach($inv as $slot => $item){
+                if(!is_array($item) or count($item) < 3){
+                    $item = [AIR, 0, 0];
+                }
+                $this->inventory[$slot] = BlockAPI::getItem($item[0], $item[1], $item[2]);
+            }
 
-			$this->server->api->player->saveOffline($this->data);
+            $this->armor = [];
+            if(($this->gamemode & 0x01) == 0){
+                foreach($this->data->get("armor") as $slot => $item){
+                    $this->armor[$slot] = BlockAPI::getItem($item[0], $item[1], $item[0] === 0 ? 0 : 1);
+                }
+            }
 
-			$pk = new LoginStatusPacket;
-			$pk->status = 0;
-			$this->dataPacket($pk);
+            $this->data->set("lastIP", $this->ip);
+            $this->data->set("lastID", $this->clientID);
 
-			$pk = new StartGamePacket;
-			$pk->seed = $this->level->getSeed();
-			$pk->x = $this->data->get("position")["x"];
-			$pk->y = $this->data->get("position")["y"];
-			$pk->z = $this->data->get("position")["z"];
-			$pk->generator = 0;
-			$pk->gamemode = $this->gamemode & 0x01;
-			$pk->eid = 0;
-			$this->dataPacket($pk);
+            $this->server->api->player->saveOffline($this->data);
 
-			if (($this->gamemode & 0x01) === 0x01) {
-				$this->slot = 0;
-				$this->hotbar = [];
-			} elseif ($this->data->exists("hotbar")) {
-				$this->hotbar = $this->data->get("hotbar");
-				$this->slot = $this->hotbar[0];
-			} else {
-				$this->slot = 0;
-				$this->hotbar = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-			}
-			for ($i = 0; $i < count($this->hotbar); ++$i) {
-				if ($this->hotbar[$i] > 36) $this->hotbar[$i] = -1; //XXX unsafe?
-				if ($this->hotbar[$i] < -1) $this->hotbar[$i] = -1;
-			}
-			if ($this->data->exists("slot-count")) {
-				$this->slotCount = $this->data->get("slot-count");
-			} else {
-				$this->data->set("slot-count", $this->slotCount);
-			}
 
-			$this->entity = $this->server->api->entity->add($this->level, ENTITY_PLAYER, 0, ["player" => $this]);
-			$this->eid = $this->entity->eid;
-			$this->server->query("UPDATE players SET EID = " . $this->eid . " WHERE CID = " . $this->CID . ";");
-			$this->entity->x = $this->data->get("position")["x"];
-			$this->entity->y = $this->data->get("position")["y"];
-			$this->entity->z = $this->data->get("position")["z"];
-			if (($level = $this->server->api->level->get($this->data->get("spawn")["level"])) !== false) {
-				$this->spawnPosition = new Position($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"], $level);
+            $pk = new LoginStatusPacket;
+            $pk->status = 0;
+            $this->dataPacket($pk);
 
-				$pk = new SetSpawnPositionPacket;
-				$pk->x = (int) $this->spawnPosition->x;
-				$pk->y = (int) $this->spawnPosition->y;
-				$pk->z = (int) $this->spawnPosition->z;
-				$this->dataPacket($pk);
-			}
-			$this->entity->check = false;
-			$this->entity->setName($this->username);
-			$this->entity->data["CID"] = $this->CID;
-			$this->evid[] = $this->server->event("server.chat", [$this, "eventHandler"]);
-			$this->evid[] = $this->server->event("entity.motion", [$this, "eventHandler"]);
-			$this->evid[] = $this->server->event("entity.animate", [$this, "eventHandler"]);
-			$this->evid[] = $this->server->event("entity.event", [$this, "eventHandler"]);
-			$this->evid[] = $this->server->event("entity.metadata", [$this, "eventHandler"]);
-			$this->evid[] = $this->server->event("entity.link", [$this, "eventHandler"]);
-			$this->evid[] = $this->server->event("player.equipment.change", [$this, "eventHandler"]);
-			$this->evid[] = $this->server->event("player.armor", [$this, "eventHandler"]);
-			$this->evid[] = $this->server->event("player.pickup", [$this, "eventHandler"]);
-			$this->evid[] = $this->server->event("tile.container.slot", [$this, "eventHandler"]);
-			$this->evid[] = $this->server->event("tile.update", [$this, "eventHandler"]);
-			$this->lastMeasure = microtime(true);
-			$this->server->schedule(50, [$this, "measureLag"], [], true);
+            if($this->data->exists("hotbar")){
+                $this->hotbar = $this->data->get("hotbar");
+            }else{
+                if(($this->gamemode & 0x01) === 0x01) $this->hotbar = BlockAPI::$creativeHotbarSlots;
+                else $this->hotbar = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+            }
 
-			$pk = new SetTimePacket;
-			$pk->time = $this->level->getTime();
-			$pk->started = !$this->level->isTimeStopped();
-			$this->dataPacket($pk);
+            $this->slot = $this->hotbar[0];
 
-			console("[INFO] " . FORMAT_AQUA . $this->username . FORMAT_RESET . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->eid . " at (" . $this->entity->level->getName() . ", " . round($this->entity->x, 2) . ", " . round($this->entity->y, 2) . ", " . round($this->entity->z, 2) . ")");
-			return;
+            for($i = 0; $i < count($this->hotbar); ++$i){
+                if($this->hotbar[$i] > (($this->gamemode & 1) == 0 ? 36 : count(BlockAPI::$creative))) $this->hotbar[$i] = -1;
+                if($this->hotbar[$i] < -1) $this->hotbar[$i] = -1;
+            }
+            if($this->data->exists("slot-count")){
+                $this->slotCount = $this->data->get("slot-count");
+            }else{
+                $this->data->set("slot-count", $this->slotCount);
+            }
+
+            if($this->data->exists("bed-position")){
+                $this->bedPosition = $this->data->get("bed-position");
+            }else{
+                $this->setBedPosition(null);
+            }
+
+            $this->entity = $this->server->api->entity->add($this->level, ENTITY_PLAYER, 0, ["player" => $this]);
+            $this->eid = $this->entity->eid;
+            $this->server->query("UPDATE players SET EID = " . $this->eid . " WHERE CID = " . $this->CID . ";");
+
+            $this->addEntity($this->entity);
+
+            $pk = new StartGamePacket;
+            $pk->seed = $this->level->getSeed();
+            $pk->x = $this->data->get("position")["x"];
+            $pk->y = ceil($this->data->get("position")["y"])+1;
+            $pk->z = $this->data->get("position")["z"];
+            $pk->generator = 0;
+            $pk->gamemode = $this->gamemode & 0x01;
+            $pk->eid = $this->entity->eid;
+
+            $this->entity->x = $pk->x;
+            $this->entity->y = $pk->y-0.9;
+            $this->entity->z = $pk->z;
+            $this->dataPacket($pk);
+
+            //should cache it for client(unless the queue was full and startgamepacket was sent without settime
+            //and client receives time before startgame - TODO maybe make it ordered?)
+            $pk = new SetTimePacket;
+            $pk->time = $this->level->getTime();
+            $pk->started = !$this->level->isTimeStopped();
+            $this->dataPacket($pk);
+
+            if(($level = $this->server->api->level->get($this->data->get("spawn")["level"])) !== false){
+                $this->spawnPosition = new Position($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"], $level);
+
+                $pk = new SetSpawnPositionPacket;
+                $pk->x = (int) $this->spawnPosition->x;
+                $pk->y = (int) $this->spawnPosition->y;
+                $pk->z = (int) $this->spawnPosition->z;
+                $this->dataPacket($pk);
+            }
+            $this->entity->check = false;
+            $this->entity->setName($this->username);
+            $this->entity->data["CID"] = $this->CID;
+            $this->evid[] = $this->server->event("server.chat", [$this, "eventHandler"]);
+            $this->evid[] = $this->server->event("entity.motion", [$this, "eventHandler"]);
+            $this->evid[] = $this->server->event("entity.animate", [$this, "eventHandler"]);
+            $this->evid[] = $this->server->event("entity.event", [$this, "eventHandler"]);
+            $this->evid[] = $this->server->event("entity.metadata", [$this, "eventHandler"]);
+            $this->evid[] = $this->server->event("entity.link", [$this, "eventHandler"]);
+            $this->evid[] = $this->server->event("player.equipment.change", [$this, "eventHandler"]);
+            $this->evid[] = $this->server->event("player.armor", [$this, "eventHandler"]);
+            $this->evid[] = $this->server->event("player.pickup", [$this, "eventHandler"]);
+            $this->evid[] = $this->server->event("tile.container.slot", [$this, "eventHandler"]);
+            $this->evid[] = $this->server->event("tile.update", [$this, "eventHandler"]);
+            $this->evid[] = $this->server->event("player.invisible", [$this, "invisibilityHandler"]);
+            $this->lastMeasure = microtime(true);
+            $this->server->schedule(50, [$this, "measureLag"], [], true);
+
+
+            console("[INFO] " . FORMAT_AQUA . $this->username . FORMAT_RESET . "[/{$this->ip}:{$this->port}] logged in with entity id {$this->eid} at ({$this->entity->level->getName()}, " . round($this->entity->x, 2) . ", " . round($this->entity->y, 2) . ", " . round($this->entity->z, 2) . ") MTU: {$this->MTU}");
+            return;
 		}
 
 		$internalPid = $packet->getInternalPid();

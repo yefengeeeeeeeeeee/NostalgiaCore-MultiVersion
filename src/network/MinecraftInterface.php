@@ -41,7 +41,7 @@ class MinecraftInterface{
 		$pid = ord($buffer[0]);
 
 		if(RakNetInfo::isValid($pid)){
-			$packet = RakNetParser::parse($buffer);
+			$packet = RakNetParser::parse($buffer, $source, $port);
 			if($packet !== false){
 				$packet->ip = $source;
 				$packet->port = $port;
