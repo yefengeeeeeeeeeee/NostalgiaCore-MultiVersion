@@ -680,18 +680,21 @@ class BlockAPI{
         }
 
         $idMap = [ //default for protocol < 12
-            LIT_PUMPKIN => MELON_BLOCK, //block
-            PUMPKIN_SEEDS => MELON_SEEDS, //item
-            PUMPKIN_PIE => BREAD, //item
-            BEETROOT => BREAD, //item
-            BEETROOT_SEEDS => SEEDS, //item
+            RAIL => AIR,
+            POWERED_RAIL => AIR,
+            LIT_PUMPKIN => MELON_BLOCK,
+            PUMPKIN_SEEDS => MELON_SEEDS,
+            PUMPKIN_PIE => BREAD,
+            BEETROOT => BREAD,
+            BEETROOT_SEEDS => SEEDS,
         ];
 
         if ($protocolId < ProtocolInfo9::CURRENT_PROTOCOL_9) {
             $idMap += [
-                NETHERRACK => OBSIDIAN, //block
-                NETHER_BRICK => BRICK, //item
-                NETHER_QUARTZ => BRICK, //item
+                SPAWN_EGG => AIR,
+                NETHERRACK => OBSIDIAN,
+                NETHER_BRICK => BRICK,
+                NETHER_QUARTZ => BRICK,
             ];
         }
 
