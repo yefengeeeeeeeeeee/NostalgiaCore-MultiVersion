@@ -17,7 +17,7 @@ class ChatPacket extends RakNetDataPacket{
 	}
 
 	public function decode(){
-
+		console($this->getString());
 	}
 
 	public function encode(){

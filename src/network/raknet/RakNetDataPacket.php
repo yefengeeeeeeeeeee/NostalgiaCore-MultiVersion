@@ -162,6 +162,10 @@ abstract class RakNetDataPacket extends stdClass{
 		$this->buffer .= Utils::writeShort($v);
 	}
 
+	protected function putLShort($v){
+		$this->buffer .= Utils::writeLShort($v);
+	}
+
 	protected function putByte($v){
 		$this->buffer .= chr((int)$v);
 	}

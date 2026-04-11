@@ -11,6 +11,8 @@ class MessagePacket extends RakNetDataPacket{
 	public function decode(){
 		if($this->PROTOCOL > ProtocolInfo9::CURRENT_PROTOCOL_9){ //0.6.1 and below From NostalgiaCore-BackPort Author:Gameherobrine
 			$this->source = $this->getString();
+		}else {
+			$this->source = "";
 		}
 		$this->message = $this->getString();
 	}

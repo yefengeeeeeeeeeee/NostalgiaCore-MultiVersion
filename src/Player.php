@@ -45,7 +45,7 @@ class Player{
 	public $CID;
 	public $MTU;
 	public $spawned = false;
-    public $PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
+	public $PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
 	/**
 	 * Stores player inventory. Should not be accessed directly: use Player::addItem/Player::removeItem/Player::setSlot for setting and Player::getSlot for getting.
 	 * @var array
@@ -482,7 +482,7 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY) return [];
 		if(!$this->convertToLocalEIDPacket($packet)) return false;
 
-        $packet->PROTOCOL = $this->PROTOCOL;
+		$packet->PROTOCOL = $this->PROTOCOL;
 		$packet->encode();
 		$pk = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$pk->data[] = $packet;
@@ -505,11 +505,11 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY) return;
 		if(!$this->convertToLocalEIDPacket($packet)) return false;
 
-        if(PacketPool::isPacketExist($packet->pid(), $this->PROTOCOL) != true){
-            return;
-        }
+		if(PacketPool::isPacketExist($packet->pid(), $this->PROTOCOL) != true){
+			return;
+		}
 
-        $packet->PROTOCOL = $this->PROTOCOL;
+		$packet->PROTOCOL = $this->PROTOCOL;
 		$packet->encode();
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;
@@ -542,7 +542,7 @@ class Player{
 		$pk->seqNumber = $this->counter[0]++;
 		$pk->sendtime = microtime(true);
 
-        $packet->PROTOCOL = $this->PROTOCOL;
+		$packet->PROTOCOL = $this->PROTOCOL;
 		$packet->encode();
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;
@@ -572,7 +572,7 @@ class Player{
 			$cnts[] = $count = $this->counter[0]++;
 
 			$pk = new UnknownPacket;
-            $pk->PROTOCOL = $this->PROTOCOL;
+			$pk->PROTOCOL = $this->PROTOCOL;
 			$pk->packetID = $pk->pid();
 			$pk->reliability = RakNetInfo::RELIABILITY_RELIABLE_ORDERED;
 
@@ -610,7 +610,7 @@ class Player{
 			$cnts[] = $count = $this->counter[0]++;
 
 			$pk = new UnknownPacket;
-            $pk->PROTOCOL = $this->PROTOCOL;
+			$pk->PROTOCOL = $this->PROTOCOL;
 			$pk->packetID = $pk->pid();
 			$pk->reliability = RakNetInfo::RELIABILITY_RELIABLE_ORDERED;
 
@@ -649,7 +649,7 @@ class Player{
 			$cnts[] = $count = $this->counter[0]++;
 
 			$pk = new UnknownPacket;
-            $pk->PROTOCOL = $this->PROTOCOL;
+			$pk->PROTOCOL = $this->PROTOCOL;
 			$pk->packetID = $pk->pid();
 			$pk->reliability = RakNetInfo::RELIABILITY_RELIABLE_ORDERED;
 
@@ -677,7 +677,7 @@ class Player{
 		if($this->connected === false) return false;
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $pk)) === BaseEvent::DENY) return;
 
-        $pk->PROTOCOL = $this->PROTOCOL;
+		$pk->PROTOCOL = $this->PROTOCOL;
 		$pk->encode();
 		$sendtime = microtime(true);
 		$size = $this->MTU - 34;
@@ -691,7 +691,7 @@ class Player{
 			$cnts[] = $count = $this->counter[0]++;
 			
 			$pk = new UnknownPacket;
-            $pk->PROTOCOL = $this->PROTOCOL;
+			$pk->PROTOCOL = $this->PROTOCOL;
 			$pk->packetID = $pk->pid();
 			$pk->reliability = RakNetInfo::RELIABILITY_RELIABLE;
 			$pk->hasSplit = true;
@@ -729,7 +729,7 @@ class Player{
 			$cnts[] = $count = $this->counter[0]++;
 
 			$pk = new UnknownPacket;
-            $pk->PROTOCOL = $this->PROTOCOL;
+			$pk->PROTOCOL = $this->PROTOCOL;
 			$pk->packetID = $packet->pid();
 			$pk->reliability = RakNetInfo::RELIABILITY_RELIABLE;
 			$pk->hasSplit = true;
@@ -751,7 +751,7 @@ class Player{
 
 	public function send(RakNetPacket $packet){
 		if($this->connected === true){
-            $packet->PROTOCOL = $this->PROTOCOL;
+			$packet->PROTOCOL = $this->PROTOCOL;
             $packet->packetID = $packet->pid();
 			$packet->ip = $this->ip;
 			$packet->port = $this->port;
@@ -1106,9 +1106,9 @@ class Player{
 	public function eventHandler($data, $event){
 		switch($event){
 			case "entity.link":
-                if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
-                    break;
-                }
+				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+					break;
+				}
 				$pk = new SetEntityLinkPacket();
 				$pk->rider = $data["rider"];
 				$pk->riding = $data["riding"];
@@ -1801,7 +1801,7 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $pk)) === BaseEvent::DENY) return;
 		if(!$this->convertToLocalEIDPacket($pk)) return false;
 
-        $pk->PROTOCOL = $this->PROTOCOL;
+		$pk->PROTOCOL = $this->PROTOCOL;
 		$pk->encode();
 
 		$len = 1 + strlen($pk->buffer);
@@ -1845,7 +1845,7 @@ class Player{
 		if($this->connected === false) return false;
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $pk)) === BaseEvent::DENY) return;
 		if(!$this->convertToLocalEIDPacket($pk)) return false;
-        $pk->PROTOCOL = $this->PROTOCOL;
+		$pk->PROTOCOL = $this->PROTOCOL;
 		$pk->encode();
 		$len = 1 + strlen($pk->buffer);
 		$MTU = $this->MTU - 24;
@@ -2101,7 +2101,7 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY) return false;
 		if(!$this->convertToLocalEIDPacket($packet)) return false;
 
-        $packet->PROTOCOL = $this->PROTOCOL;
+		$packet->PROTOCOL = $this->PROTOCOL;
 		$packet->encode();
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;
@@ -2165,12 +2165,12 @@ class Player{
             $this->username = $packet->username;
             $this->iusername = strtolower($this->username);
             $this->loginData = ["clientId" => $packet->clientId, "loginData" => $packet->loginData];
-            $this->PROTOCOL = $packet->PROTOCOL;
+			$this->PROTOCOL = $packet->PROTOCOL;
             if(count($this->server->clients) > $this->server->maxClients and !$this->server->api->ban->isOp($this->iusername)){
                 $this->close("server is full!", false);
                 return;
             }
-            if($packet->protocol1 < ProtocolInfo3::CURRENT_PROTOCOL_3 && $packet->protocol1 > ProtocolInfo::CURRENT_PROTOCOL){
+			if($packet->protocol1 < ProtocolInfo3::CURRENT_PROTOCOL_3 && $packet->protocol1 > ProtocolInfo::CURRENT_PROTOCOL){
                 if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
                     $pk = new LoginStatusPacket;
                     $pk->status = 1;
@@ -2397,7 +2397,7 @@ class Player{
 				$this->username = $packet->username;
 				$this->iusername = strtolower($this->username);
 				$this->loginData = ["clientId" => $packet->clientId, "loginData" => $packet->loginData];
-                $this->PROTOCOL = $packet->PROTOCOL;
+				$this->PROTOCOL = $packet->PROTOCOL;
 				if(count($this->server->clients) > $this->server->maxClients and !$this->server->api->ban->isOp($this->iusername)){
 					$this->close("server is full!", false);
 					return;
@@ -3535,6 +3535,10 @@ class Player{
 						$t->spawn($this);
 					}else{
 						$nbt = new NBT();
+						if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12) {
+							$t->setText($packet->line1, $packet->line2, $packet->line3, $packet->line4);
+							break;
+						}
 						$nbt->load($packet->namedtag);
 						$d = array_shift($nbt->tree);
 						if($d["id"] !== TILE_SIGN){
