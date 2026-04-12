@@ -41,10 +41,6 @@ class UseItemPacket extends RakNetDataPacket{
 		$this->item = $this->getShort();
 		$this->meta = $this->getByte();
 		$this->eid = $this->getInt();
-        if ($this->PROTOCOL > ProtocolInfo9::CURRENT_PROTOCOL_9) {
-            $this->unknownInt1 = $this->getInt();
-            return;
-        }
 		$this->fx = $this->getFloat();
 		$this->fy = $this->getFloat();
 		$this->fz = $this->getFloat();
@@ -56,15 +52,7 @@ class UseItemPacket extends RakNetDataPacket{
 	}
 
 	public function encode(){
-        /*$this->reset();
-        $this->putInt($this->x);
-        $this->putInt($this->y);
-        $this->putInt($this->z);
-        $this->putInt($this->face);
-        $this->putShort($this->item);
-        $this->putByte($this->meta);
-        $this->putInt($this->eid);
-        $this->putInt($this->unknownInt1);*/
+
 	}
 	public function eidsToGlobal(Player $p){
 		if($this->localEids){

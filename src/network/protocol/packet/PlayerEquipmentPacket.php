@@ -23,7 +23,7 @@ class PlayerEquipmentPacket extends RakNetDataPacket{
 		$this->eid = $this->getInt();
 		$this->item = $this->getShort();
 		$this->meta = $this->getShort();
-		if($this->PROTOCOL === ProtocolInfo::CURRENT_PROTOCOL){$this->slot = $this->getSignedByte();}
+		if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12){$this->slot = $this->getSignedByte();}
 	}
 
 	public function encode(){
@@ -31,7 +31,7 @@ class PlayerEquipmentPacket extends RakNetDataPacket{
 		$this->putInt($this->eid);
 		$this->putShort(BlockAPI::convertHighItemIdsToOldItemIds($this->PROTOCOL, $this->item));
 		$this->putShort($this->meta);
-		if($this->PROTOCOL === ProtocolInfo::CURRENT_PROTOCOL){$this->putByte($this->slot);}
+		if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12){$this->putByte($this->slot);}
 	}
 	
 	public function eidsToGlobal(Player $p){

@@ -2166,6 +2166,9 @@ class Player{
             $this->iusername = strtolower($this->username);
             $this->loginData = ["clientId" => $packet->clientId, "loginData" => $packet->loginData];
 			$this->PROTOCOL = $packet->PROTOCOL;
+			if($this->PROTOCOL <= ProtocolInfo12::CURRENT_PROTOCOL_12){
+				Player::$experimentalHotbar = false;
+			}
             if(count($this->server->clients) > $this->server->maxClients and !$this->server->api->ban->isOp($this->iusername)){
                 $this->close("server is full!", false);
                 return;
@@ -2806,6 +2809,13 @@ class Player{
 				$data["posY"] = $packet->posY;
 				$data["posZ"] = $packet->posZ;
 
+				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){ //TODO Emulate and Calcuate slot for version under 0.6.0
+					if($this->hasItem($data["item"], $data["meta"])) {
+						$handHeldItem = BlockAPI::getItem($data["item"], $data["meta"]);
+						$this->setCurrentSlot($handHeldItem);
+					}
+				}
+
 				//nc: check item desync
 				$heldItem = $this->getHeldItem();
 				$pmeta = ($packet->meta & 0xff);
@@ -2850,7 +2860,12 @@ class Player{
 					$this->addBlockUpdateIntoQueue($block->x, $block->y, $block->z, $block->getID(), $block->getMetadata());
 					break;
 				}elseif($packet->face === 0xff){
-					
+					if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){ //TODO Emulate and Calcuate slot for version under 0.6.0
+						if($this->hasItem($data["item"], $data["meta"])) {
+							$handHeldItem = BlockAPI::getItem($data["item"], $data["meta"]);
+							$this->setCurrentSlot($handHeldItem);
+						}
+					}
 					$slotItem = $this->getHeldItem();
 					if($slotItem->getID() == SNOWBALL || $slotItem->getID() == EGG){ //TODO better way
 						$x = $packet->x * 0.000030518;
@@ -3224,6 +3239,12 @@ class Player{
 				
 				$packet->eid = $this->eid;
 				$prevItem = $packet->item;
+				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){ //TODO Emulate and Calcuate slot for version under 0.6.0
+					if($this->hasItem($prevItem->getID(), $prevItem->getMetadata())) {
+						$handHeldItem = BlockAPI::getItem($prevItem->getID(), $prevItem->getMetadata());
+						$this->setCurrentSlot($handHeldItem);
+					}
+				}
 				$newItem = $this->getHeldItem();
 
 				if(($n = $this->isExpectedSetSlot(-1, $prevItem))){
@@ -3264,7 +3285,6 @@ class Player{
 				$this->toCraft = [];
 				$this->craftingType = CraftingRecipes::TYPE_INVENTORY;
 				$data["eid"] = $packet->eid;
-				$data["unknown"] = $packet->randomly;
 				$data["randomly"] = $packet->randomly;
 				$data["item"] = $packet->item;
 				$data["player"] = $this;
@@ -3583,7 +3603,18 @@ class Player{
 	 */
 	
 	public function getHeldItem(){
+		if($this->PROTOCOL <= Protocolinfo9::CURRENT_PROTOCOL_9){
+			ConsoleAPI::debug("Slot may exist issue , plz check the correct slot using setCurrentSlot first !");
+		}
 		return $this->getSlot($this->slot);
+	}
+
+	/**
+	 * Dont use this if the protocol version >= MCPE 0.7
+	 * @return Boolean
+	 */
+	public function setCurrentSlot(Item $heldItem){
+		$this->slot = $this->hasItem($heldItem->getID(), $heldItem->getMetadata()) ?: 0;
 	}
 	
 	public function stopSleep(){
