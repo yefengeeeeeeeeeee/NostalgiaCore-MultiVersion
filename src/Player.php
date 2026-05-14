@@ -2423,8 +2423,24 @@ class Player{
 					break;
 				}
 				if($this->isSleeping) break;
+				
+				
+				//prevent crash caused by nan values
+				if(is_nan($packet->x) || is_nan($packet->y) || is_nan($packet->z)){
+					ConsoleAPI::warn("{$this->username} Attempted to crash the server using NaN position!");
+					$this->close("invalid position");
+					break;
+				}
+				
 				if(($this->entity instanceof Entity) && $packet->messageIndex > $this->lastMovement){
 					$this->lastMovement = $packet->messageIndex;
+					//prevent all movement this far - vanilla collisions break there
+					//farther distances(like inf) may cause client and server crash
+					if(abs($packet->x) >= 8388608 || abs($packet->y) >= 8388608 || abs($packet->z) >= 8388608){
+						$this->addEntityMovementUpdateToQueue($this->entity);
+						break;
+					}
+					
 					$newPos = new Vector3($packet->x, $packet->y, $packet->z);
 					if($this->forceMovement instanceof Vector3){
 						if($this->forceMovement->distance($newPos) <= 0.7){
