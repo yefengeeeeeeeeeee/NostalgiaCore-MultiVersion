@@ -24,14 +24,14 @@ class TaskEatTileGoal extends TaskBase
 
 		if (--$this->selfCounter == 4)
 		{
-			$id = $ai->entity->level->level->getBlockID($ai->entity->x, $ai->entity->y, $ai->entity->z);
-			$idb = $ai->entity->level->level->getBlockID($ai->entity->x, $ai->entity->y - 1, $ai->entity->z);
+			$id = $ai->entity->level->level->getBlockID((int)$ai->entity->x, (int)$ai->entity->y, (int)$ai->entity->z);
+			$idb = $ai->entity->level->level->getBlockID((int)$ai->entity->x, (int)$ai->entity->y - 1, (int)$ai->entity->z);
 			if($id === TALL_GRASS){
-				$ai->entity->level->fastSetBlockUpdate($ai->entity->x, $ai->entity->y, $ai->entity->z, AIR, 0);
+				$ai->entity->level->fastSetBlockUpdate((int)$ai->entity->x, (int)$ai->entity->y, (int)$ai->entity->z, AIR, 0);
 				$ai->entity->eatGrass();
 				
 			}elseif($idb === GRASS){
-				$ai->entity->level->fastSetBlockUpdate($ai->entity->x, $ai->entity->y - 1, $ai->entity->z, DIRT, 0);
+				$ai->entity->level->fastSetBlockUpdate((int)$ai->entity->x, (int)$ai->entity->y - 1, (int)$ai->entity->z, DIRT, 0);
 				$ai->entity->eatGrass();
 			}
 		}
