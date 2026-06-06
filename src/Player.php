@@ -1379,10 +1379,11 @@ class Player{
 	}
 	
 	public function makeInvisibleForAllPlayers(){
-		foreach($this->server->api->player->getA as $player){
+		foreach($this->server->api->player->getAll() as $player){
 			if($player->CID != $this->CID) $this->setInvisibleFor($player, true);
 		}
 	}
+
 	public function getGamemode(){
 		switch($this->gamemode){
 			case SURVIVAL:
