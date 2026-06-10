@@ -756,8 +756,8 @@ class Entity extends Position
 	
 	public function positionRider($dead){
 		if($this->rider != 0){
-			$e = $this->level->entityList[$this->rider];
-			if($e === false) return;
+			$e = $this->level->entityList[$this->rider] ?? false;
+			if(!($e instanceof Entity)) return;
 			
 			$v3 = $this->getRideHeight();
 			if($dead || $this->dead) $v3 = 0.01;
