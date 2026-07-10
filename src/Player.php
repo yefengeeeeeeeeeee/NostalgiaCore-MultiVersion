@@ -1554,8 +1554,18 @@ class Player{
 				}
 			}elseif(($gm & 0x01) === 0x01){
 				$inv = [];
+				if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12){
 				foreach(BlockAPI::$creative as $item){
 					$inv[] = BlockAPI::getItem($item[0], $item[1], 1);
+				}
+				}elseif($this->PROTOCOL > ProtocolInfo6::CURRENT_PROTOCOL_6){
+					foreach(BlockAPI::$creative_old as $item){
+						$inv[] = [$item[0], $item[1], 1];
+					}
+				}else{
+					foreach(BlockAPI::$creative_legacy as $item){
+						$inv[] = [$item[0], $item[1], 1];
+					}
 				}
 			}
 			$this->gamemode = $gm;
@@ -2315,9 +2325,19 @@ class Player{
                             $inv[] = [0, 0, 1];
                         }
                     }else{
+						if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12){
                         foreach(BlockAPI::$creative as $item){
                             $inv[] = [$item[0], $item[1], 1];
                         }
+						}elseif($this->PROTOCOL > ProtocolInfo6::CURRENT_PROTOCOL_6){
+							foreach(BlockAPI::$creative_old as $item){
+								$inv[] = [$item[0], $item[1], 1];
+							}
+						}else{
+							foreach(BlockAPI::$creative_legacy as $item){
+								$inv[] = [$item[0], $item[1], 1];
+							}
+						}
                     }
                 }
             }else{
@@ -2551,8 +2571,22 @@ class Player{
 								$inv[] = [0, 0, 1];
 							}
 						}else{
+							if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12){
 							foreach(BlockAPI::$creative as $item){
 								$inv[] = [$item[0], $item[1], 1];
+							}
+							}elseif($this->PROTOCOL > ProtocolInfo6::CURRENT_PROTOCOL_6){
+								foreach(BlockAPI::$creative_old as $i => $d){
+									if($d[0] === $packet->item and $d[1] === $packet->meta){
+										$packet->slot = $i;
+									}
+								}
+							}else{
+								foreach(BlockAPI::$creative_legacy as $i => $d){
+									if($d[0] === $packet->item and $d[1] === $packet->meta){
+										$packet->slot = $i;
+									}
+								}
 							}
 						}
 					}
@@ -2686,6 +2720,35 @@ class Player{
 							break;
 						}
 
+						if($this->PROTOCOL <= ProtocolInfo8::CURRENT_PROTOCOL_8 && ($this->gamemode & 1) == SURVIVAL){
+							foreach($this->inventory as $slot => $item) {
+								if ($item->getID() === AIR or $item->count <= 0) {
+									continue;
+								}
+								$data = [
+									"x" => $this->entity->x,
+									"y" => $this->entity->y - 0.3 + $this->entity->height - 0.12,
+									"z" => $this->entity->z,
+									"level" => $this->level,
+									"speedX" => 0,
+									"speedY" => 0,
+									"speedZ" => 0,
+									"item" => $item,
+									"itemID" => $item->getID()
+								];
+								for ($count = $item->count; $count > 0;) {
+									$item->count = min($item->getMaxStackSize(), $count);
+									$count -= $item->count;
+									$e = $this->server->api->entity->add($this->level, ENTITY_ITEM, ENTITY_ITEM_TYPE, $data);
+									$e->spawn($this);
+									$pk = new TakeItemEntityPacket;
+									$pk->eid = $this->eid;
+									$pk->target = $e->eid;
+									$this->entityQueueDataPacket($pk);
+									$e->close();
+								}
+							}
+						}
 						$pk = new SetTimePacket;
 						$pk->time = $this->level->getTime();
 						$pk->started = !$this->level->isTimeStopped();
@@ -2803,9 +2866,23 @@ class Player{
 					}
 				}elseif(($this->gamemode & 0x01) === CREATIVE){
 					$packet->slot = false;
+					if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12){
 					foreach(BlockAPI::$creative as $i => $d){
 						if($d[0] === $packet->item and $d[1] === $packet->meta){
 							$packet->slot = $i;
+						}
+					}
+					}elseif($this->PROTOCOL > ProtocolInfo6::CURRENT_PROTOCOL_6){
+						foreach(BlockAPI::$creative_old as $i => $d){
+							if($d[0] === $packet->item and $d[1] === $packet->meta){
+								$packet->slot = $i;
+							}
+						}
+					}else{
+						foreach(BlockAPI::$creative_legacy as $i => $d){
+							if($d[0] === $packet->item and $d[1] === $packet->meta){
+								$packet->slot = $i;
+							}
 						}
 					}
 					if($packet->slot !== false){

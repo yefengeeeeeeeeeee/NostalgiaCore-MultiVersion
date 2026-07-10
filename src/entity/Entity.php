@@ -1717,6 +1717,10 @@ class Entity extends Position
 		$this->dead = true;
 		if($this->player instanceof Player){
 			if($this->player->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
+				$pk = new EntityEventPacket;
+				$pk->eid = $this->eid;
+				$pk->event = EntityEventPacket::ENTITY_DEAD;
+				$this->player->entityQueueDataPacket($pk);
 				$this->player->isWorkbench = false;
 				$this->player->isStoneCutter = false;
 				if($this->player->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
