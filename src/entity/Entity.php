@@ -1716,6 +1716,13 @@ class Entity extends Position
 		$this->updateMetadata();
 		$this->dead = true;
 		if($this->player instanceof Player){
+			if($this->player->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
+				$this->player->isWorkbench = false;
+				$this->player->isStoneCutter = false;
+				if($this->player->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+					$this->player->isOre = [];
+				}
+			}
 			$pk = new MoveEntityPacket_PosRot();
 			$pk->eid = $this->eid;
 			$pk->x = -256;

@@ -157,6 +157,8 @@ class Player{
 	public $expectedSetSlotPackets = [];
 	public $expectedSetSlotIndex = -1;
 	public $lastExpectedSetSlotIndexReceived = -1;
+	public $isOre = [];
+	public $isWorkBench = false, $isStoneCutter = false;
 
 	private $lastPing = -1;
 
@@ -1072,6 +1074,15 @@ class Player{
 		return true;
 	}
 
+	public function hasEmptySlot(){
+		foreach($this->inventory as $s => $item){
+			if($item->getID() === AIR){
+				return $s;
+			}
+		}
+		return -1;
+	}
+
 	/**
 	 * @param integer $slot
 	 *
@@ -1317,6 +1328,73 @@ class Player{
 			if($addexpected) $this->addExpectedSetSlotPacket(-1, $type, $damage, $stacksz);
 		}
 		return true;
+	}
+
+	/**
+	 * @param $type
+	 * @param $damage
+	 * @param integer $count
+	 *
+	 * @return boolean
+	 */
+	private function addCraftedItem($type, $damage, $count){
+		if ($type <= 0 || $damage < 0 || $count < 0 || ($this->gamemode & 1) == CREATIVE){
+			return false;
+		}
+		$result = BlockAPI::getItem($type, $damage,$count);
+		$this->craftingType = CraftingRecipes::TYPE_INVENTORY;
+		if($this->isWorkBench){
+			 $this->craftingType = CraftingRecipes::TYPE_CRAFTIGTABLE;
+		}
+
+		if($this->isWorkBench && $this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9 && $this->PROTOCOL > ProtocolInfo8::CURRENT_PROTOCOL_8){
+			if($type === SLAB && $damage === 2){
+				$ingridients[][] = [WOODEN_PLANKS, "?", 3];
+				if(CraftingRecipes::tryCraft($this, $ingridients, $result, $this->craftingType)) {
+					goto success_to_craft;
+				}
+			}elseif($type === WOODEN_STAIRS && $damage === 0){
+				$ingridients[][] = [WOODEN_PLANKS, "?", 6];
+				if(CraftingRecipes::tryCraft($this, $ingridients, $result, $this->craftingType)) {
+					goto success_to_craft;
+				}
+			}
+		}
+
+		if($this->PROTOCOL <= 6 && !isset($this->isOre[$type]) && $items = CraftingRecipes::getMCPE032CycleBlockType($this, $type, $damage)){
+			if($result->isPlaceable() && $items->count >= 6){
+				$this->isOre[$items->getID()] = true;
+				$this->isOre[$type] = true;
+			}elseif($items = CraftingRecipes::getMCPE032CycleBlockType($this, $type, $damage, true)){
+				if($items->count){
+					$this->isOre[$items->getID()] = true;
+					$this->isOre[$type] = true;
+				}
+			}
+		}
+
+		if(!$this->isWorkBench && $this->PROTOCOL <= ProtocolInfo6::CURRENT_PROTOCOL_6 && $type === STONE_BRICK){
+			$this->toCraft = [];
+			$this->craftingItems = [];
+			return false;
+		}
+
+		if($ingridients = CraftingRecipes::getRecipe($result, $this->craftingType, $this->PROTOCOL)){
+			if(CraftingRecipes::tryCraft($this, $ingridients, $result, $this->craftingType)) {
+				success_to_craft:
+				$this->craftingType = CraftingRecipes::TYPE_INVENTORY;
+				return true;
+			}
+		}elseif ($this->isStoneCutter && $this->PROTOCOL > ProtocolInfo8::CURRENT_PROTOCOL_8){
+			if($ingridients = CraftingRecipes::getRecipe($result, CraftingRecipes::TYPE_STONECUTTER, $this->PROTOCOL)){
+				$this->craftingType = CraftingRecipes::TYPE_STONECUTTER;
+				if (CraftingRecipes::tryCraft($this, $ingridients, $result, CraftingRecipes::TYPE_STONECUTTER)) {
+					goto success_to_craft;
+				}
+			}
+		 }
+		$this->craftingType = CraftingRecipes::TYPE_INVENTORY;
+		return false;
 	}
 
 	/**
@@ -2283,6 +2361,10 @@ class Player{
 
             $this->slot = $this->hotbar[0];
 
+			if($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
+				$this->slot = 42;
+			}
+
             for($i = 0; $i < count($this->hotbar); ++$i){
                 if($this->hotbar[$i] > (($this->gamemode & 1) == 0 ? 36 : count(BlockAPI::$creative))) $this->hotbar[$i] = -1;
                 if($this->hotbar[$i] < -1) $this->hotbar[$i] = -1;
@@ -2514,6 +2596,9 @@ class Player{
 				}
 
 				$this->slot = $this->hotbar[0];
+				if($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
+					$this->slot = 42;
+				}
 
 				for($i = 0; $i < count($this->hotbar); ++$i){
 					if($this->hotbar[$i] > (($this->gamemode & 1) == 0 ? 36 : count(BlockAPI::$creative))) $this->hotbar[$i] = -1;
@@ -2686,6 +2771,17 @@ class Player{
 				$data["eid"] = $packet->eid;
 				$data["player"] = $this;
 
+				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+					if(($slot = $this->hasItem($packet->item, $packet->meta)) !== false) {
+						$packet->slot = $slot + 9;
+					}elseif ($packet->item === AIR && $packet->meta === AIR){
+						$packet->slot = 0;
+					}elseif (($this->gamemode & 1) == SURVIVAL && $this->addCraftedItem($packet->item, $packet->meta, 0)){
+						$handHeldItem = BlockAPI::getItem($packet->item, $packet->meta);
+						$packet->slot = $this->setCurrentSlot($handHeldItem);
+					}
+				}
+
 				if($packet->slot === 0){
 					$data["slot"] = -1;
 					$data["item"] = BlockAPI::getItem(AIR, 0, 0);
@@ -2810,9 +2906,18 @@ class Player{
 				$data["posZ"] = $packet->posZ;
 
 				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){ //TODO Emulate and Calcuate slot for version under 0.6.0
-					if($this->hasItem($data["item"], $data["meta"])) {
-						$handHeldItem = BlockAPI::getItem($data["item"], $data["meta"]);
-						$this->setCurrentSlot($handHeldItem);
+					$target = $this->level->getBlock($blockVector);
+					if($target->getID() === WORKBENCH) $this->isWorkBench = true;
+					elseif ($target->getID() === STONECUTTER) $this->isStoneCutter = true;
+					if(($slot = $this->hasItem($data["item"], $data["meta"])) !== false) {
+						$this->slot = $slot;
+					}elseif ($data["item"] === AIR && $data["meta"] === AIR){
+						$this->slot = $this->hasEmptySlot();
+					}else {
+						if(($this->gamemode & 1) == SURVIVAL && $this->addCraftedItem($data["item"], $data["meta"],0)){
+							$handHeldItem = BlockAPI::getItem($data["item"], $data["meta"]);
+							$this->setCurrentSlot($handHeldItem);
+						}
 					}
 				}
 
@@ -2861,7 +2966,7 @@ class Player{
 					break;
 				}elseif($packet->face === 0xff){
 					if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){ //TODO Emulate and Calcuate slot for version under 0.6.0
-						if($this->hasItem($data["item"], $data["meta"])) {
+						if($this->hasItem($data["item"], $data["meta"])  !== false) {
 							$handHeldItem = BlockAPI::getItem($data["item"], $data["meta"]);
 							$this->setCurrentSlot($handHeldItem);
 						}
@@ -2997,6 +3102,11 @@ class Player{
 					case 5: //Shot arrow
 						if($this->entity->inAction){
 							$arrowSlot = $this->hasItem(ARROW);
+							if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12 && $arrowSlot === false){
+								if(($this->gamemode & 1) == SURVIVAL && $this->isWorkBench && $this->getHeldItem()->getID() === BOW && $this->PROTOCOL >= ProtocolInfo6::CURRENT_PROTOCOL_6 && $this->addCraftedItem(ARROW, 0, 1)){
+									$arrowSlot = $this->hasItem(ARROW);
+								}
+							}
 							if($this->getSlot($this->slot)->getID() === BOW && (($this->gamemode & 0x01) == 0x1 || $arrowSlot !== false)){
 								if($this->startAction !== false){
 									$initalPower = $this->entity->inActionCounter;
@@ -3041,7 +3151,9 @@ class Player{
 									}
 								}
 							}else{ //inv desynced, resend
+								if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
 								$this->sendInventory();
+								}
 							}
 						}
 						$this->startAction = false;
@@ -3082,6 +3194,11 @@ class Player{
 					}
 					$slot = $this->armor[$i];
 
+					if(($this->gamemode & 1) == SURVIVAL && $this->isWorkBench && $this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12 && $this->PROTOCOL >= ProtocolInfo6::CURRENT_PROTOCOL_6) {
+						if($this->hasItem($s->getID()) === false && $this->getArmor($i)->getID() !== $s->getID()){
+							$this->addCraftedItem($s->getID(), 0 , 1);
+						}
+					}
 					if($slot->getID() !== AIR && $s->getID() === AIR){
 						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
 						$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
@@ -3141,6 +3258,9 @@ class Player{
 				if(@$this->entity->dead === false){
 					break;
 				}
+				$this->isWorkBench = false;
+				$this->isStoneCutter = false;
+				$this->isOre = [];
 				$this->craftingItems = [];
 				$this->toCraft = [];
 				$this->craftingType = CraftingRecipes::TYPE_INVENTORY;
@@ -3239,12 +3359,48 @@ class Player{
 				
 				$packet->eid = $this->eid;
 				$prevItem = $packet->item;
-				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){ //TODO Emulate and Calcuate slot for version under 0.6.0
-					if($this->hasItem($prevItem->getID(), $prevItem->getMetadata())) {
-						$handHeldItem = BlockAPI::getItem($prevItem->getID(), $prevItem->getMetadata());
-						$this->setCurrentSlot($handHeldItem);
+
+				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12) {
+					if (($droppingAbsoluteSlot = $this->getAccurateItemSlot($prevItem->getID(), $prevItem->getMetadata(), $prevItem->count)) !== false) {
+						$this->slot = $droppingAbsoluteSlot;
+					} elseif (($this->gamemode & 1) == SURVIVAL) {
+						$count = $this->getItemCount($prevItem->getID(), $prevItem->getMetadata());
+						if ($this->PROTOCOL <= ProtocolInfo6::CURRENT_PROTOCOL_6 && CraftingRecipes::getMCPE032CycleBlockType($this, $prevItem->getID(), $prevItem->getMetadata()) && ($count >= 6 || $prevItem->isPlaceable() || isset($this->isOre[$prevItem->getID()]) === true)) {
+							$this->isOre[$prevItem->getID()] = true;
+						}
+						if ($count < $prevItem->count) {
+							if($this->addCraftedItem($prevItem->getID(), $prevItem->getMetadata(), $prevItem->count - $count)){
+								$this->removeItem($prevItem->getID(), $prevItem->getMetadata(), $prevItem->count, false, false);
+								$this->setSlot(43, $prevItem, false);
+								$this->slot = 43;
+							}
+						}else{
+							$this->removeItem($prevItem->getID(), $prevItem->getMetadata(), $prevItem->count, false, false);
+							$this->setSlot(43, $prevItem, false);
+							$this->slot = 43;
+						}
 					}
 				}
+
+				//That person tries to predict how many items player actually craft,but  failed and the tear of idea is over there  so this sucks
+//						$real = $count % $prevItem->getMaxStackSize();
+//						if($this->isWorkBench && $leastItemCnt = CraftingRecipes::getCraftNumber($prevItem, CraftingRecipes::TYPE_CRAFTIGTABLE, $this->PROTOCOL)){}
+//						elseif($leastItemCnt = CraftingRecipes::getCraftNumber($prevItem, CraftingRecipes::TYPE_STONECUTTER, $this->PROTOCOL)){
+//						}else{$leastItemCnt = CraftingRecipes::getCraftNumber($prevItem, CraftingRecipes::TYPE_INVENTORY, $this->PROTOCOL);
+//						}
+//						if($real < $prevItem->count && $leastItemCnt && !(($prevItem->count-$real)%$leastItemCnt)){
+//							$this->addCraftedItem($prevItem->getID(), $prevItem->getMetadata(), $prevItem->count-$real);
+//						}elseif($real > $prevItem->count && $leastItemCnt && !(($prevItem->getMaxStackSize()-$real+$prevItem->count)%$leastItemCnt)){
+//							$this->addCraftedItem($prevItem->getID(), $prevItem->getMetadata(), $prevItem->getMaxStackSize()-$real+$prevItem->count);
+//						}elseif($leastItemCnt && (($prevItem->count - $real)%$leastItemCnt) && $itemSlots = CraftingRecipes::getAccurateCraftNumber($prevItem,$prevItem->count - $real, $leastItemCnt)){
+//							$this->addCraftedItem($prevItem->getID(), $prevItem->getMetadata(), $prevItem->count - $real + $prevItem->getMaxStackSize()*$itemSlots);
+//						}
+//						if(($droppingAbsoluteSlot = $this->getAccurateItemSlot($prevItem->getID(), $prevItem->getMetadata(), $prevItem->count)) !== false) {
+//							$this->slot = $droppingAbsoluteSlot;
+//						}
+//					}
+//				}
+
 				$newItem = $this->getHeldItem();
 
 				if(($n = $this->isExpectedSetSlot(-1, $prevItem))){
@@ -3496,6 +3652,18 @@ class Player{
 					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
 
 					$slot = $tile->getSlot($packet->slot);
+
+					if(($this->gamemode & 1) == SURVIVAL && $this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12 && $this->PROTOCOL >= ProtocolInfo6::CURRENT_PROTOCOL_6 && $slot->count < $item->count && !CraftingRecipes::getEnoughItem($this, $slot->getID(), $slot->getMetadata(), $item->count - $slot->count)){
+						$transCnt = $item->count - $slot->count;
+						if(($counts = $this->getItemCount($item->getID(), $item->getMetadata())) !== 0) {
+							if($counts < $transCnt){
+								$this->addCraftedItem($item->getID(), $item->getMetadata(), $transCnt - $counts);
+							}
+						}else{
+							$this->addCraftedItem($item->getID(), $item->getMetadata(), $transCnt);
+						}
+					}
+
 					if($this->server->api->dhandle("player.container.slot", [
 						"tile" => $tile,
 						"slot" => $packet->slot,
@@ -3614,7 +3782,7 @@ class Player{
 	 * @return Boolean
 	 */
 	public function setCurrentSlot(Item $heldItem){
-		$this->slot = $this->hasItem($heldItem->getID(), $heldItem->getMetadata()) ?: 0;
+		return $this->slot = $this->hasItem($heldItem->getID(), $heldItem->getMetadata()) ?: 0;
 	}
 	
 	public function stopSleep(){
@@ -3751,8 +3919,10 @@ class Player{
 		$this->toCraft[$index][$slot] += $count;
 		
 		//console("Result: $id, $meta, $count into $slot");
+		if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
 		if($this->tryCraft() === false){
 			$this->sendInventory();
+		}
 		}
 	}
 	
@@ -3766,14 +3936,35 @@ class Player{
 		if(!isset($this->craftingItems[$index][$slot])) $this->craftingItems[$index][$slot] = 0;
 		$this->craftingItems[$index][$slot] += $count;
 		//console("Ingridient: $id, $meta, $count into $slot");
+		if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
 		if($this->tryCraft() === false){
 			$this->sendInventory();
+		}
 		}
 	}
 	
 	public function hasItem($type, $damage = false){
 		foreach($this->inventory as $s => $item){
 			if($item->getID() === $type and ($item->getMetadata() === $damage or $damage === false) and $item->count > 0){
+				return $s;
+			}
+		}
+		return false;
+	}
+
+	public function getItemCount($type, $damage = false){
+		$countedItem = 0;
+		foreach($this->inventory as $s => $item){
+			if($item->getID() === $type and ($item->getMetadata() === $damage or $damage === false) and $item->count > 0){
+				$countedItem += $item->count;
+			}
+		}
+		return $countedItem;
+	}
+
+	public function getAccurateItemSlot($type, $damage, $count){
+		foreach($this->inventory as $s => $item){
+			if($item->getID() === $type && ($item->getMetadata() === $damage || $damage === false) && $item->count === $count){
 				return $s;
 			}
 		}
@@ -3799,7 +3990,7 @@ class Player{
 		while($count > 0){
 			$remove = 0;
 			foreach($this->inventory as $s => $item){
-				if($item->getID() === $type and $item->getMetadata() === $damage){
+				if($item->getID() === $type and ($item->getMetadata() === $damage or $damage === false)){
 					$remove = min($count, $item->count);
 
 					if($remove < $item->count){

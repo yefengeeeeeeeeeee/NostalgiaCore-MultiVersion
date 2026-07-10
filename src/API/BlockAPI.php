@@ -481,7 +481,7 @@ class BlockAPI{
 
 	private function cancelAction(Block $block, Player $player, $send = true){
 		$player->addBlockUpdateIntoQueue($block->x, $block->y, $block->z, $block->getID(), $block->getMetadata());
-		if($send === true){
+		if($send === true && $player->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12){
 			$player->sendInventory();
 		}
 		return false;
@@ -674,7 +674,7 @@ class BlockAPI{
 		}
 	}
 
-    public static function convertHighItemIdsToOldItemIds(int $protocolId, int $itemId) : int{
+    public static function convertHighItemIdsToOldItemIds(int $protocolId, int $itemId, int $metaData = 0) : int{
         if ($protocolId >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
             return $itemId;
         }
@@ -689,9 +689,14 @@ class BlockAPI{
             BEETROOT_SEEDS => SEEDS,
         ];
 
+		if ($protocolId <= ProtocolInfo9::CURRENT_PROTOCOL_9) {
+			$idMap += [
+				SPAWN_EGG => AIR,
+			];
+		}
+
         if ($protocolId < ProtocolInfo9::CURRENT_PROTOCOL_9) {
             $idMap += [
-                SPAWN_EGG => AIR,
                 NETHERRACK => OBSIDIAN,
                 NETHER_BRICK => BRICK,
                 NETHER_QUARTZ => BRICK,
