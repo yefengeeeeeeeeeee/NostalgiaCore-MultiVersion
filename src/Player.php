@@ -1733,7 +1733,9 @@ class Player{
 
 			}
 			$pk->hotbar = $hotbar;
+			if(!(($this->gamemode === CREATIVE || $this->gamemode === VIEW) && $this->PROTOCOL <= ProtocolInfo12::CURRENT_PROTOCOL_12)){
 			$this->dataPacket($pk);
+			}
 
 			$this->sendingInventoryRequired = false;
 		}
