@@ -756,8 +756,8 @@ class Entity extends Position
 	
 	public function positionRider($dead){
 		if($this->rider != 0){
-			$e = $this->level->entityList[$this->rider];
-			if($e === false) return;
+			$e = $this->level->entityList[$this->rider] ?? false;
+			if(!($e instanceof Entity)) return;
 			
 			$v3 = $this->getRideHeight();
 			if($dead || $this->dead) $v3 = 0.01;
@@ -918,7 +918,7 @@ class Entity extends Position
 					}
 				}
 				
-				if($prevGroundState == $this->onGround && !$this->onGround && $this->player->isSleeping == false && !$this->dead){ //isSleeping may be a vector
+				if($prevGroundState == $this->onGround && !$this->onGround && $this->player->isSleeping == false && !$this->dead && $this->riding == 0){ //isSleeping may be a vector
 					++$this->notOnGroundTicks;
 				}else if($this->onGround){
 					$this->notOnGroundTicks = 0;

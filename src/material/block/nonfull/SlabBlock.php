@@ -29,7 +29,7 @@ class SlabBlock extends TransparentBlock{
 
 		[$id, $meta] = $level->level->getBlock($x, $y, $z);
 
-		if($meta & 0x08 == 0x08){
+		if(($meta & 0x08) == 0x08){
 			StaticBlock::setBlockBounds($id, 0, 0, 0, 1, 1, 1);
 		}else{
 			$bottom = (($meta ^ 8) >> 3) & 1;
