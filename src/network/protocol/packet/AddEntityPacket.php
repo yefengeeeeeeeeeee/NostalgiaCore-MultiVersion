@@ -12,8 +12,10 @@ class AddEntityPacket extends RakNetDataPacket{
 	public $speedZ;
 
 	public function pid(){
-		if($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
-			return  ProtocolInfo4::ADD_ENTITY_PACKET;
+		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
+			return  ProtocolInfo3::ADD_ENTITY_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+			return  ProtocolInfo5::ADD_ENTITY_PACKET;
 		}
 		return ProtocolInfo::ADD_ENTITY_PACKET;
 	}

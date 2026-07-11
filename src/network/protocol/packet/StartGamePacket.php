@@ -10,6 +10,9 @@ class StartGamePacket extends RakNetDataPacket{
 	public $z;
 
 	public function pid(){
+		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
+			return ProtocolInfo3::START_GAME_PACKET;
+		}
 		return ProtocolInfo::START_GAME_PACKET;
 	}
 

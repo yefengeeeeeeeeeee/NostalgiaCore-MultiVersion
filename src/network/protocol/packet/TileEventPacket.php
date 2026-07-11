@@ -9,7 +9,7 @@ class TileEventPacket extends RakNetDataPacket{
 
 	public function pid(){
 		if($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
-			return  ProtocolInfo4::TILE_EVENT_PACKET;
+			return  ProtocolInfo5::TILE_EVENT_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
 			return  ProtocolInfo6::TILE_EVENT_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){

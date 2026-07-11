@@ -507,11 +507,8 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY) return;
 		if(!$this->convertToLocalEIDPacket($packet)) return false;
 
-		if(PacketPool::isPacketExist($packet->pid(), $this->PROTOCOL) != true){
-			return;
-		}
-
 		$packet->PROTOCOL = $this->PROTOCOL;
+		if(!PacketPool::isPacketExist($packet->pid(), $this->PROTOCOL)) return;
 		$packet->encode();
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;
@@ -545,6 +542,7 @@ class Player{
 		$pk->sendtime = microtime(true);
 
 		$packet->PROTOCOL = $this->PROTOCOL;
+		if(!PacketPool::isPacketExist($packet->pid(), $this->PROTOCOL)) return;
 		$packet->encode();
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;
@@ -1892,6 +1890,7 @@ class Player{
 		if(!$this->convertToLocalEIDPacket($pk)) return false;
 
 		$pk->PROTOCOL = $this->PROTOCOL;
+		if(!PacketPool::isPacketExist($pk->pid(), $this->PROTOCOL)) return false;
 		$pk->encode();
 
 		$len = 1 + strlen($pk->buffer);
@@ -1936,6 +1935,7 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $pk)) === BaseEvent::DENY) return;
 		if(!$this->convertToLocalEIDPacket($pk)) return false;
 		$pk->PROTOCOL = $this->PROTOCOL;
+		if(!PacketPool::isPacketExist($pk->pid(), $this->PROTOCOL)) return false;
 		$pk->encode();
 		$len = 1 + strlen($pk->buffer);
 		$MTU = $this->MTU - 24;
@@ -3444,7 +3444,7 @@ class Player{
 						$this->slot = $droppingAbsoluteSlot;
 					} elseif (($this->gamemode & 1) == SURVIVAL) {
 						$count = $this->getItemCount($prevItem->getID(), $prevItem->getMetadata());
-						if ($this->PROTOCOL <= ProtocolInfo6::CURRENT_PROTOCOL_6 && CraftingRecipes::getMCPE032CycleBlockType($this, $prevItem->getID(), $prevItem->getMetadata()) && ($count >= 6 || $prevItem->isPlaceable() || isset($this->isOre[$prevItem->getID()]) === true)) {
+						if ($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6 && CraftingRecipes::getMCPE032CycleBlockType($this, $prevItem->getID(), $prevItem->getMetadata()) && ($count >= 6 || $prevItem->isPlaceable() || isset($this->isOre[$prevItem->getID()]) === true)) {
 							$this->isOre[$prevItem->getID()] = true;
 						}
 						if ($count < $prevItem->count) {

@@ -8,7 +8,7 @@ class SetEntityMotionPacket extends RakNetDataPacket{
 
 	public function pid(){
 		if($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
-			return  ProtocolInfo4::SET_ENTITY_MOTION_PACKET;
+			return  ProtocolInfo5::SET_ENTITY_MOTION_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
 			return  ProtocolInfo6::SET_ENTITY_MOTION_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){

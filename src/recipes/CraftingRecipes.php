@@ -495,12 +495,12 @@ class CraftingRecipes{
 		}
 
 		foreach(CraftingRecipes::$legacy_small as $recipe){
-			CraftingRecipes::addRecipe($recipe, self::TYPE_INVENTORY, ProtocolInfo6::CURRENT_PROTOCOL_6);
-			CraftingRecipes::addRecipe($recipe, self::TYPE_CRAFTIGTABLE, ProtocolInfo6::CURRENT_PROTOCOL_6);
+			CraftingRecipes::addRecipe($recipe, self::TYPE_INVENTORY, ProtocolInfo5::CURRENT_PROTOCOL_5);
+			CraftingRecipes::addRecipe($recipe, self::TYPE_CRAFTIGTABLE, ProtocolInfo5::CURRENT_PROTOCOL_5);
 		}
 
 		foreach(CraftingRecipes::$legacy_big as $recipe){
-			CraftingRecipes::addRecipe($recipe, self::TYPE_CRAFTIGTABLE, ProtocolInfo6::CURRENT_PROTOCOL_6);
+			CraftingRecipes::addRecipe($recipe, self::TYPE_CRAFTIGTABLE, ProtocolInfo5::CURRENT_PROTOCOL_5);
 		}
 
 	}
@@ -567,10 +567,10 @@ class CraftingRecipes{
 			}
 		}
 
-		}elseif($protocol <= ProtocolInfo8::CURRENT_PROTOCOL_8 && $protocol > ProtocolInfo6::CURRENT_PROTOCOL_6){
+		}elseif($protocol <= ProtocolInfo8::CURRENT_PROTOCOL_8 && $protocol >= ProtocolInfo6::CURRENT_PROTOCOL_6){
 			if(!isset($arr_old[$result_index])) $arr_old[$result_index] = [];
 			$arr_old[$result_index][] = $ingridients_arr;
-		}elseif($protocol <= ProtocolInfo6::CURRENT_PROTOCOL_6){
+		}elseif($protocol < ProtocolInfo6::CURRENT_PROTOCOL_6){
 			if(!isset($arr_legacy[$result_index])) $arr_legacy[$result_index] = [];
 			$arr_legacy[$result_index][] = $ingridients_arr;
 		}
@@ -613,19 +613,19 @@ class CraftingRecipes{
 		}
 
 		$protocolId = ProtocolInfo::CURRENT_PROTOCOL;
-		if($protocol <= ProtocolInfo8::CURRENT_PROTOCOL_8 && $protocol > ProtocolInfo6::CURRENT_PROTOCOL_6){
+		if($protocol <= ProtocolInfo8::CURRENT_PROTOCOL_8 && $protocol >= ProtocolInfo6::CURRENT_PROTOCOL_6){
 			$protocolId = ProtocolInfo8::CURRENT_PROTOCOL_8;
-		}elseif($protocol <= ProtocolInfo6::CURRENT_PROTOCOL_6){
-			$protocolId = ProtocolInfo6::CURRENT_PROTOCOL_6;
+		}elseif($protocol < ProtocolInfo6::CURRENT_PROTOCOL_6){
+			$protocolId = ProtocolInfo5::CURRENT_PROTOCOL_5;
 		}
 
 		if(isset($arr_r[$craftItem->getID()][$craftItem->getMetadata()][$protocolId])){
 			$craftIndex = $arr_r[$craftItem->getID()][$craftItem->getMetadata()][$protocolId];
 			if($protocol >= ProtocolInfo9::CURRENT_PROTOCOL_9 && isset($arr[$craftIndex])) {
 				return $arr[$craftIndex];
-			}elseif($protocol <= ProtocolInfo8::CURRENT_PROTOCOL_8 && $protocol > ProtocolInfo6::CURRENT_PROTOCOL_6 && isset($arr_old[$craftIndex])){
+			}elseif($protocol <= ProtocolInfo8::CURRENT_PROTOCOL_8 && $protocol >= ProtocolInfo6::CURRENT_PROTOCOL_6 && isset($arr_old[$craftIndex])){
 				return $arr_old[$craftIndex];
-			}elseif($protocol <= ProtocolInfo6::CURRENT_PROTOCOL_6 && isset($arr_legacy[$craftIndex])){
+			}elseif($protocol < ProtocolInfo6::CURRENT_PROTOCOL_6 && isset($arr_legacy[$craftIndex])){
 				return $arr_legacy[$craftIndex];
 			}
 		}
@@ -702,10 +702,10 @@ class CraftingRecipes{
 		}
 
 		$protocolId = ProtocolInfo::CURRENT_PROTOCOL;
-		if($protocol <= ProtocolInfo8::CURRENT_PROTOCOL_8 && $protocol > ProtocolInfo6::CURRENT_PROTOCOL_6){
+		if($protocol <= ProtocolInfo8::CURRENT_PROTOCOL_8 && $protocol >= ProtocolInfo6::CURRENT_PROTOCOL_6){
 			$protocolId = ProtocolInfo8::CURRENT_PROTOCOL_8;
-		}elseif($protocol <= ProtocolInfo6::CURRENT_PROTOCOL_6){
-			$protocolId = ProtocolInfo6::CURRENT_PROTOCOL_6;
+		}elseif($protocol < ProtocolInfo6::CURRENT_PROTOCOL_6){
+			$protocolId = ProtocolInfo5::CURRENT_PROTOCOL_5;
 		}
 
 		if($protocol <= ProtocolInfo9::CURRENT_PROTOCOL_9 && $protocol > ProtocolInfo8::CURRENT_PROTOCOL_8 && $craftItem->getID() === SLAB && $craftItem->getMetadata() === 2){

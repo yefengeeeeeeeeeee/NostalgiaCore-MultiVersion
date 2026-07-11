@@ -4,6 +4,9 @@ class ReadyPacket extends RakNetDataPacket{
 	public $status;
 
 	public function pid(){
+		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
+			return ProtocolInfo3::READY_PACKET;
+		}
 		return ProtocolInfo::READY_PACKET;
 	}
 

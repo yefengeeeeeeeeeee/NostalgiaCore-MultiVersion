@@ -59,17 +59,17 @@ class PacketPool{
 		self::registerPacket(ChunkDataPacket::class);
 		self::registerPacket(ClientConnectPacket::class);
 		self::registerPacket(ClientHandshakePacket::class);
-		self::registerPacket(ContainerClosePacket::class);
-		self::registerPacket(ContainerOpenPacket::class);
-		self::registerPacket(ContainerSetContentPacket::class);
-		self::registerPacket(ContainerSetDataPacket::class);
-		self::registerPacket(ContainerSetSlotPacket::class);
-		self::registerPacket(ContainerAckPacket::class);
+		self::registerPacket(ContainerClosePacket::class, [6, 7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(ContainerOpenPacket::class, [6, 7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(ContainerSetContentPacket::class, [6, 7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(ContainerSetDataPacket::class, [6, 7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(ContainerSetSlotPacket::class, [6, 7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(ContainerAckPacket::class, [6, 7, 8, 9, 10, 11, 12, 13, 14]);
 
 		self::registerPacket(DisconnectPacket::class);
-		self::registerPacket(DropItemPacket::class);
+		self::registerPacket(DropItemPacket::class, [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
 
-		self::registerPacket(EntityDataPacket::class, [6, 7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(EntityDataPacket::class, [7, 8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(EntityEventPacket::class);
 		self::registerPacket(ExplodePacket::class);
 
@@ -100,20 +100,20 @@ class PacketPool{
 		self::registerPacket(RemovePlayerPacket::class);
 		self::registerPacket(RequestChunkPacket::class);
 		self::registerPacket(RespawnPacket::class);
-		self::registerPacket(RotateHeadPacket::class);
+		self::registerPacket(RotateHeadPacket::class, [12, 13, 14]);
 
-		self::registerPacket(SendInventoryPacket::class);
+		self::registerPacket(SendInventoryPacket::class, [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(ServerHandshakePacket::class);
 		self::registerPacket(SetEntityDataPacket::class);
 		self::registerPacket(SetEntityLinkPacket::class, [12, 13, 14]);
-		self::registerPacket(SetEntityMotionPacket::class, [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(SetEntityMotionPacket::class, [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(SetHealthPacket::class);
 		self::registerPacket(SetSpawnPositionPacket::class, [8, 9, 10, 11, 12, 13, 14]);
 		self::registerPacket(SetTimePacket::class);
 		self::registerPacket(StartGamePacket::class);
 
 		self::registerPacket(TakeItemEntityPacket::class);
-		self::registerPacket(TileEventPacket::class, [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+		self::registerPacket(TileEventPacket::class, [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
 
 		self::registerPacket(UpdateBlockPacket::class);
 		self::registerPacket(UseItemPacket::class);

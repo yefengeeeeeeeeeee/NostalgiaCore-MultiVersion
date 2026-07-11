@@ -6,10 +6,10 @@ class DropItemPacket extends RakNetDataPacket{
 	public $item;
 
 	public function pid(){
-		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
-			return  ProtocolInfo3::DROP_ITEM_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+		if($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
 			return  ProtocolInfo4::DROP_ITEM_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+			return  ProtocolInfo5::DROP_ITEM_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
 			return  ProtocolInfo6::DROP_ITEM_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){

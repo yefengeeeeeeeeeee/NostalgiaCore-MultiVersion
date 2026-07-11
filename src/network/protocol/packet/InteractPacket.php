@@ -11,8 +11,10 @@ class InteractPacket extends RakNetDataPacket{
 	public function pid(){
 		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
 			return  ProtocolInfo3::INTERACT_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+		}elseif($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
 			return  ProtocolInfo4::INTERACT_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+			return  ProtocolInfo5::INTERACT_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
 			return  ProtocolInfo6::INTERACT_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){

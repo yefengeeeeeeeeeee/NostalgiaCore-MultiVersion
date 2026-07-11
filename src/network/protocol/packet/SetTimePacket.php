@@ -5,6 +5,9 @@ class SetTimePacket extends RakNetDataPacket{
 	public $started = true;
 
 	public function pid(){
+		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
+			return ProtocolInfo3::SET_TIME_PACKET;
+		}
 		return ProtocolInfo::SET_TIME_PACKET;
 	}
 

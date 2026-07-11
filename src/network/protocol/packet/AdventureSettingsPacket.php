@@ -6,8 +6,6 @@ class AdventureSettingsPacket extends RakNetDataPacket{
 	public function pid(){
 		if($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
 			return  ProtocolInfo8::ADVENTURE_SETTINGS_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
-			return  ProtocolInfo9::ADVENTURE_SETTINGS_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
 			return  ProtocolInfo12::ADVENTURE_SETTINGS_PACKET;
 		}

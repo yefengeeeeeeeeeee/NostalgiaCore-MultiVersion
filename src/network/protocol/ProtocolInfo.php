@@ -281,6 +281,7 @@ abstract class ProtocolInfo8{
 }
 abstract class ProtocolInfo6{
 
+	const CURRENT_PROTOCOL_7 = 7;
 	const CURRENT_PROTOCOL_6 = 6;
 
 	const PING_PACKET = 0x00;
@@ -307,30 +308,27 @@ abstract class ProtocolInfo6{
 	const REMOVE_ENTITY_PACKET = 0x8d;
 	const ADD_ITEM_ENTITY_PACKET = 0x8e;
 	const TAKE_ITEM_ENTITY_PACKET = 0x8f;
-	const MOVE_ENTITY_PACKET = 0x90;
-
+	const MOVE_ENTITY_PACKET = 0x90;//unused ?
+	const MOVE_ENTITY_PACKET_POS = 0x91;//unused ?
+	const MOVE_ENTITY_PACKET_ROT = 0x92;//unused ?
 	const MOVE_ENTITY_PACKET_POSROT = 0x93;
 	const MOVE_PLAYER_PACKET = 0x94;
 	const PLACE_BLOCK_PACKET = 0x95;
 	const REMOVE_BLOCK_PACKET = 0x96;
 	const UPDATE_BLOCK_PACKET = 0x97;
-	//const ADD_PAINTING_PACKET = 0x98;
-	const EXPLODE_PACKET = 0x98;// Change
+	const EXPLODE_PACKET = 0x98;
 	const LEVEL_EVENT_PACKET = 0x99;
 	const TILE_EVENT_PACKET = 0x9a;
 	const ENTITY_EVENT_PACKET = 0x9b;
 	const REQUEST_CHUNK_PACKET = 0x9c;
 	const CHUNK_DATA_PACKET = 0x9d;
 	const PLAYER_EQUIPMENT_PACKET = 0x9e;
-	// const PLAYER_ARMOR_EQUIPMENT_PACKET = 0xa0;
 	const INTERACT_PACKET = 0x9f;
 	const USE_ITEM_PACKET = 0xa0;
 	const PLAYER_ACTION_PACKET = 0xa1;
 	const SET_ENTITY_DATA_PACKET = 0xa2;
 	const SET_ENTITY_MOTION_PACKET = 0xa3;
-	//const SET_ENTITY_LINK_PACKET = 0xa?;
 	const SET_HEALTH_PACKET = 0xa4;
-	//const SET_SPAWN_POSITION_PACKET = 0xa6;
 	const ANIMATE_PACKET = 0xa5;
 	const RESPAWN_PACKET = 0xa6;
 	const SEND_INVENTORY_PACKET = 0xa7;
@@ -345,9 +343,9 @@ abstract class ProtocolInfo6{
 	const ENTITY_DATA_PACKET = 0xb0;
 	//const ADVENTURE_SETTINGS_PACKET = 0xb3;
 }
-abstract class ProtocolInfo4{
+abstract class ProtocolInfo5{
 
-	const CURRENT_PROTOCOL_4 = 4;
+	const CURRENT_PROTOCOL_5 = 5;
 
 	const PING_PACKET = 0x00;
 
@@ -374,13 +372,13 @@ abstract class ProtocolInfo4{
 	const ADD_ITEM_ENTITY_PACKET = 0x8d;
 	const TAKE_ITEM_ENTITY_PACKET = 0x8e;
 	const MOVE_ENTITY_PACKET = 0x8f;//unused ?
-
+	const MOVE_ENTITY_PACKET_POS =  0x90;//unused ?
+	const MOVE_ENTITY_PACKET_ROT = 0X91;//unused ?
 	const MOVE_ENTITY_PACKET_POSROT = 0x92;
 	const MOVE_PLAYER_PACKET = 0x93;
 	const PLACE_BLOCK_PACKET = 0x94;
 	const REMOVE_BLOCK_PACKET = 0x95;//Maybe exist
 	const UPDATE_BLOCK_PACKET = 0x96;
-	//const ADD_PAINTING_PACKET = 0x98;
 	const EXPLODE_PACKET = 0x97;
 	const LEVEL_EVENT_PACKET = 0x98;
 	const TILE_EVENT_PACKET = 0x99;
@@ -388,15 +386,11 @@ abstract class ProtocolInfo4{
 	const REQUEST_CHUNK_PACKET = 0x9b;
 	const CHUNK_DATA_PACKET = 0x9c;
 	const PLAYER_EQUIPMENT_PACKET = 0x9d;
-	// const PLAYER_ARMOR_EQUIPMENT_PACKET = 0xa0;
 	const INTERACT_PACKET = 0x9e;
 	const USE_ITEM_PACKET = 0x9f;
-	// const PLAYER_ACTION_PACKET = 0xa1;
 	const SET_ENTITY_DATA_PACKET = 0xa0;
 	const SET_ENTITY_MOTION_PACKET = 0xa1;
-	//const SET_ENTITY_LINK_PACKET = 0xa?;
 	const SET_HEALTH_PACKET = 0xa2;
-	//const SET_SPAWN_POSITION_PACKET = 0xa6;
 	const ANIMATE_PACKET = 0xa3;
 	const RESPAWN_PACKET = 0xa4;
 	const SEND_INVENTORY_PACKET = 0xa5;
@@ -407,12 +401,10 @@ abstract class ProtocolInfo4{
 	const CONTAINER_SET_DATA_PACKET = 0xaa;
 	const CONTAINER_SET_CONTENT_PACKET = 0xab;
 	const CONTAINER_ACK_PACKET = 0xac;
-	//const CHAT_PACKET = 0xaf;
-	//const ADVENTURE_SETTINGS_PACKET = 0xb3;
 }
-abstract class ProtocolInfo3{
+abstract class ProtocolInfo4{
 
-	const CURRENT_PROTOCOL_3 = 3;
+	const CURRENT_PROTOCOL_4 = 4;
 
 	const PING_PACKET = 0x00;
 
@@ -439,42 +431,98 @@ abstract class ProtocolInfo3{
 	const ADD_ITEM_ENTITY_PACKET = 0x8d;
 	const TAKE_ITEM_ENTITY_PACKET = 0x8e;
 	const MOVE_ENTITY_PACKET = 0x8f;//unused ?
-
+	const MOVE_ENTITY_PACKET_POS = 0x90;//unused ?
+	const MOVE_ENTITY_PACKET_ROT = 0x91;//unused ?
 	const MOVE_ENTITY_PACKET_POSROT = 0x92;
 	const MOVE_PLAYER_PACKET = 0x93;
 	const PLACE_BLOCK_PACKET = 0x94;
 	const REMOVE_BLOCK_PACKET = 0x95;
 	const UPDATE_BLOCK_PACKET = 0x96;
-	//const ADD_PAINTING_PACKET = 0x98;
 	const EXPLODE_PACKET = 0x97;
 	const LEVEL_EVENT_PACKET = 0x98;
-	//const TILE_EVENT_PACKET = 0x99;
 	const ENTITY_EVENT_PACKET = 0x99;//Change
 	const REQUEST_CHUNK_PACKET = 0x9a;
 	const CHUNK_DATA_PACKET = 0x9b;//Change
 	const PLAYER_EQUIPMENT_PACKET = 0x9c;
-	// const PLAYER_ARMOR_EQUIPMENT_PACKET = 0xa0;
 	const INTERACT_PACKET = 0x9d;
 	const USE_ITEM_PACKET = 0x9e;
-	// const PLAYER_ACTION_PACKET = 0xa1;
 	const SET_ENTITY_DATA_PACKET = 0x9f;
-	// const SET_ENTITY_MOTION_PACKET = 0xa1;
-	//const SET_ENTITY_LINK_PACKET = 0xa?;
 	const SET_HEALTH_PACKET = 0xa0;
-	//const SET_SPAWN_POSITION_PACKET = 0xa6;
 	const ANIMATE_PACKET = 0xa1;
 	const RESPAWN_PACKET = 0xa2;
 	const SEND_INVENTORY_PACKET = 0xa3;
 	const DROP_ITEM_PACKET = 0xa4;
-	const CONTAINER_OPEN_PACKET = 0xa7;
-	const CONTAINER_CLOSE_PACKET = 0xa8;
-	const CONTAINER_SET_SLOT_PACKET = 0xa9;
-	const CONTAINER_SET_DATA_PACKET = 0xaa;
-	const CONTAINER_SET_CONTENT_PACKET = 0xab;
-	const CONTAINER_ACK_PACKET = 0xac;
-	//const CHAT_PACKET = 0xaf;
-	//const ADVENTURE_SETTINGS_PACKET = 0xb3;
+	const CONTAINER_OPEN_PACKET = 0xa5;
+	const CONTAINER_CLOSE_PACKET = 0xa6;
+	const CONTAINER_SET_SLOT_PACKET = 0xa7;
+	const CONTAINER_SET_DATA_PACKET = 0xa8;
+	const CONTAINER_SET_CONTENT_PACKET = 0xa9;
+	const CONTAINER_ACK_PACKET = 0xaa;
 }
+abstract class ProtocolInfo3{
+
+	const CURRENT_PROTOCOL_3 = 3;
+
+	const PING_PACKET = 0x00;
+
+	const PONG_PACKET = 0x03;
+
+	const CLIENT_CONNECT_PACKET = 0x09;
+	const SERVER_HANDSHAKE_PACKET = 0x10;
+
+	const CLIENT_HANDSHAKE_PACKET = 0x13;
+	//const SERVER_FULL_PACKET = 0x14;
+	const DISCONNECT_PACKET = 0x15;
+	const LOGIN_PACKET = 0x86;
+	const LOGIN_STATUS_PACKET = 0x87;
+	const READY_PACKET = 0x88;
+	const MESSAGE_PACKET = 0x89;
+	const SET_TIME_PACKET = 0x8a;
+	const START_GAME_PACKET = 0x8b;
+	const ADD_MOB_PACKET = 0x8c;
+	const ADD_PLAYER_PACKET = 0x8d;
+	const REMOVE_PLAYER_PACKET = 0x8e;
+
+	const ADD_ENTITY_PACKET = 0x8f; //Maybe exist
+	const REMOVE_ENTITY_PACKET = 0x90;
+	const ADD_ITEM_ENTITY_PACKET = 0x91;
+	const TAKE_ITEM_ENTITY_PACKET = 0x92;
+	const MOVE_ENTITY_PACKET = 0x93;//unused ?
+	const MOVE_ENTITY_PACKET_POS = 0x94;//unused ?
+	const MOVE_ENTITY_PACKET_ROT = 0x95;//unused ?
+	const MOVE_ENTITY_PACKET_POSROT = 0x96;
+	const MOVE_PLAYER_PACKET = 0x97;
+	const PLACE_BLOCK_PACKET = 0x98;
+	const REMOVE_BLOCK_PACKET = 0x99;
+	const UPDATE_BLOCK_PACKET = 0x9a;
+	const EXPLODE_PACKET = 0x9b;
+	const LEVEL_EVENT_PACKET = 0x9c;
+	const ENTITY_EVENT_PACKET = 0x9d;
+	const REQUEST_CHUNK_PACKET = 0x9e;
+	const CHUNK_DATA_PACKET = 0x9f;
+	const PLAYER_EQUIPMENT_PACKET = 0xa0;
+	const INTERACT_PACKET = 0xa1;
+	const USE_ITEM_PACKET = 0xa2;
+	const SET_ENTITY_DATA_PACKET = 0xa3;
+	const SET_HEALTH_PACKET = 0xa4;
+	const ANIMATE_PACKET = 0xa5;
+	const RESPAWN_PACKET = 0xa6;
+}
+abstract class ProtocolInfo18{ //evil skidcode company
+	const CURRENT_PROTOCOL_18 = 18;
+	const PLAYER_INPUT_PACKET = 0xb9;
+	const FULL_CHUNK_DATA_PACKET = 0xba;
+	const UNLOAD_CHUNK_PACKET = 0xbb;
+
+}
+/*Unused:
+ * 0xb5
+ * 0xb9
+ * 0x96
+ * 0x17
+ * 0x14
+ */
+
 /***REM_START***/
 require_once(FILE_PATH . "src/network/raknet/RakNetDataPacket.php");
 /***REM_END***/

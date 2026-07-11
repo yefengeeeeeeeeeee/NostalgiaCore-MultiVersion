@@ -8,8 +8,10 @@ class ContainerAckPacket extends RakNetDataPacket{
 	public $write0;
 
 	public function pid(){
-		if($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+		if($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
 			return  ProtocolInfo4::CONTAINER_ACK_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+			return  ProtocolInfo5::CONTAINER_ACK_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
 			return  ProtocolInfo6::CONTAINER_ACK_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){

@@ -7,9 +7,11 @@ class ChunkDataPacket extends RakNetDataPacket{
 
 	public function pid(){
 		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
-			return  ProtocolInfo3::CHUNK_DATA_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+			return  ProtocolInfo3::CHUNK_DATA_PACKET;//Same as 18
+		}elseif($this->PROTOCOL < ProtocolInfo5::CURRENT_PROTOCOL_5){
 			return  ProtocolInfo4::CHUNK_DATA_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+			return  ProtocolInfo5::CHUNK_DATA_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
 			return  ProtocolInfo6::CHUNK_DATA_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
