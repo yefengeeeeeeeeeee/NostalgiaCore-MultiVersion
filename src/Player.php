@@ -3968,7 +3968,7 @@ class Player{
 		}
 
 		
-		$cc = CraftingRecipes::canCraft($results, $ingridients, $this->craftingType);
+		$cc = CraftingRecipes::canCraft($results, $ingridients, $this->craftingType, $this->PROTOCOL);
 		if(!is_array($cc)){
 			if(!$cc){
 				$this->toCraft = [];

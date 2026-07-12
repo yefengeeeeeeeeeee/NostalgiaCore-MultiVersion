@@ -901,7 +901,7 @@ class CraftingRecipes{
 	 * @param int $type craft type (CraftingRecipes::TYPE_INVENTORY, CraftingRecipes::TYPE_CRAFTIGTABLE, CraftingRecipes::TYPE_STONECUTTER)
 	 * @return array|true|false recipe that will be used or bool. If returned false, crafting will be aborted. If returned true crafting wont be aborted
 	 */
-	public static function canCraft(array $craftItems, array $recipeItems, $type){
+	public static function canCraft(array $craftItems, array $recipeItems, $type, $protocol = ProtocolInfo::CURRENT_PROTOCOL){
 		$craftIndexArr = [];
 		foreach($craftItems as $it){
 			$craftIndexArr[$it[0]] = "{$it[0]}:{$it[1]}x{$it[2]}";
@@ -936,6 +936,20 @@ class CraftingRecipes{
 			}
 			ConsoleAPI::info("Recipe with $craftIndex is not found but it might be found later. Crafting continued.");
 			return true; //recipe might be found next time
+		}
+		if($protocol <= ProtocolInfo12::CURRENT_PROTOCOL_12 && $protocol >= ProtocolInfo12::CURRENT_PROTOCOL_11 && ($craftIndex === "5:0x4" || $craftIndex === "53:0x4" || $craftIndex === "158:0x6")){
+			console(2);
+			switch ($craftIndex){
+				case "5:0x4":
+					$arr[$craftIndex][][] = [WOOD, "?", 1];
+					break;
+				case "53:0x4":
+					$arr[$craftIndex][][] = [WOODEN_PLANKS, "?", 6];
+					break;
+				case "158:0x6":
+					$arr[$craftIndex][][] = [WOODEN_PLANKS, "?", 3];
+					break;
+			}
 		}
 		
 		foreach($arr[$craftIndex] as $ingridients){
