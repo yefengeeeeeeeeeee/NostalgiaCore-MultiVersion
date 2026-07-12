@@ -18,7 +18,7 @@ class AnimatePacket extends RakNetDataPacket{
 			return  ProtocolInfo6::ANIMATE_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
 			return  ProtocolInfo8::ANIMATE_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+		}elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11){
 			return  ProtocolInfo9::ANIMATE_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
 			return  ProtocolInfo12::ANIMATE_PACKET;

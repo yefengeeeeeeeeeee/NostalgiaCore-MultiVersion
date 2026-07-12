@@ -17,7 +17,7 @@ class RespawnPacket extends RakNetDataPacket{
 			return  ProtocolInfo6::RESPAWN_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
 			return  ProtocolInfo8::RESPAWN_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+		}elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11){
 			return  ProtocolInfo9::RESPAWN_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
 			return  ProtocolInfo12::RESPAWN_PACKET;

@@ -1716,7 +1716,7 @@ class Entity extends Position
 		$this->updateMetadata();
 		$this->dead = true;
 		if($this->player instanceof Player){
-			if($this->player->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
+			if($this->player->PROTOCOL <= ProtocolInfo8::CURRENT_PROTOCOL_8){
 				$pk = new EntityEventPacket;
 				$pk->eid = $this->eid;
 				$pk->event = EntityEventPacket::ENTITY_DEAD;

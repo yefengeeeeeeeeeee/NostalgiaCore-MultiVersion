@@ -665,7 +665,7 @@ class BlockAPI{
 
 	private function cancelAction(Block $block, Player $player, $send = true){
 		$player->addBlockUpdateIntoQueue($block->x, $block->y, $block->z, $block->getID(), $block->getMetadata());
-		if($send === true && $player->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12){
+		if($send === true && $player->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_11){
 			$player->sendInventory();
 		}
 		return false;
@@ -859,7 +859,7 @@ class BlockAPI{
 	}
 
 	public static function convertHighItemIdsToOldItemIds(int $protocolId, int $itemId, int $metaData = 0) : int{ //TODO Id metadata
-        if ($protocolId >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
+        if ($protocolId >= ProtocolInfo12::CURRENT_PROTOCOL_11) {
             return $itemId;
         }
 

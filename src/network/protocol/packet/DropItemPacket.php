@@ -14,7 +14,7 @@ class DropItemPacket extends RakNetDataPacket{
 			return  ProtocolInfo6::DROP_ITEM_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
 			return  ProtocolInfo8::DROP_ITEM_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+		}elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11){
 			return  ProtocolInfo9::DROP_ITEM_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
 			return  ProtocolInfo12::DROP_ITEM_PACKET;
@@ -23,17 +23,12 @@ class DropItemPacket extends RakNetDataPacket{
 	}
 
 	public function decode(){
-        //if($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8)$this->reset();
 		$this->eid = $this->getInt();
 		$this->randomly = $this->getByte();
 		$this->item = $this->getSlot();
 	}
 
 	public function encode(){
-        /*$this->reset();
-        $this->putInt($this->eid);
-        $this->putByte($this->unknown);
-        $this->putSlot($this->item);*/
 	}
 	
 	public function eidsToGlobal(Player $p){

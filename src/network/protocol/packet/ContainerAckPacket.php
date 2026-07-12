@@ -16,7 +16,7 @@ class ContainerAckPacket extends RakNetDataPacket{
 			return  ProtocolInfo6::CONTAINER_ACK_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
 			return  ProtocolInfo8::CONTAINER_ACK_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+		}elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11){
 			return  ProtocolInfo9::CONTAINER_ACK_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
 			return  ProtocolInfo12::CONTAINER_ACK_PACKET;

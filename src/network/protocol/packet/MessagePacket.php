@@ -12,7 +12,7 @@ class MessagePacket extends RakNetDataPacket{
 	}
 
 	public function decode(){
-		if($this->PROTOCOL > ProtocolInfo9::CURRENT_PROTOCOL_9){ //0.6.1 and below From NostalgiaCore-BackPort Author:Gameherobrine
+		if($this->PROTOCOL > ProtocolInfo12::CURRENT_PROTOCOL_11){ //0.6.1 and below From NostalgiaCore-BackPort Author:Gameherobrine
 			$this->source = $this->getString();
 		}else {
 			$this->source = "";
@@ -22,7 +22,7 @@ class MessagePacket extends RakNetDataPacket{
 
 	public function encode(){
 		$this->reset();
-		if($this->PROTOCOL > ProtocolInfo9::CURRENT_PROTOCOL_9){ //0.6.1 and below From NostalgiaCore-BackPort Author:Gameherobrine
+		if($this->PROTOCOL > ProtocolInfo12::CURRENT_PROTOCOL_11){ //0.6.1 and below From NostalgiaCore-BackPort Author:Gameherobrine
 			$this->putString($this->source);
 		}
 		$this->putString($this->message);

@@ -78,6 +78,7 @@ abstract class ProtocolInfo{
 abstract class ProtocolInfo12{
 
 	const CURRENT_PROTOCOL_12 = 12;
+	const CURRENT_PROTOCOL_11 = 11;
 
 	const PING_PACKET = 0x00;
 

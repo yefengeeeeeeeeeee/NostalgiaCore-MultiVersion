@@ -17,8 +17,8 @@ class ContainerOpenPacket extends RakNetDataPacket{
 		}elseif($this->PROTOCOL < ProtocolInfo8::CURRENT_PROTOCOL_8){
 			return  ProtocolInfo6::CONTAINER_OPEN_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo9::CURRENT_PROTOCOL_9){
-			return  ProtocolInfo8::CONTAINER_OPN_PACKET;
-		}elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+			return  ProtocolInfo8::CONTAINER_OPEN_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11){
 			return  ProtocolInfo9::CONTAINER_OPEN_PACKET;
 		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
 			return  ProtocolInfo12::CONTAINER_OPEN_PACKET;
@@ -37,7 +37,7 @@ class ContainerOpenPacket extends RakNetDataPacket{
 		$this->putByte($this->slots);
         if ($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
             $this->putString($this->unknownstring);
-            ConsoleAPI::debug($this->unknownstring);
+            ConsoleAPI::info($this->unknownstring);
         }else{
             $this->putInt($this->x);
             $this->putInt($this->y);

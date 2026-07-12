@@ -1115,7 +1115,7 @@ class Player{
 	public function eventHandler($data, $event){
 		switch($event){
 			case "entity.link":
-				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11){
 					break;
 				}
 				$pk = new SetEntityLinkPacket();
@@ -1424,6 +1424,9 @@ class Player{
 				$pk = new MessagePacket;
 				$pk->source = ($author instanceof Player) ? $author->username : $author;
 				$pk->message = TextFormat::clean($m); //Colors not implemented :(
+				if($this->PROTOCOL <= ProtocolInfo12::CURRENT_PROTOCOL_11 && $pk->source !== $author) {
+					$pk->message = "<" . $pk->source . "> " . $pk->message;
+				}
 				$this->sendChatMessagePacket($pk);
 			}
 		}
@@ -1552,7 +1555,7 @@ class Player{
 				}
 			}elseif(($gm & 0x01) === 0x01){
 				$inv = [];
-				if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12){
+				if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_11){
 				foreach(BlockAPI::$creative as $item){
 					$inv[] = BlockAPI::getItem($item[0], $item[1], 1);
 				}
@@ -2325,7 +2328,7 @@ class Player{
                             $inv[] = [0, 0, 1];
                         }
                     }else{
-						if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12){
+						if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_11){
                         foreach(BlockAPI::$creative as $item){
                             $inv[] = [$item[0], $item[1], 1];
                         }
@@ -2571,7 +2574,7 @@ class Player{
 								$inv[] = [0, 0, 1];
 							}
 						}else{
-							if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12){
+							if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_11){
 							foreach(BlockAPI::$creative as $item){
 								$inv[] = [$item[0], $item[1], 1];
 							}
@@ -2836,7 +2839,7 @@ class Player{
 				$data["eid"] = $packet->eid;
 				$data["player"] = $this;
 
-				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11){
 					if(($slot = $this->hasItem($packet->item, $packet->meta)) !== false) {
 						$packet->slot = $slot + 9;
 					}elseif ($packet->item === AIR && $packet->meta === AIR){
@@ -2866,7 +2869,7 @@ class Player{
 					}
 				}elseif(($this->gamemode & 0x01) === CREATIVE){
 					$packet->slot = false;
-					if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12){
+					if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_11){
 					foreach(BlockAPI::$creative as $i => $d){
 						if($d[0] === $packet->item and $d[1] === $packet->meta){
 							$packet->slot = $i;
@@ -2984,7 +2987,7 @@ class Player{
 				$data["posY"] = $packet->posY;
 				$data["posZ"] = $packet->posZ;
 
-				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){ //TODO Emulate and Calcuate slot for version under 0.6.0
+				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11){ //TODO Emulate and Calcuate slot for version under 0.6.0
 					$target = $this->level->getBlock($blockVector);
 					if($target->getID() === WORKBENCH) $this->isWorkBench = true;
 					elseif ($target->getID() === STONECUTTER) $this->isStoneCutter = true;
@@ -3044,7 +3047,7 @@ class Player{
 					$this->addBlockUpdateIntoQueue($block->x, $block->y, $block->z, $block->getID(), $block->getMetadata());
 					break;
 				}elseif($packet->face === 0xff){
-					if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){ //TODO Emulate and Calcuate slot for version under 0.6.0
+					if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11){
 						if($this->hasItem($data["item"], $data["meta"])  !== false) {
 							$handHeldItem = BlockAPI::getItem($data["item"], $data["meta"]);
 							$this->setCurrentSlot($handHeldItem);
@@ -3181,7 +3184,7 @@ class Player{
 					case 5: //Shot arrow
 						if($this->entity->inAction){
 							$arrowSlot = $this->hasItem(ARROW);
-							if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12 && $arrowSlot === false){
+							if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11 && $arrowSlot === false){
 								if(($this->gamemode & 1) == SURVIVAL && $this->isWorkBench && $this->getHeldItem()->getID() === BOW && $this->PROTOCOL >= ProtocolInfo6::CURRENT_PROTOCOL_6 && $this->addCraftedItem(ARROW, 0, 1)){
 									$arrowSlot = $this->hasItem(ARROW);
 								}
@@ -3230,7 +3233,7 @@ class Player{
 									}
 								}
 							}else{ //inv desynced, resend
-								if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
+								if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_11) {
 								$this->sendInventory();
 								}
 							}
@@ -3273,7 +3276,7 @@ class Player{
 					}
 					$slot = $this->armor[$i];
 
-					if(($this->gamemode & 1) == SURVIVAL && $this->isWorkBench && $this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12 && $this->PROTOCOL >= ProtocolInfo6::CURRENT_PROTOCOL_6) {
+					if(($this->gamemode & 1) == SURVIVAL && $this->isWorkBench && $this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11 && $this->PROTOCOL >= ProtocolInfo6::CURRENT_PROTOCOL_6) {
 						if($this->hasItem($s->getID()) === false && $this->getArmor($i)->getID() !== $s->getID()){
 							$this->addCraftedItem($s->getID(), 0 , 1);
 						}
@@ -3439,7 +3442,7 @@ class Player{
 				$packet->eid = $this->eid;
 				$prevItem = $packet->item;
 
-				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12) {
+				if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11) {
 					if (($droppingAbsoluteSlot = $this->getAccurateItemSlot($prevItem->getID(), $prevItem->getMetadata(), $prevItem->count)) !== false) {
 						$this->slot = $droppingAbsoluteSlot;
 					} elseif (($this->gamemode & 1) == SURVIVAL) {
@@ -3556,6 +3559,12 @@ class Player{
 				$this->toCraft = [];
 				$this->craftingType = CraftingRecipes::TYPE_INVENTORY;
 				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
+					if($this->PROTOCOL === ProtocolInfo12::CURRENT_PROTOCOL_11 && str_contains($packet->message, ">") !== false){
+						$rawMessage = explode(">", $packet->message, 2)[1];
+						if(strlen($rawMessage ) >= 2){
+							$packet->message = substr($rawMessage, 1);
+						}
+					}
 					$message = $packet->message;
 					if($message[0] === "/"){ //Command
 						if($this instanceof Player){
@@ -3732,7 +3741,7 @@ class Player{
 
 					$slot = $tile->getSlot($packet->slot);
 
-					if(($this->gamemode & 1) == SURVIVAL && $this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12 && $this->PROTOCOL >= ProtocolInfo6::CURRENT_PROTOCOL_6 && $slot->count < $item->count && !CraftingRecipes::getEnoughItem($this, $slot->getID(), $slot->getMetadata(), $item->count - $slot->count)){
+					if(($this->gamemode & 1) == SURVIVAL && $this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11 && $this->PROTOCOL >= ProtocolInfo6::CURRENT_PROTOCOL_6 && $slot->count < $item->count && !CraftingRecipes::getEnoughItem($this, $slot->getID(), $slot->getMetadata(), $item->count - $slot->count)){
 						$transCnt = $item->count - $slot->count;
 						if(($counts = $this->getItemCount($item->getID(), $item->getMetadata())) !== 0) {
 							if($counts < $transCnt){
@@ -3998,7 +4007,7 @@ class Player{
 		$this->toCraft[$index][$slot] += $count;
 		
 		//console("Result: $id, $meta, $count into $slot");
-		if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
+		if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_11) {
 		if($this->tryCraft() === false){
 			$this->sendInventory();
 		}
@@ -4015,7 +4024,7 @@ class Player{
 		if(!isset($this->craftingItems[$index][$slot])) $this->craftingItems[$index][$slot] = 0;
 		$this->craftingItems[$index][$slot] += $count;
 		//console("Ingridient: $id, $meta, $count into $slot");
-		if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_12) {
+		if($this->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_11) {
 		if($this->tryCraft() === false){
 			$this->sendInventory();
 		}
