@@ -938,7 +938,6 @@ class CraftingRecipes{
 			return true; //recipe might be found next time
 		}
 		if($protocol <= ProtocolInfo12::CURRENT_PROTOCOL_12 && $protocol >= ProtocolInfo12::CURRENT_PROTOCOL_11 && ($craftIndex === "5:0x4" || $craftIndex === "53:0x4" || $craftIndex === "158:0x6")){
-			console(2);
 			switch ($craftIndex){
 				case "5:0x4":
 					$arr[$craftIndex][][] = [WOOD, "?", 1];

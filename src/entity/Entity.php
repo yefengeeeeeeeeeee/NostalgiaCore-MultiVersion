@@ -1634,6 +1634,11 @@ class Entity extends Position
 				$part->hurtAndBreak($v2, $this->player, helditem: false);
 				if($part->count <= 0) $this->player->setArmor($slot, BlockAPI::getItem(0, 0, 0), send: false);
 			}
+			if($this->player->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11 && $this->player->PROTOCOL > ProtocolInfo8::CURRENT_PROTOCOL_8){
+				$pk = new HurtArmorPacket();
+				$pk->health = $part->meta - $v2;
+				//$this->player->dataPacket($pk); //MCPE 0.6.0
+			}
 			$this->player->sendArmor();
 		}
 	}
