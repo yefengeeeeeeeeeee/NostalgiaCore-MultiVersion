@@ -3595,6 +3595,44 @@ class Player{
 					}
 				}
 				break;
+			case ProtocolInfo::CHAT_PACKET:
+				if($this->spawned === false){
+					break;
+				}
+				$this->craftingItems = [];
+				$this->toCraft = [];
+				$this->craftingType = CraftingRecipes::TYPE_INVENTORY;
+				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
+					$message = $packet->message;
+					if($message[0] === "/"){ //Command
+						if($this instanceof Player){
+							console("[DEBUG] " . FORMAT_AQUA . $this->username . FORMAT_RESET . " issued server command: " . $message);
+						}else{
+							console("[DEBUG] " . FORMAT_YELLOW . "*" . $this . FORMAT_RESET . " issued server command: " . $message);
+						}
+						$this->server->api->console->run(substr($message, 1), $this);
+					}else{
+						$data = ["player" => $this, "message" => $message];
+						if(Player::$disableEmojisInChat && Utils::hasEmoji($data["message"])){
+							$this->sendChat("Your message contains illegal characters");
+							break;
+						}
+
+						//if($message == "pf"){
+						//	Living::$pathfind = !Living::$pathfind;
+						//}
+
+						if($this->server->api->handle("player.chat", $data) !== false){
+							$this->server->send2Discord("<" . $this->username . "> " . $message);
+							if(isset($data["message"])){
+								$this->server->api->chat->send($this, $data["message"]);
+							}else{
+								$this->server->api->chat->send($this, $message);
+							}
+						}
+					}
+				}
+				break;
 			case ProtocolInfo::CONTAINER_CLOSE_PACKET:
 				if($this->spawned === false){
 					break;
