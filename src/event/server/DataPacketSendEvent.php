@@ -32,7 +32,9 @@ class DataPacketSendEvent extends ServerEvent implements CancellableEvent{
 	}
 
 	public function getPacket(){
-		return $this->packet;
+		$packetCurrent = clone $this->packet;
+		$packetCurrent->PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
+		return $packetCurrent;
 	}
 
 	public function getPlayer(){
