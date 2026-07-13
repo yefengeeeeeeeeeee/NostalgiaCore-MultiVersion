@@ -412,7 +412,7 @@ class Tile extends Position{
 
 				$nbt->write(chr(NBT::TAG_END));
 
-				if($player->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+				if($player->getProtocol() < ProtocolInfo12::CURRENT_PROTOCOL_12){
 					$line1 = mb_substr($this->data["Text1"], 0, 15);
 					$line2 = mb_substr($this->data["Text2"], 0, 15);
 					$line3 = mb_substr($this->data["Text3"], 0, 15);

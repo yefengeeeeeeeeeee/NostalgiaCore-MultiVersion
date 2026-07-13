@@ -665,7 +665,7 @@ class BlockAPI{
 
 	private function cancelAction(Block $block, Player $player, $send = true){
 		$player->addBlockUpdateIntoQueue($block->x, $block->y, $block->z, $block->getID(), $block->getMetadata());
-		if($send === true && $player->PROTOCOL >= ProtocolInfo12::CURRENT_PROTOCOL_11){
+		if($send === true && $player->getProtocol() >= ProtocolInfo12::CURRENT_PROTOCOL_11){
 			$player->sendInventory();
 		}
 		return false;

@@ -739,13 +739,13 @@ class CraftingRecipes{
 			return false;
 		}
 
-		$craftneededItemCnt = self::getCraftNumber($craftItem, $type, $player->PROTOCOL);
+		$craftneededItemCnt = self::getCraftNumber($craftItem, $type, $player->getProtocol());
 
 		if(!$craftneededItemCnt){
 			goto failed_to_craft;
 		}
 
-		if($player->PROTOCOL <= 6 && $type === self::TYPE_CRAFTIGTABLE && $items = self::getMCPE032CycleBlockType($player, $craftItem->getID(), $craftItem->getMetadata())){
+		if($player->getProtocol() <= 6 && $type === self::TYPE_CRAFTIGTABLE && $items = self::getMCPE032CycleBlockType($player, $craftItem->getID(), $craftItem->getMetadata())){
 			$itemsSolid = self::getMCPE032CycleBlockType($player, $craftItem->getID(), $craftItem->getMetadata(), true);
 			if(!isset($player->isOre[$itemsSolid->getID()]) && $itemsSolid->count){
 				$player->isOre[$itemsSolid->getID()] = true;
@@ -807,7 +807,7 @@ class CraftingRecipes{
 				}elseif(self::getEnoughItem($player, $item[0], (($item[1] === "?") ? false : $item[1]), $needCraftCnt) !== false) {
 					$slot = $player->hasItem($item[0], (($item[1] === "?") ? false : $item[1]));
 					$player->addCraftingIngridient($slot, $item[0], ($item[1] === "?") ? 65535 : $item[1], $needCraftCnt);
-				}elseif($player->PROTOCOL <= 6 && $type === CraftingRecipes::TYPE_CRAFTIGTABLE && ($items = self::getMCPE032CycleBlockType($player, $item[0], (($item[1] === "?") ? false : $item[1]))) !== false && ($player->getItemCount($item[0], (($item[1] === "?") ? false : $item[1])) || isset($player->isOre[$item[0]]) === true)) {
+				}elseif($player->getProtocol() <= 6 && $type === CraftingRecipes::TYPE_CRAFTIGTABLE && ($items = self::getMCPE032CycleBlockType($player, $item[0], (($item[1] === "?") ? false : $item[1]))) !== false && ($player->getItemCount($item[0], (($item[1] === "?") ? false : $item[1])) || isset($player->isOre[$item[0]]) === true)) {
 					$slot = $player->hasItem($item[0], (($item[1] === "?") ? false : $item[1]));
 					$result = BlockAPI::getItem($item[0], ($item[1] === "?") ? 65535 : $item[1], $needCraftCnt-$items->count);
 					self::tryCraft($player, $recipeItems, $result, $type, 1);
@@ -823,7 +823,7 @@ class CraftingRecipes{
 						$need = $item[2]*ceil($toCraftCnt/$craftneededItemCnt) - $cnt%$item[2];
 					}
 
-					if(($forwardResult = self::getRecipe(BlockAPI::getItem($item[0],(($item[1] === "?") ? false : $item[1]),$item[2]), $type, $player->PROTOCOL)) !== false){
+					if(($forwardResult = self::getRecipe(BlockAPI::getItem($item[0],(($item[1] === "?") ? false : $item[1]),$item[2]), $type, $player->getProtocol())) !== false){
 						$craftingItem = BlockAPI::getItem($item[0], (($item[1] === "?") ? false : $item[1]), $need);
 						if (self::tryCraft($player, $forwardResult, $craftingItem, $type, $depth)) {
 							$slot = $player->hasItem($craftingItem->getID(), (($item[1] === "?") ? false : $item[1]));
@@ -834,7 +834,7 @@ class CraftingRecipes{
 					}else{
 						goto failed_to_craft;
 					}
-				}elseif (($forwardResult = self::getRecipe(BlockAPI::getItem($item[0],(($item[1] === "?") ? false : $item[1]),$item[2]), $type, $player->PROTOCOL)) !== false) {
+				}elseif (($forwardResult = self::getRecipe(BlockAPI::getItem($item[0],(($item[1] === "?") ? false : $item[1]),$item[2]), $type, $player->getProtocol())) !== false) {
 					$craftingItem = BlockAPI::getItem($item[0], (($item[1] === "?") ? false : $item[1]), $needCraftCnt);
 					if (self::tryCraft($player, $forwardResult, $craftingItem, $type, $depth)) {
 						$slot = $player->hasItem($craftingItem->getID(), (($item[1] === "?") ? false : $item[1]));

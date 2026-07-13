@@ -45,7 +45,6 @@ class Player{
 	public $CID;
 	public $MTU;
 	public $spawned = false;
-	public $PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
 	/**
 	 * Stores player inventory. Should not be accessed directly: use Player::addItem/Player::removeItem/Player::setSlot for setting and Player::getSlot for getting.
 	 * @var array
@@ -86,6 +85,7 @@ class Player{
 	private $clientID;
 	private $ip;
 	private $port;
+	private $PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
 	private $counter = [0, 0, 0, 0];
 	public $username;
 	public $iusername;
@@ -298,6 +298,35 @@ class Player{
 
 	public function getSpawn(){
 		return $this->spawnPosition;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getVersion():string{
+		return match ($this->PROTOCOL) {
+			14 => "v 0.8.1 Alpha",
+			13 => "v 0.8.0 Alpha",
+			12 => "v 0.7.6 Alpha",
+			11 => "v 0.7.1 Alpha",
+			10 => "v 0.6.1 Alpha",
+			9 => "v 0.6.1 Alpha",
+			8 => "v 0.5.0j Alpha",
+			7 => "v 0.4.0 Alpha",
+			6 => "v 0.3.3 Alpha",
+			5 => "v 0.3.2 Alpha",
+			4 => "v 0.3.0 Alpha",
+			3 => "v 0.2.1 Alpha",
+			18 => "v 0.10.5 Alpha",
+			default => "v 0.8.1 Alpha",
+		};
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getProtocol():int{
+		return $this->PROTOCOL;
 	}
 
 	public function setBedPosition(?Position $bedPos){
