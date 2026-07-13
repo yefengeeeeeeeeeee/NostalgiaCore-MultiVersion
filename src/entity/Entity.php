@@ -1634,10 +1634,10 @@ class Entity extends Position
 				$part->hurtAndBreak($v2, $this->player, helditem: false);
 				if($part->count <= 0) $this->player->setArmor($slot, BlockAPI::getItem(0, 0, 0), send: false);
 			}
-			if($this->player->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_11 && $this->player->PROTOCOL > ProtocolInfo8::CURRENT_PROTOCOL_8){
+			if($this->player->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12 && $this->player->PROTOCOL > ProtocolInfo8::CURRENT_PROTOCOL_8){
 				$pk = new HurtArmorPacket();
-				$pk->health = $part->meta - $v2;
-				//$this->player->dataPacket($pk); //MCPE 0.6.0
+				$pk->health = $v2; //TODO: Verify the real attack health for it
+				$this->player->entityQueueDataPacket($pk);
 			}
 			$this->player->sendArmor();
 		}
@@ -1721,16 +1721,22 @@ class Entity extends Position
 		$this->updateMetadata();
 		$this->dead = true;
 		if($this->player instanceof Player){
-			if($this->player->PROTOCOL <= ProtocolInfo8::CURRENT_PROTOCOL_8){
-				$pk = new EntityEventPacket;
-				$pk->eid = $this->eid;
-				$pk->event = EntityEventPacket::ENTITY_DEAD;
-				$this->player->entityQueueDataPacket($pk);
+			if($this->player->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
 				$this->player->isWorkbench = false;
 				$this->player->isStoneCutter = false;
-				if($this->player->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
-					$this->player->isOre = [];
+				if(!self::$keepInventory) {
+					if ($this->player->PROTOCOL <= ProtocolInfo8::CURRENT_PROTOCOL_8) {
+						$pk = new EntityEventPacket;
+						$pk->eid = $this->eid;
+						$pk->event = EntityEventPacket::ENTITY_DEAD;
+						$this->player->entityQueueDataPacket($pk);
+					} elseif (isset($this->player->isOre[DIAMOND_HELMET])) {
+						$pk = new HurtArmorPacket();
+						$pk->health = 900; //TODO Verify the real attack health for it
+						$this->player->entityQueueDataPacket($pk);
+					}
 				}
+				$this->player->isOre = [];
 			}
 			$pk = new MoveEntityPacket_PosRot();
 			$pk->eid = $this->eid;

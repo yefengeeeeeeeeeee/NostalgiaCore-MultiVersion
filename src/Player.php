@@ -3318,10 +3318,16 @@ class Player{
 					}elseif($s->getID() !== AIR and $slot->getID() === AIR and ($sl = $this->hasItem($s->getID())) !== false){
 						$this->armor[$i] = $this->getSlot($sl);
 						$this->setSlot($sl, BlockAPI::getItem(AIR, 0, 0), false);
+						if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12 && $this->PROTOCOL > ProtocolInfo8::CURRENT_PROTOCOL_8){
+							$this->isOre[DIAMOND_HELMET] = true;
+						}
 					}elseif($s->getID() !== AIR && $slot->getID() !== AIR and ($slot->getID() !== $s->getID() or $slot->getMetadata() !== $s->getMetadata()) and ($sl = $this->hasItem($s->getID())) !== false){
 						$item = $this->armor[$i];
 						$this->armor[$i] = $this->getSlot($sl);
 						$this->setSlot($sl, $item, false);
+						if($this->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12 && $this->PROTOCOL > ProtocolInfo8::CURRENT_PROTOCOL_8){
+							$this->isOre[DIAMOND_HELMET] = true;
+						}
 					}else{
 						$packet->slots[$i] = 255;
 					}

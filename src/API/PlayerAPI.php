@@ -42,12 +42,10 @@ class PlayerAPI{
 	public function handle($data, $event){
 		switch($event){
 			case "player.death":
-				if($data["player"]->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
+				if($data["player"]->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
 					$data["player"]->isWorkBench = false;
 					$data["player"]->isStoneCutter = false;
-					if($data["player"]->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
-						$data["player"]->isOre = [];
-					}
+					$data["player"]->isOre = [];
 				}
 				if(is_numeric($data["cause"])){
 					$e = $this->server->api->entity->get($data["cause"]);
