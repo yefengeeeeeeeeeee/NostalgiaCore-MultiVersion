@@ -1157,24 +1157,19 @@ class Entity extends Position
 			16 => [
 				"type" => 0,
 				"value" => 0
-			],
-			17 => [
-				"type" => 6,
-				"value" => [
-					0,
-					0,
-					0
-				]
 			]
 		];
 		$d[16]["value"] = $this->data["State"];
 		if($this->isPlayer()){
 			if($this->player->isSleeping !== false){
 				$d[16]["value"] = 2;
-				$d[17]["value"] = [
-					$this->player->isSleeping->x,
-					$this->player->isSleeping->y,
-					$this->player->isSleeping->z
+				$d[17] = [
+					"type" => 6,
+					"value" => [
+						$this->player->isSleeping->x,
+						$this->player->isSleeping->y,
+						$this->player->isSleeping->z
+					]
 				];
 			}
 		}
