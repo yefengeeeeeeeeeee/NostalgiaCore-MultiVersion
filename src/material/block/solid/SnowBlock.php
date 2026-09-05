@@ -18,5 +18,5 @@ class SnowBlock extends SolidBlock{
 		}
 		return [];
 	}
-	
+
 }

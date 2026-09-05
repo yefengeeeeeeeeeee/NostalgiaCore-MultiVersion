@@ -42,6 +42,11 @@ class PlayerAPI{
 	public function handle($data, $event){
 		switch($event){
 			case "player.death":
+				if($data["player"]->PROTOCOL < ProtocolInfo12::CURRENT_PROTOCOL_12){
+					$data["player"]->isWorkBench = false;
+					$data["player"]->isStoneCutter = false;
+					$data["player"]->isOre = [];
+				}
 				if(is_numeric($data["cause"])){
 					$e = $this->server->api->entity->get($data["cause"]);
 					if($e instanceof Entity){
@@ -521,6 +526,17 @@ class PlayerAPI{
 			}
 		}
 	}
+
+    /**
+     * @return int
+     */
+    public static function decodeProtocol($ip, $port){
+        foreach(ServerAPI::request()->clients as $p) {
+            if($p->ip == $ip && $p->port == $port){
+                return $p->getProtocol();
+            }
+        }
+    }
 
 	public function remove($CID){
 		if(isset($this->server->clients[$CID])){

@@ -148,7 +148,6 @@ class Matrix implements ArrayAccess{
 		};
 	}
 
-
 	//Computation of the determinant of 2x2 and 3x3 matrices
 
 	public function isSquare(){

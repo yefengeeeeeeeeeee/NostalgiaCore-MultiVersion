@@ -18,7 +18,7 @@ class WheatBlock extends FlowableBlock{
 		}
 		return false;
 	}
-	
+
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			$this->meta += mt_rand(0, 3) + 2;
@@ -47,7 +47,7 @@ class WheatBlock extends FlowableBlock{
 			$level->fastSetBlockUpdate($x, $y, $z, 0, 0);
 		}
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		$drops = [];
 		if($this->meta >= 0x07){
@@ -58,7 +58,7 @@ class WheatBlock extends FlowableBlock{
 			  $drops[] = [WHEAT_SEEDS, 0, 1];
 			}
 		}
-		
+
 		return $drops;
 	}
 }

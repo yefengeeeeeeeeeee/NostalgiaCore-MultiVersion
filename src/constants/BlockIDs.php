@@ -109,7 +109,6 @@ define("SOUL_SAND", 88); //doesnt exist
 define("GLOWSTONE", 89);
 define("GLOWSTONE_BLOCK", 89);
 
-
 define("LIT_PUMPKIN", 91);
 define("JACK_O_LANTERN", 91);
 define("CAKE_BLOCK", 92);
@@ -175,5 +174,9 @@ define("GLOWING_OBSIDIAN", 246);
 define("NETHER_REACTOR", 247);
 define("INFO_UPDATE", 248);
 define("INFO_UPDATE2", 249);
+
+//0.2 - 0.7: 253 & 254
+define("GRASS_CARRIED", 253);
+define("LEAVES_CARRIED", 254);
 
 define("RESERVED6", 255);

@@ -13,7 +13,7 @@ class BirchFeature extends Feature
 			if($i >= (($y + 1) + $nextInt) - 2){
 				$i2 = 2;
 			}
-			
+
 			for($i3 = $x - $i2; $i3 <= $x + $i2 && $z2; ++$i3){
 				for($i4 = $z - $i2; $i4 <= $z + $i2 && $z2; ++$i4){
 					if($i >= 0 && $i < 128){
@@ -44,7 +44,7 @@ class BirchFeature extends Feature
 						}
 					}
 				}
-				
+
 				for($i12 = 0; $i12 < $nextInt; ++$i12){
 					$blockID = $level->level->getBlockID($x, $y + $i12, $z);
 					if($blockID == 0 || $blockID == LEAVES){
@@ -56,7 +56,7 @@ class BirchFeature extends Feature
 			return false;
 		}
 		return false;
-			
+
 	}
 }
 

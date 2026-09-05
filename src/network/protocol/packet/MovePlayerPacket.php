@@ -8,11 +8,18 @@ class MovePlayerPacket extends RakNetDataPacket{
 	public $yaw;
 	public $pitch;
 	public $bodyYaw;
-	
+
 	public function pid(){
+		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
+			return  ProtocolInfo3::MOVE_PLAYER_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+			return  ProtocolInfo5::MOVE_PLAYER_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+			return  ProtocolInfo12::MOVE_PLAYER_PACKET;
+		}
 		return ProtocolInfo::MOVE_PLAYER_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->x = $this->getFloat();
@@ -20,9 +27,11 @@ class MovePlayerPacket extends RakNetDataPacket{
 		$this->z = $this->getFloat();
 		$this->yaw = $this->getFloat();
 		$this->pitch = $this->getFloat();
-		$this->bodyYaw = $this->getFloat();
+		if($this->PROTOCOL > 13){
+			$this->bodyYaw = $this->getFloat();
+		}
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);
@@ -31,7 +40,9 @@ class MovePlayerPacket extends RakNetDataPacket{
 		$this->putFloat($this->z);
 		$this->putFloat($this->yaw);
 		$this->putFloat($this->pitch);
-		$this->putFloat($this->bodyYaw);
+		if($this->PROTOCOL > 13){
+			$this->putFloat($this->bodyYaw);
+		}
 	}
 
 	public function eidsToLocal(Player $p){

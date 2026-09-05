@@ -23,15 +23,18 @@ class AddPlayerPacket extends RakNetDataPacket{
 	 *@var array
 	 */
 	public $metadata;
-	
+
 	public function pid(){
+		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
+			return ProtocolInfo3::ADD_PLAYER_PACKET;
+		}
 		return ProtocolInfo::ADD_PLAYER_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putLong($this->clientID);
@@ -44,7 +47,9 @@ class AddPlayerPacket extends RakNetDataPacket{
 		$this->putByte($this->pitch);
 		$this->putShort($this->itemID);
 		$this->putShort($this->itemAuxValue); //Example: bow shooting power
+		if($this->PROTOCOL >= ProtocolInfo6::CURRENT_PROTOCOL_6){
 		$this->put(Utils::writeMetadata($this->metadata));
+		}
 	}
 	
 	public function eidsToLocal(Player $p){

@@ -1,13 +1,16 @@
 <?php
+
 class PlayerInputPacket extends RakNetDataPacket{
+
 	public $moveStrafe, $moveForward, $isJumping, $isSneaking;
-	public function encode()
-	{
-		
+
+	public function encode(){
 	}
 
-	public function pid()
-	{
+	public function pid(){
+		if($this->PROTOCOL < ProtocolInfo::CURRENT_PROTOCOL){
+			return  ProtocolInfo12::PLAYER_INPUT_PACKET;
+		}
 		return ProtocolInfo::PLAYER_INPUT_PACKET;
 	}
 
@@ -18,6 +21,6 @@ class PlayerInputPacket extends RakNetDataPacket{
 		$this->isJumping = $this->getByte() != 0;
 		$this->isSneaking = $this->getByte() != 0;
 	}
-	
+
 }
 

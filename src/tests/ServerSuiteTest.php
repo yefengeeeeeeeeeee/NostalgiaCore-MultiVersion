@@ -1,4 +1,5 @@
 <?php
+
 /***REM_START***/
 $testErrors = 0;
 function testCase($name, $output, $expected){
@@ -52,7 +53,6 @@ class ServerSuiteTest{
 		testCase("event fired", true, true);
 		$server = ServerAPI::request();
 		testCase("defaultgamemode", $server->getGamemode(), "survival");
-
 
 		//Everything done!
 		$server->close();

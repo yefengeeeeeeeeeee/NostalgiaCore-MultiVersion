@@ -17,7 +17,7 @@ class TileAPI{
 		}
 		return false;
 	}
-	
+
 	public function invalidateAll(Level $level, $x, $y, $z){
 		$x = (int) $x;
 		$y = (int) $y;
@@ -31,14 +31,14 @@ class TileAPI{
 					++$invcnt;
 					$tl->close();
 				}
-				
+
 				if($invcnt > 1){
 					ConsoleAPI::warn("{$level->getName()}: ($x $y $z) has more than 1 tile entity! Invalidated ID {$t["ID"]} (Total invaliated: $invcnt)");
 				}
 			}
 		}
 	}
-	
+
 	public function get(Position $pos){
 		$tile = $this->server->query("SELECT * FROM tiles WHERE level = '" . $pos->level->getName() . "' AND x = {$pos->x} AND y = {$pos->y} AND z = {$pos->z};", true);
 		if($tile !== false and $tile !== true and ($tile = $this->getByID($tile["ID"])) !== false){

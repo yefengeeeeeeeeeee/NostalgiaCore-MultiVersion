@@ -9,10 +9,10 @@ class WoodDoorBlock extends DoorBlock{
 		$this->breakTime = 3;
 		$this->material = Material::$wood;
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array(WOODEN_DOOR, 0, 1),
-		);
+		return [
+			[WOODEN_DOOR, 0, 1],
+		];
 	}
 }

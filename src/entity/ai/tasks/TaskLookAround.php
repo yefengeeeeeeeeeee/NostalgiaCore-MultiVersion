@@ -3,7 +3,7 @@
 class TaskLookAround extends TaskBase
 {
 	public $lookOffsetX, $lookOffsetZ;
-	
+
 	public function onStart(EntityAI $ai)
 	{
 		$this->selfCounter = 20 + lcg_value();
@@ -19,9 +19,9 @@ class TaskLookAround extends TaskBase
 
 	public function canBeExecuted(EntityAI $ai)
 	{
-		return !$ai->entity->inPanic && !$ai->entity->isMoving() && lcg_value() < 0.02 && !$ai->isStarted("TaskLookAtPlayer") && !$ai->isStarted("TaskAttackPlayer")  && !$ai->isStarted("TaskMate")  && !$ai->isStarted("TaskTempt") && !$ai->entity->hasPath(); /*Vanilla value*/
+		return !$ai->entity->inPanic && !$ai->entity->isMoving() && lcg_value() < 0.02 && !$ai->isStarted("TaskLookAtPlayer") && !$ai->isStarted("TaskAttackPlayer") && !$ai->isStarted("TaskMate") && !$ai->isStarted("TaskTempt") && !$ai->entity->hasPath(); /*Vanilla value*/
 	}
-	
+
 	public function onUpdate(EntityAI $ai)
 	{
 		--$this->selfCounter;

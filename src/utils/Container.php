@@ -43,7 +43,6 @@ class Container{
 		return true;
 	}
 
-
 	public function __toString(){
 		return $this->payload;
 	}

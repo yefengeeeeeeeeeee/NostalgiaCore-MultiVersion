@@ -10,29 +10,27 @@ class EntityAI
 	 * @var Living
 	 */
 	public $entity;
-	
+
 	/**
 	 * @var TaskBase[]
 	 */
 	protected $tasks;
-	
+
 	public $lastTask;
-	
+
 	public function __construct($entity){
 		$this->entity = $entity;
 		$this->tasks = [];
 		$this->mobController = new MobController($entity);
 	}
-	
-	
+
 	public function canSee(Entity $entity){
 		//TODO caches
 		return $this->entity->canSee($entity);
 	}
-	
+
 	/**
 	 * Add a task for entity
-	 * @param TaskBase $task
 	 */
 	public function addTask(TaskBase $task){
 		$this->tasks[$task->__toString()] = $task;
@@ -44,16 +42,16 @@ class EntityAI
 		}
 		return false;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param mixed $id classname
 	 * @return TaskBase | false
 	 */
 	public function getTask($id){
 		return $this->tasks[$id] ?? false;
 	}
-	
+
 	public function isStarted($id){
 		$task = $this->getTask($id);
 		return $task instanceof TaskBase && $task->isStarted;
@@ -75,10 +73,10 @@ class EntityAI
 			}
 		}
 	}
-	
+
 	public function __destruct(){
 		unset($this->entity);
 	}
-	
+
 }
 

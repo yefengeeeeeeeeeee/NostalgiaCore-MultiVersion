@@ -8,11 +8,11 @@ class GlassBlock extends TransparentBlock{
 		$this->breakTime = 0.3;
 		$this->material = Material::$glass;
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
-		return array();
+		return [];
 	}
-	
+
 	public static function getCollisionBoundingBoxes(Level $level, $x, $y, $z, Entity $entity){
 		return [new AxisAlignedBB($x, $y, $z, $x + 1, $y + 1, $z + 1)];
 	}

@@ -12,8 +12,10 @@ abstract class RakNetDataPacket extends stdClass{
 	public $splitID;
 	public $splitIndex;
 	public $seqIndex;
+    public $PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
+
 	private $offset = 0;
-	
+
 	public abstract function encode();
 
 	public abstract function decode();
@@ -25,7 +27,7 @@ abstract class RakNetDataPacket extends stdClass{
 	public function eidsToGlobal(Player $p){
 		return true;
 	}
-	
+
 	public function getBuffer(){
 		return $this->buffer;
 	}
@@ -44,6 +46,14 @@ abstract class RakNetDataPacket extends stdClass{
 	}
 
 	abstract public function pid();
+
+	public function getInternalPid() : int{
+		$rawProtocol = $this->PROTOCOL;
+		$this->PROTOCOL = ProtocolInfo::CURRENT_PROTOCOL;
+		$pid = (int) $this->pid();
+		$this->PROTOCOL = $rawProtocol;
+		return $pid;
+	}
 
 	protected function getLong($unsigned = false){
 		return Utils::readLong($this->get(8), $unsigned);
@@ -142,14 +152,18 @@ abstract class RakNetDataPacket extends stdClass{
 		return ord($this->get(1));
 	}
 
-	protected function putSlot(Item $item){
-		$this->putShort($item->getID());
+	protected function putSlot(Int $protocolId, Item $item){
+		$this->putShort(BlockAPI::convertHighItemIdsToOldItemIds($protocolId, $item->getID()));
 		$this->putByte($item->count);
 		$this->putShort($item->getMetadata());
 	}
 
 	protected function putShort($v){
 		$this->buffer .= Utils::writeShort($v);
+	}
+
+	protected function putLShort($v){
+		$this->buffer .= Utils::writeLShort($v);
 	}
 
 	protected function putByte($v){

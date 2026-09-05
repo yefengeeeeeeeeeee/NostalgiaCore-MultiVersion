@@ -9,11 +9,11 @@ class GravelBlock extends FallableBlock{
 		$this->material = Material::$sand;
 		$this->lightBlock = 255;
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		return [
 			[mt_rand(1,10) == 1 ? FLINT : GRAVEL, 0, 1],
 		];
 	}
-	
+
 }

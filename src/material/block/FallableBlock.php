@@ -12,10 +12,6 @@ class FallableBlock extends SolidBlock{
 	}
 
 	/**
-	 * @param Item $item
-	 * @param Player $player
-	 * @param Block $block
-	 * @param Block $target
 	 * @param int $face
 	 * @param int $fx
 	 * @param int $fy

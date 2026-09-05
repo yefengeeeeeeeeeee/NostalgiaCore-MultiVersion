@@ -111,8 +111,8 @@ class Async extends Thread{
 			}
 		}
 	}
-	
+
 	public function __destruct(){}
-	
+
 	public function run(){}
 }*/

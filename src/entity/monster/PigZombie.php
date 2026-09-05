@@ -1,4 +1,5 @@
 <?php
+
 class PigZombie extends Monster{ //TODO extends zombie
 	const TYPE = MOB_PIGMAN;
 	function __construct(Level $level, $eid, $class, $type = 0, $data = []){

@@ -11,6 +11,11 @@ class AddItemEntityPacket extends RakNetDataPacket{
 	public $speedZ;
 	
 	public function pid(){
+		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
+			return  ProtocolInfo3::ADD_ITEM_ENTITY_PACKET;
+		}elseif($this->PROTOCOL < ProtocolInfo6::CURRENT_PROTOCOL_6){
+			return  ProtocolInfo5::ADD_ITEM_ENTITY_PACKET;
+		}
 		return ProtocolInfo::ADD_ITEM_ENTITY_PACKET;
 	}
 	
@@ -21,7 +26,7 @@ class AddItemEntityPacket extends RakNetDataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);
-		$this->putSlot($this->item);
+		$this->putSlot($this->PROTOCOL, $this->item);
 		$this->putFloat($this->x);
 		$this->putFloat($this->y);
 		$this->putFloat($this->z);

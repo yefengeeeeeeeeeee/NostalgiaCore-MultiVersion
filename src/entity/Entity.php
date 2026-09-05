@@ -1629,10 +1629,15 @@ class Entity extends Position
 		if($this->isPlayer()){
 			$v2 = (int)($dmg / 4);
 			if($v2 < 1) $v2 = 1;
-			
+
 			foreach($this->player->armor as $slot => $part){
 				$part->hurtAndBreak($v2, $this->player, helditem: false);
 				if($part->count <= 0) $this->player->setArmor($slot, BlockAPI::getItem(0, 0, 0), send: false);
+			}
+			if($this->player->getProtocol() < ProtocolInfo12::CURRENT_PROTOCOL_12 && $this->player->getProtocol() > ProtocolInfo8::CURRENT_PROTOCOL_8){
+				$pk = new HurtArmorPacket();
+				$pk->health = $v2;
+				$this->player->entityQueueDataPacket($pk);
 			}
 			$this->player->sendArmor();
 		}
@@ -1716,6 +1721,25 @@ class Entity extends Position
 		$this->updateMetadata();
 		$this->dead = true;
 		if($this->player instanceof Player){
+			if($this->player->getProtocol() < ProtocolInfo12::CURRENT_PROTOCOL_12){
+				$this->player->isWorkbench = false;
+				$this->player->isStoneCutter = false;
+				if(!self::$keepInventory) {
+					if ($this->player->getProtocol() <= ProtocolInfo8::CURRENT_PROTOCOL_8) {
+						$pk = new EntityEventPacket;
+						$pk->eid = $this->eid;
+						$pk->event = EntityEventPacket::ENTITY_DEAD;
+						$this->player->entityQueueDataPacket($pk);
+					} elseif (isset($this->player->isOre[DIAMOND_HELMET])) {
+						for($i = 0 ; $i < 19 ; $i++){
+							$pk = new HurtArmorPacket();
+							$pk->health = 127;
+							$this->player->entityQueueDataPacket($pk);
+						}
+					}
+				}
+				$this->player->isOre = [];
+			}
 			$pk = new MoveEntityPacket_PosRot();
 			$pk->eid = $this->eid;
 			$pk->x = -256;

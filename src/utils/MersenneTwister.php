@@ -17,10 +17,10 @@
   and floats when we must.
 
   Only the class `twister' is part of the API; everything else is private.
-  
+
   http://kingfisher.nfshost.com/sw/twister/
-  
-  
+
+
   Who made such a weird names? - GameHerobrine
 */
 const N = 624;
@@ -42,16 +42,14 @@ foreach([16, 31, 32] as $n){
 $val = MASK31 | (MASK31 << 1);
 define("MASK32", $val);
 
-
 class MersenneTwister{
-	
-	
+
 	static $MAG_01 = [0, MATRIX_A];
-	
+
 	const N = N;
 	//the class constant is not used anywhere in this namespace,
 	//but it makes the API cleaner.
-	
+
 	//^^ u probably wanted to say makes code look weirder
 
 	function __construct(){
@@ -191,7 +189,7 @@ class MersenneTwister{
 
 		return $y & 0xFFFFFFFF;
 	}
-	
+
 	/* generates a random number on [0,1]-real-interval */
 
 	function real_closed(){
@@ -325,15 +323,15 @@ class MersenneTwister{
 	function nextInt($bound = null){
 		return $bound == null ? ($this->int32() >> 1) : ($this->int32() % $bound);
 	}
-	
+
 	function nextFloat(){
 		return $this->int32() * 2.32830644e-10;
 	}
-	
+
 	function setSeed($seed){
 		$this->init_with_integer($seed);
 	}
-	
+
 }
 
 function signed2unsigned($signed_integer){
@@ -389,7 +387,7 @@ function force_32_bit_int($x){
 /*
   takes 2 integers, treats them as unsigned 32-bit integers,
   and adds them.
-  
+
   it works by splitting each integer into
   2 "half-integers", then adding the high and low half-integers
   separately.

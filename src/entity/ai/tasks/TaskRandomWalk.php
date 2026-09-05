@@ -7,7 +7,7 @@ class TaskRandomWalk extends TaskBase
 	public function __construct($speedMultiplier){
 		$this->speedMultiplier = $speedMultiplier;
 	}
-	
+
 	public function onStart(EntityAI $ai)
 	{
 		$this->x = mt_rand(-1, 1);
@@ -30,7 +30,7 @@ class TaskRandomWalk extends TaskBase
 			$this->reset();
 			return false; //TODO Better way: block movement
 		}
-		
+
 		--$this->selfCounter;
 		$ai->mobController->setMovingOffset($this->x, 0, $this->z, $this->speedMultiplier);
 	}
@@ -40,8 +40,7 @@ class TaskRandomWalk extends TaskBase
 		if(($ai->entity instanceof Creeper && $ai->entity->isIgnited()) || $ai->entity->hasPath() || $ai->isStarted("TaskTempt") || $ai->isStarted("TaskAttackPlayer") || $ai->isStarted("TaskRangedAttack")) {
 			return false;
 		} // i really need mutexBits
-		return !$ai->entity->inPanic && !$ai->isStarted("TaskMate")  && !$ai->isStarted("TaskEatTileGoal") && !$ai->isStarted("TaskLookAround") && !$ai->isStarted("TaskFollowParent") && !$ai->isStarted("TaskLookAtPlayer") && mt_rand(0, 120) == 0;
+		return !$ai->entity->inPanic && !$ai->isStarted("TaskMate") && !$ai->isStarted("TaskEatTileGoal") && !$ai->isStarted("TaskLookAround") && !$ai->isStarted("TaskFollowParent") && !$ai->isStarted("TaskLookAtPlayer") && mt_rand(0, 120) == 0;
 	}
 
-	
-}
+	}

@@ -14,9 +14,9 @@ class Tile extends Position{
 	public $metadata;
 	public $closed;
 	private $server;
-	
+
 	public $scheduledUpdate, $lastUpdate;
-	
+
 	function __construct(Level $level, $id, $class, $x, $y, $z, $data = []){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
@@ -412,6 +412,26 @@ class Tile extends Position{
 
 				$nbt->write(chr(NBT::TAG_END));
 
+				if($player->getProtocol() < ProtocolInfo12::CURRENT_PROTOCOL_12){
+					$line1 = mb_substr($this->data["Text1"], 0, 15);
+					$line2 = mb_substr($this->data["Text2"], 0, 15);
+					$line3 = mb_substr($this->data["Text3"], 0, 15);
+					$line4 = mb_substr($this->data["Text4"], 0, 15);
+
+					$pk = new EntityDataPacket;
+					$pk->x = $this->x;
+					$pk->y = $this->y;
+					$pk->z = $this->z;
+
+					$pk->line1 = $line1;
+					$pk->line2 = $line2;
+					$pk->line3 = $line3;
+					$pk->line4 = $line4;
+
+					$player->blockQueueDataPacket($pk);
+					break;
+				}
+
 				$pk = new EntityDataPacket;
 				$pk->x = $this->x;
 				$pk->y = $this->y;
@@ -465,7 +485,6 @@ class Tile extends Position{
 	public function getName(){
 		return $this->name;
 	}
-
 
 	public function setPosition(Vector3 $pos){
 		if($pos instanceof Position){

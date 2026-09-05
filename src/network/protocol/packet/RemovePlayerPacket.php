@@ -3,15 +3,18 @@
 class RemovePlayerPacket extends RakNetDataPacket{
 	public $eid;
 	public $clientID;
-	
+
 	public function pid(){
+		if($this->PROTOCOL < ProtocolInfo4::CURRENT_PROTOCOL_4){
+			return ProtocolInfo3::REMOVE_PLAYER_PACKET;
+		}
 		return ProtocolInfo::REMOVE_PLAYER_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);
