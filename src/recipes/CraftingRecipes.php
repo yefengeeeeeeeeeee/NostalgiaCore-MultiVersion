@@ -515,14 +515,17 @@ class CraftingRecipes{
 	
 	public static function addRecipe($recipe, $type, $protocol = ProtocolInfo::CURRENT_PROTOCOL){
 		[$ingridients, $results] = explode("=>", $recipe);
-		$results_arr = []; //indexed by id, must be rewritten in case some recipe will craft 2 items with same id but different metadata
+		$results_arr = []; //indexed by id, full [id, meta, cnt]
+		$results_idmeta = []; //indexed by id, "id:meta" only
 		foreach(explode(",", $results) as $res){
 			[$id, $meta, $cnt] = self::fromString($res);
 			if($meta === "?") throw new RuntimeException("Unknown metadata in result when trying to add $recipe (type: $type)");
-			$results_arr[$id] = "{$id}:{$meta}x{$cnt}";
+			$results_arr[$id] = [$id, $meta, $cnt];
+			$results_idmeta[$id] = "{$id}:{$meta}";
 		}
 		ksort($results_arr);
-		$result_index = implode(",", $results_arr);
+		ksort($results_idmeta);
+		$result_index = implode(",", $results_idmeta);
 		
 		$ingridients_arr = [];
 		foreach(explode(",", $ingridients) as $resultstr){
@@ -556,13 +559,13 @@ class CraftingRecipes{
 
 		if($protocol >= ProtocolInfo9::CURRENT_PROTOCOL_9){
 		if(!isset($arr[$result_index])) $arr[$result_index] = [];
-		$arr[$result_index][] = $ingridients_arr;
-		
-		foreach($results_arr as $resitem){
+		$arr[$result_index][] = ["in" => $ingridients_arr, "out" => array_values($results_arr)];
+
+		foreach($results_idmeta as $resitem){
 			if(!isset($arr_c[$resitem])){
 				$arr_c[$resitem] = [];
 			}
-			foreach($results_arr as $resitem2){
+			foreach($results_idmeta as $resitem2){
 				$arr_c[$resitem][$resitem2] = true;
 			}
 		}
@@ -903,8 +906,11 @@ class CraftingRecipes{
 	 */
 	public static function canCraft(array $craftItems, array $recipeItems, $type, $protocol = ProtocolInfo::CURRENT_PROTOCOL){
 		$craftIndexArr = [];
+		$craftCount = [];
 		foreach($craftItems as $it){
-			$craftIndexArr[$it[0]] = "{$it[0]}:{$it[1]}x{$it[2]}";
+			$k = "{$it[0]}:{$it[1]}";
+			$craftIndexArr[$it[0]] = $k;
+			$craftCount[$k] = $it[2];
 		}
 		ksort($craftIndexArr);
 		$craftIndex = implode(",", $craftIndexArr);
@@ -925,7 +931,7 @@ class CraftingRecipes{
 				ConsoleAPI::error("Tried crafting recipe with unknown type {$type}!");
 				return false;
 		}
-		
+
 		if(!isset($arr[$craftIndex])) { //recipe for those ingridients was not found
 			$allcombos = $arr_c[current($craftIndexArr)] ?? [];
 			foreach($craftIndexArr as $res){
@@ -951,10 +957,28 @@ class CraftingRecipes{
 			}
 		}
 		
-		foreach($arr[$craftIndex] as $ingridients){
+
+		foreach($arr[$craftIndex] as $recipe){
+			$ingridients = $recipe["in"];
+			$outputs = $recipe["out"];
+
+			$multiplier = null;
+			$ok = true;
+			foreach($outputs as $out){
+				$k = "{$out[0]}:{$out[1]}";
+				if(!isset($craftCount[$k]) || $out[2] <= 0 || $craftCount[$k] % $out[2] !== 0 || ($craftCount[$k] / $out[2]) < 1){
+					$ok = false;
+					break;
+				}
+				$m = $craftCount[$k] / $out[2];
+				if($multiplier === null) $multiplier = $m;
+				elseif($multiplier !== $m) $ok = false;
+			}
+			if(!$ok) continue;
+
 			foreach($ingridients as $item){
 				if($item[1] === "?"){ // any metadata is allowed
-					$needcnt = $item[2];
+					$needcnt = $item[2] * $multiplier;
 					foreach($recipeItems as $idmeta => $it){
 						$id = $idmeta >> 16;
 						if($id != $item[0]) continue;
@@ -969,14 +993,15 @@ class CraftingRecipes{
 						goto skip_recipe; //dont check count if no idmeta pair is in ingridients
 					}
 					$it = $recipeItems[$exceptedIndex];
-					if($it[0] != $item[0] || $it[1] != $item[1] || $it[2] != $item[2]) {
+					$need = $item[2] * $multiplier;
+					if($it[0] != $item[0] || $it[1] != $item[1] || $it[2] != $need) {
 						goto skip_recipe;
 					}
 				}
 			}
 			//recipe is correct
 			return [$craftItems, $ingridients];
-			
+
 			skip_recipe:
 		}
 		return true;
