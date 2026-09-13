@@ -2494,8 +2494,11 @@ class Player{
 
             $this->slot = $this->hotbar[0];
 
-			if($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9 && ){
-				$this->slot = 42;
+			if($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
+				if(($this->gamemode & 0x01) === 0x01)
+					$this->slot = 0;
+				else
+					$this->slot = 42;
 			}
 
             for($i = 0; $i < count($this->hotbar); ++$i){
@@ -2744,7 +2747,10 @@ class Player{
 
 				$this->slot = $this->hotbar[0];
 				if($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
-					$this->slot = 42;
+					if(($this->gamemode & 0x01) === 0x01)
+						$this->slot = 0;
+					else
+						$this->slot = 42;
 				}
 
 				for($i = 0; $i < count($this->hotbar); ++$i){
