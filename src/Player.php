@@ -1454,12 +1454,12 @@ class Player{
 
 		if($this->isWorkBench && $this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9 && $this->PROTOCOL > ProtocolInfo8::CURRENT_PROTOCOL_8){
 			if($type === SLAB && $damage === 2){
-				$ingridients[][] = [WOODEN_PLANKS, "?", 3];
+				$ingridients[0]["in"][] = [WOODEN_PLANKS, "?", 3];
 				if(CraftingRecipes::tryCraft($this, $ingridients, $result, $this->craftingType)) {
 					goto success_to_craft;
 				}
 			}elseif($type === WOODEN_STAIRS && $damage === 0){
-				$ingridients[][] = [WOODEN_PLANKS, "?", 6];
+				$ingridients[0]["in"][] = [WOODEN_PLANKS, "?", 6];
 				if(CraftingRecipes::tryCraft($this, $ingridients, $result, $this->craftingType)) {
 					goto success_to_craft;
 				}
@@ -2494,7 +2494,7 @@ class Player{
 
             $this->slot = $this->hotbar[0];
 
-			if($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9){
+			if($this->PROTOCOL <= ProtocolInfo9::CURRENT_PROTOCOL_9 && ){
 				$this->slot = 42;
 			}
 

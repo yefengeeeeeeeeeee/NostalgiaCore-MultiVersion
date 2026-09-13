@@ -572,14 +572,14 @@ class CraftingRecipes{
 
 		}elseif($protocol <= ProtocolInfo8::CURRENT_PROTOCOL_8 && $protocol >= ProtocolInfo6::CURRENT_PROTOCOL_6){
 			if(!isset($arr_old[$result_index])) $arr_old[$result_index] = [];
-			$arr_old[$result_index][] = $ingridients_arr;
+			$arr_old[$result_index][] = ["in" => $ingridients_arr, "out" => array_values($results_arr)];
 		}elseif($protocol < ProtocolInfo6::CURRENT_PROTOCOL_6){
 			if(!isset($arr_legacy[$result_index])) $arr_legacy[$result_index] = [];
-			$arr_legacy[$result_index][] = $ingridients_arr;
+			$arr_legacy[$result_index][] = ["in" => $ingridients_arr, "out" => array_values($results_arr)];
 		}
 
 		foreach ($results_arr as $id => $idIndex) {
-			$idMetaData = explode(":",explode("x", $idIndex)[0])[1];
+			$idMetaData = $idIndex[1];
 			if(!isset($arr_r[$id])){
 				$arr_r[$id] = [];
 			}
@@ -587,7 +587,7 @@ class CraftingRecipes{
 				$arr_r[$id][$idMetaData] = [];
 			}
 			if(is_numeric($protocol)){
-				$arr_r[$id][$idMetaData][$protocol] = $idIndex;
+				$arr_r[$id][$idMetaData][$protocol] = $result_index;
 			}
 		}
 	}
@@ -688,15 +688,22 @@ class CraftingRecipes{
 		return false;
 	}
 
-	public static function getCraftNumber(Item $craftItem, $type, $protocol = ProtocolInfo::CURRENT_PROTOCOL){
+	private static function getCraftNumber(Item $craftItem, $type, $protocol = ProtocolInfo::CURRENT_PROTOCOL){
 		switch($type){
 			case self::TYPE_CRAFTIGTABLE:
+				$arr = &self::$craftingTableRecipes;
+				$arr_old = &self::$craftingTableOldRecipes;
+				$arr_legacy = &self::$craftingTableLegacyRecipes;
 				$arr_r = &self::$craftingTablePossibleRecipes;
 				break;
 			case self::TYPE_INVENTORY:
+				$arr = &self::$inventoryRecipes;
+				$arr_old = &self::$inventoryOldRecipes;
+				$arr_legacy = &self::$inventoryLegacyRecipes;
 				$arr_r = &self::$inventoryPossibleRecipes;
 				break;
 			case self::TYPE_STONECUTTER:
+				$arr = &self::$stoneCutterRecipes;
 				$arr_r = &self::$stoneCutterPossibleRecipes;
 				break;
 			default:
@@ -716,9 +723,14 @@ class CraftingRecipes{
 		}
 
 		if(isset($arr_r[$craftItem->getID()][$craftItem->getMetadata()][$protocolId])){
-			$craftIndex = $arr_r[$craftItem->getID()][$craftItem->getMetadata()][$protocolId];
-			$res = explode("x",$craftIndex);
-			return $res[1];
+			$result_index = $arr_r[$craftItem->getID()][$craftItem->getMetadata()][$protocolId];
+			if($protocol >= ProtocolInfo9::CURRENT_PROTOCOL_9){
+				if(isset($arr[$result_index])) return $arr[$result_index][0]["out"][0][2];
+			}elseif($protocol <= ProtocolInfo8::CURRENT_PROTOCOL_8 && $protocol >= ProtocolInfo6::CURRENT_PROTOCOL_6){
+				if(isset($arr_old[$result_index])) return $arr_old[$result_index][0]["out"][0][2];
+			}elseif($protocol < ProtocolInfo6::CURRENT_PROTOCOL_6){
+				if(isset($arr_legacy[$result_index])) return $arr_legacy[$result_index][0]["out"][0][2];
+			}
 		}
 		return false;
 	}
@@ -798,7 +810,8 @@ class CraftingRecipes{
 			$craftItem->count += ($craftneededItemCnt - $combineCraftCnt);
 		}
 
-		foreach($recipeItems as $ingridients){
+		foreach($recipeItems as $recipes){
+			$ingridients = $recipes["in"];
 			foreach($ingridients as $item){
 				$needCraftCnt = $item[2];
 				if($craftItem->count > $craftneededItemCnt){
@@ -943,16 +956,16 @@ class CraftingRecipes{
 			ConsoleAPI::info("Recipe with $craftIndex is not found but it might be found later. Crafting continued.");
 			return true; //recipe might be found next time
 		}
-		if($protocol <= ProtocolInfo12::CURRENT_PROTOCOL_12 && $protocol >= ProtocolInfo12::CURRENT_PROTOCOL_11 && ($craftIndex === "5:0x4" || $craftIndex === "53:0x4" || $craftIndex === "158:0x6")){
+		if($protocol <= ProtocolInfo12::CURRENT_PROTOCOL_12 && $protocol >= ProtocolInfo12::CURRENT_PROTOCOL_11 && ($craftIndex === "5:0" || $craftIndex === "53:0" || $craftIndex === "158:0")){
 			switch ($craftIndex){
-				case "5:0x4":
-					$arr[$craftIndex][][] = [WOOD, "?", 1];
+				case "5:0":
+					$arr[$craftIndex][0]["in"][0] = [WOOD, "?", 1];
 					break;
-				case "53:0x4":
-					$arr[$craftIndex][][] = [WOODEN_PLANKS, "?", 6];
+				case "53:0":
+					$arr[$craftIndex][0]["in"][0] = [WOODEN_PLANKS, "?", 6];
 					break;
-				case "158:0x6":
-					$arr[$craftIndex][][] = [WOODEN_PLANKS, "?", 3];
+				case "158:0":
+					$arr[$craftIndex][0]["in"][0] = [WOODEN_PLANKS, "?", 3];
 					break;
 			}
 		}
